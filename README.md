@@ -10,3 +10,6 @@ This project is still WIP but if you'd like to run the bot locally you can fetch
 ```defaultPrefix=YOUR_PREFIX_GOES_HERE```
 
 and execute the jar
+
+Are you a maintainer?
+To build the project through maven use maven goal `clean package` or for tests only maven goal `clean test`
