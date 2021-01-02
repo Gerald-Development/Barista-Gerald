@@ -34,6 +34,7 @@ public class ConfigService {
 	}
 
 	public String getDefaultPrefix() {
-		return config.getProperty("defaultPrefix");
+		String prefix = config.getProperty("defaultPrefix");
+		return prefix != null ? prefix : "$";
 	}
 }

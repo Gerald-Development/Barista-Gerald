@@ -14,11 +14,12 @@ public class MessageHandler {
 
 	private volatile static MessageHandler instance;
 	private static final Logger LOGGER = Logger.getLogger(MessageHandler.class.getName());
-	private ConfigService config = ConfigService.getInstance();
+	private ConfigService config;
 	public final String defaultPrefix;
 
 	// private for Singleton
 	private MessageHandler() {
+		this.config = ConfigService.getInstance();
 		this.defaultPrefix = config.getDefaultPrefix();
 	}
 
