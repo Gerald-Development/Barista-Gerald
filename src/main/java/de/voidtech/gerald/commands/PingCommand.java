@@ -26,4 +26,14 @@ public class PingCommand extends AbstractCommand {
 		});
 	}
 
+	@Override
+	public String getDescription() {
+		return "returns the ping of Gerald and the gateway";
+	}
+
+	@Override
+	public String getUsage() {
+		return "ping";
+	}
+
 }

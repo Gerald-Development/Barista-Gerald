@@ -12,4 +12,15 @@ public class TestCommand extends AbstractCommand{
 		message.getAuthor();
 	}
 
+
+	@Override
+	public String getDescription() {
+		return "not your business";
+	}
+
+	@Override
+	public String getUsage() {
+		return "";
+	}
+
 }

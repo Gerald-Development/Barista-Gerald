@@ -31,6 +31,12 @@ public class ConfigServiceTest extends TestCase
 	public void testNoConfigFile() throws Exception {
 		ConfigService configService = ConfigService.getInstance();
 		
+		Properties config = new Properties();
+		
+		Field field = configService.getClass().getDeclaredField("config");
+		field.setAccessible(true);
+		field.set(configService, config);
+		
 		assertEquals(configService.getDefaultPrefix(), "$");
 		assertEquals(configService.getToken(), null);
 	}
