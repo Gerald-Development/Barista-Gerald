@@ -14,11 +14,12 @@ public class MessageHandler {
 
 	private volatile static MessageHandler instance;
 	private static final Logger LOGGER = Logger.getLogger(MessageHandler.class.getName());
-	static ConfigService config = new ConfigService();
-	public static final String DEFAULTPREFIX = config.getDefaultPrefix();
+	private ConfigService config = ConfigService.getInstance();
+	public final String defaultPrefix;
 
 	// private for Singleton
 	private MessageHandler() {
+		this.defaultPrefix = config.getDefaultPrefix();
 	}
 
 	public static MessageHandler getInstance() {
@@ -34,10 +35,10 @@ public class MessageHandler {
 	}
 
 	private void handleCommand(Message message) {
-		if (!message.getContentRaw().startsWith(DEFAULTPREFIX)) {
+		if (!message.getContentRaw().startsWith(this.defaultPrefix)) {
 			return;
 		}
-		String messageContent = message.getContentRaw().substring(DEFAULTPREFIX.length());
+		String messageContent = message.getContentRaw().substring(this.defaultPrefix.length());
 		List<String> messageArray = Arrays.asList(messageContent.split(" "));
 
 		List<Commands> commandEnumEntries = Arrays.asList(Commands.values())//

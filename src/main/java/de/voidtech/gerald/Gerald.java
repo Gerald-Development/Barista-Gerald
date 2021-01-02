@@ -18,7 +18,7 @@ public class Gerald {
 	private static final Logger LOGGER = Logger.getLogger(Gerald.class.getName());
 
 	private Gerald() throws LoginException {
-		ConfigService config = new ConfigService();
+		ConfigService config = ConfigService.getInstance();
 		String token = config.getToken();
 		
 		JDABuilder.createDefault(token)

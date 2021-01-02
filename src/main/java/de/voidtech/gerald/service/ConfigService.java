@@ -2,42 +2,38 @@ package main.java.de.voidtech.gerald.service;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ConfigService {
-	
-	public Properties config = new Properties();
-	
-	public ConfigService()  {
-		//Get path
-		String path = null;
-		try {
-			path = new File(".").getCanonicalPath() + "\\GeraldConfig.properties";
-		} catch (IOException IOError) {
-			IOError.printStackTrace();
-			System.exit(1);
-		}
-		//Read file
-		try {
-			config.load(new FileInputStream(path));
-		} catch (FileNotFoundException noFileError) {
-			noFileError.printStackTrace();
-			System.exit(1);
-		} catch (IOException IOError) {
-			IOError.printStackTrace();
-			System.exit(1);
+	private static volatile ConfigService instance;
+	private static final Logger LOGGER = Logger.getLogger(ConfigService.class.getName());
+
+	private Properties config = new Properties();
+
+	//PRIVATE FOR SINGLETON
+	private ConfigService() {
+		try (FileInputStream fis = new FileInputStream(new File("GeraldConfig.properties"))){
+			config.load(fis);
+		} catch (IOException e) {
+			LOGGER.log(Level.SEVERE, "an error has occurred while reading the config\n" + e.getMessage());
 		}
 	}
-	//Get Token
+
+	public static ConfigService getInstance() {
+		if (ConfigService.instance == null) {
+			ConfigService.instance = new ConfigService();
+		}
+		return ConfigService.instance;
+	}
+
 	public String getToken() {
-		String token = config.getProperty("token");
-		return token;
+		return config.getProperty("token");
 	}
-	//Get Prefix
+
 	public String getDefaultPrefix() {
-		String defaultPrefix = config.getProperty("defaultPrefix");
-		return defaultPrefix;
+		return config.getProperty("defaultPrefix");
 	}
 }
