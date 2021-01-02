@@ -9,6 +9,7 @@ import org.junit.Test;
 import junit.framework.TestCase;
 import main.java.de.voidtech.gerald.service.MessageHandler;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 
 public class MessageHandlerTest extends TestCase
 {
@@ -32,7 +33,7 @@ public class MessageHandlerTest extends TestCase
 	}
 	
 	@Test
-	public void testNotExistentMessage() throws Exception 
+	public void testNotExistentCommand() throws Exception 
 	{
 		Message message = mock(Message.class);
 		
@@ -46,10 +47,13 @@ public class MessageHandlerTest extends TestCase
 	public void testCommand() throws Exception 
 	{
 		Message message = mock(Message.class);
+		User user = mock(User.class);
 		
 		expect(message.getContentRaw()).andReturn("$junittest").times(2);
-		expect(message.getAuthor()).andReturn(null);
-		replay(message);
+		expect(message.getAuthor()).andReturn(user).times(3);
+		expect(user.getAsTag()).andReturn("Barista#4711");
+		expect(user.getId()).andReturn("ACoolID");
+		replay(message, user);
 		
 		msgHandler.handleMessage(message);
 	}

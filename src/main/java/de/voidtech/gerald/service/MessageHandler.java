@@ -57,6 +57,6 @@ public class MessageHandler {
 		if (messageArray.size() <= 0)
 			return;
 		commandOpt.execute(message, messageArray.subList(1, messageArray.size()));
-		LOGGER.log(Level.INFO, "Command executed: " + messageArray.get(0));
+		LOGGER.log(Level.INFO, "Command executed: " + messageArray.get(0) + "\nfrom " + message.getAuthor().getAsTag() + "\nID: " + message.getAuthor().getId());
 	}
 }
