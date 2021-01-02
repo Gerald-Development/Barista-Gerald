@@ -3,6 +3,7 @@ package main.java.de.voidtech.gerald.commands;
 public enum Commands {
 	
 	PING("ping", new PingCommand()),
+	SAY("say", new SayCommand()),
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", new TestCommand())
 	

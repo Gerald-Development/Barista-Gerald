@@ -7,6 +7,7 @@ import javax.security.auth.login.LoginException;
 
 import main.java.de.voidtech.gerald.listeners.MessageListener;
 import main.java.de.voidtech.gerald.listeners.ReadyListener;
+import main.java.de.voidtech.gerald.service.ConfigService;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.utils.Compression;
@@ -17,8 +18,10 @@ public class Gerald {
 	private static final Logger LOGGER = Logger.getLogger(Gerald.class.getName());
 
 	private Gerald() throws LoginException {
-		//TODO: read token from a config file
-		JDABuilder.createDefault("NzkyODAyMjYwMTUyMjIxNzQ3.X-jApA.FyVQ_j_LCLFrl8-iT6TjFtX1Qis")
+		ConfigService config = new ConfigService();
+		String token = config.getToken();
+		
+		JDABuilder.createDefault(token)
 				.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE)//
 				.setBulkDeleteSplittingEnabled(false)//
 				.setCompression(Compression.NONE)//
