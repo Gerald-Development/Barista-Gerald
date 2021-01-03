@@ -7,4 +7,7 @@ import net.dv8tion.jda.api.entities.Message;
 public abstract class AbstractCommand 
 {
 	public abstract void execute(Message message, List<String> args);
+	
+	public abstract String getDescription();
+	public abstract String getUsage();
 }

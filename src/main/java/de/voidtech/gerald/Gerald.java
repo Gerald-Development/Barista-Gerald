@@ -19,9 +19,8 @@ public class Gerald {
 
 	private Gerald() throws LoginException {
 		ConfigService config = ConfigService.getInstance();
-		String token = config.getToken();
 		
-		JDABuilder.createDefault(token)
+		JDABuilder.createDefault(config.getToken())
 				.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE)//
 				.setBulkDeleteSplittingEnabled(false)//
 				.setCompression(Compression.NONE)//
