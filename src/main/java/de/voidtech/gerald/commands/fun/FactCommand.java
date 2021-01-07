@@ -15,11 +15,12 @@ import net.dv8tion.jda.api.entities.Message;
 
 public class FactCommand extends AbstractCommand 
 {
+	private static final String REQUEST_URL = "https://uselessfacts.jsph.pl/random.json?language=en";
 
 	@Override
 	public void executeInternal(Message message, List<String> args) throws IOException {
 		
-		URL requestURL = new URL("https://uselessfacts.jsph.pl/random.json?language=en");
+		URL requestURL = new URL(REQUEST_URL);
 		HttpURLConnection con = (HttpURLConnection) requestURL.openConnection();
 		con.setRequestMethod("GET");
 
