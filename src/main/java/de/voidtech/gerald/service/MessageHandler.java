@@ -56,7 +56,12 @@ public class MessageHandler {
 
 		if (messageArray.size() <= 0)
 			return;
-		commandOpt.execute(message, messageArray.subList(1, messageArray.size()));
+		try {
+			commandOpt.execute(message, messageArray.subList(1, messageArray.size()));
+		} catch (Exception e) {
+			// TODO REMOVE
+			e.printStackTrace();
+		}
 		LOGGER.log(Level.INFO, "Command executed: " + messageArray.get(0) + "\nfrom " + message.getAuthor().getAsTag() + "\nID: " + message.getAuthor().getId());
 	}
 }

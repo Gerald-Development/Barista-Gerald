@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 public class ServerInfoCommand extends AbstractCommand{
 
 	@Override
-	public void execute(Message message, List<String> args) 
+	public void executeInternal(Message message, List<String> args) 
 	{
 		Guild guild = message.getGuild();
 		Member owner = guild.retrieveOwner().complete();
