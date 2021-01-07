@@ -9,6 +9,7 @@ public enum Commands {
 	SAY("say", new SayCommand()),
 	SERVERINFO("serverinfo", new ServerInfoCommand()),
 	FACT("fact", new FactCommand()),
+	ASK("ask", new AskCommand()),
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", new TestCommand()),
 	
