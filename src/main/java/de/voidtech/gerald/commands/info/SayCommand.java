@@ -1,7 +1,8 @@
-package main.java.de.voidtech.gerald.commands;
+package main.java.de.voidtech.gerald.commands.info;
 
 import java.util.List;
 
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.entities.Message;
 
 public class SayCommand extends AbstractCommand{

@@ -1,11 +1,14 @@
 package main.java.de.voidtech.gerald.commands;
 
+import main.java.de.voidtech.gerald.commands.info.*;
+
 public enum Commands {
 	
 	PING("ping", new PingCommand()),
 	SAY("say", new SayCommand()),
+	SERVERINFO("serverinfo", new ServerInfoCommand()),
 	@SuppressWarnings("deprecation")
-	JUNIT_TEST("junittest", new TestCommand())
+	JUNIT_TEST("junittest", new TestCommand()),
 	
 	;
 	
