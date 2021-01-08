@@ -10,30 +10,45 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
 
-public class ServerInfoCommand extends AbstractCommand{
+public class ServerInfoCommand extends AbstractCommand {
 
 	@Override
-	public void executeInternal(Message message, List<String> args) 
-	{
+	public void executeInternal(Message message, List<String> args) {
+
 		Guild guild = message.getGuild();
 		Member owner = guild.retrieveOwner().complete();
-		
-		//TODO: get humans and bots once the bot has gateway intents
-		//TODO: JUnit Tests once the command is finished
-		int totalCount = guild.getMemberCount();
-		
-		guild.getMemberCache().acceptStream(stream -> stream.forEach(member -> System.out.println(member.getUser().getAsTag())));
-		
+
+		// TODO: get humans and bots once the bot has gateway intents
+		// TODO: JUnit Tests once the command is finished
+		List<Member> memberList = guild.loadMembers().get();
+
+		int totalMemberCount = memberList.size();
+		int botCount = (int) memberList.stream()//
+				.map(Member::getUser)//
+				.filter(User::isBot)//
+				.count();
+		int humanCount = totalMemberCount - botCount;
+
 		MessageEmbed serverInfoEmbed = new EmbedBuilder()//
-					.setTitle(message.getGuild().getName())
-					.addField("Owner Information", String.format("```Owner ID: %s\nOwner Tag: %s```", owner.getId(), owner.getUser().getAsTag()), false)//
-					.addField("General Server Info", String.format("```Server ID: %s\nCreated at: %s\nRegion: %s\nUser Verification Level: %s```",//
-							guild.getId(), guild.getTimeCreated().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)), guild.getRegion().getName(), guild.getVerificationLevel().name()), false)//
-					.addField("Member Information", String.format("```Member count: %s```", totalCount), false)
-					.build();
-		
+				.setTitle(message.getGuild().getName())
+				.addField("Owner Information",
+						String.format("```Owner ID: %s\nOwner Tag: %s```", owner.getId(), owner.getUser().getAsTag()),
+						false)//
+				.addField("General Server Info",
+						String.format("```Server ID: %s\nCreated at: %s\nRegion: %s\nUser Verification Level: %s```", //
+								guild.getId(),
+								guild.getTimeCreated()
+										.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)),
+								guild.getRegion().getName(), guild.getVerificationLevel().name()),
+						false)//
+				.addField("Member Information", String.format("```Member count: %s\nHuman count: %s\nBot count: %s```",
+						totalMemberCount, humanCount, botCount), false)
+				.build();
+
 		message.getChannel().sendMessage(serverInfoEmbed).queue();
+
 	}
 
 	@Override

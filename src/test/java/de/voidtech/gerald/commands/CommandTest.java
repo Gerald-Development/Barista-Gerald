@@ -16,7 +16,14 @@ public class CommandTest extends TestCase {
 	public void testAllCommands() throws Exception {
 		Collection<AbstractCommand> commandList = Arrays.asList(Commands.values())//
 				.stream()//
-				.map(commands -> commands.getCommand())//
+				.map(commands -> {
+					try {
+						return commands.getCommandClass().newInstance();
+					} catch (InstantiationException | IllegalAccessException e) {
+						e.printStackTrace();
+					}
+					return null;
+				})//
 				.collect(Collectors.toList());
 		
 		commandList.forEach(command -> {

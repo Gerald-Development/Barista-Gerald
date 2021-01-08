@@ -30,7 +30,8 @@ public class MessageHandler {
 
 		return MessageHandler.instance;
 	}
-	//ENTRY POINT FROM MESSAGE LISTENER
+
+	// ENTRY POINT FROM MESSAGE LISTENER
 	public void handleMessage(Message message) {
 		handleCommand(message);
 	}
@@ -41,6 +42,8 @@ public class MessageHandler {
 		}
 		String messageContent = message.getContentRaw().substring(this.defaultPrefix.length());
 		List<String> messageArray = Arrays.asList(messageContent.split(" "));
+		if (messageArray.size() <= 0)
+			return;
 
 		List<Commands> commandEnumEntries = Arrays.asList(Commands.values())//
 				.stream()//
@@ -52,16 +55,18 @@ public class MessageHandler {
 			return;
 		}
 
-		AbstractCommand commandOpt = commandEnumEntries.get(0).getCommand();
-
-		if (messageArray.size() <= 0)
-			return;
 		try {
-			commandOpt.execute(message, messageArray.subList(1, messageArray.size()));
+			AbstractCommand commandOpt = commandEnumEntries.get(0).getCommandClass().newInstance();
+			commandOpt.initCommand(message, messageArray.subList(1, messageArray.size()));
+			
+			Thread commandThread = new Thread(commandOpt);
+			commandThread.setName(commandOpt.getClass().getName());
+			commandThread.start();
 		} catch (Exception e) {
 			// TODO REMOVE
 			e.printStackTrace();
 		}
-		LOGGER.log(Level.INFO, "Command executed: " + messageArray.get(0) + "\nfrom " + message.getAuthor().getAsTag() + "\nID: " + message.getAuthor().getId());
+		LOGGER.log(Level.INFO, "Command executed: " + messageArray.get(0) + "\nfrom " + message.getAuthor().getAsTag()
+				+ "\nID: " + message.getAuthor().getId());
 	}
 }

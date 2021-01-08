@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.entities.Message;
 public class AskCommand extends AbstractCommand{
 
 	@Override
-	public void executeInternal(Message message, List<String> args) throws Exception 
+	public void executeInternal(Message message, List<String> args)
 	{
 		if(args.size() > 0)
 		{

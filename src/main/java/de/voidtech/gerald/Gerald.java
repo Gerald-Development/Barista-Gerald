@@ -10,6 +10,7 @@ import main.java.de.voidtech.gerald.listeners.ReadyListener;
 import main.java.de.voidtech.gerald.service.ConfigService;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
@@ -22,6 +23,7 @@ public class Gerald {
 		
 		JDABuilder.createDefault(config.getToken())
 				.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE)//
+				.enableIntents(GatewayIntent.GUILD_MEMBERS)
 				.setBulkDeleteSplittingEnabled(false)//
 				.setCompression(Compression.NONE)//
 				.addEventListeners(new ReadyListener(), new MessageListener())//
