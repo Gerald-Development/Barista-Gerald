@@ -33,18 +33,12 @@ public class ServerInfoCommand extends AbstractCommand {
 
 		MessageEmbed serverInfoEmbed = new EmbedBuilder()//
 				.setTitle(message.getGuild().getName())
-				.addField("Owner Information",
-						String.format("```Owner ID: %s\nOwner Tag: %s```", owner.getId(), owner.getUser().getAsTag()),
-						false)//
-				.addField("General Server Info",
-						String.format("```Server ID: %s\nCreated at: %s\nRegion: %s\nUser Verification Level: %s```", //
+				.addField("Owner Information", String.format("```Owner ID: %s\nOwner Tag: %s```", owner.getId(), owner.getUser().getAsTag()), false)//
+				.addField("General Server Info", String.format("```Server ID: %s\nCreated at: %s\nRegion: %s\nUser Verification Level: %s```", //
 								guild.getId(),
-								guild.getTimeCreated()
-										.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)),
-								guild.getRegion().getName(), guild.getVerificationLevel().name()),
-						false)//
-				.addField("Member Information", String.format("```Member count: %s\nHuman count: %s\nBot count: %s```",
-						totalMemberCount, humanCount, botCount), false)
+								guild.getTimeCreated().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)),
+								guild.getRegion().getName(), guild.getVerificationLevel().name()),false)//
+				.addField("Member Information", String.format("```Member count: %s\nHuman count: %s\nBot count: %s```",totalMemberCount, humanCount, botCount), false)
 				.build();
 
 		message.getChannel().sendMessage(serverInfoEmbed).queue();
