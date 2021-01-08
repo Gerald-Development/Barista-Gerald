@@ -10,6 +10,7 @@ public enum Commands {
 	SERVERINFO("serverinfo", ServerInfoCommand.class),
 	FACT("fact", FactCommand.class),
 	ASK("ask", AskCommand.class),
+	WHOIS("whois", WhoisCommand.class),
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class),
 	
