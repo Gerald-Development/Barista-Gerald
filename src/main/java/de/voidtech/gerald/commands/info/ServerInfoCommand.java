@@ -20,8 +20,6 @@ public class ServerInfoCommand extends AbstractCommand {
 		Guild guild = message.getGuild();
 		Member owner = guild.retrieveOwner().complete();
 
-		// TODO: get humans and bots once the bot has gateway intents
-		// TODO: JUnit Tests once the command is finished
 		List<Member> memberList = guild.loadMembers().get();
 
 		int totalMemberCount = memberList.size();
