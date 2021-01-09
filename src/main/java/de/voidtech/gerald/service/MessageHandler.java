@@ -63,8 +63,7 @@ public class MessageHandler {
 			commandThread.setName(commandOpt.getClass().getName());
 			commandThread.start();
 		} catch (Exception e) {
-			// TODO REMOVE
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, "An error has occurred during command execution:\n" + e.getMessage());
 		}
 		LOGGER.log(Level.INFO, "Command executed: " + messageArray.get(0) + "\nfrom " + message.getAuthor().getAsTag()
 				+ "\nID: " + message.getAuthor().getId());
