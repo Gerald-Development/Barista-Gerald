@@ -11,6 +11,7 @@ public enum Commands {
 	FACT("fact", FactCommand.class),
 	ASK("ask", AskCommand.class),
 	WHOIS("whois", WhoisCommand.class),
+	COMPILE("compile", CompileCommand.class),
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class),
 	
