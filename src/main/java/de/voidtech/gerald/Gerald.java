@@ -1,5 +1,6 @@
 package main.java.de.voidtech.gerald;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,6 +11,7 @@ import main.java.de.voidtech.gerald.listeners.ReadyListener;
 import main.java.de.voidtech.gerald.service.ConfigService;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
@@ -21,7 +23,8 @@ public class Gerald {
 		ConfigService config = ConfigService.getInstance();
 		
 		JDABuilder.createDefault(config.getToken())
-				.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE)//
+				.enableCache(CacheFlag.CLIENT_STATUS)//
+				.enableIntents(Arrays.asList(GatewayIntent.values()))//
 				.setBulkDeleteSplittingEnabled(false)//
 				.setCompression(Compression.NONE)//
 				.addEventListeners(new ReadyListener(), new MessageListener())//

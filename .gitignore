@@ -26,3 +26,4 @@ hs_err_pid*
 .settings
 dependency-reduced-pom.xml
 GeraldConfig.properties
+.metadata

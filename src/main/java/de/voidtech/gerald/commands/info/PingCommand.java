@@ -1,8 +1,9 @@
-package main.java.de.voidtech.gerald.commands;
+package main.java.de.voidtech.gerald.commands.info;
 
 import java.awt.Color;
 import java.util.List;
 
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -10,7 +11,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 public class PingCommand extends AbstractCommand {
 
 	@Override
-	public void execute(Message message, List<String> args) {
+	public void executeInternal(Message message, List<String> args) {
 
 		long time = System.currentTimeMillis();
 

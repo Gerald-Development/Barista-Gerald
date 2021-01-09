@@ -1,20 +1,28 @@
 package main.java.de.voidtech.gerald.commands;
 
+import main.java.de.voidtech.gerald.commands.info.*;
+import main.java.de.voidtech.gerald.commands.fun.*;
+
 public enum Commands {
 	
-	PING("ping", new PingCommand()),
-	SAY("say", new SayCommand()),
+	PING("ping", PingCommand.class),
+	SAY("say", SayCommand.class),
+	SERVERINFO("serverinfo", ServerInfoCommand.class),
+	FACT("fact", FactCommand.class),
+	ASK("ask", AskCommand.class),
+	WHOIS("whois", WhoisCommand.class),
+	COMPILE("compile", CompileCommand.class),
 	@SuppressWarnings("deprecation")
-	JUNIT_TEST("junittest", new TestCommand())
+	JUNIT_TEST("junittest", TestCommand.class),
 	
 	;
 	
 	private String name;
-	private AbstractCommand command;
+	private Class<? extends AbstractCommand> commandClass;
 	
-	private Commands(String name, AbstractCommand command) {
+	private Commands(String name, Class<? extends AbstractCommand> command) {
 		this.name = name;
-		this.command = command;
+		this.commandClass = command;
 	}
 	
 	public String getName()
@@ -22,8 +30,8 @@ public enum Commands {
 		return this.name;
 	}
 	
-	public AbstractCommand getCommand()
+	public Class<? extends AbstractCommand> getCommandClass()
 	{
-		return this.command;
+		return this.commandClass;
 	}
 }
