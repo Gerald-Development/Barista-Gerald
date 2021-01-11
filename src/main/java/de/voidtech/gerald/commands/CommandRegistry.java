@@ -50,9 +50,8 @@ public enum CommandRegistry {
 	}
 
 	public AbstractCommand getCommand() throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-		if (this.arg == null)
-			return this.commandClass.newInstance();
-		else
-			return this.commandClass.getDeclaredConstructor(String.class).newInstance(arg);
+		return this.arg == null 
+				? this.commandClass.newInstance()
+				: this.commandClass.getDeclaredConstructor(String.class).newInstance(arg);
 	}
 }
