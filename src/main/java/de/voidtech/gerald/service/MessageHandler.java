@@ -1,6 +1,5 @@
 package main.java.de.voidtech.gerald.service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
