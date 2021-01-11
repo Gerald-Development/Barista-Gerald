@@ -40,8 +40,9 @@ public class ActionsCommand extends AbstractCommand {
             if (gifURL == null)
                 super.sendErrorOccurred();
             else {
-                MessageEmbed inspiroEmbed = new EmbedBuilder()//
-                        .setTitle(message.getAuthor().getName() + " " + this.name + "ed " + message.getMentionedMembers().get(0).getEffectiveName())
+                MessageEmbed inspiroEmbed = new EmbedBuilder()
+                        .setTitle(message.getAuthor().getName() + " " + this.name + this.name.charAt(this.name.length()-1) +
+                                "ed " + message.getMentionedMembers().get(0).getEffectiveName())
                         .setColor(Color.ORANGE)
                         .setImage(gifURL)
                         .build();
