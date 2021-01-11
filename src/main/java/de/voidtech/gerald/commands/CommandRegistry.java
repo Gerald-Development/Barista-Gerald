@@ -13,6 +13,7 @@ public enum CommandRegistry {
 	ASK("ask", AskCommand.class),
 	WHOIS("whois", WhoisCommand.class),
 	COMPILE("compile", CompileCommand.class),
+	INSPIRO("inspiro", InspiroCommand.class),
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class),
 
