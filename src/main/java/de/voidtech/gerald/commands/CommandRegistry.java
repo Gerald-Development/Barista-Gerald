@@ -14,7 +14,7 @@ public enum CommandRegistry {
 	WHOIS("whois", WhoisCommand.class),
 	COMPILE("compile", CompileCommand.class),
 	INSPIRO("inspiro", InspiroCommand.class),
-	APOD("apod", Apod.class),
+	APOD("apod", ApodCommand.class),
 
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class),
