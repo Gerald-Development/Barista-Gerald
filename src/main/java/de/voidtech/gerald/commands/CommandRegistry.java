@@ -23,6 +23,7 @@ public enum CommandRegistry {
 	PAT("pat", ActionsCommand.class, "pat"),
 	POKE("poke", ActionsCommand.class, "poke"),
 	SLAP("slap", ActionsCommand.class, "slap"),
+	NOM("nom", ActionsCommand.class, "nom"),
 
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class, null),
