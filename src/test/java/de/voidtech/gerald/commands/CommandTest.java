@@ -1,9 +1,7 @@
 package test.java.de.voidtech.gerald.commands;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.junit.Test;

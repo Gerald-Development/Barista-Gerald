@@ -24,7 +24,8 @@ public class ApodCommand extends AbstractCommand {
 
     @Override
     public void executeInternal(Message message, List<String> args) {
-        JSONObject response = getNasaData();
+        JSONObject response = getNasaDataOpt();
+        
         EmbedBuilder nasaEmbed = new EmbedBuilder()
                 .setTitle(response.getString("title"))
                 .setColor(Color.ORANGE)
@@ -40,7 +41,7 @@ public class ApodCommand extends AbstractCommand {
         message.getChannel().sendMessage(nasaEmbed.build()).queue();
     }
 
-    private JSONObject getNasaData() {
+    private JSONObject getNasaDataOpt() {
         try {
             HttpURLConnection con = (HttpURLConnection) new URL(API_URL).openConnection();
             con.setRequestMethod("GET");
