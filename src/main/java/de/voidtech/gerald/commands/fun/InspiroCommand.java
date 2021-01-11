@@ -1,5 +1,6 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,18 +12,30 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public class InspiroCommand extends AbstractCommand{
 	private static final String REQUEST_URL = "https://inspirobot.me/api?generate=true";
+	private static final String INSPIRO_ICON = "https://inspirobot.me/website/images/inspirobot-dark-green.png";
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64; Trident/7.0; rv:11.0) like Gecko";
 	private static final Logger LOGGER = Logger.getLogger(InspiroCommand.class.getName());
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		String inspiroImageURLOpt = getInspiroImageURLOpt();
-		if (inspiroImageURLOpt == null) super.sendErrorOccurred();
-		else message.getChannel().sendMessage(inspiroImageURLOpt).queue();
+		if (inspiroImageURLOpt == null)
+			super.sendErrorOccurred();
+		else {
+			MessageEmbed inspiroEmbed = new EmbedBuilder()//
+					.setTitle("InspiroBot says:")//
+					.setColor(Color.ORANGE)//
+					.setImage(inspiroImageURLOpt)//
+					.setFooter("Data from InspiroBot", INSPIRO_ICON)//
+					.build();
+			message.getChannel().sendMessage(inspiroEmbed).queue();
+		}
 	}
 	
 	private String getInspiroImageURLOpt() {
