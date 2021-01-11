@@ -1,10 +1,11 @@
 package main.java.de.voidtech.gerald.commands;
 
 import main.java.de.voidtech.gerald.commands.info.*;
+
 import main.java.de.voidtech.gerald.commands.fun.*;
 
-public enum Commands {
-	
+public enum CommandRegistry {
+
 	PING("ping", PingCommand.class),
 	SAY("say", SayCommand.class),
 	SERVERINFO("serverinfo", ServerInfoCommand.class),
@@ -14,24 +15,22 @@ public enum Commands {
 	COMPILE("compile", CompileCommand.class),
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class),
-	
+
 	;
-	
+
 	private String name;
 	private Class<? extends AbstractCommand> commandClass;
-	
-	private Commands(String name, Class<? extends AbstractCommand> command) {
+
+	private CommandRegistry(String name, Class<? extends AbstractCommand> command) {
 		this.name = name;
 		this.commandClass = command;
 	}
-	
-	public String getName()
-	{
+
+	public String getName() {
 		return this.name;
 	}
-	
-	public Class<? extends AbstractCommand> getCommandClass()
-	{
+
+	public Class<? extends AbstractCommand> getCommandClass() {
 		return this.commandClass;
 	}
 }

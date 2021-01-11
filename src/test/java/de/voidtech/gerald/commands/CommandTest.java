@@ -8,13 +8,13 @@ import org.junit.Test;
 
 import junit.framework.TestCase;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.Commands;
+import main.java.de.voidtech.gerald.commands.CommandRegistry;
 
 public class CommandTest extends TestCase {
 
 	@Test
 	public void testAllCommands() throws Exception {
-		Collection<AbstractCommand> commandList = Arrays.asList(Commands.values())//
+		Collection<AbstractCommand> commandList = Arrays.asList(CommandRegistry.values())//
 				.stream()//
 				.map(commands -> {
 					try {

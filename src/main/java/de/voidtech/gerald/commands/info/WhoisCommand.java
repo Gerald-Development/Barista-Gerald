@@ -27,7 +27,14 @@ public class WhoisCommand extends AbstractCommand{
 		
 		List<String> memberRoles = member.getRoles().stream().map(Role::getAsMention).collect(Collectors.toList());
 		
-		MessageEmbed whoisEmbed = new EmbedBuilder()//
+		MessageEmbed whoisEmbed = buildEmbed(member, memberRoles);
+		
+		message.getChannel().sendMessage(whoisEmbed).queue();
+	}
+	
+	private MessageEmbed buildEmbed(Member member, List<String> memberRoles)
+	{
+		return new EmbedBuilder()//
 				.setTitle("Who is " + member.getUser().getAsTag() + "?")//
 				.setThumbnail(member.getUser().getAvatarUrl())
 				.addField("Nickname:", member.getEffectiveName(), true)
@@ -37,9 +44,8 @@ public class WhoisCommand extends AbstractCommand{
 				.addField(String.format("Roles [%d]:", memberRoles.size()), StringUtils.join(memberRoles.toArray()), false)
 				.addField("ID:", member.getId(), false)
 				.build();
-		
-		message.getChannel().sendMessage(whoisEmbed).queue();
 	}
+	
 	@Override
 	public String getDescription() {
 		return "returns information about the specified user";

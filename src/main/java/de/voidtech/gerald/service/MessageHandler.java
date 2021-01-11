@@ -4,10 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.Commands;
+import main.java.de.voidtech.gerald.commands.CommandRegistry;
 import net.dv8tion.jda.api.entities.Message;
 
 public class MessageHandler {
@@ -33,39 +32,45 @@ public class MessageHandler {
 
 	// ENTRY POINT FROM MESSAGE LISTENER
 	public void handleMessage(Message message) {
-		handleCommand(message);
+		handleCommandOnDemand(message);
 	}
 
-	private void handleCommand(Message message) {
-		if (!message.getContentRaw().startsWith(this.defaultPrefix)) {
+	private void handleCommandOnDemand(Message message) {
+		if (!message.getContentRaw().startsWith(this.defaultPrefix)
+				|| message.getContentRaw().length() == this.defaultPrefix.length())
 			return;
-		}
+		
 		String messageContent = message.getContentRaw().substring(this.defaultPrefix.length());
 		List<String> messageArray = Arrays.asList(messageContent.split(" "));
-		if (messageArray.size() <= 0)
-			return;
 
-		List<Commands> commandEnumEntries = Arrays.asList(Commands.values())//
-				.stream()//
-				.filter(commandsEntry -> commandsEntry.getName().equals(messageArray.get(0)))//
-				.collect(Collectors.toList());
+		AbstractCommand commandOpt = getCommandByNameOpt(messageArray.get(0));
 
-		if (commandEnumEntries.size() <= 0) {
+		if (commandOpt == null) {
 			LOGGER.log(Level.INFO, "Command not found: " + messageArray.get(0));
 			return;
 		}
 
-		try {
-			AbstractCommand commandOpt = commandEnumEntries.get(0).getCommandClass().newInstance();
-			commandOpt.initCommand(message, messageArray.subList(1, messageArray.size()));
-			
-			Thread commandThread = new Thread(commandOpt);
-			commandThread.setName(commandOpt.getClass().getName());
-			commandThread.start();
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "An error has occurred during command execution:\n" + e.getMessage());
-		}
+		commandOpt.initCommand(message, messageArray.subList(1, messageArray.size()));
+
+		Thread commandThread = new Thread(commandOpt);
+		commandThread.setName(commandOpt.getClass().getName());
+		commandThread.start();
+
 		LOGGER.log(Level.INFO, "Command executed: " + messageArray.get(0) + "\nfrom " + message.getAuthor().getAsTag()
 				+ "\nID: " + message.getAuthor().getId());
+	}
+	
+	private AbstractCommand getCommandByNameOpt(String commandName) {
+		try {
+			for (CommandRegistry registryEntry : CommandRegistry.values()) {
+				if (registryEntry.getName().equals(commandName.toLowerCase())) {
+					return registryEntry.getCommandClass().newInstance();
+				}
+			}
+		} catch (InstantiationException | IllegalAccessException e) {
+			LOGGER.log(Level.SEVERE, "An Error has occurred while instantiating a Command: " + e.getMessage());
+		}
+		
+		return null;
 	}
 }
