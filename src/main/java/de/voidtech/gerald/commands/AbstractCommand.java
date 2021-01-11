@@ -8,6 +8,10 @@ public abstract class AbstractCommand implements Runnable {
 	private Message message;
 	private List<String> args;
 
+	public AbstractCommand() {}
+
+	public AbstractCommand(String s) {}
+
 	public void initCommand(Message message, List<String> args)
 	{
 		this.message = message;

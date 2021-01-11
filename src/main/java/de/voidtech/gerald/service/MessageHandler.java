@@ -1,5 +1,6 @@
 package main.java.de.voidtech.gerald.service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -64,13 +65,13 @@ public class MessageHandler {
 		try {
 			for (CommandRegistry registryEntry : CommandRegistry.values()) {
 				if (registryEntry.getName().equals(commandName.toLowerCase())) {
-					return registryEntry.getCommandClass().newInstance();
+					return registryEntry.getCommand();
 				}
 			}
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (Exception e) {
 			LOGGER.log(Level.SEVERE, "An Error has occurred while instantiating a Command: " + e.getMessage());
 		}
-		
+
 		return null;
 	}
 }
