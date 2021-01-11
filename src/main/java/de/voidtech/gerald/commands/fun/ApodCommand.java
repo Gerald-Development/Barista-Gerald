@@ -20,7 +20,7 @@ public class ApodCommand extends AbstractCommand {
 
     private static final String API_URL = "https://api.nasa.gov/planetary/apod?api_key=lCJQbMiUG6iZMQdas8Qcg2IQ8KQmC19Ssuhc84pi";
     private static final String NASA_FOOTER = "https://cdn.freebiesupply.com/logos/large/2x/nasa-1-logo-png-transparent.png";
-    private static final Logger LOGGER = Logger.getLogger(InspiroCommand.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ApodCommand.class.getName());
 
     @Override
     public void executeInternal(Message message, List<String> args) {
