@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
@@ -21,35 +22,32 @@ public class FactCommand extends AbstractCommand
 	private static final Logger LOGGER = Logger.getLogger(FactCommand.class.getName());
 
 	@Override
-	public void executeInternal(Message message, List<String> args){
-		
-		try
-		{
-			URL requestURL = new URL(REQUEST_URL);
-			HttpURLConnection con = (HttpURLConnection) requestURL.openConnection();
+	public void executeInternal(Message message, List<String> args) {
+		String factOpt = getFactOpt();
+		if (factOpt == null)
+			super.sendErrorOccurred();
+		else
+			message.getChannel().sendMessage(factOpt).queue();
+	}
+	
+	private String getFactOpt() {
+		try {
+			HttpURLConnection con = (HttpURLConnection) new URL(REQUEST_URL).openConnection();
 			con.setRequestMethod("GET");
-			
+
 			if (con.getResponseCode() == 200) {
 				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
 					String content = in.lines().collect(Collectors.joining());
 					JSONObject json = new JSONObject(content.toString());
-					
-					message.getChannel().sendMessage(json.getString("text")).queue();
+					return json.getString("text");
 				}
 			}
-			else
-			{
-				super.sendErrorOccurred();
-			}
-			
 			con.disconnect();
-		}
-		catch(IOException e)
-		{
-			//TODO: Proper Error Handling
-			LOGGER.log(Level.SEVERE, e.getMessage());
+		} catch (IOException | JSONException e) {
 			super.sendErrorOccurred();
+			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
 		}
+		return null;
 	}
 
 	@Override
