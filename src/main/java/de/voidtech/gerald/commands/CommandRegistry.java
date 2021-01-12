@@ -24,8 +24,9 @@ public enum CommandRegistry {
 	POKE("poke", ActionsCommand.class, "poke"),
 	SLAP("slap", ActionsCommand.class, "slap"),
 	NOM("nom", ActionsCommand.class, "nom"),
-	COMPLIMENT("compliment", ComplimentCommand.class),
-	SHIP("ship", ShipCommand.class),
+	CLAP("clap", ClapCommand.class),
+	EMOJIFY("emojify", EmojifyCommand.class),
+	ZALGO("zalgo", ZalgoCommand.class),
 
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class, null),
