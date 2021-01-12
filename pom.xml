@@ -92,5 +92,12 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.11</version>
 		</dependency>
+		<dependency>
+			<groupId>com.jagrosh</groupId>
+			<artifactId>jda-utilities</artifactId>
+			<version>3.0.5</version>
+			<scope>compile</scope>
+			<type>pom</type>
+		</dependency>
 	</dependencies>
 </project>

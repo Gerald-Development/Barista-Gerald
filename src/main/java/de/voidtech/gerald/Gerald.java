@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 
 import javax.security.auth.login.LoginException;
 
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+
 import main.java.de.voidtech.gerald.listeners.MessageListener;
 import main.java.de.voidtech.gerald.listeners.ReadyListener;
 import main.java.de.voidtech.gerald.service.ConfigService;
@@ -29,7 +31,7 @@ public class Gerald {
 				.setMemberCachePolicy(MemberCachePolicy.ALL)//
 				.setBulkDeleteSplittingEnabled(false)//
 				.setCompression(Compression.NONE)//
-				.addEventListeners(new ReadyListener(), new MessageListener())//
+				.addEventListeners(new EventWaiter(), new ReadyListener(), new MessageListener())//
 				//TODO: store activity in database
 				.setActivity(Activity.listening("to the coffee machine"))//
 				.build()//
