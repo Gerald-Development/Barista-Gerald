@@ -13,30 +13,33 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 public class Gerald {
 
 	private static final Logger LOGGER = Logger.getLogger(Gerald.class.getName());
 
-	private Gerald() throws LoginException {
+	private Gerald() throws LoginException, InterruptedException {
 		ConfigService config = ConfigService.getInstance();
 		
 		JDABuilder.createDefault(config.getToken())
 				.enableCache(CacheFlag.CLIENT_STATUS)//
 				.enableIntents(Arrays.asList(GatewayIntent.values()))//
+				.setMemberCachePolicy(MemberCachePolicy.ALL)//
 				.setBulkDeleteSplittingEnabled(false)//
 				.setCompression(Compression.NONE)//
 				.addEventListeners(new ReadyListener(), new MessageListener())//
 				//TODO: store activity in database
 				.setActivity(Activity.listening("to the coffee machine"))//
-				.build();
+				.build()//
+				.awaitReady();
 	}
 
 	public static void main(String[] args) {
 		try {
 			new Gerald();
-		} catch (LoginException e) {
+		} catch (LoginException | InterruptedException e) {
 			LOGGER.log(Level.SEVERE, "An error has occurred while initilizing Gerald\n" + e.getMessage());
 		}
 	}
