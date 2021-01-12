@@ -26,6 +26,7 @@ public enum CommandRegistry {
 	NOM("nom", ActionsCommand.class, "nom"),
 	COMPLIMENT("compliment", ComplimentCommand.class),
 	SHIP("ship", ShipCommand.class),
+	COINFLIP("coinflip", CoinflipCommand.class),
 
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class, null),
