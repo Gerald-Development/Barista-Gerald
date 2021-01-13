@@ -30,6 +30,7 @@ public enum CommandRegistry {
 	CLAP("clap", ClapCommand.class),
 	EMOJIFY("emojify", EmojifyCommand.class),
 	ZALGO("zalgo", ZalgoCommand.class),
+	CITRUS("citrus", CitrusCommand.class),
 
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class, null),
