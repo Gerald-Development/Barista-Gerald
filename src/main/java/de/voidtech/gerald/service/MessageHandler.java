@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandRegistry;
@@ -49,8 +52,16 @@ public class MessageHandler {
 			LOGGER.log(Level.INFO, "Command not found: " + messageArray.get(0));
 			return;
 		}
-
-		commandOpt.initCommand(message, messageArray.subList(1, messageArray.size()));
+		//TODO put this in the container after DI impl
+		EventWaiter waiter = message.getJDA()//
+				.getRegisteredListeners()//
+				.stream()//
+				.filter(listener -> listener instanceof EventWaiter)//
+				.map(listener -> (EventWaiter) listener)//
+				.collect(Collectors.toList())//
+				.get(0);
+		
+		commandOpt.initCommand(message, messageArray.subList(1, messageArray.size()), waiter);
 
 		Thread commandThread = new Thread(commandOpt);
 		commandThread.setName(commandOpt.getClass().getName());
