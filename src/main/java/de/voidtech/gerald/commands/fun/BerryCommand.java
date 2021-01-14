@@ -80,7 +80,6 @@ public class BerryCommand extends AbstractCommand{
 		berryMap.put("banana", "https://cdn.mos.cms.futurecdn.net/42E9as7NaTaAi4A6JcuFwG-1200-80.jpg");
 		berryMap.put("strawberry tree", "https://upload.wikimedia.org/wikipedia/commons/c/cb/Arbouses.jpg");
 		berryMap.put("agarita berry", "https://texasjellymaking.files.wordpress.com/2011/04/agarita.jpg");
-		berryMap.put("bilberry", "https://www.et-chem.com/wp-content/uploads/2017/08/bilberry-extracts-manufacturer-2.jpg");
 		berryMap.put("barbados cherry", "https://draxe.com/wp-content/uploads/2020/01/acerola-cherry-facebook.jpg");
 		berryMap.put("cherry", "https://upload.wikimedia.org/wikipedia/commons/b/bb/Cherry_Stella444.jpg");
 		berryMap.put("plum", "https://www.treehugger.com/thmb/MUAkeEvYT8uHFuGpYMOf0EVvg3E=/1000x562/smart/filters:no_upscale()/__opt__aboutcom__coeus__resources__content_migration__mnn__images__2018__06__plums-65c0c343f7024361947cffe44bb6d2ba.jpg");
