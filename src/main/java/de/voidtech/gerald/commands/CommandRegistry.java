@@ -33,6 +33,7 @@ public enum CommandRegistry {
 	CITRUS("citrus", CitrusCommand.class),
 	BERRY("berry", BerryCommand.class),
 	WYR("wyr", WouldYouRatherCommand.class),
+	VOTE("vote", VoteCommand.class),
 
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class, null),

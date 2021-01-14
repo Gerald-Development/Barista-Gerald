@@ -1,0 +1,27 @@
+package main.java.de.voidtech.gerald.commands.fun;
+
+import java.util.List;
+
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import net.dv8tion.jda.api.entities.Message;
+
+public class VoteCommand extends AbstractCommand{
+	private final static String CHECK = "U+2705";
+	private final static String CROSS = "U+274E";
+	@Override
+	public void executeInternal(Message message, List<String> args) {
+		message.addReaction(CHECK).queue();
+		message.addReaction(CROSS).queue();
+	}
+
+	@Override
+	public String getDescription() {
+		return "Allows you to hold a quick vote on your very sensitive topics";
+	}
+
+	@Override
+	public String getUsage() {
+		return "vote is this democracy?";
+	}
+
+}
