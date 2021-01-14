@@ -67,6 +67,7 @@ public class CitrusCommand extends AbstractCommand {
 		
 		return citrusMap;
 	}
+	
 	@Override
 	public String getDescription() {
 		return "Guess the citrus!";
