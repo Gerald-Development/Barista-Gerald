@@ -32,6 +32,7 @@ public enum CommandRegistry {
 	ZALGO("zalgo", ZalgoCommand.class),
 	CITRUS("citrus", CitrusCommand.class),
 	BERRY("berry", BerryCommand.class),
+	WYR("wyr", WouldYouRatherCommand.class),
 
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class, null),
