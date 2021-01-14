@@ -31,6 +31,7 @@ public enum CommandRegistry {
 	EMOJIFY("emojify", EmojifyCommand.class),
 	ZALGO("zalgo", ZalgoCommand.class),
 	CITRUS("citrus", CitrusCommand.class),
+	BERRY("berry", BerryCommand.class),
 
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class, null),
