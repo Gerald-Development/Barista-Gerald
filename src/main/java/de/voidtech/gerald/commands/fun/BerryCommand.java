@@ -71,7 +71,7 @@ public class BerryCommand extends AbstractCommand{
 		berryMap.put("mulberry", "https://www.nealsyardremedies.com/on/demandware.static/-/Sites-nyr-product-catalog/default/dw10a65858/images/3381/3381-mulberry-large.jpg");
 		berryMap.put("acai", "https://www.gracefruit.com/uploads/images/products/large/gracefruit_gracefruit_acaiberryoil_1460546395dreamstimemaximum_43852716.jpg");
 		berryMap.put("goji", "https://www.realfoodsource.com/wp-content/uploads/2016/11/C-GOJIBRY-e1480517101169.jpg");
-		berryMap.put("physalis", "https://www.google.com/url?sa=i&url=https%3A%2F%2Featsmarter.de%2Flexikon%2Fwarenkunde%2Fobst%2Fphysalis&psig=AOvVaw3yzPCYMjhx609iW8HbhI3R&ust=1610669311298000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCMCVivOQmu4CFQAAAAAdAAAAABAE");
+		berryMap.put("physalis", "https://images.eatsmarter.de/sites/default/files/styles/576x432/public/images/thumb_physalis_576x432.jpg");
 		berryMap.put("cloud berry", "https://d3h1lg3ksw6i6b.cloudfront.net/media/image/2019/07/29/a9f504c61b0840b9bb57ca21e851c752_shutterstock-cloudberries-HERO.jpg");
 		berryMap.put("pine berry", "https://images-na.ssl-images-amazon.com/images/I/41LBbYMzbgL._AC_SY400_.jpg");
 		berryMap.put("salmonberry", "https://www.kcaw.org/wp-content/uploads/2012/07/Salmonberries_lg.jpg");
