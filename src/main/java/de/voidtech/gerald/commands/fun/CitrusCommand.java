@@ -62,7 +62,6 @@ public class CitrusCommand extends AbstractCommand {
 		citrusMap.put("finger lime", "https://www.nature-and-garden.com/wp-content/uploads/sites/4/2018/10/australian-finger-lime.jpg");
 		citrusMap.put("cantaloupe", "https://seedworld.com/site/wp-content/uploads/2019/01/GettyImages-845261084.jpg");
 		citrusMap.put("watermelon", "https://specialtyproduce.com/sppics/11357.png");
-		citrusMap.put("pumpkin", "https://www.liveeatlearn.com/wp-content/uploads/2015/10/pumpkin-photo-1.jpg");
 		citrusMap.put("honeydew melon", "https://groceries.morrisons.com/productImages/210/210305011_0_640x640.jpg?identifier=6ff605c91cd0384439fa1acbd7de32a1");
 		
 		return citrusMap;

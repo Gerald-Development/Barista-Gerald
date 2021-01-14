@@ -48,7 +48,6 @@ public class BerryCommand extends AbstractCommand{
 	{
 		BidiMap<String, String> berryMap = new DualHashBidiMap<>();
 		
-		berryMap.put("pumpkin", "https://www.liveeatlearn.com/wp-content/uploads/2015/10/pumpkin-photo-1.jpg");
 		berryMap.put("cucumber", "https://cdn.mos.cms.futurecdn.net/EBEXFvqez44hySrWqNs3CZ.jpg");
 		berryMap.put("watermelon", "https://specialtyproduce.com/sppics/11357.png");
 		berryMap.put("grape", "https://pictures.attention-ngn.com/portal/185/191463/products/1499209833.7975_115_o.jpg");
