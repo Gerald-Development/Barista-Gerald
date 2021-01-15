@@ -2,11 +2,9 @@ package main.java.de.voidtech.gerald.commands.utils;
 
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.service.NitroliteService;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,8 +12,6 @@ public class NitroliteCommand extends AbstractCommand {
     @Override
     public void executeInternal(Message message, List<String> args) {
         NitroliteService nls = NitroliteService.getInstance();
-
-        EnumSet<Permission> perms = message.getGuild().getSelfMember().getPermissions((GuildChannel) message.getChannel());
 
         List<Emote> emotes = message.getJDA()//
                 .getEmoteCache()//
@@ -27,7 +23,7 @@ public class NitroliteCommand extends AbstractCommand {
             final String content = StringUtils.join(args.subList(1, args.size()), " ") +
                     " " + nls.constructEmoteString(emotes.get(0));
 
-            nls.sendMessage(message, content, perms);
+            nls.sendMessage(message, content);
         }
     }
 

@@ -37,21 +37,28 @@ public class MessageHandler {
 
     // ENTRY POINT FROM MESSAGE LISTENER
     public void handleMessage(Message message) {
-        handleCommandOnDemand(message);
-        messageRoutineExecutor(message);
+    	
+    	if(message.getAuthor().isBot()) return;
+    	
+    	EventWaiter waiter = getEventWaiter(message);
+    	
+        handleCommandOnDemand(message, waiter);
+        runMessageRoutines(message, waiter);
+    }
+    
+    private EventWaiter getEventWaiter(Message message)
+    {
+    	return message.getJDA()//
+                .getRegisteredListeners()//
+                .stream()//
+                .filter(listener -> listener instanceof EventWaiter)//
+                .map(listener -> (EventWaiter) listener)//
+                .collect(Collectors.toList())//
+                .get(0);
     }
 
-    private void messageRoutineExecutor(Message message) {
+    private void runMessageRoutines(Message message, EventWaiter waiter) {
         for (RoutineRegistry abstractRoutine : RoutineRegistry.values()) {
-            //TODO put this in the container after DI impl
-            EventWaiter waiter = message.getJDA()//
-                    .getRegisteredListeners()//
-                    .stream()//
-                    .filter(listener -> listener instanceof EventWaiter)//
-                    .map(listener -> (EventWaiter) listener)//
-                    .collect(Collectors.toList())//
-                    .get(0);
-
             try {
                 AbstractRoutine routine = abstractRoutine.getRoutine();
                 routine.initRoutine(message, waiter);
@@ -60,7 +67,6 @@ public class MessageHandler {
                 routineThread.setName(routine.getClass().getName());
                 routineThread.start();
 
-                // TODO: maybe lower log level, maybe remove entirely
                 LOGGER.log(Level.FINE, "Routine executed: " + routine.getClass().getName());
             } catch (IllegalAccessException | InstantiationException e) {
                 LOGGER.log(Level.SEVERE, "An Error has occurred while instantiating a Routine: " + e.getMessage());
@@ -68,7 +74,7 @@ public class MessageHandler {
         }
     }
 
-    private void handleCommandOnDemand(Message message) {
+    private void handleCommandOnDemand(Message message, EventWaiter waiter) {
         if (!message.getContentRaw().startsWith(this.defaultPrefix)
                 || message.getContentRaw().length() == this.defaultPrefix.length())
             return;
@@ -82,14 +88,6 @@ public class MessageHandler {
             LOGGER.log(Level.INFO, "Command not found: " + messageArray.get(0));
             return;
         }
-        //TODO put this in the container after DI impl
-        EventWaiter waiter = message.getJDA()//
-                .getRegisteredListeners()//
-                .stream()//
-                .filter(listener -> listener instanceof EventWaiter)//
-                .map(listener -> (EventWaiter) listener)//
-                .collect(Collectors.toList())//
-                .get(0);
 
         commandOpt.initCommand(message, messageArray.subList(1, messageArray.size()), waiter);
 

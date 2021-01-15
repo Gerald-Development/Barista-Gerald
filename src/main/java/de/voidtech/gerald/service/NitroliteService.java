@@ -2,6 +2,7 @@ package main.java.de.voidtech.gerald.service;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
@@ -14,7 +15,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class NitroliteService {
-    private static volatile NitroliteService instance;
+	private static volatile NitroliteService instance;
+    private static final String PERMISSION_ERROR_MESSAGE_TEMPLATE = "Barista-Gerald does not have permissions to %s, contact the server owner to resolve this issue!";
     private static final Logger LOGGER = Logger.getLogger(NitroliteService.class.getName());
 
     //PRIVATE FOR SINGLETON
@@ -28,43 +30,42 @@ public class NitroliteService {
         return NitroliteService.instance;
     }
 
-    public void sendMessage(Message message, String content, EnumSet<Permission> perms) {
-        if (perms.contains(Permission.MANAGE_WEBHOOKS)) {
-            if (!sendWebhookMessage(message, content)) {
-                ((TextChannel) message.getChannel()).createWebhook("BGnitrolite").complete();
+    public void sendMessage(Message originMessage, String content) {
+    	
+    	EnumSet<Permission> perms = originMessage.getGuild().getSelfMember().getPermissions((GuildChannel) originMessage.getChannel());
+    	
+        if (perms.contains(Permission.MANAGE_WEBHOOKS)) 
+        {
+            if (!sendWebhookMessage(originMessage, content)) 
+            {
+                ((TextChannel) originMessage.getChannel()).createWebhook("BGnitrolite").complete();
 
-                if (!sendWebhookMessage(message, content)) {
+                if (!sendWebhookMessage(originMessage, content)) 
+                {
                     // TODO: super.sendErrorOccurred() work around
                     LOGGER.log(Level.INFO, "Error during CommandExecution: Webhook creation has failed");
-                } else {
-                    attemptMessageDelete(message, perms);
-                }
-            } else {
-                attemptMessageDelete(message, perms);
-            }
-        } else {
-            if (perms.contains(Permission.MESSAGE_WRITE)) {
-                message.getChannel().sendMessage(content).complete();
+                } else attemptMessageDelete(originMessage, perms);
+                
+            } else attemptMessageDelete(originMessage, perms);
+        } else 
+        {
+            if (perms.contains(Permission.MESSAGE_WRITE)) 
+            {
+                originMessage.getChannel().sendMessage(content).complete();
 
-                attemptMessageDelete(message, perms);
-
-                sendErrorDM(message, "Barista-Gerald does not have permissions to create webhooks in this " +
-                        "channel, contact the server owner to resolve this issue!");
-            } else {
-                // TODO: optimize these messages
-                sendErrorDM(message, "Barista-Gerald does not have permissions to create webhooks or write in " +
-                        "this channel, contact the server owner to resolve this issue!");
+                attemptMessageDelete(originMessage, perms);
+                
+                sendErrorDM(originMessage, String.format(PERMISSION_ERROR_MESSAGE_TEMPLATE, "create webhooks in this channel"));
+            } else 
+            {
+                sendErrorDM(originMessage, String.format(PERMISSION_ERROR_MESSAGE_TEMPLATE, "create webhooks or write in this channel"));
             }
         }
     }
 
     private void attemptMessageDelete(Message message, EnumSet<Permission> perms) {
-        if (perms.contains(Permission.MESSAGE_MANAGE)) {
-            message.delete().queue();
-        } else {
-            sendErrorDM(message, "Barista-Gerald does not have permissions to delete messages in this " +
-                    "channel, contact the server owner to resolve this issue!");
-        }
+        if (perms.contains(Permission.MESSAGE_MANAGE)) message.delete().queue();
+        else sendErrorDM(message, String.format(PERMISSION_ERROR_MESSAGE_TEMPLATE, "delete messages in this channel"));
     }
 
     private void sendErrorDM(Message message, String text) {
