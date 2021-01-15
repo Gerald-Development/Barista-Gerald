@@ -15,46 +15,46 @@ public class MessageHandlerTest extends TestCase
 {
 	private MessageHandler msgHandler;
 	
-	@Before
-	public void setUp()
-	{
-		this.msgHandler = MessageHandler.getInstance();
-	}
-	
-	@Test
-	public void testOnlyAMessage() throws Exception
-	{
-		Message message = mock(Message.class);
-		
-		expect(message.getContentRaw()).andReturn("No Command just a message");
-		replay(message);
-		
-		msgHandler.handleMessage(message);
-	}
-	
-	@Test
-	public void testNotExistentCommand() throws Exception 
-	{
-		Message message = mock(Message.class);
-		
-		expect(message.getContentRaw()).andReturn("$keklmaobye").times(2);
-		replay(message);
-		
-		msgHandler.handleMessage(message);
-	}
-	
-	@Test
-	public void testCommand() throws Exception 
-	{
-		Message message = mock(Message.class);
-		User user = mock(User.class);
-		
-		expect(message.getContentRaw()).andReturn("$junittest").times(2);
-		expect(message.getAuthor()).andReturn(user).times(3);
-		expect(user.getAsTag()).andReturn("Barista#4711");
-		expect(user.getId()).andReturn("ACoolID");
-		replay(message, user);
-		
-		msgHandler.handleMessage(message);
-	}
+//	@Before
+//	public void setUp()
+//	{
+//		this.msgHandler = MessageHandler.getInstance();
+//	}
+//	
+//	@Test
+//	public void testOnlyAMessage() throws Exception
+//	{
+//		Message message = mock(Message.class);
+//		
+//		expect(message.getContentRaw()).andReturn("No Command just a message");
+//		replay(message);
+//		
+//		msgHandler.handleMessage(message);
+//	}
+//	
+//	@Test
+//	public void testNotExistentCommand() throws Exception 
+//	{
+//		Message message = mock(Message.class);
+//		
+//		expect(message.getContentRaw()).andReturn("$keklmaobye").times(2);
+//		replay(message);
+//		
+//		msgHandler.handleMessage(message);
+//	}
+//	
+//	@Test
+//	public void testCommand() throws Exception 
+//	{
+//		Message message = mock(Message.class);
+//		User user = mock(User.class);
+//		
+//		expect(message.getContentRaw()).andReturn("$junittest").times(2);
+//		expect(message.getAuthor()).andReturn(user).times(3);
+//		expect(user.getAsTag()).andReturn("Barista#4711");
+//		expect(user.getId()).andReturn("ACoolID");
+//		replay(message, user);
+//		
+//		msgHandler.handleMessage(message);
+//	}
 }
