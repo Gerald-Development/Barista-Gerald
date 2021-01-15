@@ -4,6 +4,8 @@ import main.java.de.voidtech.gerald.commands.info.*;
 
 import main.java.de.voidtech.gerald.commands.fun.*;
 
+import main.java.de.voidtech.gerald.commands.utils.*;
+
 import java.lang.reflect.InvocationTargetException;
 
 public enum CommandRegistry {
@@ -34,6 +36,7 @@ public enum CommandRegistry {
 	BERRY("berry", BerryCommand.class),
 	WYR("wyr", WouldYouRatherCommand.class),
 	VOTE("vote", VoteCommand.class),
+	NITROLITE("nitrolite", NitroliteCommand.class),
 
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class, null),
