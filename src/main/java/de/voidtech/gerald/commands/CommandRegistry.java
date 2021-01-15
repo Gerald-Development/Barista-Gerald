@@ -37,6 +37,7 @@ public enum CommandRegistry {
 	WYR("wyr", WouldYouRatherCommand.class),
 	VOTE("vote", VoteCommand.class),
 	NITROLITE("nitrolite", NitroliteCommand.class),
+	DEFINE("define", DefineCommand.class),
 
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class, null),
