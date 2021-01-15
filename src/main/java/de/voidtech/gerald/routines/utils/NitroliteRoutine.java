@@ -26,13 +26,14 @@ public class NitroliteRoutine extends AbstractRoutine {
             String token = messageTokens.get(i);
 
             if (token.matches("\\[:[^:]*:]")) {
-                boolean emoteFound = emoteList//
+                Emote e = emoteList//
                         .stream()//
-                        .anyMatch(emote -> emote.getName().equals(token.substring(2, token.length() - 2)));
+                        .filter(emote -> emote.getName().equals(token.substring(2, token.length() - 2)))
+                        .findFirst().orElse(null);
 
-                if (emoteFound) {
+                if (e != null) {
                     foundOne = true;
-                    messageTokens.set(i, nls.constructEmoteString(emoteList.get(0)));
+                    messageTokens.set(i, nls.constructEmoteString(e));
                 }
             }
         }
