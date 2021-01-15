@@ -6,12 +6,12 @@ package test.java.de.voidtech.gerald.service;
 //
 //import org.junit.Before;
 //import org.junit.Test;
-import junit.framework.TestCase;
+//import junit.framework.TestCase;
 //import main.java.de.voidtech.gerald.service.MessageHandler;
 //import net.dv8tion.jda.api.entities.Message;
 //import net.dv8tion.jda.api.entities.User;
 
-public class MessageHandlerTest extends TestCase
+public class MessageHandlerTest //extends TestCase
 {
 //	private MessageHandler msgHandler;
 	
