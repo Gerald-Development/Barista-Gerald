@@ -11,24 +11,30 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class NitroliteCommand extends AbstractCommand {
     private static final Logger LOGGER = Logger.getLogger(NitroliteCommand.class.getName());
 
     @Override
     public void executeInternal(Message message, List<String> args) {
+    	
         EnumSet<Permission> perms = message.getGuild().getSelfMember().getPermissions((GuildChannel) message.getChannel());
-        Object[] emotes = message.getJDA().getEmoteCache().stream().filter(e -> e.getName().equals(args.get(0))).toArray();
+        
+        List<Emote> emotes = message.getJDA()//
+        		.getEmoteCache()//
+        		.stream()//
+        		.filter(emote -> emote.getName().equals(args.get(0)))//
+        		.collect(Collectors.toList());
 
-        if (emotes.length > 0) {
-            String content = StringUtils.join(args.subList(1, args.size()), " ") + " " +
-                    (((Emote)emotes[0]).isAnimated() ? "<a:" : "<:") +
-                    ((Emote)emotes[0]).getName() + ":" + ((Emote)emotes[0]).getId() + ">";
+        if (!emotes.isEmpty()) 
+        {
+            final String content = StringUtils.join(args.subList(1, args.size()), " ") + " " +  contructEmoteString(emotes.get(0));
 
             if (perms.contains(Permission.MANAGE_WEBHOOKS)) {
                 if (!sendWebhookMessage(message, content)) {
                     ((TextChannel) message.getChannel()).createWebhook("BGnitrolite").complete();
-
+                    
                     if (!sendWebhookMessage(message, content)) {
                         super.sendErrorOccurred();
                         LOGGER.log(Level.INFO, "Error during CommandExecution: Webhook creation has failed");
@@ -36,11 +42,16 @@ public class NitroliteCommand extends AbstractCommand {
                 }
             } else {
                 message.getChannel().sendMessage(content).queue();
-                String pmString = "Barista-Gerald does not have permissions to create webhooks in this " +
+                String noPermissionMessage = "Barista-Gerald does not have permissions to create webhooks in this " +
                         "channel, contact the server owner to resolve this issue!";
-                message.getAuthor().openPrivateChannel().flatMap(channel -> channel.sendMessage(pmString)).queue();
+                message.getAuthor().openPrivateChannel().flatMap(channel -> channel.sendMessage(noPermissionMessage)).queue();
             }
         }
+    }
+    
+    private String contructEmoteString(Emote emote)
+    {
+    	return String.format("<%s%s:%s>", emote.isAnimated() ? "a:" : ":", emote.getName(), emote.getId());
     }
 
     private boolean sendWebhookMessage(Message message, String content) {
@@ -75,7 +86,6 @@ public class NitroliteCommand extends AbstractCommand {
                     super.sendErrorOccurred();
                     LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + ex.getMessage());
                 }
-
                 return true;
             }
         }
