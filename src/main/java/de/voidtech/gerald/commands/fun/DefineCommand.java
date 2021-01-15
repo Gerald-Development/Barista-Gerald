@@ -70,14 +70,12 @@ public class DefineCommand extends AbstractCommand{
 
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return "looks up a definition on urban dictionary";
 	}
 
 	@Override
 	public String getUsage() {
-		// TODO Auto-generated method stub
-		return null;
+		return "define chad";
 	}
 
 }
