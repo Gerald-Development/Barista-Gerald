@@ -1,19 +1,19 @@
 package test.java.de.voidtech.gerald.service;
 
-import static org.easymock.EasyMock.mock;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.expect;
-
-import org.junit.Before;
-import org.junit.Test;
+//import static org.easymock.EasyMock.mock;
+//import static org.easymock.EasyMock.replay;
+//import static org.easymock.EasyMock.expect;
+//
+//import org.junit.Before;
+//import org.junit.Test;
 import junit.framework.TestCase;
-import main.java.de.voidtech.gerald.service.MessageHandler;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
+//import main.java.de.voidtech.gerald.service.MessageHandler;
+//import net.dv8tion.jda.api.entities.Message;
+//import net.dv8tion.jda.api.entities.User;
 
 public class MessageHandlerTest extends TestCase
 {
-	private MessageHandler msgHandler;
+//	private MessageHandler msgHandler;
 	
 //	@Before
 //	public void setUp()
