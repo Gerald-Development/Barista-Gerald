@@ -26,14 +26,14 @@ public class NitroliteRoutine extends AbstractRoutine {
             String token = messageTokens.get(i);
 
             if (token.matches("\\[:[^:]*:]")) {
-                Emote e = emoteList//
+                Emote emoteOpt = emoteList//
                         .stream()//
                         .filter(emote -> emote.getName().equals(token.substring(2, token.length() - 2)))
                         .findFirst().orElse(null);
 
-                if (e != null) {
+                if (emoteOpt != null) {
                     foundOne = true;
-                    messageTokens.set(i, nls.constructEmoteString(e));
+                    messageTokens.set(i, nls.constructEmoteString(emoteOpt));
                 }
             }
         }
@@ -46,8 +46,7 @@ public class NitroliteRoutine extends AbstractRoutine {
 
     @Override
     public String getDescription() {
-        // TODO: description
-        return "n/a";
+        return "Service for sending emotes without nitro";
     }
 
 }
