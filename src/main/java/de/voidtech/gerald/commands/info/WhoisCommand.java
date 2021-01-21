@@ -53,10 +53,4 @@ public class WhoisCommand extends AbstractCommand{
 	public String getUsage() {
 		return "whois @BaristaBoi#4029";
 	}
-	
-	@Override
-	public Boolean getArgsRequirement() {
-		return false;
-	}
-
 }
