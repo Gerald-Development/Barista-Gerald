@@ -19,11 +19,9 @@ public class WhoisCommand extends AbstractCommand{
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		
-		Member member = message.getMentionedMembers().size() == 1// 
+		Member member = message.getMentionedMembers().size() >= 1// 
 				? message.getMentionedMembers().get(0)//
 				: message.getMember();
-		
-		member = message.getGuild().retrieveMember(member.getUser()).complete();
 		
 		List<String> memberRoles = member.getRoles().stream().map(Role::getAsMention).collect(Collectors.toList());
 		
@@ -54,6 +52,11 @@ public class WhoisCommand extends AbstractCommand{
 	@Override
 	public String getUsage() {
 		return "whois @BaristaBoi#4029";
+	}
+	
+	@Override
+	public Boolean getArgsRequirement() {
+		return false;
 	}
 
 }
