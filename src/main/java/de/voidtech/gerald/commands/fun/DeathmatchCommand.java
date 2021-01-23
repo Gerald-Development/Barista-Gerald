@@ -18,10 +18,10 @@ public class DeathmatchCommand extends AbstractCommand {
 		PLAYER_TWO
 	}
 	
-	User playerOne;
-	User playerTwo;
+	private User playerOne;
+	private User playerTwo;
 
-	List<String> attacksList = Arrays.asList("hits", "smacks", "punches", "runs over", "electrocutes",
+	private final List<String> attacksList = Arrays.asList("hits", "smacks", "punches", "runs over", "electrocutes",
 			"atomic wedgies", "fish slaps", "clobbers", "pokes", "insults", "flicks"); // class field!
 	
 	@Override
@@ -37,7 +37,6 @@ public class DeathmatchCommand extends AbstractCommand {
 				message.getChannel().sendMessage("**You cannot fight yourself!**").queue();
 			else
 				startGame(message);
-
 		}
 	}
 
