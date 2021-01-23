@@ -39,6 +39,8 @@ public enum CommandRegistry {
 	NITROLITE("nitrolite", NitroliteCommand.class),
 	DEFINE("define", DefineCommand.class),
 	SPIN("spin", SpinCommand.class),
+	EIGHTBALL("8ball", EightballCommand.class),
+	DEATHMATCH("deathmatch", DeathmatchCommand.class),
 
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class, null),
