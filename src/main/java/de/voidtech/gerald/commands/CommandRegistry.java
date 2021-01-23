@@ -4,6 +4,8 @@ import main.java.de.voidtech.gerald.commands.info.*;
 
 import main.java.de.voidtech.gerald.commands.fun.*;
 
+import main.java.de.voidtech.gerald.commands.utils.*;
+
 import java.lang.reflect.InvocationTargetException;
 
 public enum CommandRegistry {
@@ -24,6 +26,21 @@ public enum CommandRegistry {
 	POKE("poke", ActionsCommand.class, "poke"),
 	SLAP("slap", ActionsCommand.class, "slap"),
 	NOM("nom", ActionsCommand.class, "nom"),
+	COMPLIMENT("compliment", ComplimentCommand.class),
+	SHIP("ship", ShipCommand.class),
+	COINFLIP("coinflip", CoinflipCommand.class),
+	CLAP("clap", ClapCommand.class),
+	EMOJIFY("emojify", EmojifyCommand.class),
+	ZALGO("zalgo", ZalgoCommand.class),
+	CITRUS("citrus", CitrusCommand.class),
+	BERRY("berry", BerryCommand.class),
+	WYR("wyr", WouldYouRatherCommand.class),
+	VOTE("vote", VoteCommand.class),
+	NITROLITE("nitrolite", NitroliteCommand.class),
+	DEFINE("define", DefineCommand.class),
+	SPIN("spin", SpinCommand.class),
+	EIGHTBALL("8ball", EightballCommand.class),
+	DEATHMATCH("deathmatch", DeathmatchCommand.class),
 
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class, null),
