@@ -16,6 +16,10 @@ public abstract class AbstractCommand implements Runnable {
 	public AbstractCommand(String s) {}
 
 	public void initCommand(Message message, List<String> args, EventWaiter waiter)
+
+	public AbstractCommand() {}
+
+	public AbstractCommand(String s) {}
 	{
 		this.message = message;
 		this.args = args;
