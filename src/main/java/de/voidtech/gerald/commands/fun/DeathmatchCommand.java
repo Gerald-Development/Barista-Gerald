@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -18,8 +19,7 @@ public class DeathmatchCommand extends AbstractCommand {
 		PLAYER_TWO
 	}
 	
-	private User playerOne;
-	private User playerTwo;
+	private ArrayList<User> usr = new ArrayList<>(2);
 
 	private final List<String> attacksList = Arrays.asList("hits", "smacks", "punches", "runs over", "electrocutes",
 			"atomic wedgies", "fish slaps", "clobbers", "pokes", "insults", "flicks");
@@ -29,10 +29,10 @@ public class DeathmatchCommand extends AbstractCommand {
 		if (message.getMentionedMembers().size() == 0) {
 			message.getChannel().sendMessage("**You need to mention an opponent!**").queue();
 		} else {
-			playerOne = message.getMember().getUser();
-			playerTwo = message.getMentionedMembers().get(0).getUser();
+			usr.add(message.getMember().getUser());
+			usr.add(message.getMentionedMembers().get(0).getUser());
 
-			if (playerTwo.equals(playerOne))
+			if (usr.get(0).equals(usr.get(1)))
 				message.getChannel().sendMessage("**You cannot fight yourself!**").queue();
 			else startGame(message);
 		}
@@ -40,40 +40,31 @@ public class DeathmatchCommand extends AbstractCommand {
 
 	private void startGame(Message message) {
 		MessageEmbed gameStartEmbed = new EmbedBuilder()
-				.setTitle(playerOne.getName() + " VS " + playerTwo.getName())
+				.setTitle(usr.get(0).getName() + " VS " + usr.get(1).getName())
 				.setColor(Color.RED).build();
 		message.getChannel().sendMessage(gameStartEmbed).queue(sentMessage -> playRounds(sentMessage));
 	}
 
 	private void playRounds(Message message) {
 		try {
-			int playerOneHealth = 100, playerTwoHealth = 100;
+			int[] playerHealth = {100, 100};
 			Turn playerTurn = Turn.PLAYER_ONE;
 		
-			while (playerOneHealth > 0 && playerTwoHealth > 0) {
+			while (playerHealth[0] != 0 && playerHealth[1] != 0) {
 				int damage = new Random().nextInt(40);
 
-				if (playerTurn == Turn.PLAYER_ONE) {
-					playerTwoHealth = playerTwoHealth - damage;
-					if (playerTwoHealth < 0)
-						playerTwoHealth = 0;
+				playerHealth[1-playerTurn.ordinal()] -= damage;
+				if (playerHealth[1-playerTurn.ordinal()] < 0)
+					playerHealth[1-playerTurn.ordinal()] = 0;
 
-					message.editMessage(craftEmbed(playerOneHealth, playerTwoHealth, damage, Turn.PLAYER_ONE)).queue();
-					playerTurn = Turn.PLAYER_TWO;
-				} else {
-					playerOneHealth -= damage;
-					if (playerOneHealth < 0) playerOneHealth = 0;
+				message.editMessage(craftEmbed(playerHealth[0], playerHealth[1], damage, playerTurn)).queue();
 
-					message.editMessage(craftEmbed(playerOneHealth, playerTwoHealth, damage, Turn.PLAYER_TWO)).queue();
-					playerTurn = Turn.PLAYER_ONE;
-				}
+				playerTurn = Turn.values()[1-playerTurn.ordinal()];
+
 				Thread.sleep(2000);
 			}
 
-			if (playerTurn == Turn.PLAYER_ONE)
-				playerTurn = Turn.PLAYER_TWO;
-			else
-				playerTurn = Turn.PLAYER_ONE;
+			playerTurn = Turn.values()[1-playerTurn.ordinal()];
 
 			sendWinnerMessage(playerTurn, message);
 		} catch (InterruptedException e) {
@@ -83,17 +74,17 @@ public class DeathmatchCommand extends AbstractCommand {
 
 	private String craftMessage(int damage, Turn playerTurn) {
 						// if it was player ones turn write his name else player twos name etc...
-		return "**" + (playerTurn == Turn.PLAYER_ONE ? playerOne.getName() : playerTwo.getName()) +
+		return "**" + (playerTurn == Turn.PLAYER_ONE ? usr.get(0).getName() : usr.get(1).getName()) +
 				"** " + attacksList.get(new Random().nextInt(attacksList.size())) +
-				" **" + (playerTurn != Turn.PLAYER_ONE ? playerOne.getName() : playerTwo.getName()) +
+				" **" + (playerTurn != Turn.PLAYER_ONE ? usr.get(0).getName() : usr.get(1).getName()) +
 				"** for **" + damage + "** damage";
 	}
 
 	private MessageEmbed craftEmbed(int playerOneHealth, int playerTwoHealth, int damage, Turn playerTurn) {
 		return new EmbedBuilder()
-				.setTitle(playerOne.getName() + " (" + playerOneHealth + " ❤) VS " + playerTwo.getName() + " (" + playerTwoHealth + " ❤)")
-				.setAuthor((playerTurn == Turn.PLAYER_ONE ? playerOne.getName() : playerTwo.getName()) + "'s Attack!")
-				.setThumbnail(playerTurn == Turn.PLAYER_ONE ? playerOne.getAvatarUrl() : playerTwo.getAvatarUrl())
+				.setTitle(usr.get(0).getName() + " (" + playerOneHealth + " ❤) VS " + usr.get(1).getName() + " (" + playerTwoHealth + " ❤)")
+				.setAuthor((playerTurn == Turn.PLAYER_ONE ? usr.get(0).getName() : usr.get(1).getName()) + "'s Attack!")
+				.setThumbnail(playerTurn == Turn.PLAYER_ONE ? usr.get(0).getAvatarUrl() : usr.get(1).getAvatarUrl())
 				.setDescription(craftMessage(damage, playerTurn))
 				.setColor(playerTurn == Turn.PLAYER_ONE ? Color.ORANGE : Color.RED)
 				.build();
@@ -101,9 +92,9 @@ public class DeathmatchCommand extends AbstractCommand {
 
 	private MessageEmbed craftWinnerEmbed(Turn playerTurn) {
 		return new EmbedBuilder()
-				.setThumbnail(playerTurn == Turn.PLAYER_ONE ? playerOne.getAvatarUrl() : playerTwo.getAvatarUrl())
-				.setTitle((playerTurn == Turn.PLAYER_ONE ? playerOne.getName() : playerTwo.getName()) + " Has won the battle!")
-				.setDescription("**" + (playerTurn == Turn.PLAYER_ONE ? playerTwo.getName() : playerOne.getName()) + " Was defeated!**")
+				.setThumbnail(playerTurn == Turn.PLAYER_ONE ? usr.get(0).getAvatarUrl() : usr.get(1).getAvatarUrl())
+				.setTitle((playerTurn == Turn.PLAYER_ONE ? usr.get(0).getName() : usr.get(1).getName()) + " Has won the battle!")
+				.setDescription("**" + (playerTurn == Turn.PLAYER_ONE ? usr.get(1).getName() : usr.get(0).getName()) + " Was defeated!**")
 				.setColor(Color.GREEN)
 				.build();
 	}
