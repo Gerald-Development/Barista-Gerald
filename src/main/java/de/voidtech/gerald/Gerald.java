@@ -33,7 +33,7 @@ public class Gerald {
 				.setCompression(Compression.NONE)//
 				.addEventListeners(new EventWaiter(), new ReadyListener(), new MessageListener())//
 				//TODO: store activity in database
-				.setActivity(Activity.listening("to the coffee machine"))//
+				.setActivity(Activity.listening(" the coffee machine"))//
 				.build()//
 				.awaitReady();
 	}
