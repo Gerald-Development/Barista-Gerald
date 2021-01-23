@@ -19,7 +19,7 @@ public class DeathmatchCommand extends AbstractCommand {
 		PLAYER_TWO
 	}
 	
-	private ArrayList<User> usr = new ArrayList<>(2);
+	private ArrayList<User> userList = new ArrayList<>(2);
 
 	private final List<String> attacksList = Arrays.asList("hits", "smacks", "punches", "runs over", "electrocutes",
 			"atomic wedgies", "fish slaps", "clobbers", "pokes", "insults", "flicks");
@@ -29,10 +29,10 @@ public class DeathmatchCommand extends AbstractCommand {
 		if (message.getMentionedMembers().size() == 0) {
 			message.getChannel().sendMessage("**You need to mention an opponent!**").queue();
 		} else {
-			usr.add(message.getMember().getUser());
-			usr.add(message.getMentionedMembers().get(0).getUser());
+			userList.add(message.getMember().getUser());
+			userList.add(message.getMentionedMembers().get(0).getUser());
 
-			if (usr.get(0).equals(usr.get(1)))
+			if (userList.get(0).equals(userList.get(1)))
 				message.getChannel().sendMessage("**You cannot fight yourself!**").queue();
 			else startGame(message);
 		}
@@ -40,7 +40,7 @@ public class DeathmatchCommand extends AbstractCommand {
 
 	private void startGame(Message message) {
 		MessageEmbed gameStartEmbed = new EmbedBuilder()
-				.setTitle(usr.get(0).getName() + " VS " + usr.get(1).getName())
+				.setTitle(userList.get(0).getName() + " VS " + userList.get(1).getName())
 				.setColor(Color.RED).build();
 		message.getChannel().sendMessage(gameStartEmbed).queue(sentMessage -> playRounds(sentMessage));
 	}
@@ -74,17 +74,17 @@ public class DeathmatchCommand extends AbstractCommand {
 
 	private String craftMessage(int damage, Turn playerTurn) {
 						// if it was player ones turn write his name else player twos name etc...
-		return "**" + (playerTurn == Turn.PLAYER_ONE ? usr.get(0).getName() : usr.get(1).getName()) +
+		return "**" + (playerTurn == Turn.PLAYER_ONE ? userList.get(0).getName() : userList.get(1).getName()) +
 				"** " + attacksList.get(new Random().nextInt(attacksList.size())) +
-				" **" + (playerTurn != Turn.PLAYER_ONE ? usr.get(0).getName() : usr.get(1).getName()) +
+				" **" + (playerTurn != Turn.PLAYER_ONE ? userList.get(0).getName() : userList.get(1).getName()) +
 				"** for **" + damage + "** damage";
 	}
 
 	private MessageEmbed craftEmbed(int playerOneHealth, int playerTwoHealth, int damage, Turn playerTurn) {
 		return new EmbedBuilder()
-				.setTitle(usr.get(0).getName() + " (" + playerOneHealth + " ❤) VS " + usr.get(1).getName() + " (" + playerTwoHealth + " ❤)")
-				.setAuthor((playerTurn == Turn.PLAYER_ONE ? usr.get(0).getName() : usr.get(1).getName()) + "'s Attack!")
-				.setThumbnail(playerTurn == Turn.PLAYER_ONE ? usr.get(0).getAvatarUrl() : usr.get(1).getAvatarUrl())
+				.setTitle(userList.get(0).getName() + " (" + playerOneHealth + " ❤) VS " + userList.get(1).getName() + " (" + playerTwoHealth + " ❤)")
+				.setAuthor((playerTurn == Turn.PLAYER_ONE ? userList.get(0).getName() : userList.get(1).getName()) + "'s Attack!")
+				.setThumbnail(playerTurn == Turn.PLAYER_ONE ? userList.get(0).getAvatarUrl() : userList.get(1).getAvatarUrl())
 				.setDescription(craftMessage(damage, playerTurn))
 				.setColor(playerTurn == Turn.PLAYER_ONE ? Color.ORANGE : Color.RED)
 				.build();
@@ -92,9 +92,9 @@ public class DeathmatchCommand extends AbstractCommand {
 
 	private MessageEmbed craftWinnerEmbed(Turn playerTurn) {
 		return new EmbedBuilder()
-				.setThumbnail(playerTurn == Turn.PLAYER_ONE ? usr.get(0).getAvatarUrl() : usr.get(1).getAvatarUrl())
-				.setTitle((playerTurn == Turn.PLAYER_ONE ? usr.get(0).getName() : usr.get(1).getName()) + " Has won the battle!")
-				.setDescription("**" + (playerTurn == Turn.PLAYER_ONE ? usr.get(1).getName() : usr.get(0).getName()) + " Was defeated!**")
+				.setThumbnail(playerTurn == Turn.PLAYER_ONE ? userList.get(0).getAvatarUrl() : userList.get(1).getAvatarUrl())
+				.setTitle((playerTurn == Turn.PLAYER_ONE ? userList.get(0).getName() : userList.get(1).getName()) + " Has won the battle!")
+				.setDescription("**" + (playerTurn == Turn.PLAYER_ONE ? userList.get(1).getName() : userList.get(0).getName()) + " Was defeated!**")
 				.setColor(Color.GREEN)
 				.build();
 	}
