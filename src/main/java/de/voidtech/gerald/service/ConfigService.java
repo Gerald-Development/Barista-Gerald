@@ -11,7 +11,7 @@ public class ConfigService {
 	private static volatile ConfigService instance;
 	private static final Logger LOGGER = Logger.getLogger(ConfigService.class.getName());
 
-	private Properties config = new Properties();
+	private final Properties config = new Properties();
 
 	//PRIVATE FOR SINGLETON
 	private ConfigService() {
@@ -36,5 +36,35 @@ public class ConfigService {
 	public String getDefaultPrefix() {
 		String prefix = config.getProperty("defaultPrefix");
 		return prefix != null ? prefix : "$";
+	}
+	
+	public String getHibernateDialect()
+	{
+		String dialect = config.getProperty("hibernate.Dialect");
+		return dialect != null ? dialect : "org.hibernate.dialect.PostgreSQLDialect";
+	}
+	
+	public String getDriver()
+	{
+		String driver = config.getProperty("hibernate.Driver");
+		return driver != null ? driver : "org.postgresql.Driver";
+	}
+	
+	public String getDBUser()
+	{
+		String user = config.getProperty("hibernate.User");
+		return user != null ? user : "postgres";
+	}
+	
+	public String getDBPassword()
+	{
+		String pass = config.getProperty("hibernate.Password");
+		return pass != null ? pass : "root";
+	}
+	
+	public String getConnectionURL()
+	{
+		String dbURL = config.getProperty("hibernate.ConnectionURL");
+		return dbURL != null ? dbURL : "jdbc:postgresql://localhost:5432/BaristaDB";
 	}
 }

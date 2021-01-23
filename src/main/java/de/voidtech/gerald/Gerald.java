@@ -11,6 +11,7 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import main.java.de.voidtech.gerald.listeners.MessageListener;
 import main.java.de.voidtech.gerald.listeners.ReadyListener;
 import main.java.de.voidtech.gerald.service.ConfigService;
+import main.java.de.voidtech.gerald.service.DatabaseService;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -24,6 +25,9 @@ public class Gerald {
 
 	private Gerald() throws LoginException, InterruptedException {
 		ConfigService config = ConfigService.getInstance();
+		DatabaseService dbService = DatabaseService.getInstance();
+		
+		dbService.exportSchema();
 		
 		JDABuilder.createDefault(config.getToken())
 				.enableCache(CacheFlag.CLIENT_STATUS)//
