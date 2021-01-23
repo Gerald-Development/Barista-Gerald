@@ -93,8 +93,8 @@ public class DeathmatchCommand extends AbstractCommand {
 	private MessageEmbed craftWinnerEmbed(Turn playerTurn) {
 		return new EmbedBuilder()
 				.setThumbnail(playerTurn == Turn.PLAYER_ONE ? usr.get(0).getAvatarUrl() : usr.get(1).getAvatarUrl())
-				.setTitle((playerTurn == Turn.PLAYER_ONE ? usr.get(0).getName() : usr.get(1).getName()) + " Has won the battle!")
-				.setDescription("**" + (playerTurn == Turn.PLAYER_ONE ? usr.get(1).getName() : usr.get(0).getName()) + " Was defeated!**")
+				.setTitle((playerTurn == Turn.PLAYER_ONE ? usr.get(0).getName() : usr.get(1).getName()) + " has won the battle!")
+				.setDescription("**" + (playerTurn == Turn.PLAYER_ONE ? usr.get(1).getName() : usr.get(0).getName()) + " was defeated!**")
 				.setColor(Color.GREEN)
 				.build();
 	}
