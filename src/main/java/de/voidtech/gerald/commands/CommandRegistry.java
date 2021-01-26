@@ -42,6 +42,7 @@ public enum CommandRegistry {
 	EIGHTBALL("8ball", EightballCommand.class),
 	DEATHMATCH("deathmatch", DeathmatchCommand.class),
 	PP("pp", PPCommand.class),
+	ACTIVITY("activity", ActivityCommand.class),
 
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class, null),

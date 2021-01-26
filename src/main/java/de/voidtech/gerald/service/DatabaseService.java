@@ -13,8 +13,7 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
-import org.hibernate.tool.hbm2ddl.SchemaExport.Action;
+import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.hibernate.tool.schema.TargetType;
 import org.reflections.Reflections;
 
@@ -70,16 +69,15 @@ public final class DatabaseService
 		Set<Class<?>> annotated = getAllEntities();
 		annotated.forEach(metadataSources::addAnnotatedClass);
 		
-		//TODO: This drops and exports the Schema, THIS IS NEEDED TO CHANGE BEFORE RELEASE THIS DROPS THE DATA EVERY TIME
-		new SchemaExport()
+		//TODO: This is highly not good. Better export to a migration file and migrate the DB after it
+		new SchemaUpdate()
 			.setFormat(true)
-			.execute(EnumSet.of(TargetType.DATABASE), Action.BOTH, metadataSources.buildMetadata());
+			.execute(EnumSet.of(TargetType.DATABASE), metadataSources.buildMetadata());
 	}
 	
 	private Properties getHibernateProperties()
 	{
 		Properties properties = new Properties();
-		
 		properties.put(Environment.DRIVER, configService.getDriver());
 		properties.put(Environment.URL, configService.getConnectionURL());
 		properties.put(Environment.USER, configService.getDBUser());
