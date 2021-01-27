@@ -5,11 +5,16 @@
 
 The Java Version of the [Gerald Discord Bot](https://github.com/Elementalmp4/GeraldCore)
 
-This project is still WIP but if you'd like to run the bot locally you can fetch the latest build from our jenkins and create a `GeraldConfig.properties` with content 
+This project is still WIP but if you'd like to run the bot locally you can fetch the latest build from our jenkins and create a `GeraldConfig.properties` with following content: 
 
-```defaultPrefix=YOUR_PREFIX_GOES_HERE```
+```
+defaultPrefix=YOUR_PREFIX_GOES_HERE
+hibernate.User=[YourDBUser]
+hibernate.Password=[yourDBPassword]
+```
 
 and execute the jar
+You are required to also have a local postgres database with a created database "BaristaDB" to run the bot.
 
 Are you a maintainer?
 To build the project through maven use maven goal `clean package` or for tests only maven goal `clean test`
