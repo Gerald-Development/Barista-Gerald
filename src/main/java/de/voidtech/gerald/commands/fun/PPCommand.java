@@ -38,9 +38,9 @@ public class PPCommand extends AbstractCommand{
 	
 	private String getPhrase(int ppSize)
 	{
-		return ppSize > 10
+		return ppSize > 8
 				? "Thats pretty spankin' huge" 
-				: ppSize > 6 
+				: ppSize > 4
 				? "Meh could be bigger" 
 				: "Does it even exist?";
 	}
