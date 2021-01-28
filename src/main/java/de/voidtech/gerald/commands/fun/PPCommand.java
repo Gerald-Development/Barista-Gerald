@@ -21,7 +21,7 @@ public class PPCommand extends AbstractCommand{
 		MessageEmbed ppSizeEmbed = new EmbedBuilder()//
 				.setTitle("How big is your PP?")
 				.setColor(color)
-				.setDescription("Your PP is **" + ppSizeNumber + " inches.** " + phrase)
+				.setDescription("Your PP is **" + ppSizeNumber + (ppSizeNumber == 1 ? " inch.** " : " inches.** ") + phrase)
 				.build();
 		
 		message.getChannel().sendMessage(ppSizeEmbed).queue();
