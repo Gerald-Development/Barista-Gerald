@@ -52,7 +52,7 @@ public class WhitelistCommand extends AbstractCommand
 
 	private void handleAddToWhitelist(Message message, TextChannel mentionedChannel, Server server) 
 	{
-		if (mentionedChannel != null) {
+		if (mentionedChannel != null && mentionedChannel.getGuild().getIdLong() == message.getGuild().getIdLong()) {
 			if (server.getChannelWhitelist().contains(mentionedChannel.getId()))
 				message.getChannel().sendMessage("This channel has already been added to the whitelist").queue();
 			else {
