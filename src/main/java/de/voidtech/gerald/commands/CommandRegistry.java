@@ -4,6 +4,8 @@ import main.java.de.voidtech.gerald.commands.info.*;
 
 import main.java.de.voidtech.gerald.commands.fun.*;
 
+import main.java.de.voidtech.gerald.commands.management.*;
+
 import main.java.de.voidtech.gerald.commands.utils.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -43,6 +45,7 @@ public enum CommandRegistry {
 	DEATHMATCH("deathmatch", DeathmatchCommand.class),
 	PP("pp", PPCommand.class),
 	ACTIVITY("activity", ActivityCommand.class),
+	WHITELIST("whitelist", WhitelistCommand.class),
 
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class, null),
