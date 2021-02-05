@@ -21,7 +21,7 @@ public class GlobalConfigService {
 		return GlobalConfigService.instance;
 	}
 	
-	public GlobalConfig getOrCreateGlobalConfig()
+	public GlobalConfig getGlobalConfig()
 	{
 		try(Session session = dbService.getSessionFactory().openSession())
 		{

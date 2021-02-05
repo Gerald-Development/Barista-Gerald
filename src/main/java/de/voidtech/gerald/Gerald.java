@@ -32,7 +32,7 @@ public class Gerald {
 		GlobalConfigService globalConfService = GlobalConfigService.getInstance();
 
 		dbService.exportSchema();
-		GlobalConfig globalConf = globalConfService.getOrCreateGlobalConfig();
+		GlobalConfig globalConf = globalConfService.getGlobalConfig();
 
 		JDABuilder.createDefault(config.getToken()).enableCache(CacheFlag.CLIENT_STATUS)//
 				.enableIntents(Arrays.asList(GatewayIntent.values()))//

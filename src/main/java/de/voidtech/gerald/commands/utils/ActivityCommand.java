@@ -54,7 +54,7 @@ public class ActivityCommand extends AbstractCommand {
 		{
 			session.getTransaction().begin();
 			
-			GlobalConfig globalConf = globalConfService.getOrCreateGlobalConfig();
+			GlobalConfig globalConf = globalConfService.getGlobalConfig();
 			globalConf.setActivity(activityType);
 			globalConf.setStatus(status);
 			
