@@ -5,6 +5,7 @@ import main.java.de.voidtech.gerald.routines.utils.*;
 
 public enum RoutineRegistry {
 	NITROLITE("nitrolite", NitroliteRoutine.class),
+	TUNNEL("tunnel", TunnelRoutine.class),
 
 	// TODO: add junit test
 	;

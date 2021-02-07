@@ -46,6 +46,7 @@ public enum CommandRegistry {
 	PP("pp", PPCommand.class),
 	ACTIVITY("activity", ActivityCommand.class),
 	WHITELIST("whitelist", WhitelistCommand.class),
+	TUNNEL("tunnel", TunnelCommand.class),
 
 	@SuppressWarnings("deprecation")
 	JUNIT_TEST("junittest", TestCommand.class, null),
