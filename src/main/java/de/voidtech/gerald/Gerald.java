@@ -66,6 +66,7 @@ public class Gerald {
 		properties.put("spring.jpa.properties.hibernate.dialect", configService.getHibernateDialect());
 		properties.put("jdbc.driver", configService.getDriver());
 		properties.put("spring.jpa.hibernate.ddl-auto", "update");
+		properties.put("server.port", "6969");
 		
 		springApp.setDefaultProperties(properties);		
 		springApp.run(args);
