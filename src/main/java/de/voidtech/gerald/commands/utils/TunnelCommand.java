@@ -155,12 +155,12 @@ public class TunnelCommand extends AbstractCommand {
 
 	@Override
 	public String getDescription() {
-		return null;
+		return "Tunnels allow you to form a bridge between two servers/channels! Using this command, Gerald will forward all text messages between the chosen channels";
 	}
 
 	@Override
 	public String getUsage() {
-		return null;
+		return "To create a tunnel: tunnel [channel ID]\nTo destroy a tunnel: tunnel fill";
 	}
 
 }
