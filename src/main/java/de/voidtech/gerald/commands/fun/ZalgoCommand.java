@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.entities.Message;
 
+@Command
 public class ZalgoCommand extends AbstractCommand {
 
 	@Override
@@ -37,6 +39,10 @@ public class ZalgoCommand extends AbstractCommand {
 		return "zalgo a very normal message";
 	}
 	
+	@Override
+	public String getName() {
+		return "zalgo";
+	}
 	private Map<String, String> getZalgoText() {
 		Map<String, String> zalgoText = new HashMap<String, String>();
 			zalgoText.put("a","a̸̱̦̪̫̯̹̫ͧ̍̆");
@@ -68,4 +74,5 @@ public class ZalgoCommand extends AbstractCommand {
 		
 		return zalgoText;
 	}
+
 }

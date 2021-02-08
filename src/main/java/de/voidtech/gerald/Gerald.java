@@ -1,11 +1,14 @@
 package main.java.de.voidtech.gerald;
 
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Properties;
 
 import javax.security.auth.login.LoginException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 
@@ -13,8 +16,8 @@ import main.java.de.voidtech.gerald.entities.GlobalConfig;
 import main.java.de.voidtech.gerald.listeners.MessageListener;
 import main.java.de.voidtech.gerald.listeners.ReadyListener;
 import main.java.de.voidtech.gerald.service.ConfigService;
-import main.java.de.voidtech.gerald.service.DatabaseService;
 import main.java.de.voidtech.gerald.service.GlobalConfigService;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
@@ -22,35 +25,49 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 
+@SpringBootApplication
 public class Gerald {
-
-	private static final Logger LOGGER = Logger.getLogger(Gerald.class.getName());
-
-	private Gerald() throws LoginException, InterruptedException {
-		ConfigService config = ConfigService.getInstance();
-		DatabaseService dbService = DatabaseService.getInstance();
-		GlobalConfigService globalConfService = GlobalConfigService.getInstance();
-
-		dbService.exportSchema();
+	
+	@Bean
+	@Autowired
+	public JDA getJDA(MessageListener msgListener, ConfigService configService, GlobalConfigService globalConfService, EventWaiter eventWaiter) throws LoginException, InterruptedException
+	{
 		GlobalConfig globalConf = globalConfService.getGlobalConfig();
-
-		JDABuilder.createDefault(config.getToken()).enableCache(CacheFlag.CLIENT_STATUS)//
+		
+		
+		return JDABuilder.createDefault(configService.getToken()).enableCache(CacheFlag.CLIENT_STATUS)//
 				.enableIntents(Arrays.asList(GatewayIntent.values()))//
 				.setMemberCachePolicy(MemberCachePolicy.ALL)//
 				.setBulkDeleteSplittingEnabled(false)//
 				.setCompression(Compression.NONE)//
-				.addEventListeners(new EventWaiter(), new ReadyListener(), new MessageListener())//
-				.setActivity(EntityBuilder.createActivity(globalConf.getStatus(), GlobalConstants.STREAM_URL, globalConf.getActivity()))
+				.addEventListeners(eventWaiter, msgListener, new ReadyListener())//
+				 .setActivity(EntityBuilder.createActivity(globalConf.getStatus(),
+						 GlobalConstants.STREAM_URL, globalConf.getActivity()))
 				.build()//
 				.awaitReady();
-
 	}
+	
+	@Bean
+	public EventWaiter getEventWaiter()
+    {
+		return new EventWaiter();
+    }
 
 	public static void main(String[] args) {
-		try {
-			new Gerald();
-		} catch (LoginException | InterruptedException e) {
-			LOGGER.log(Level.SEVERE, "An error has occurred while initilizing Gerald\n" + e.getMessage());
-		}
+		SpringApplication springApp = new SpringApplication(Gerald.class);
+		
+		ConfigService configService = new ConfigService();
+		Properties properties = new Properties();
+		
+		properties.put("spring.datasource.url", configService.getConnectionURL());
+		properties.put("spring.datasource.username", configService.getDBUser());
+		properties.put("spring.datasource.password", configService.getDBPassword());
+		properties.put("spring.datasource.url", configService.getConnectionURL());
+		properties.put("spring.jpa.properties.hibernate.dialect", configService.getHibernateDialect());
+		properties.put("jdbc.driver", configService.getDriver());
+		properties.put("spring.jpa.hibernate.ddl-auto", "update");
+		
+		springApp.setDefaultProperties(properties);		
+		springApp.run(args);
 	}
 }

@@ -1,13 +1,6 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.awt.*;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,6 +11,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+
+//TODO ActionsCommand into Container 
 public class ActionsCommand extends AbstractCommand {
 
     private static final Logger LOGGER = Logger.getLogger(ActionsCommand.class.getName());
@@ -36,9 +38,8 @@ public class ActionsCommand extends AbstractCommand {
             message.getChannel().sendMessage("You need to mention someone to " + this.name).queue();
         } else {
             String gifURL = getActionGif();
-            if (gifURL == null)
-                super.sendErrorOccurred();
-            else {
+            if (gifURL != null)
+            {
                 MessageEmbed actionEmbed = new EmbedBuilder()
                         .setTitle(message.getAuthor().getName() + " " + this.name + this.name.charAt(this.name.length()-1) +
                                 "ed " + message.getMentionedMembers().get(0).getEffectiveName())
@@ -64,7 +65,6 @@ public class ActionsCommand extends AbstractCommand {
             }
             con.disconnect();
         } catch (IOException | JSONException e) {
-            super.sendErrorOccurred();
             LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
         }
         return null;
@@ -79,4 +79,9 @@ public class ActionsCommand extends AbstractCommand {
     public String getUsage() {
         return this.name + "[@user#1234]";
     }
+
+	@Override
+	public String getName() {
+		return "";
+	}
 }

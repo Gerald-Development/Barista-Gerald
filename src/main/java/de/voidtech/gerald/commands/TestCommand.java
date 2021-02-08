@@ -23,4 +23,10 @@ public class TestCommand extends AbstractCommand{
 		return "";
 	}
 
+
+	@Override
+	public String getName() {
+		return "test";
+	}
+
 }

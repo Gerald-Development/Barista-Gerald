@@ -1,30 +1,22 @@
 package main.java.de.voidtech.gerald.service;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import main.java.de.voidtech.gerald.entities.Server;
 
+@Service
 public class ServerService {
 	
-	private DatabaseService dbService;
-	private static volatile ServerService instance;
-	
-	public static ServerService getInstance() {
-		if (ServerService.instance == null) {
-			ServerService.instance = new ServerService();
-		}
-		return ServerService.instance;
-	}
-	
-	private ServerService()
-	{
-		this.dbService = DatabaseService.getInstance();
-	}
+	@Autowired
+	private SessionFactory sf;
 	
 	public Server getServer(String guildID)
 	{
 		Server server;
-		try(Session session = dbService.getSessionFactory().openSession())
+		try(Session session = sf.openSession())
 		{
 			server = (Server) session.createQuery("FROM Server WHERE guildID = :guildID")
 					.setParameter("guildID", guildID)
@@ -44,7 +36,7 @@ public class ServerService {
 	
 	public void saveServer(Server server)
 	{
-		try(Session session = dbService.getSessionFactory().openSession())
+		try(Session session = sf.openSession())
 		{
 			session.getTransaction().begin();
 			session.saveOrUpdate(server);

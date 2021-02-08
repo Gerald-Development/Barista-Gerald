@@ -3,9 +3,11 @@ package main.java.de.voidtech.gerald.commands.fun;
 import java.util.List;
 import java.util.Random;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.entities.Message;
 
+@Command
 public class CoinflipCommand extends AbstractCommand{
 
 	@Override
@@ -20,6 +22,11 @@ public class CoinflipCommand extends AbstractCommand{
 
 	@Override
 	public String getUsage() {
+		return "coinflip";
+	}
+
+	@Override
+	public String getName() {
 		return "coinflip";
 	}
 

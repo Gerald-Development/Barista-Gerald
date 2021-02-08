@@ -8,21 +8,26 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+@Command
 public class CitrusCommand extends AbstractCommand {
+	
+	@Autowired
+	private EventWaiter waiter;
 	
 	@Override
 	public void executeInternal(Message message, List<String> args) 
 	{
-		EventWaiter waiter = getEventWaiter();
 		BidiMap<String, String> citrusMap = getCitrusMap();
 		List<String> keyList = citrusMap.keySet().stream().collect(Collectors.toList());
 		String currentCitrus = keyList.get(new Random().nextInt(keyList.size()));
@@ -74,6 +79,11 @@ public class CitrusCommand extends AbstractCommand {
 
 	@Override
 	public String getUsage() {
+		return "citrus";
+	}
+
+	@Override
+	public String getName() {
 		return "citrus";
 	}
 

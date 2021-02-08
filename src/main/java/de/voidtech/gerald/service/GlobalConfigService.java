@@ -1,29 +1,21 @@
 package main.java.de.voidtech.gerald.service;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import main.java.de.voidtech.gerald.entities.GlobalConfig;
 
+@Service
 public class GlobalConfigService {
-	private volatile static GlobalConfigService instance;
-	private DatabaseService dbService;
-
-	// private for Singleton
-	private GlobalConfigService() {
-		this.dbService = DatabaseService.getInstance();
-	}
-
-	public static GlobalConfigService getInstance() {
-		if (GlobalConfigService.instance == null) {
-			GlobalConfigService.instance = new GlobalConfigService();
-		}
-
-		return GlobalConfigService.instance;
-	}
 	
+	@Autowired
+	private SessionFactory sf;
+
 	public GlobalConfig getGlobalConfig()
 	{
-		try(Session session = dbService.getSessionFactory().openSession())
+		try(Session session = sf.openSession())
 		{
 			GlobalConfig globalConf = (GlobalConfig) session.createQuery("FROM GlobalConfig").uniqueResult();
 			

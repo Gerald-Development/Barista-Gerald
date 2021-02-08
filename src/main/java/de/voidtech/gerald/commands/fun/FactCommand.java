@@ -13,9 +13,11 @@ import java.util.stream.Collectors;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.entities.Message;
 
+@Command
 public class FactCommand extends AbstractCommand 
 {
 	private static final String REQUEST_URL = "https://uselessfacts.jsph.pl/random.json?language=en";
@@ -24,10 +26,7 @@ public class FactCommand extends AbstractCommand
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		String factOpt = getFactOpt();
-		if (factOpt == null)
-			super.sendErrorOccurred();
-		else
-			message.getChannel().sendMessage(factOpt).queue();
+		if (factOpt != null) message.getChannel().sendMessage(factOpt).queue();
 	}
 	
 	private String getFactOpt() {
@@ -44,7 +43,6 @@ public class FactCommand extends AbstractCommand
 			}
 			con.disconnect();
 		} catch (IOException | JSONException e) {
-			super.sendErrorOccurred();
 			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
 		}
 		return null;
@@ -57,6 +55,11 @@ public class FactCommand extends AbstractCommand
 
 	@Override
 	public String getUsage() {
+		return "fact";
+	}
+
+	@Override
+	public String getName() {
 		return "fact";
 	}
 

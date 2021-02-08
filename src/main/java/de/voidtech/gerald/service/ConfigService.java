@@ -7,26 +7,21 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class ConfigService {
-	private static volatile ConfigService instance;
 	private static final Logger LOGGER = Logger.getLogger(ConfigService.class.getName());
 
 	private final Properties config = new Properties();
 
 	//PRIVATE FOR SINGLETON
-	private ConfigService() {
+	public ConfigService() {
 		try (FileInputStream fis = new FileInputStream(new File("GeraldConfig.properties"))){
 			config.load(fis);
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, "an error has occurred while reading the config\n" + e.getMessage());
 		}
-	}
-
-	public static ConfigService getInstance() {
-		if (ConfigService.instance == null) {
-			ConfigService.instance = new ConfigService();
-		}
-		return ConfigService.instance;
 	}
 
 	public String getToken() {

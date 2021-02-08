@@ -4,19 +4,26 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.GlobalConstants;
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.entities.GlobalConfig;
-import main.java.de.voidtech.gerald.service.DatabaseService;
 import main.java.de.voidtech.gerald.service.GlobalConfigService;
 import net.dv8tion.jda.api.entities.Activity.ActivityType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 
+@Command
 public class ActivityCommand extends AbstractCommand {
-	private GlobalConfigService globalConfService = GlobalConfigService.getInstance();
-	private DatabaseService dbService = DatabaseService.getInstance();
+	
+	@Autowired
+	private SessionFactory sessionFactory;
+	
+	@Autowired
+	private GlobalConfigService globalConfService;
 
 	@Override
 	public void executeInternal(Message message, List<String> args) 
@@ -50,7 +57,7 @@ public class ActivityCommand extends AbstractCommand {
 	
 	private void updatePersistentActivity(ActivityType activityType, String status)
 	{
-		try(Session session = dbService.getSessionFactory().openSession())
+		try(Session session = sessionFactory.openSession())
 		{
 			session.getTransaction().begin();
 			
@@ -101,6 +108,11 @@ public class ActivityCommand extends AbstractCommand {
 			else if(activity.startsWith("playing")) return ActivityWrapper.DEFAULT;
 			return null;
 		}
+	}
+
+	@Override
+	public String getName() {
+		return "activity";
 	}
 
 }

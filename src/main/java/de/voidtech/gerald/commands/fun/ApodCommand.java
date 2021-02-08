@@ -1,11 +1,6 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import org.json.JSONObject;
-
-import java.awt.*;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,6 +11,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.json.JSONObject;
+
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
+
+@Command
 public class ApodCommand extends AbstractCommand {
 
     private static final String API_URL = "https://api.nasa.gov/planetary/apod?api_key=lCJQbMiUG6iZMQdas8Qcg2IQ8KQmC19Ssuhc84pi";
@@ -54,7 +57,6 @@ public class ApodCommand extends AbstractCommand {
 
             con.disconnect();
         } catch (IOException e) {
-            super.sendErrorOccurred();
             LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
         }
         return null;
@@ -69,4 +71,9 @@ public class ApodCommand extends AbstractCommand {
     public String getUsage() {
         return "apod";
     }
+
+	@Override
+	public String getName() {
+		return "apod";
+	}
 }

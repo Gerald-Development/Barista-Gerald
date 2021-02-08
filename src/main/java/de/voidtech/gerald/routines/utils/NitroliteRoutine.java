@@ -1,14 +1,18 @@
 package main.java.de.voidtech.gerald.routines.utils;
 
-import main.java.de.voidtech.gerald.routines.AbstractRoutine;
-import main.java.de.voidtech.gerald.service.NitroliteService;
-import net.dv8tion.jda.api.entities.*;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
+import main.java.de.voidtech.gerald.annotations.Routine;
+import main.java.de.voidtech.gerald.routines.AbstractRoutine;
+import main.java.de.voidtech.gerald.service.NitroliteService;
+import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.entities.Message;
+
+@Routine
 public class NitroliteRoutine extends AbstractRoutine {
     @Override
     public void executeInternal(Message message) {

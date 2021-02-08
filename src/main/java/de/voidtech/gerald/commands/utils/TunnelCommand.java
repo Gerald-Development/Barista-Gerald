@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.entities.Tunnel;
 import main.java.de.voidtech.gerald.service.DatabaseService;
@@ -15,10 +17,13 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+@Command
 public class TunnelCommand extends AbstractCommand {
 	
-	EventWaiter waiter = null;
-	private DatabaseService dbService = DatabaseService.getInstance();
+	@Autowired
+	private EventWaiter waiter;
+	@Autowired
+	private DatabaseService dbService;
 
 	private void fillTunnel(Message message) {
 		if (tunnelExists(message.getChannel().getId())) {
@@ -133,7 +138,6 @@ public class TunnelCommand extends AbstractCommand {
 		if (args.get(0).equals("fill")) {
 			fillTunnel(message);
 		} else {
-			waiter = getEventWaiter();
 			String targetChannelID = args.get(0);
 			TextChannel targetChannel = message.getJDA().getTextChannelCache().getElementById(targetChannelID);
 	
@@ -161,6 +165,11 @@ public class TunnelCommand extends AbstractCommand {
 	@Override
 	public String getUsage() {
 		return "To create a tunnel: tunnel [channel ID]\nTo destroy a tunnel: tunnel fill";
+	}
+
+	@Override
+	public String getName() {
+		return "tunnel";
 	}
 
 }

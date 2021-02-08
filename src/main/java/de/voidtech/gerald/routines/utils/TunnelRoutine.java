@@ -6,11 +6,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.entities.Tunnel;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
-import main.java.de.voidtech.gerald.service.DatabaseService;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -21,14 +23,17 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+@Routine
 public class TunnelRoutine extends AbstractRoutine {
 	
-	private DatabaseService dbService = DatabaseService.getInstance();
+	@Autowired
+	private SessionFactory sessionFactory;
+	
 	private static final Logger LOGGER = Logger.getLogger(TunnelRoutine.class.getName());
 	
 	private boolean tunnelExists(String senderChannelID) {
 		
-		try(Session session = dbService.getSessionFactory().openSession())
+		try(Session session = sessionFactory.openSession())
 		{
 			Tunnel tunnel = (Tunnel) session.createQuery("FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
                     .setParameter("senderChannelID", senderChannelID)
@@ -39,7 +44,7 @@ public class TunnelRoutine extends AbstractRoutine {
 	
 	private Tunnel getTunnel(String senderChannelID) {
 		
-		try(Session session = dbService.getSessionFactory().openSession())
+		try(Session session = sessionFactory.openSession())
 		{
 			Tunnel tunnel = (Tunnel) session.createQuery("FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
                     .setParameter("senderChannelID", senderChannelID)

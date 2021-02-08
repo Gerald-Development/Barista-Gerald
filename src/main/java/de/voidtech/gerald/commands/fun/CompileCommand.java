@@ -15,11 +15,13 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
+@Command
 public class CompileCommand extends AbstractCommand {
 
 	private static final String WANDBOX_COMPILE_URL = "https://wandbox.org/compile";
@@ -146,6 +148,11 @@ public class CompileCommand extends AbstractCommand {
 		supportedLangsMap.put("lua", "lua-5.4.0");
 
 		return supportedLangsMap;
+	}
+
+	@Override
+	public String getName() {
+		return "compile";
 	}
 
 }

@@ -2,9 +2,11 @@ package main.java.de.voidtech.gerald.commands.info;
 
 import java.util.List;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.entities.Message;
 
+@Command
 public class SayCommand extends AbstractCommand{
 
 	@Override
@@ -23,6 +25,11 @@ public class SayCommand extends AbstractCommand{
 	@Override
 	public String getUsage() {
 		return "say a very exciting message";
+	}
+
+	@Override
+	public String getName() {
+		return "say";
 	}
 
 }

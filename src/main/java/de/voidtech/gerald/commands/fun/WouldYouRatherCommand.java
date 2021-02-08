@@ -7,10 +7,12 @@ import java.util.logging.Logger;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.entities.Message;
 
-
+@Command
 public class WouldYouRatherCommand extends AbstractCommand {
 	private static final Logger LOGGER = Logger.getLogger(WouldYouRatherCommand.class.getName());
 
@@ -28,7 +30,6 @@ public class WouldYouRatherCommand extends AbstractCommand {
 			});
 			
 		} catch (IOException e) {
-			super.sendErrorOccurred();
 			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
 		}		
 	}
@@ -40,6 +41,11 @@ public class WouldYouRatherCommand extends AbstractCommand {
 
 	@Override
 	public String getUsage() {
+		return "wyr";
+	}
+
+	@Override
+	public String getName() {
 		return "wyr";
 	}
 

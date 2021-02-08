@@ -4,11 +4,13 @@ import java.awt.Color;
 import java.util.List;
 import java.util.Random;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
+@Command
 public class PPCommand extends AbstractCommand{
 
 	@Override
@@ -52,6 +54,11 @@ public class PPCommand extends AbstractCommand{
 
 	@Override
 	public String getUsage() {
+		return "pp";
+	}
+
+	@Override
+	public String getName() {
 		return "pp";
 	}
 

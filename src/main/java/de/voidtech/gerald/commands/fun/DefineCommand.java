@@ -15,11 +15,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
+@Command
 public class DefineCommand extends AbstractCommand{
 	private final static String API_URL = "http://api.urbandictionary.com/v0/define?term=";
 	private final static String REGEX = "[^a-zA-Z0-9()\"'?!;:., \\n]";
@@ -62,7 +64,6 @@ public class DefineCommand extends AbstractCommand{
 			}
 			con.disconnect();
 		} catch (IOException | JSONException e) {
-			super.sendErrorOccurred();
 			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
 		}
 		return null;
@@ -76,6 +77,11 @@ public class DefineCommand extends AbstractCommand{
 	@Override
 	public String getUsage() {
 		return "define chad";
+	}
+
+	@Override
+	public String getName() {
+		return "define";
 	}
 
 }

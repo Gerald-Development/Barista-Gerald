@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
@@ -12,13 +14,14 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 //TODO: What if channel gets deleted?
+@Command
 public class WhitelistCommand extends AbstractCommand 
 {
+	@Autowired
 	private ServerService serverService;
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		this.serverService = ServerService.getInstance();
 
 		String argString = args.size() > 0 ? args.get(0) : "list";
 		TextChannel mentionedChannel = message.getMentionedChannels().size() > 0 
@@ -99,6 +102,12 @@ public class WhitelistCommand extends AbstractCommand
 	@Override
 	public String getUsage() {
 		return "whitelist add {channelID}\nwhitelist remove {channelID}\nwhitelist clear\nwhitelist";
+	}
+
+
+	@Override
+	public String getName() {
+		return "whitelist";
 	}
 
 }

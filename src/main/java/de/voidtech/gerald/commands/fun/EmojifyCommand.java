@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.entities.Message;
 
+@Command
 public class EmojifyCommand extends AbstractCommand {
 
 	@Override
@@ -67,5 +69,10 @@ public class EmojifyCommand extends AbstractCommand {
 			emojiText.put("z",":regional_indicator_z:");
 		
 		return emojiText;
+	}
+
+	@Override
+	public String getName() {
+		return "emojify";
 	}
 }
