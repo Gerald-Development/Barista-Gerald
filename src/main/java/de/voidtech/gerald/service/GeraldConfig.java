@@ -3,20 +3,23 @@ package main.java.de.voidtech.gerald.service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ConfigService {
-	private static final Logger LOGGER = Logger.getLogger(ConfigService.class.getName());
+public class GeraldConfig {
+	private static final Logger LOGGER = Logger.getLogger(GeraldConfig.class.getName());
 
 	private final Properties config = new Properties();
 
 	//PRIVATE FOR SINGLETON
-	public ConfigService() {
+	public GeraldConfig() {
 		try (FileInputStream fis = new FileInputStream(new File("GeraldConfig.properties"))){
 			config.load(fis);
 		} catch (IOException e) {
@@ -61,5 +64,11 @@ public class ConfigService {
 	{
 		String dbURL = config.getProperty("hibernate.ConnectionURL");
 		return dbURL != null ? dbURL : "jdbc:postgresql://localhost:5432/BaristaDB";
+	}
+	
+	public List<String> getMasters()
+	{
+		List<String> masters = Arrays.asList(StringUtils.split(config.getProperty("masters"), ','));
+		return masters.size() > 0 ? masters : Arrays.asList("275355515003863040", "497341083949465600", "217567653210882049");
 	}
 }

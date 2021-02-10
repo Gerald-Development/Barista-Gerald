@@ -11,6 +11,7 @@ import main.java.de.voidtech.gerald.GlobalConstants;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.entities.GlobalConfig;
+import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.GlobalConfigService;
 import net.dv8tion.jda.api.entities.Activity.ActivityType;
 import net.dv8tion.jda.api.entities.Message;
@@ -24,10 +25,15 @@ public class ActivityCommand extends AbstractCommand {
 	
 	@Autowired
 	private GlobalConfigService globalConfService;
+	
+	@Autowired
+	private GeraldConfig config;
 
 	@Override
 	public void executeInternal(Message message, List<String> args) 
 	{
+		if(!config.getMasters().contains(message.getMember().getId())) return;
+		
 		if (StringUtils.join(args.toArray(), " ").length() > 128) message.getChannel().sendMessage("Too many characters! The activity can only be 128 letters").queue();
 		else {
 			ActivityWrapper activityWrapperOpt = ActivityWrapper

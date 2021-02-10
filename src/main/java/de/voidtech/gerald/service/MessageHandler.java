@@ -18,7 +18,7 @@ public class MessageHandler {
     private static final Logger LOGGER = Logger.getLogger(MessageHandler.class.getName());
     
     @Autowired
-    private ConfigService config;
+    private GeraldConfig config;
     
     @Autowired
     private List<AbstractCommand> commands;

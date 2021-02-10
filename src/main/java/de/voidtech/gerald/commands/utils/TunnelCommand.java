@@ -12,6 +12,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.entities.Tunnel;
 import main.java.de.voidtech.gerald.service.DatabaseService;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -135,6 +136,8 @@ public class TunnelCommand extends AbstractCommand {
 	@Override
 	public void executeInternal(Message message, List<String> args) 
 	{	
+		if(!message.getMember().hasPermission(Permission.ADMINISTRATOR)) return;
+		
 		if (args.get(0).equals("fill")) {
 			fillTunnel(message);
 		} else {

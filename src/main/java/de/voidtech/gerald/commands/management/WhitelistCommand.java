@@ -10,6 +10,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
@@ -22,7 +23,9 @@ public class WhitelistCommand extends AbstractCommand
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-
+		
+		if(!message.getMember().hasPermission(Permission.ADMINISTRATOR)) return;
+		
 		String argString = args.size() > 0 ? args.get(0) : "list";
 		TextChannel mentionedChannel = message.getMentionedChannels().size() > 0 
 				? message.getMentionedChannels().get(0) 

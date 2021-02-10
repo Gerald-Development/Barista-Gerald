@@ -24,7 +24,7 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import main.java.de.voidtech.gerald.entities.GlobalConfig;
 import main.java.de.voidtech.gerald.listeners.MessageListener;
 import main.java.de.voidtech.gerald.listeners.ReadyListener;
-import main.java.de.voidtech.gerald.service.ConfigService;
+import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.GlobalConfigService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -39,7 +39,7 @@ public class Gerald {
 	
 	@Bean
 	@Autowired
-	public JDA getJDA(MessageListener msgListener, ConfigService configService, GlobalConfigService globalConfService, EventWaiter eventWaiter) throws LoginException, InterruptedException
+	public JDA getJDA(MessageListener msgListener, GeraldConfig configService, GlobalConfigService globalConfService, EventWaiter eventWaiter) throws LoginException, InterruptedException
 	{
 		GlobalConfig globalConf = globalConfService.getGlobalConfig();
 		
@@ -65,7 +65,7 @@ public class Gerald {
 	public static void main(String[] args) {
 		SpringApplication springApp = new SpringApplication(Gerald.class);
 		
-		ConfigService configService = new ConfigService();
+		GeraldConfig configService = new GeraldConfig();
 		Properties properties = new Properties();
 		
 		properties.put("spring.datasource.url", configService.getConnectionURL());
@@ -82,7 +82,7 @@ public class Gerald {
 		springApp.run(args);
 	}
 
-	private static void exportSchema(ConfigService configService) {
+	private static void exportSchema(GeraldConfig configService) {
 		Properties hbnProperties = getHibernateProperties(configService);
 		
 		MetadataSources metadataSources = new MetadataSources(new StandardServiceRegistryBuilder().applySettings(hbnProperties).build());
@@ -96,7 +96,7 @@ public class Gerald {
 			.execute(EnumSet.of(TargetType.DATABASE), metadataSources.buildMetadata());
 	}
 	
-	private static Properties getHibernateProperties(ConfigService configService)
+	private static Properties getHibernateProperties(GeraldConfig configService)
 	{
 		Properties properties = new Properties();
 		properties.put(Environment.DRIVER, configService.getDriver());

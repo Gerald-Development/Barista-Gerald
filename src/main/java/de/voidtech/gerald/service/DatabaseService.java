@@ -26,7 +26,7 @@ public class DatabaseService
 	private static final Logger LOGGER = Logger.getLogger(DatabaseService.class.getName());
 	
 	@Autowired
-	private ConfigService configService;
+	private GeraldConfig configService;
 	
 	@Bean
 	public SessionFactory getSessionFactory() 
