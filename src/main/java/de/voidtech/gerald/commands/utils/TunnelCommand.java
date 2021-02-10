@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
@@ -11,7 +12,6 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.entities.Tunnel;
-import main.java.de.voidtech.gerald.service.DatabaseService;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -24,7 +24,7 @@ public class TunnelCommand extends AbstractCommand {
 	@Autowired
 	private EventWaiter waiter;
 	@Autowired
-	private DatabaseService dbService;
+	private SessionFactory sessionFactory;
 
 	private void fillTunnel(Message message) {
 		if (tunnelExists(message.getChannel().getId())) {
@@ -86,7 +86,7 @@ public class TunnelCommand extends AbstractCommand {
 	
 	private void writeTunnelPair(String sourceChannelID, String destChannelID)
 	{
-		try(Session session = dbService.getSessionFactory().openSession())
+		try(Session session = sessionFactory.openSession())
 		{
 			session.getTransaction().begin();
 			
@@ -102,7 +102,7 @@ public class TunnelCommand extends AbstractCommand {
 	
 	private boolean tunnelExists(String senderChannelID) {
 		
-		try(Session session = dbService.getSessionFactory().openSession())
+		try(Session session = sessionFactory.openSession())
 		{
 			Tunnel tunnel = (Tunnel) session.createQuery("FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
                     .setParameter("senderChannelID", senderChannelID)
@@ -113,7 +113,7 @@ public class TunnelCommand extends AbstractCommand {
 	
 	private Tunnel getTunnel(String senderChannelID) {
 		
-		try(Session session = dbService.getSessionFactory().openSession())
+		try(Session session = sessionFactory.openSession())
 		{
 			Tunnel tunnel = (Tunnel) session.createQuery("FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
                     .setParameter("senderChannelID", senderChannelID)
@@ -123,7 +123,7 @@ public class TunnelCommand extends AbstractCommand {
 	}
 	
 	private void deleteTunnel(String senderChannelID) {
-		try(Session session = dbService.getSessionFactory().openSession())
+		try(Session session = sessionFactory.openSession())
 		{
 			session.getTransaction().begin();
 			session.createQuery("DELETE FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
