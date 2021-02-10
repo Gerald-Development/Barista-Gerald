@@ -48,9 +48,4 @@ public class GlobalConfig  {
 	public void setActivity(Activity.ActivityType activity) {
 		this.activity = activity;
 	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
 }
