@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -14,6 +15,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 
+@Command
 public class WhoisCommand extends AbstractCommand{
 
 	@Override
@@ -52,5 +54,10 @@ public class WhoisCommand extends AbstractCommand{
 	@Override
 	public String getUsage() {
 		return "whois @BaristaBoi#4029";
+	}
+
+	@Override
+	public String getName() {
+		return "whois";
 	}
 }

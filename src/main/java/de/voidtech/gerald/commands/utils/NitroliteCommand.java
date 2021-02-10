@@ -1,13 +1,17 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.service.NitroliteService;
-import net.dv8tion.jda.api.entities.*;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.service.NitroliteService;
+import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.entities.Message;
+
+@Command
 public class NitroliteCommand extends AbstractCommand {
     @Override
     public void executeInternal(Message message, List<String> args) {
@@ -36,4 +40,9 @@ public class NitroliteCommand extends AbstractCommand {
     public String getUsage() {
         return "emote_name [text](optional)";
     }
+
+	@Override
+	public String getName() {
+		return "nitrolite";
+	}
 }

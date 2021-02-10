@@ -4,6 +4,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -12,6 +13,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 
+@Command
 public class ServerInfoCommand extends AbstractCommand {
 
 	@Override
@@ -50,6 +52,11 @@ public class ServerInfoCommand extends AbstractCommand {
 
 	@Override
 	public String getUsage() {
+		return "serverinfo";
+	}
+
+	@Override
+	public String getName() {
 		return "serverinfo";
 	}
 

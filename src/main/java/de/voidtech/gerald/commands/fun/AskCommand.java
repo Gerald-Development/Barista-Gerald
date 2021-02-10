@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.entities.Message;
 
+@Command
 public class AskCommand extends AbstractCommand{
 
 	@Override
@@ -47,6 +49,11 @@ public class AskCommand extends AbstractCommand{
 	@Override
 	public String getUsage() {
 		return "ask are animals with guns cool?";
+	}
+
+	@Override
+	public String getName() {
+		return "ask";
 	}
 
 }

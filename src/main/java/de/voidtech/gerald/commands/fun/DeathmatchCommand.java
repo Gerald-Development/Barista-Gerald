@@ -6,12 +6,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 
+@Command
 public class DeathmatchCommand extends AbstractCommand {
 
 	private enum Turn {
@@ -111,6 +113,11 @@ public class DeathmatchCommand extends AbstractCommand {
 	@Override
 	public String getUsage() {
 		return "deathmatch [@another_user#0001]";
+	}
+
+	@Override
+	public String getName() {
+		return "deathmatch";
 	}
 
 }

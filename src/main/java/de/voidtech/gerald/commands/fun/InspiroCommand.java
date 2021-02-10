@@ -11,11 +11,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
+@Command
 public class InspiroCommand extends AbstractCommand{
 	private static final String REQUEST_URL = "https://inspirobot.me/api?generate=true";
 	private static final String INSPIRO_ICON = "https://inspirobot.me/website/images/inspirobot-dark-green.png";
@@ -25,9 +27,8 @@ public class InspiroCommand extends AbstractCommand{
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		String inspiroImageURLOpt = getInspiroImageURLOpt();
-		if (inspiroImageURLOpt == null)
-			super.sendErrorOccurred();
-		else {
+		if (inspiroImageURLOpt != null)
+		{
 			MessageEmbed inspiroEmbed = new EmbedBuilder()//
 					.setTitle("InspiroBot says:")//
 					.setColor(Color.ORANGE)//
@@ -51,7 +52,6 @@ public class InspiroCommand extends AbstractCommand{
 			}
 			con.disconnect();
 		} catch (IOException e) {
-			super.sendErrorOccurred();
 			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
 		}
 		return null;
@@ -64,6 +64,11 @@ public class InspiroCommand extends AbstractCommand{
 
 	@Override
 	public String getUsage() {
+		return "inspiro";
+	}
+
+	@Override
+	public String getName() {
 		return "inspiro";
 	}
 

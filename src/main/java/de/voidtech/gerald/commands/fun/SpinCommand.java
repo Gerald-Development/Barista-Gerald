@@ -8,11 +8,13 @@ import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
+@Command
 public class SpinCommand extends AbstractCommand {
 
 	@Override
@@ -75,6 +77,11 @@ public class SpinCommand extends AbstractCommand {
 		spinnerColors.put("magenta", Color.MAGENTA);
 		spinnerColors.put("pink", Color.PINK);
 		return spinnerColors;
+	}
+
+	@Override
+	public String getName() {
+		return "spin";
 	}
 
 }

@@ -2,9 +2,11 @@ package main.java.de.voidtech.gerald.commands.fun;
 
 import java.util.List;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.entities.Message;
 
+@Command
 public class VoteCommand extends AbstractCommand{
 	private final static String CHECK = "U+2705";
 	private final static String CROSS = "U+274E";
@@ -22,6 +24,11 @@ public class VoteCommand extends AbstractCommand{
 	@Override
 	public String getUsage() {
 		return "vote is this democracy?";
+	}
+
+	@Override
+	public String getName() {
+		return "vote";
 	}
 
 }

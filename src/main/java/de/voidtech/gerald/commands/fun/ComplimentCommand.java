@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.entities.Message;
 
+@Command
 public class ComplimentCommand extends AbstractCommand{
 
 	@Override
@@ -39,6 +41,11 @@ public class ComplimentCommand extends AbstractCommand{
 
 	@Override
 	public String getUsage() {
+		return "compliment";
+	}
+
+	@Override
+	public String getName() {
 		return "compliment";
 	}
 
