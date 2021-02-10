@@ -29,10 +29,7 @@ public abstract class ActionsCommand extends AbstractCommand {
             String gifURL = getActionGif(action);
             if (gifURL != null)
             {
-            	String phrase = message.getMember().getEffectiveName()//
-            			+ " "//
-            			+ conjugateAction(action)
-            			+ message.getMentionedMembers().get(0).getEffectiveName();
+            	String phrase = String.format("%s %s %s", message.getMember().getEffectiveName(), conjugateAction(action), message.getMentionedMembers().get(0).getEffectiveName());
             	
                 MessageEmbed actionEmbed = new EmbedBuilder()
                         .setTitle(phrase)
