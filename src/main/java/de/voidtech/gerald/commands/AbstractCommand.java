@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.commands;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,9 +17,13 @@ public abstract class AbstractCommand{
 
 	public void run(Message message, List<String> args) {
 		Server server = serverService.getServer(message.getGuild().getId());
-		List<String> channelWhitelist = server.getChannelWhitelist();
+		Set<String> channelWhitelist = server.getChannelWhitelist();
+		Set<String> commandBlacklist = server.getCommandBlacklist();
 		
-		if(channelWhitelist.isEmpty() || channelWhitelist.contains(message.getChannel().getId()) || message.getMember().hasPermission(Permission.ADMINISTRATOR))
+		boolean channelWhitelisted = channelWhitelist.isEmpty() || (channelWhitelist.contains(message.getChannel().getId()));
+		boolean commandOnBlacklist = commandBlacklist.contains(getName());
+		
+		if((channelWhitelisted && !commandOnBlacklist) || message.getMember().hasPermission(Permission.ADMINISTRATOR))
 		{
 			executeInternal(message, args);
 		}

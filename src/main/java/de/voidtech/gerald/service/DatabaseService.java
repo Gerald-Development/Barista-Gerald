@@ -18,6 +18,7 @@ import org.hibernate.tool.schema.TargetType;
 import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -32,6 +33,7 @@ public class DatabaseService
 	private GeraldConfig config;
 	
 	@Bean("sessionFactory")
+	@Order(2)
 	public SessionFactory getSessionFactory() 
 	{
 		SessionFactory sessionFactory = null;

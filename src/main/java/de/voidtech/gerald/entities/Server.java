@@ -1,8 +1,8 @@
 package main.java.de.voidtech.gerald.entities;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -26,7 +26,10 @@ public class Server
 	
 	//TODO: Don't fetch EAGER for this.
 	@ElementCollection(fetch = FetchType.EAGER)
-	private List<String> channelWhitelist;
+	private Set<String> channelWhitelist;
+	//TODO: Don't fetch EAGER for this.
+	@ElementCollection(fetch = FetchType.EAGER)
+	private Set<String> commandBlacklist;
 	
 	@Deprecated
 	//ONLY FOR HIBERNATE, DO NOT USE
@@ -46,9 +49,9 @@ public class Server
 		return guildID;
 	}
 	
-	public List<String> getChannelWhitelist() {
-		if(this.channelWhitelist == null) return Collections.unmodifiableList(new ArrayList<String>());
-		else return Collections.unmodifiableList(this.channelWhitelist);
+	public Set<String> getChannelWhitelist() {
+		if(this.channelWhitelist == null) return Collections.unmodifiableSet(new HashSet<String>());
+		else return Collections.unmodifiableSet(this.channelWhitelist);
 	}
 	
 	public void addToChannelWhitelist(String channelID) {
@@ -59,5 +62,17 @@ public class Server
 	}
 	public void clearChannelWhitelist() {
 		this.channelWhitelist.clear();
+	}
+
+	public Set<String> getCommandBlacklist() {
+		if(this.commandBlacklist == null) return Collections.unmodifiableSet(new HashSet<String>());
+		else return Collections.unmodifiableSet(this.commandBlacklist);
+	}
+	
+	public void addToCommandBlacklist(String channelID) {
+		this.commandBlacklist.add(channelID);
+	}
+	public void removeFromCommandBlacklist(String channelID) {
+		this.commandBlacklist.remove(channelID);
 	}
 }
