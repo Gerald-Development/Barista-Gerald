@@ -59,7 +59,6 @@ public class DatabaseService
 		Set<Class<?>> annotated = new Reflections("main.java.de.voidtech.gerald").getTypesAnnotatedWith(Entity.class);
 		annotated.forEach(metadataSources::addAnnotatedClass);
 		
-		//TODO: This is highly not good. Better export to a migration file and migrate the DB after it
 		new SchemaUpdate()
 			.setFormat(true)
 			.execute(EnumSet.of(TargetType.DATABASE), metadataSources.buildMetadata());
