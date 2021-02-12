@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.Permission;
@@ -65,6 +66,21 @@ public class DisableCommand extends AbstractCommand {
 	@Override
 	public String getName() {
 		return "disable";
+	}
+
+	@Override
+	public CommandCategory getCommandCategory() {
+		return CommandCategory.MANAGEMENT;
+	}
+
+	@Override
+	public boolean isDMCapable() {
+		return false;
+	}
+
+	@Override
+	public boolean requiresArguments() {
+		return true;
 	}
 
 }

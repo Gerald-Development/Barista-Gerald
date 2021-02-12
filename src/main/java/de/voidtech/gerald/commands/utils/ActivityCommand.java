@@ -16,6 +16,7 @@ import main.java.de.voidtech.gerald.service.GlobalConfigService;
 import net.dv8tion.jda.api.entities.Activity.ActivityType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
 
 @Command
 public class ActivityCommand extends AbstractCommand {
@@ -119,6 +120,21 @@ public class ActivityCommand extends AbstractCommand {
 	@Override
 	public String getName() {
 		return "activity";
+	}
+
+	@Override
+	public CommandCategory getCommandCategory() {
+		return CommandCategory.UTILS;
+	}
+
+	@Override
+	public boolean isDMCapable() {
+		return true;
+	}
+
+	@Override
+	public boolean requiresArguments() {
+		return true;
 	}
 
 }

@@ -11,6 +11,7 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.Tunnel;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -173,6 +174,21 @@ public class TunnelCommand extends AbstractCommand {
 	@Override
 	public String getName() {
 		return "tunnel";
+	}
+	
+	@Override
+	public CommandCategory getCommandCategory() {
+		return CommandCategory.UTILS;
+	}
+
+	@Override
+	public boolean isDMCapable() {
+		return false;
+	}
+
+	@Override
+	public boolean requiresArguments() {
+		return true;
 	}
 
 }

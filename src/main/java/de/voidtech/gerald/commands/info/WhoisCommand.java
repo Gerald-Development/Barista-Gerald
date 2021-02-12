@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -59,5 +60,20 @@ public class WhoisCommand extends AbstractCommand{
 	@Override
 	public String getName() {
 		return "whois";
+	}
+
+	@Override
+	public CommandCategory getCommandCategory() {
+		return CommandCategory.INFO;
+	}
+
+	@Override
+	public boolean isDMCapable() {
+		return false;
+	}
+
+	@Override
+	public boolean requiresArguments() {
+		return false;
 	}
 }

@@ -34,7 +34,13 @@ public abstract class AbstractCommand{
 	public abstract String getDescription();
 
 	public abstract String getUsage();
-	
+	    
 	public abstract String getName();
+
+	public abstract CommandCategory getCommandCategory();
+
+	public abstract boolean isDMCapable();
+
+	public abstract boolean requiresArguments();
 	
 }

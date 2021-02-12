@@ -6,6 +6,7 @@ import java.util.Random;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -31,7 +32,7 @@ public class ShipCommand extends AbstractCommand{
 		Color color = getColor(shipRating);
 		
 		MessageEmbed shipEmbed = new EmbedBuilder()//
-				.setTitle(name1 + " ❤ " + name2)
+				.setTitle(name1 + " â�¤ " + name2)
 				.setColor(color)
 				.setDescription(String.format("Your love match percentage is %d%c %s", shipRating, '%', phrase))
 				.build();
@@ -70,6 +71,21 @@ public class ShipCommand extends AbstractCommand{
 	@Override
 	public String getName() {
 		return "ship";
+	}
+
+	@Override
+	public CommandCategory getCommandCategory() {
+		return CommandCategory.FUN;
+	}
+	
+	@Override
+	public boolean isDMCapable() {
+		return false;
+	}
+
+	@Override
+	public boolean requiresArguments() {
+		return true;
 	}
 
 }

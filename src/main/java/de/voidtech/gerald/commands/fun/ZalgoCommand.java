@@ -8,6 +8,7 @@ import java.util.Map;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
 import net.dv8tion.jda.api.entities.Message;
 
 @Command
@@ -31,7 +32,7 @@ public class ZalgoCommand extends AbstractCommand {
 
 	@Override
 	public String getDescription() {
-		return "Converts your messages into z̜̆͛̏̓̆̑̊a̸̱̦̪̫̯̹̫̙ͧ̍̆l͖ͬͥ̉ͣ͢g̢̳͆̌̆ͮo̶̭̭͎̍̎͋̍̓̊";
+		return "Converts your messages into zÌ†Í›Ì�Ì“Ì†Ì‘ÌŠÌœaÍ§Ì�Ì†Ì¸Ì±Ì¦ÌªÌ«Ì¯Ì¹Ì«Ì™lÍ¬Í¥Ì‰Í£Í¢Í–gÍ†ÌŒÌ†Í®Ì¢Ì³oÌ�ÌŽÍ‹Ì�Ì“ÌŠÌ¶Ì­Ì­ÍŽ";
 	}
 
 	@Override
@@ -45,34 +46,49 @@ public class ZalgoCommand extends AbstractCommand {
 	}
 	private Map<String, String> getZalgoText() {
 		Map<String, String> zalgoText = new HashMap<String, String>();
-			zalgoText.put("a","a̸̱̦̪̫̯̹̫ͧ̍̆");
-			zalgoText.put("b","b̵̻");
-			zalgoText.put("c","c̳");
-			zalgoText.put("d","d̰̰͎̥͈̦̗̊");
+			zalgoText.put("a","aÍ§Ì�Ì†Ì¸Ì±Ì¦ÌªÌ«Ì¯Ì¹Ì«");
+			zalgoText.put("b","bÌµÌ»");
+			zalgoText.put("c","cÌ³");
+			zalgoText.put("d","dÌŠÌ°Ì°ÍŽÌ¥ÍˆÌ¦Ì—");
 			zalgoText.put("e","e");
-			zalgoText.put("f","f̥͈͍̯̦͍ͦͪ̂̚ͅ");
-			zalgoText.put("g","g̢̳͆̌̆ͮ");
-			zalgoText.put("h","hͨ̾͞");
-			zalgoText.put("i","͔̙̝̬̖̗̦͛̈́ͬ̃̏̈́̆í̝̉̍͞");
-			zalgoText.put("j","j̟͚͍ͅͅ");
-			zalgoText.put("k","̠̱̱̪̮͌̇ͪ̏k̘̭̱̍ͣ̓ͪ̐̍͆͜");
-			zalgoText.put("l","̙l͖ͬͥ̉ͣ͢");
-			zalgoText.put("m","̩̟̗̠̱̟̯͑͛ͣͮ͑ṃ̢͍̾̓̉̚");
-			zalgoText.put("n","͎n̪̬̗͍͈̱͔ͬ̓͆̀̂ͮ");
-			zalgoText.put("o","o̶̭̭͎̍̎͋̍̓̊");
-			zalgoText.put("p","̸͎͕̜̻̞͚͉͑̿p͌ͤ͊̅҉̳͈̬̤");
-			zalgoText.put("q","͎͎͍̟̩̰͒̒͟q̯̆͋̉̿̕");
-			zalgoText.put("r","̛̼̳̯͈ŗ̰̹͖̝̗͕ͮ̀͑ͤ͒̊");
-			zalgoText.put("s","͉͓̙̲̮ͯ̿ͩ̈́̅͊̂s̟̼̗̊̈ͪ̓͐̎̾");
-			zalgoText.put("t","̹̹ͤ̎ͨ͋ͅt̲͖͋ͦͭ̔");
-			zalgoText.put("u","͊̏ͩ͛̒̂͛͠u̦");
-			zalgoText.put("v","̸͍̘̖̞͔̳̽̓ͣͯ͆v̑̊ͯ̑͛");
-			zalgoText.put("w","̫̞͍͈͖ͨͅͅw͙̱̪͇͙̬ͭ͒̽͊̍́ͅ");
-			zalgoText.put("x","͔̼̟̜̫͚͈͌͊̄̕x͇̺̫͉͇̱̩ͧ͆̾͝");
-			zalgoText.put("y","̲̳͙͇͉̝̇y̤̞̜̍̑̾̉̾̾ͮ͠");
-			zalgoText.put("z","z̜̆͛̏̓̆̑̊");		
+			zalgoText.put("f","fÍ¦ÌšÍªÌ‚Ì¥Í…ÍˆÍ�Ì¯Ì¦Í�");
+			zalgoText.put("g","gÍ†ÌŒÌ†Í®Ì¢Ì³");
+			zalgoText.put("h","hÍ¨Ì¾Íž");
+			zalgoText.put("i","Í›Í„Í¬ÌƒÌ�Í„Ì†Í”Ì™Ì�Ì¬Ì–Ì—Ì¦iÌ�Ì‰Ì�ÍžÌ�");
+			zalgoText.put("j","jÌŸÍ…ÍšÍ…Í�");
+			zalgoText.put("k","ÍŒÌ‡ÍªÌ�Ì Ì±Ì±ÌªÌ®kÌ�Í£Ì“ÍªÌ�Ì�Í†ÍœÌ˜Ì­Ì±");
+			zalgoText.put("l","Ì™lÍ¬Í¥Ì‰Í£Í¢Í–");
+			zalgoText.put("m","Í‘Í›Í£Í®Í‘Ì©ÌŸÌ—Ì Ì±ÌŸÌ¯mÌ¾ÌšÍƒÌ‰Ì¢Ì£Í�");
+			zalgoText.put("n","ÍŽnÍ¬ÍƒÍ†Ì€Ì‚Í®ÌªÌ¬Ì—Í�ÍˆÌ±Í”");
+			zalgoText.put("o","oÌ�ÌŽÍ‹Ì�Ì“ÌŠÌ¶Ì­Ì­ÍŽ");
+			zalgoText.put("p","Í‘Ì¿Ì¸ÍŽÍ•ÌœÌ»ÌžÍšÍ‰pÍŒÍ¤ÍŠÌ…Ò‰Ì³ÍˆÌ¬Ì¤");
+			zalgoText.put("q","Í’Ì’ÍŸÍŽÍŽÍ�ÌŸÌ©Ì°qÌ†Í‹Ì‰Ì¿Ì•Ì¯");
+			zalgoText.put("r","Ì›Ì¼Ì³Ì¯ÍˆrÍ®Ì€Í‘Í¤Í’ÌŠÌ§Ì°Ì¹Í–Ì�Ì—Í•");
+			zalgoText.put("s","Í¯Ì¿Í©Í„Ì…ÍŠÌ‚Í‰Í“Ì™Ì²Ì®sÌŠÌˆÍªÌ“Í�ÌŽÌ¾ÌŸÌ¼Ì—");
+			zalgoText.put("t","Í¤ÌŽÍ¨Í‹Ì¹Í…Ì¹tÍ‹Í¦Í­Ì”Ì²Í–");
+			zalgoText.put("u","ÍŠÌ�Í©Í›Ì’Ì‚Í›Í uÌ¦");
+			zalgoText.put("v","Ì½Ì“Í£Í¯Í†Ì¸Í�Ì˜Ì–ÌžÍ”Ì³vÌ‘ÌŠÍ¯Ì‘Í›");
+			zalgoText.put("w","Í¨Í…Í…Ì«ÌžÍ�ÍˆÍ–wÍ­Í’Ì½ÍŠÌ�Ì�Í™Ì±Í…ÌªÍ‡Í™Ì¬");
+			zalgoText.put("x","ÍŒÍŠÌ„Ì•Í”Ì¼ÌŸÌœÌ«ÍšÍˆxÍ§Í†Ì¾Í�Í‡ÌºÌ«Í‰Í‡Ì±Ì©");
+			zalgoText.put("y","Ì‡Ì²Ì³Í™Í‡Í‰Ì�yÌ�Ì‘Ì¾Ì‰Ì¾Ì¾Í®Í Ì¤ÌžÌœ");
+			zalgoText.put("z","zÌ†Í›Ì�Ì“Ì†Ì‘ÌŠÌœ");		
 		
 		return zalgoText;
+	}
+
+	@Override
+	public CommandCategory getCommandCategory() {
+		return CommandCategory.FUN;
+	}
+
+	@Override
+	public boolean isDMCapable() {
+		return true;
+	}
+
+	@Override
+	public boolean requiresArguments() {
+		return true;
 	}
 
 }
