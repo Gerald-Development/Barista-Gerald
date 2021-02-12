@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 
 @Service
@@ -64,10 +65,19 @@ public class MessageHandler {
             LOGGER.log(Level.INFO, "Command not found: " + messageArray.get(0));
             return;
         }
+        
+        if (message.getChannel().getType() == ChannelType.PRIVATE && !commandOpt.isDMCapable()) {
+        	message.getChannel().sendMessage("**You can only use this command in guilds!**").queue();
+        	return;
+        }
+        
+        if (commandOpt.requiresArguments() && messageArray.size() <= 1) {
+        	message.getChannel().sendMessage("**This command needs arguments to work!**\n" + commandOpt.getUsage()).queue();
+        	return;
+        }
 
         commandOpt.run(message, messageArray.subList(1, messageArray.size()));
 
-        LOGGER.log(Level.INFO, "Command executed: " + messageArray.get(0) + "\nfrom " + message.getAuthor().getAsTag()
-                + "\nID: " + message.getAuthor().getId());
+        LOGGER.log(Level.INFO, "Command executed: " + messageArray.get(0) + " - From " + message.getAuthor().getAsTag() + "- ID: " + message.getAuthor().getId());
     }
 }
