@@ -27,9 +27,13 @@ public class Server
 	//TODO: Don't fetch EAGER for this.
 	@ElementCollection(fetch = FetchType.EAGER)
 	private Set<String> channelWhitelist;
+	
 	//TODO: Don't fetch EAGER for this.
 	@ElementCollection(fetch = FetchType.EAGER)
 	private Set<String> commandBlacklist;
+	
+	@Column
+	private String prefix;
 	
 	@Deprecated
 	//ONLY FOR HIBERNATE, DO NOT USE
@@ -74,5 +78,13 @@ public class Server
 	}
 	public void removeFromCommandBlacklist(String channelID) {
 		this.commandBlacklist.remove(channelID);
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
 	}
 }
