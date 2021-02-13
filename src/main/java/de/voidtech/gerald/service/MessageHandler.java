@@ -91,6 +91,9 @@ public class MessageHandler {
     }
     
     private String getPrefix(Message message) {
+    	if (message.getChannelType() == ChannelType.PRIVATE) {
+    		return config.getDefaultPrefix();
+    	}
     	String customPrefix = serverService.getServer(message.getGuild().getId()).getPrefix();
     	
     	if(customPrefix == null) return config.getDefaultPrefix();

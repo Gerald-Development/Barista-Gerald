@@ -14,10 +14,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
-public class HelpCommand extends AbstractCommand{
-	
-	private static final String REPO_URL = "https://github.com/Montori/Barista-Gerald";
-	
+public class HelpCommand extends AbstractCommand{	
 	 @Autowired
 	 private List<AbstractCommand> commands;
 	
@@ -34,7 +31,7 @@ public class HelpCommand extends AbstractCommand{
 		
 		MessageEmbed categoryListEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
-				.setTitle("Barista Gerald Help", REPO_URL)
+				.setTitle("Barista Gerald Help", GlobalConstants.LINKTREE_URL)
 				.setDescription("**The command categories are as follows:** \n\n" + commandCategoryList + "\nUse `help [commandName]` or `help [categoryName]` For more information!")
 				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
 				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, message.getJDA().getSelfUser().getAvatarUrl())
@@ -69,7 +66,7 @@ public class HelpCommand extends AbstractCommand{
 		}
 		MessageEmbed commandHelpEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
-				.setTitle("Barista Gerald Help", REPO_URL)
+				.setTitle("Barista Gerald Help", GlobalConstants.LINKTREE_URL)
 				.addField(capitaliseFirstLetter(categoryName), commandList, false)
 				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
 				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, message.getJDA().getSelfUser().getAvatarUrl())
@@ -87,7 +84,7 @@ public class HelpCommand extends AbstractCommand{
 		}
 		MessageEmbed commandHelpEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
-				.setTitle("Barista Gerald Help", REPO_URL)
+				.setTitle("Barista Gerald Help", GlobalConstants.LINKTREE_URL)
 				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
 				.addField("Command Name", "```" + capitaliseFirstLetter(commandToBeDisplayed.getName()) + "```", false)
 				.addField("Description", "```" + commandToBeDisplayed.getDescription() + "```", false)
