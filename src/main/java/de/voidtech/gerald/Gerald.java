@@ -14,6 +14,8 @@ import org.springframework.context.annotation.DependsOn;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 
 import main.java.de.voidtech.gerald.entities.GlobalConfig;
+import main.java.de.voidtech.gerald.listeners.ChannelDeleteListener;
+import main.java.de.voidtech.gerald.listeners.GuildGoneListener;
 import main.java.de.voidtech.gerald.listeners.MessageListener;
 import main.java.de.voidtech.gerald.listeners.ReadyListener;
 import main.java.de.voidtech.gerald.service.GeraldConfig;
@@ -32,7 +34,7 @@ public class Gerald {
 	@Bean
 	@DependsOn(value = "sessionFactory")
 	@Autowired
-	public JDA getJDA(MessageListener msgListener, GeraldConfig configService, GlobalConfigService globalConfService, EventWaiter eventWaiter) throws LoginException, InterruptedException
+	public JDA getJDA(MessageListener msgListener, GuildGoneListener guildGoneListener, ChannelDeleteListener channelDeleteListener,  GeraldConfig configService, GlobalConfigService globalConfService, EventWaiter eventWaiter) throws LoginException, InterruptedException
 	{
 		GlobalConfig globalConf = globalConfService.getGlobalConfig();
 		
@@ -42,7 +44,7 @@ public class Gerald {
 				.setMemberCachePolicy(MemberCachePolicy.ALL)//
 				.setBulkDeleteSplittingEnabled(false)//
 				.setCompression(Compression.NONE)//
-				.addEventListeners(eventWaiter, msgListener, new ReadyListener())//
+				.addEventListeners(eventWaiter, msgListener, new ReadyListener(), guildGoneListener, channelDeleteListener)//
 				 .setActivity(EntityBuilder.createActivity(globalConf.getStatus(),
 						 GlobalConstants.STREAM_URL, globalConf.getActivity()))
 				.build()//

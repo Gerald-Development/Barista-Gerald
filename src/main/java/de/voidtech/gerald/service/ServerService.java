@@ -43,4 +43,14 @@ public class ServerService {
 			session.getTransaction().commit();
 		}
 	}
+	
+	public void deleteServer(Server server)
+	{
+		try(Session session = sf.openSession())
+		{
+			session.getTransaction().begin();
+			session.delete(server);
+			session.getTransaction().commit();
+		}
+	}
 }

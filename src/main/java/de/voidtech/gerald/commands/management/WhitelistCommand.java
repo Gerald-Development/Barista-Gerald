@@ -108,7 +108,6 @@ public class WhitelistCommand extends AbstractCommand
 		return "whitelist add {channelID}\nwhitelist remove {channelID}\nwhitelist clear\nwhitelist";
 	}
 
-
 	@Override
 	public String getName() {
 		return "whitelist";
@@ -126,7 +125,7 @@ public class WhitelistCommand extends AbstractCommand
 
 	@Override
 	public boolean requiresArguments() {
-		return true;
+		return false;
 	}
 
 }
