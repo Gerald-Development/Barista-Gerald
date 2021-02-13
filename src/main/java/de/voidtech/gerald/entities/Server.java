@@ -13,6 +13,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 @Entity
 @Table(name = "server")
 public class Server 
@@ -26,10 +29,16 @@ public class Server
 	
 	//TODO: Don't fetch EAGER for this.
 	@ElementCollection(fetch = FetchType.EAGER)
+	@Cascade(CascadeType.REMOVE)
 	private Set<String> channelWhitelist;
+	
 	//TODO: Don't fetch EAGER for this.
 	@ElementCollection(fetch = FetchType.EAGER)
+	@Cascade(CascadeType.REMOVE)
 	private Set<String> commandBlacklist;
+	
+	@Column
+	private String prefix;
 	
 	@Deprecated
 	//ONLY FOR HIBERNATE, DO NOT USE
@@ -74,5 +83,13 @@ public class Server
 	}
 	public void removeFromCommandBlacklist(String channelID) {
 		this.commandBlacklist.remove(channelID);
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
 	}
 }

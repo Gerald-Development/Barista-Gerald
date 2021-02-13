@@ -1,4 +1,4 @@
-package main.java.de.voidtech.gerald.commands.fun;
+package main.java.de.voidtech.gerald.commands.actions;
 
 import java.util.List;
 
@@ -8,31 +8,31 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import net.dv8tion.jda.api.entities.Message;
 
 @Command
-public class PokeCommand extends ActionsCommand{
+public class NomCommand extends ActionsCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		super.sendAction(message, "poke");
+		super.sendAction(message, "nom");
 	}
 
 	@Override
 	public String getDescription() {
-		return "Poke a user!";
+		return "Nom a user!";
 	}
 
 	@Override
 	public String getUsage() {
-		return "poke @user";
+		return "nom @user";
 	}
 
 	@Override
 	public String getName() {
-		return "poke";
+		return "nom";
 	}
 
 	@Override
 	public CommandCategory getCommandCategory() {
-		return CommandCategory.FUN;
+		return CommandCategory.ACTIONS;
 	}
 
 	@Override
@@ -44,4 +44,5 @@ public class PokeCommand extends ActionsCommand{
 	public boolean requiresArguments() {
 		return true;
 	}
+	
 }

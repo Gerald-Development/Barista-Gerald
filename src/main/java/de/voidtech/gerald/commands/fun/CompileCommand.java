@@ -27,17 +27,9 @@ public class CompileCommand extends AbstractCommand {
 
 	private static final String WANDBOX_COMPILE_URL = "https://wandbox.org/compile";
 	private static final String EMBED_THUMBNAIL_URL = "https://cdn.discordapp.com/attachments/772921190280724512/790283222156050462/7398c7bd6be35540-the-gallery-for-processing-gif-transparent-web-page-processing.gif";
-
-	@Override
-	public String getDescription() {
-		return "Allows you to compile code via wandbox";
-	}
-
-	@Override
-	public String getUsage() {
-		return "compile ```[name of language] [code]``` \nOR compile languages";
-	}
-
+	//I cannot stress this enough, DO NOT TOUCH THIS LINE UNDER ANY CIRCUMSTANCES. IT CONTAINS AN INVISIBLE ESCAPE CHARACTER.
+	private static final String ESCAPE_CHAR = "‌";
+	
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 
@@ -149,6 +141,16 @@ public class CompileCommand extends AbstractCommand {
 		supportedLangsMap.put("lua", "lua-5.4.0");
 
 		return supportedLangsMap;
+	}
+	
+	@Override
+	public String getDescription() {
+		return "Allows you to compile code via wandbox";
+	}
+
+	@Override
+	public String getUsage() {
+		return "compile " + ESCAPE_CHAR + "`" + ESCAPE_CHAR + "`" + ESCAPE_CHAR + "`[name of language]\n[code]\n" + ESCAPE_CHAR + "`" + ESCAPE_CHAR + "`" + ESCAPE_CHAR + "` \nOR compile languages";
 	}
 
 	@Override

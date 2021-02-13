@@ -1,4 +1,4 @@
-package main.java.de.voidtech.gerald.commands.fun;
+package main.java.de.voidtech.gerald.commands.actions;
 
 import java.util.List;
 
@@ -8,31 +8,31 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import net.dv8tion.jda.api.entities.Message;
 
 @Command
-public class SlapCommand extends ActionsCommand {
+public class CuddleCommand extends ActionsCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		super.sendAction(message, "slap");
+		super.sendAction(message, "cuddle");
 	}
 
 	@Override
 	public String getDescription() {
-		return "Slap a user!";
+		return "Cuddle a user!";
 	}
 
 	@Override
 	public String getUsage() {
-		return "slap @user";
+		return "cuddle @user";
 	}
 
 	@Override
 	public String getName() {
-		return "slap";
+		return "cuddle";
 	}
 
 	@Override
 	public CommandCategory getCommandCategory() {
-		return CommandCategory.FUN;
+		return CommandCategory.ACTIONS;
 	}
 
 	@Override

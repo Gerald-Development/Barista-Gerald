@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
+import main.java.de.voidtech.gerald.util.CustomCollectors;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 
@@ -20,6 +21,9 @@ public class MessageHandler {
     
     @Autowired
     private GeraldConfig config;
+    
+    @Autowired
+    private ServerService serverService;
     
     @Autowired
     private List<AbstractCommand> commands;
@@ -44,22 +48,16 @@ public class MessageHandler {
     }
 
     private void handleCommandOnDemand(Message message) {
-        if (!message.getContentRaw().startsWith(config.getDefaultPrefix())
-                || message.getContentRaw().length() == config.getDefaultPrefix().length())
-            return;
+    	String prefix = getPrefix(message);
+    	
+		if (!shouldHandleAsCommand(prefix, message)) return;
 
-        String messageContent = message.getContentRaw().substring(config.getDefaultPrefix().length());
+        String messageContent = message.getContentRaw().substring(prefix.length());
         List<String> messageArray = Arrays.asList(messageContent.split(" "));
 
-        AbstractCommand commandOpt = null;
-        
-        for (AbstractCommand command : commands) {
-			if(command.getName().equals(messageArray.get(0).toLowerCase()))
-			{
-				commandOpt = command;
-				break;
-			}
-		}
+		AbstractCommand commandOpt = commands.stream()
+				.filter(command -> command.getName().equals(messageArray.get(0).toLowerCase()))
+				.collect(CustomCollectors.toSingleton());
 
         if (commandOpt == null) {
             LOGGER.log(Level.INFO, "Command not found: " + messageArray.get(0));
@@ -72,12 +70,30 @@ public class MessageHandler {
         }
         
         if (commandOpt.requiresArguments() && messageArray.size() <= 1) {
-        	message.getChannel().sendMessage("**This command needs arguments to work!**\n" + commandOpt.getUsage()).queue();
+        	message.getChannel().sendMessage("**This command needs arguments to work! See the help command for more details!**\n" + commandOpt.getUsage()).queue();
         	return;
         }
 
         commandOpt.run(message, messageArray.subList(1, messageArray.size()));
 
         LOGGER.log(Level.INFO, "Command executed: " + messageArray.get(0) + " - From " + message.getAuthor().getAsTag() + "- ID: " + message.getAuthor().getId());
+    }
+    
+    private boolean shouldHandleAsCommand(String prefix, Message message)
+    {
+    	boolean result = true;
+    	String messageRaw = message.getContentRaw();
+    	
+    	result &= messageRaw.startsWith(prefix);
+    	result &= messageRaw.length() > prefix.length();
+    	
+    	return result;
+    }
+    
+    private String getPrefix(Message message) {
+    	String customPrefix = serverService.getServer(message.getGuild().getId()).getPrefix();
+    	
+    	if(customPrefix == null) return config.getDefaultPrefix();
+    	else return customPrefix;
     }
 }

@@ -126,7 +126,7 @@ public class WhitelistCommand extends AbstractCommand
 
 	@Override
 	public boolean requiresArguments() {
-		return true;
+		return false;
 	}
 
 }
