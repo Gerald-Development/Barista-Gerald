@@ -68,6 +68,10 @@ public class GeraldConfig {
 		return dbURL != null ? dbURL : "jdbc:postgresql://localhost:5432/BaristaDB";
 	}
 	
+	public String getPersonalityForgeToken() {
+		return config.getProperty("pftoken");
+	}
+	
 	public List<String> getMasters()
 	{
 		if(config.getProperty("masters") == null) return Arrays.asList("275355515003863040", "497341083949465600", "217567653210882049");
