@@ -137,27 +137,36 @@ public class TunnelCommand extends AbstractCommand {
 	@Override
 	public void executeInternal(Message message, List<String> args) 
 	{	
-		if(!message.getMember().hasPermission(Permission.ADMINISTRATOR)) return;
+		if(!message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) return;
 		
 		if (args.get(0).equals("fill")) {
 			fillTunnel(message);
-		} else {
-			String targetChannelID = args.get(0);
-			TextChannel targetChannel = message.getJDA().getTextChannelCache().getElementById(targetChannelID);
-	
-			if (targetChannel == null) {
-				message.getChannel().sendMessage("**That channel could not be found!**").queue();
 			
-			} else if (targetChannel.getId().equals(message.getChannel().getId())) {
-					message.getChannel().sendMessage("**You can't dig a tunnel here!**").queue();
+		} else if (args.get(0).equals("dig")) {
+			
+			if (args.size() < 2) {
+				message.getChannel().sendMessage("**You need to supply a channel snowflake ID!**").queue();
 			
 			} else {
-				if (tunnelExists(message.getChannel().getId())) {
-					message.getChannel().sendMessage("**There is already a tunnel here!**").queue();
+				String targetChannelID = args.get(1);
+				TextChannel targetChannel = message.getJDA().getTextChannelCache().getElementById(targetChannelID);
+		
+				if (targetChannel == null) {
+					message.getChannel().sendMessage("**That channel could not be found!**").queue();
+				
+				} else if (targetChannel.getId().equals(message.getChannel().getId())) {
+						message.getChannel().sendMessage("**You can't dig a tunnel here!**").queue();
+				
 				} else {
-					sendChannelVerificationRequest(targetChannel, message);	
-				}
-			}	
+					if (tunnelExists(message.getChannel().getId())) {
+						message.getChannel().sendMessage("**There is already a tunnel here!**").queue();
+					} else {
+						sendChannelVerificationRequest(targetChannel, message);	
+					}
+				}		
+			}
+		} else {
+			message.getChannel().sendMessage("**" + this.getUsage() + "**").queue();
 		}
 	}	
 
