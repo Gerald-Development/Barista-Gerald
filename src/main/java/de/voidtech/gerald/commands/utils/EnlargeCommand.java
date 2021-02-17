@@ -17,8 +17,6 @@ public class EnlargeCommand extends AbstractCommand{
 		String regexPattern = "([^0-9])";
 		String emoteID = emoteText.replaceAll(regexPattern, "");
 		
-		
-		
 		Emote emote = null;
 		emote = message.getJDA().getEmoteCache().getElementById(emoteID);
 		
