@@ -16,6 +16,9 @@ public class ChatRoutine extends AbstractRoutine{
 	@Autowired
 	private SessionFactory sessionFactory;
 	
+	@Autowired
+	ChatbotService chatBot;
+	
 	private boolean chatChannelEnabled(String channelID) {
 		try(Session session = sessionFactory.openSession())
 		{
@@ -34,9 +37,7 @@ public class ChatRoutine extends AbstractRoutine{
 		
 		if (chatChannelEnabled(message.getChannel().getId())) {
 			message.getChannel().sendTyping().queue();
-			String reply = ChatbotService.getReply(message.getContentRaw(), message.getAuthor().getId());
-			reply.replaceAll("<br>", "");
-			reply.replaceAll("</br>", "");
+			String reply = chatBot.getReply(message.getContentRaw(), message.getAuthor().getId());
 			message.getChannel().sendMessage(reply).queue();
 		}
 	}

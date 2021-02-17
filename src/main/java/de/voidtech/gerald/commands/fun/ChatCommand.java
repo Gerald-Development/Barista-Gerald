@@ -10,6 +10,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.ChatChannel;
+import main.java.de.voidtech.gerald.service.ChatbotService;
 import net.dv8tion.jda.api.entities.Message;
 
 @Command
@@ -17,6 +18,9 @@ public class ChatCommand extends AbstractCommand{
 	
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+	@Autowired
+	ChatbotService chatBot;
 	
 	private boolean chatChannelEnabled(String channelID) {
 		try(Session session = sessionFactory.openSession())
@@ -69,6 +73,10 @@ public class ChatCommand extends AbstractCommand{
 			} else {
 				message.getChannel().sendMessage("**GeraldAI is already disabled!**").queue();
 			}
+		} else {
+			message.getChannel().sendTyping().queue();
+			String reply = chatBot.getReply(String.join(" ", args), message.getAuthor().getId());
+			message.getChannel().sendMessage(reply).queue();
 		}
 		
 	}

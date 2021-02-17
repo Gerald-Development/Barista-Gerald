@@ -61,13 +61,15 @@ public class HelpCommand extends AbstractCommand{
 		String commandList = "";
 		for (AbstractCommand command : commands) {
 			if(command.getCommandCategory().getCategory().equals(categoryName)) {
-				commandList = commandList + "`" + command.getName()  + "`\n";
+				commandList = commandList + "`" + command.getName()  + "`, ";
 			}
 		}
+		commandList = commandList.substring(0, commandList.length() - 2);
+		
 		MessageEmbed commandHelpEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle("Barista Gerald Help", GlobalConstants.LINKTREE_URL)
-				.addField(capitaliseFirstLetter(categoryName), commandList, false)
+				.addField(capitaliseFirstLetter(categoryName) + " Commands", commandList, false)
 				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
 				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, message.getJDA().getSelfUser().getAvatarUrl())
 				.build();

@@ -1,8 +1,11 @@
 package main.java.de.voidtech.gerald.commands.info;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.List;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.GlobalConstants;
@@ -22,12 +25,22 @@ public class InfoCommand extends AbstractCommand {
 	@Autowired
 	 private List<AbstractRoutine> routines;
 	
+	private static final String JENKINS_LATEST_BUILD_URL = "https://jenkins.voidtech.de/job/Barista%20Gerald/lastSuccessfulBuild/buildNumber";
+	
+	private String getLatestBuild() {
+		Document doc = null;
+		try {
+			doc = Jsoup.connect(JENKINS_LATEST_BUILD_URL).get();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return doc.select("body").text();
+	}
+	
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		long guildCount = message.getJDA().getGuildCache().size();
 		long memberCount = message.getJDA().getUserCache().size();
-		
-		 
 		
 		MessageEmbed informationEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
@@ -37,7 +50,9 @@ public class InfoCommand extends AbstractCommand {
 						+ "Montori#4707\r\n"
 						+ "0xffset#2267```", false)
 				.addField("Gerald Guild Count", "```" + String.valueOf(guildCount) + "```", true)
-				.addField("Gerald Member Count", "```" + String.valueOf(memberCount) + "```", true)
+				.addField("Gerald Member Count", "```" + String.valueOf(memberCount) + "```", false)
+				.addField("Latest Build Number", "```" + getLatestBuild() + "```", true)
+				.addField("Current Build Number", "```69```", true)
 				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
 				.setFooter("Command Count: " + commands.size() + "\nRoutine Count: " + routines.size(), message.getJDA().getSelfUser().getAvatarUrl())
 				.build();

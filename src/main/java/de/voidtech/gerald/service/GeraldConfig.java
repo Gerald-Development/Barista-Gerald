@@ -69,7 +69,7 @@ public class GeraldConfig {
 	}
 	
 	public String getPersonalityForgeToken() {
-		return config.getProperty("pftoken");
+		return config.getProperty("personalityForgeToken");
 	}
 	
 	public List<String> getMasters()
