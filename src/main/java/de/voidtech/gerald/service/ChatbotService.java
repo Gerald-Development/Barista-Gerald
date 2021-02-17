@@ -15,11 +15,11 @@ public class ChatbotService {
 	private GeraldConfig config;
 	
     public String getReply(String message, String ID) {
-    	String API_KEY = config.getPersonalityForgeToken();
-		String REQUEST_URL = "https://www.personalityforge.com/api/chat/?apiKey=" + API_KEY + "&chatBotID=6&message=" + message + "&externalID=" + ID;
+    	String apiKey = config.getPersonalityForgeToken();
+		String personalityForgeURL = "https://www.personalityforge.com/api/chat/?apiKey=" + apiKey + "&chatBotID=6&message=" + message + "&externalID=" + ID;
 		
 		try {
-			Document doc = Jsoup.connect(REQUEST_URL).get();
+			Document doc = Jsoup.connect(personalityForgeURL).get();
 			String jsonText = doc.select("body").text();
 			
 			JSONObject json = new JSONObject(jsonText.toString());	
