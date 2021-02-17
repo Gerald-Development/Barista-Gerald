@@ -20,7 +20,7 @@ public class ChatCommand extends AbstractCommand{
 	private SessionFactory sessionFactory;
 	
 	@Autowired
-	ChatbotService chatBot;
+	private ChatbotService chatBot;
 	
 	private boolean chatChannelEnabled(String channelID) {
 		try(Session session = sessionFactory.openSession())

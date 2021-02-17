@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class ChatbotService {
 	
 	@Autowired
-	GeraldConfig config;
+	private GeraldConfig config;
 	
     public String getReply(String message, String ID) {
     	String API_KEY = config.getPersonalityForgeToken();
@@ -33,9 +33,7 @@ public class ChatbotService {
 			
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		
+		}		
 		return "no message";
 	}
-	
 }
