@@ -71,35 +71,8 @@ public class Gerald {
 		properties.put("jdbc.driver", configService.getDriver());
 		properties.put("spring.jpa.hibernate.ddl-auto", "update");
 		
-//		exportSchema(configService);
-		
 		springApp.setDefaultProperties(properties);		
 		springApp.run(args);
 	}
 
-//	private static void exportSchema(GeraldConfig configService) {
-//		Properties hbnProperties = getHibernateProperties(configService);
-//		
-//		MetadataSources metadataSources = new MetadataSources(new StandardServiceRegistryBuilder().applySettings(hbnProperties).build());
-//		
-//		Set<Class<?>> annotated = new Reflections("main.java.de.voidtech.gerald").getTypesAnnotatedWith(Entity.class);
-//		annotated.forEach(metadataSources::addAnnotatedClass);
-//		
-//		//TODO: This is highly not good. Better export to a migration file and migrate the DB after it
-//		new SchemaUpdate()
-//			.setFormat(true)
-//			.execute(EnumSet.of(TargetType.DATABASE), metadataSources.buildMetadata());
-//	}
-//	
-//	private static Properties getHibernateProperties(GeraldConfig configService)
-//	{
-//		Properties properties = new Properties();
-//		properties.put(Environment.DRIVER, configService.getDriver());
-//		properties.put(Environment.URL, configService.getConnectionURL());
-//		properties.put(Environment.USER, configService.getDBUser());
-//		properties.put(Environment.PASS, configService.getDBPassword());
-//		properties.put(Environment.DIALECT, configService.getHibernateDialect());
-//		
-//		return properties;
-//	}
 }
