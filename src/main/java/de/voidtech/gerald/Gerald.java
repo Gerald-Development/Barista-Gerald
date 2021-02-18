@@ -1,6 +1,8 @@
 package main.java.de.voidtech.gerald;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import javax.security.auth.login.LoginException;
@@ -25,7 +27,6 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 
 @SpringBootApplication
@@ -39,16 +40,24 @@ public class Gerald {
 		GlobalConfig globalConf = globalConfService.getGlobalConfig();
 		
 		
-		return JDABuilder.createDefault(configService.getToken()).enableCache(CacheFlag.CLIENT_STATUS)//
-				.enableIntents(Arrays.asList(GatewayIntent.values()))//
-				.setMemberCachePolicy(MemberCachePolicy.ALL)//
+		return JDABuilder.createDefault(configService.getToken())//
+				.enableIntents(getNonPrivilegeIntens())//
+				.setMemberCachePolicy(MemberCachePolicy.DEFAULT)//
 				.setBulkDeleteSplittingEnabled(false)//
 				.setCompression(Compression.NONE)//
 				.addEventListeners(eventWaiter, msgListener, new ReadyListener(), guildGoneListener, channelDeleteListener)//
-				 .setActivity(EntityBuilder.createActivity(globalConf.getStatus(),
+				.setActivity(EntityBuilder.createActivity(globalConf.getStatus(),
 						 GlobalConstants.STREAM_URL, globalConf.getActivity()))
 				.build()//
 				.awaitReady();
+	}
+	
+	private List<GatewayIntent> getNonPrivilegeIntens() {
+		List<GatewayIntent> gatewayIntents = new ArrayList<GatewayIntent>(Arrays.asList(GatewayIntent.values()));
+		gatewayIntents.remove(GatewayIntent.GUILD_MEMBERS);
+		gatewayIntents.remove(GatewayIntent.GUILD_PRESENCES);
+		
+		return gatewayIntents;
 	}
 	
 	@Bean

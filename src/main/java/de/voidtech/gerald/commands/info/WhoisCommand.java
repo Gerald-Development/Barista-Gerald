@@ -39,7 +39,6 @@ public class WhoisCommand extends AbstractCommand{
 				.setTitle("Who is " + member.getUser().getAsTag() + "?")//
 				.setThumbnail(member.getUser().getAvatarUrl())
 				.addField("Nickname:", member.getEffectiveName(), true)
-				.addField("Status:", member.getOnlineStatus().toString(), true)
 				.addField("Account created on:", member.getUser().getTimeCreated().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)), false)
 				.addField("Server joined on:", member.getTimeJoined().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)), true)
 				.addField(String.format("Roles [%d]:", memberRoles.size()), StringUtils.join(memberRoles.toArray()), false)

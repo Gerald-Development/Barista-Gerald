@@ -15,7 +15,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
-//TODO: What if channel gets deleted?
 @Command
 public class WhitelistCommand extends AbstractCommand 
 {
