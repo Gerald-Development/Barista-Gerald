@@ -55,7 +55,8 @@ public class TunnelCommand extends AbstractCommand {
 	private void sendChannelVerificationRequest(TextChannel targetChannel, Message originChannelMessage) {
 		String targetChannelID = targetChannel.getId();
 		String originChannelID = originChannelMessage.getChannel().getId();
-		pendingRequests.put(targetChannel.getId(), originChannelMessage.getChannel().getLatestMessageId());
+		//TODO: Redo this, it doesn't work
+		//pendingRequests.put(targetChannel.getId(), originChannelMessage.getChannel().getLatestMessageId());
 
 		targetChannel.sendMessage("**Incoming tunnel request from " + originChannelMessage.getGuild().getName() + " > "
 				+ originChannelMessage.getChannel().getName()
