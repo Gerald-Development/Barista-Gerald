@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,21 +24,15 @@ public class MemeCommand extends AbstractCommand {
 	private static final String API_URL = "https://fyouron-api.herokuapp.com/";
 	
 	private JSONObject assemblePayloadWithCaptions(List<String> args, String messageText) {
-		List<String> captionsList = Arrays.asList(messageText.split("-"));
+		List<String> captionsList = new ArrayList<String>(Arrays.asList(messageText.split("-")));
 		String templateName = captionsList.get(0);
-		String captionsText = "";
 		
-		//List.remove() doesn't work so here we are
-		for (int i = 1; i < captionsList.size(); i++) {
-			captionsText = captionsText + captionsList.get(i) + "-";
-		}
-		
-		String[] captionsArray = captionsText.split("-");
+		captionsList.remove(0);
 		
 		JSONObject payload = new JSONObject();
 		
 		payload.put("template_name", templateName);
-		payload.put("text", captionsArray);
+		payload.put("text", captionsList.toArray());
 		
 		return payload;		
 	}
