@@ -160,5 +160,10 @@
 			<artifactId>spring-aspects</artifactId>
 			<version>5.2.7.RELEASE</version><!--$NO-MVN-MAN-VER$ -->
 		</dependency>
+		<dependency>
+	    	<groupId>org.apache.commons</groupId>
+	    	<artifactId>commons-text</artifactId>
+	    	<version>1.9</version>
+		</dependency>
 	</dependencies>
 </project>

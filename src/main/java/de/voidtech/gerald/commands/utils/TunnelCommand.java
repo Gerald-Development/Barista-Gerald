@@ -148,7 +148,7 @@ public class TunnelCommand extends AbstractCommand {
 				message.getChannel().sendMessage("**You need to supply a channel snowflake ID!**").queue();
 			
 			} else {
-				String targetChannelID = args.get(1);
+				String targetChannelID = args.get(1).replaceAll("([^0-9])", "");
 				TextChannel targetChannel = message.getJDA().getTextChannelCache().getElementById(targetChannelID);
 		
 				if (targetChannel == null) {
@@ -177,7 +177,7 @@ public class TunnelCommand extends AbstractCommand {
 
 	@Override
 	public String getUsage() {
-		return "To create a tunnel: tunnel [channel ID]\nTo destroy a tunnel: tunnel fill";
+		return "To create a tunnel: tunnel dig [channel ID/channel mention]\nTo destroy a tunnel: tunnel fill";
 	}
 
 	@Override

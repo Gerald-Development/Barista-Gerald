@@ -9,6 +9,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.json.JSONObject;
@@ -22,6 +24,7 @@ import net.dv8tion.jda.api.entities.Message;
 public class MemeCommand extends AbstractCommand {
 	
 	private static final String API_URL = "https://fyouron-api.herokuapp.com/";
+	 private static final Logger LOGGER = Logger.getLogger(MemeCommand.class.getName());	
 	
 	private JSONObject assemblePayloadWithCaptions(List<String> args, String messageText) {
 		List<String> captionsList = new ArrayList<String>(Arrays.asList(messageText.split("-")));
@@ -58,7 +61,7 @@ public class MemeCommand extends AbstractCommand {
 				byte[] input = payload.getBytes("utf-8");
 				os.write(input, 0, input.length);
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
 			}
 			
 			try (OutputStream os = con.getOutputStream(); BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
@@ -68,12 +71,12 @@ public class MemeCommand extends AbstractCommand {
 				return response.substring(1, response.length() - 1);
 				
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
 			}
 			
 			con.disconnect();
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e1.getMessage());
 		}
 		return "template not found";
 	}
