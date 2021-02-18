@@ -52,7 +52,7 @@ public class InfoCommand extends AbstractCommand {
 				.addField("Gerald Guild Count", "```" + String.valueOf(guildCount) + "```", true)
 				.addField("Gerald Member Count", "```" + String.valueOf(memberCount) + "```", false)
 				.addField("Latest Build Number", "```" + getLatestBuild() + "```", true)
-				.addField("Current Build Number", "```69```", true)
+				.addField("Latest Release", "```"+ GlobalConstants.VERSION +"```", true)
 				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
 				.setFooter("Command Count: " + commands.size() + "\nRoutine Count: " + routines.size(), message.getJDA().getSelfUser().getAvatarUrl())
 				.build();
