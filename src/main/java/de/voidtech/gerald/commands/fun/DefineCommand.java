@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -82,6 +83,21 @@ public class DefineCommand extends AbstractCommand{
 	@Override
 	public String getName() {
 		return "define";
+	}
+
+	@Override
+	public CommandCategory getCommandCategory() {
+		return CommandCategory.FUN;
+	}
+
+	@Override
+	public boolean isDMCapable() {
+		return true;
+	}
+
+	@Override
+	public boolean requiresArguments() {
+		return true;
 	}
 
 }

@@ -1,34 +1,33 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
 import java.util.List;
-import java.util.Random;
 
 import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.actions.ActionsCommand;
 import net.dv8tion.jda.api.entities.Message;
 
 @Command
-public class EightballCommand extends AbstractCommand{
+public class TickleCommand extends ActionsCommand{
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		message.getChannel().sendMessage(new Random().nextBoolean() ? "Yes" : "No").queue();		
+		super.sendAction(message, "tickle");
 	}
 
 	@Override
 	public String getDescription() {
-		return "Answers yes or no to any question";
+		return "Tickle a user!";
 	}
 
 	@Override
 	public String getUsage() {
-		return "8ball is this a fantastic question?";
+		return "tickle @user";
 	}
 
 	@Override
 	public String getName() {
-		return "8ball";
+		return "tickle";
 	}
 
 	@Override
@@ -38,7 +37,7 @@ public class EightballCommand extends AbstractCommand{
 
 	@Override
 	public boolean isDMCapable() {
-		return true;
+		return false;
 	}
 
 	@Override

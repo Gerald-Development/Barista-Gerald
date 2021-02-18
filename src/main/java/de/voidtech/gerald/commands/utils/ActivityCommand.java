@@ -16,6 +16,7 @@ import main.java.de.voidtech.gerald.service.GlobalConfigService;
 import net.dv8tion.jda.api.entities.Activity.ActivityType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
 
 @Command
 public class ActivityCommand extends AbstractCommand {
@@ -44,6 +45,7 @@ public class ActivityCommand extends AbstractCommand {
 				message.getJDA().getPresence().setActivity(EntityBuilder.createActivity(statusMessage,GlobalConstants.STREAM_URL, activityWrapperOpt.getActivityType()));
 				
 				updatePersistentActivity(activityWrapperOpt.getActivityType(), statusMessage);
+				message.getChannel().sendMessage("**Set status to:** " + activityWrapperOpt.humanReadable + statusMessage).queue();
 
 			} else {
 				message.getChannel().sendMessage("Please provide a valid activity: `playing, watching, listening to, streaming`").queue();
@@ -119,6 +121,21 @@ public class ActivityCommand extends AbstractCommand {
 	@Override
 	public String getName() {
 		return "activity";
+	}
+
+	@Override
+	public CommandCategory getCommandCategory() {
+		return CommandCategory.UTILS;
+	}
+
+	@Override
+	public boolean isDMCapable() {
+		return false;
+	}
+
+	@Override
+	public boolean requiresArguments() {
+		return true;
 	}
 
 }

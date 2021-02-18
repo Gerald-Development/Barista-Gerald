@@ -1,8 +1,8 @@
 package main.java.de.voidtech.gerald.entities;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -12,6 +12,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 @Entity
 @Table(name = "server")
@@ -26,7 +29,16 @@ public class Server
 	
 	//TODO: Don't fetch EAGER for this.
 	@ElementCollection(fetch = FetchType.EAGER)
-	private List<String> channelWhitelist;
+	@Cascade(CascadeType.REMOVE)
+	private Set<String> channelWhitelist;
+	
+	//TODO: Don't fetch EAGER for this.
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Cascade(CascadeType.REMOVE)
+	private Set<String> commandBlacklist;
+	
+	@Column
+	private String prefix;
 	
 	@Deprecated
 	//ONLY FOR HIBERNATE, DO NOT USE
@@ -46,9 +58,9 @@ public class Server
 		return guildID;
 	}
 	
-	public List<String> getChannelWhitelist() {
-		if(this.channelWhitelist == null) return Collections.unmodifiableList(new ArrayList<String>());
-		else return Collections.unmodifiableList(this.channelWhitelist);
+	public Set<String> getChannelWhitelist() {
+		if(this.channelWhitelist == null) return Collections.unmodifiableSet(new HashSet<String>());
+		else return Collections.unmodifiableSet(this.channelWhitelist);
 	}
 	
 	public void addToChannelWhitelist(String channelID) {
@@ -59,5 +71,25 @@ public class Server
 	}
 	public void clearChannelWhitelist() {
 		this.channelWhitelist.clear();
+	}
+
+	public Set<String> getCommandBlacklist() {
+		if(this.commandBlacklist == null) return Collections.unmodifiableSet(new HashSet<String>());
+		else return Collections.unmodifiableSet(this.commandBlacklist);
+	}
+	
+	public void addToCommandBlacklist(String channelID) {
+		this.commandBlacklist.add(channelID);
+	}
+	public void removeFromCommandBlacklist(String channelID) {
+		this.commandBlacklist.remove(channelID);
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
 	}
 }

@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -26,17 +27,8 @@ public class CompileCommand extends AbstractCommand {
 
 	private static final String WANDBOX_COMPILE_URL = "https://wandbox.org/compile";
 	private static final String EMBED_THUMBNAIL_URL = "https://cdn.discordapp.com/attachments/772921190280724512/790283222156050462/7398c7bd6be35540-the-gallery-for-processing-gif-transparent-web-page-processing.gif";
-
-	@Override
-	public String getDescription() {
-		return "Allows you to compile code via wandbox";
-	}
-
-	@Override
-	public String getUsage() {
-		return "compile ```[name of language] [code]``` \nOR compile languages";
-	}
-
+	private static final char ESCAPE_CHAR = ((char)8204);
+	
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 
@@ -149,10 +141,35 @@ public class CompileCommand extends AbstractCommand {
 
 		return supportedLangsMap;
 	}
+	
+	@Override
+	public String getDescription() {
+		return "Allows you to compile code via wandbox";
+	}
+
+	@Override
+	public String getUsage() {
+		return "compile " + ESCAPE_CHAR + "`" + ESCAPE_CHAR + "`" + ESCAPE_CHAR + "`[name of language]\n[code]\n" + ESCAPE_CHAR + "`" + ESCAPE_CHAR + "`" + ESCAPE_CHAR + "` \nOR compile languages";
+	}
 
 	@Override
 	public String getName() {
 		return "compile";
+	}
+
+	@Override
+	public CommandCategory getCommandCategory() {
+		return CommandCategory.FUN;
+	}
+
+	@Override
+	public boolean isDMCapable() {
+		return true;
+	}
+
+	@Override
+	public boolean requiresArguments() {
+		return true;
 	}
 
 }

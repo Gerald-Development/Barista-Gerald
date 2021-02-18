@@ -1,4 +1,4 @@
-package main.java.de.voidtech.gerald.commands;
+package main.java.de.voidtech.gerald.commands.actions;
 
 import java.awt.Color;
 import java.io.BufferedReader;
@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -29,10 +30,7 @@ public abstract class ActionsCommand extends AbstractCommand {
             String gifURL = getActionGif(action);
             if (gifURL != null)
             {
-            	String phrase = message.getMember().getEffectiveName()//
-            			+ " "//
-            			+ conjugateAction(action)
-            			+ message.getMentionedMembers().get(0).getEffectiveName();
+            	String phrase = String.format("%s %s %s", message.getMember().getEffectiveName(), conjugateAction(action), message.getMentionedMembers().get(0).getEffectiveName());
             	
                 MessageEmbed actionEmbed = new EmbedBuilder()
                         .setTitle(phrase)

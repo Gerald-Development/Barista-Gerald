@@ -161,16 +161,9 @@
 			<version>5.2.7.RELEASE</version><!--$NO-MVN-MAN-VER$ -->
 		</dependency>
 		<dependency>
-			<groupId>com.jagrosh</groupId>
-			<artifactId>jda-utilities</artifactId>
-			<version>3.0.5</version>
-			<scope>compile</scope>
-			<type>pom</type>
-		</dependency>
-		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-			<version>1.13.1</version>
+	    	<groupId>org.apache.commons</groupId>
+	    	<artifactId>commons-text</artifactId>
+	    	<version>1.9</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.service.NitroliteService;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Message;
@@ -44,5 +45,20 @@ public class NitroliteCommand extends AbstractCommand {
 	@Override
 	public String getName() {
 		return "nitrolite";
+	}
+	
+	@Override
+	public CommandCategory getCommandCategory() {
+		return CommandCategory.UTILS;
+	}
+
+	@Override
+	public boolean isDMCapable() {
+		return false;
+	}
+
+	@Override
+	public boolean requiresArguments() {
+		return true;
 	}
 }

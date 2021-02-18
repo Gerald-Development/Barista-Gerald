@@ -1,39 +1,46 @@
-package main.java.de.voidtech.gerald.commands.fun;
+package main.java.de.voidtech.gerald.commands.info;
 
+import java.awt.Color;
 import java.util.List;
-import java.util.Random;
 
+import main.java.de.voidtech.gerald.GlobalConstants;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
-public class EightballCommand extends AbstractCommand{
+public class InviteCommand extends AbstractCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		message.getChannel().sendMessage(new Random().nextBoolean() ? "Yes" : "No").queue();		
+		MessageEmbed inviteLinkEmbed = new EmbedBuilder()
+				.setColor(Color.cyan)
+				.setDescription("**[Gerald Invite Link](" + GlobalConstants.INVITE_URL + ")**")
+				.build();
+		message.getChannel().sendMessage(inviteLinkEmbed).queue();
 	}
 
 	@Override
 	public String getDescription() {
-		return "Answers yes or no to any question";
+		return "Gives you the Invite link for Gerald";
 	}
 
 	@Override
 	public String getUsage() {
-		return "8ball is this a fantastic question?";
+		return "invite";
 	}
 
 	@Override
 	public String getName() {
-		return "8ball";
+		return "invite";
 	}
 
 	@Override
 	public CommandCategory getCommandCategory() {
-		return CommandCategory.FUN;
+		return CommandCategory.INFO;
 	}
 
 	@Override
@@ -43,7 +50,7 @@ public class EightballCommand extends AbstractCommand{
 
 	@Override
 	public boolean requiresArguments() {
-		return true;
+		return false;
 	}
 
 }

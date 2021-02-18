@@ -8,6 +8,7 @@ import java.util.Random;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -84,7 +85,7 @@ public class DeathmatchCommand extends AbstractCommand {
 
 	private MessageEmbed craftEmbed(int playerOneHealth, int playerTwoHealth, int damage, Turn playerTurn) {
 		return new EmbedBuilder()
-				.setTitle(userList.get(0).getName() + " (" + playerOneHealth + " ❤) VS " + userList.get(1).getName() + " (" + playerTwoHealth + " ❤)")
+				.setTitle(userList.get(0).getName() + " (" + playerOneHealth + " â�¤) VS " + userList.get(1).getName() + " (" + playerTwoHealth + " â�¤)")
 				.setAuthor((playerTurn == Turn.PLAYER_ONE ? userList.get(0).getName() : userList.get(1).getName()) + "'s Attack!")
 				.setThumbnail(playerTurn == Turn.PLAYER_ONE ? userList.get(0).getAvatarUrl() : userList.get(1).getAvatarUrl())
 				.setDescription(craftMessage(damage, playerTurn))
@@ -118,6 +119,21 @@ public class DeathmatchCommand extends AbstractCommand {
 	@Override
 	public String getName() {
 		return "deathmatch";
+	}
+
+	@Override
+	public CommandCategory getCommandCategory() {
+		return CommandCategory.FUN;
+	}
+
+	@Override
+	public boolean isDMCapable() {
+		return false;
+	}
+
+	@Override
+	public boolean requiresArguments() {
+		return true;
 	}
 
 }

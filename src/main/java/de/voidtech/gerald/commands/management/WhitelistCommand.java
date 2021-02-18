@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
-//TODO: What if channel gets deleted?
 @Command
 public class WhitelistCommand extends AbstractCommand 
 {
@@ -24,7 +24,7 @@ public class WhitelistCommand extends AbstractCommand
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		
-		if(!message.getMember().hasPermission(Permission.ADMINISTRATOR)) return;
+		if(!message.getMember().hasPermission(Permission.MANAGE_SERVER)) return;
 		
 		String argString = args.size() > 0 ? args.get(0) : "list";
 		TextChannel mentionedChannel = message.getMentionedChannels().size() > 0 
@@ -107,10 +107,24 @@ public class WhitelistCommand extends AbstractCommand
 		return "whitelist add {channelID}\nwhitelist remove {channelID}\nwhitelist clear\nwhitelist";
 	}
 
-
 	@Override
 	public String getName() {
 		return "whitelist";
+	}
+	
+	@Override
+	public CommandCategory getCommandCategory() {
+		return CommandCategory.MANAGEMENT;
+	}
+
+	@Override
+	public boolean isDMCapable() {
+		return false;
+	}
+
+	@Override
+	public boolean requiresArguments() {
+		return false;
 	}
 
 }
