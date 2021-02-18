@@ -24,7 +24,7 @@ public class WhitelistCommand extends AbstractCommand
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		
-		if(!message.getMember().hasPermission(Permission.ADMINISTRATOR)) return;
+		if(!message.getMember().hasPermission(Permission.MANAGE_SERVER)) return;
 		
 		String argString = args.size() > 0 ? args.get(0) : "list";
 		TextChannel mentionedChannel = message.getMentionedChannels().size() > 0 

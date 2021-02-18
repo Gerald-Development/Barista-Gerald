@@ -24,7 +24,7 @@ public class PrefixCommand extends AbstractCommand {
 	
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		if(message.getMember().hasPermission(Permission.ADMINISTRATOR))
+		if(message.getMember().hasPermission(Permission.MANAGE_SERVER))
 		{
 			Server server = serverService.getServer(message.getGuild().getId());
 			
