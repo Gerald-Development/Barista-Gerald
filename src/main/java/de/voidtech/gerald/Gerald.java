@@ -83,5 +83,4 @@ public class Gerald {
 		springApp.setDefaultProperties(properties);		
 		springApp.run(args);
 	}
-
 }
