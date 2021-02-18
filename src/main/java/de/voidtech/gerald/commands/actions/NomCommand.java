@@ -3,7 +3,6 @@ package main.java.de.voidtech.gerald.commands.actions;
 import java.util.List;
 
 import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.ActionsCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import net.dv8tion.jda.api.entities.Message;
 

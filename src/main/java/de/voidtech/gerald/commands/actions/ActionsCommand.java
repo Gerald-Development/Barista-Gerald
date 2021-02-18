@@ -1,4 +1,4 @@
-package main.java.de.voidtech.gerald.commands;
+package main.java.de.voidtech.gerald.commands.actions;
 
 import java.awt.Color;
 import java.io.BufferedReader;
@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
