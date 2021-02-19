@@ -22,16 +22,25 @@ public class SpinCommand extends AbstractCommand {
 	public void executeInternal(Message message, List<String> args) {
 		Map<String, Color> colorMap = getSpinnerColors();
 
-		if (colorMap.containsKey(args.get(0).toLowerCase())) {
+		if (args.size() > 0) {
+			if (colorMap.containsKey(args.get(0).toLowerCase())) {
+				int spinTime = new Random().nextInt(30);
+				Color color = colorMap.get(args.get(0).toLowerCase());
+
+				doTheSpinning(color, spinTime, message);
+			} else if (args.get(0).equals("colors")) {
+				String supportedColorsString = StringUtils.join(colorMap.keySet(), "\n");
+				message.getChannel().sendMessage("**Spinner colors:**\n" + supportedColorsString).queue();
+			} else {
+				message.getChannel().sendMessage("That is not a valid color!").queue();
+			}	
+		} else {
 			int spinTime = new Random().nextInt(30);
-			Color color = colorMap.get(args.get(0).toLowerCase());
+			
+			Object[] values = colorMap.values().toArray();
+			Color color = (Color) values[new Random().nextInt(values.length)];
 
 			doTheSpinning(color, spinTime, message);
-		} else if (args.get(0).equals("colors")) {
-			String supportedColorsString = StringUtils.join(colorMap.keySet(), "\n");
-			message.getChannel().sendMessage("**Spinner colors:**\n" + supportedColorsString).queue();
-		} else {
-			message.getChannel().sendMessage("That is not a valid color!").queue();
 		}
 	}
 
