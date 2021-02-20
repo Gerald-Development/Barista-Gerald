@@ -5,7 +5,7 @@ The Java Version of the [Gerald Discord Bot](https://github.com/Elementalmp4/Ger
 
 Welcome to Gerald! Gerald is just another bot for your lovely Discord server! To give you a rough overview here are some of the main features:
 - Chat with GeraldAI: We have implemented an ChatAI into our bot to allow users to chat with him in real time. Type /chat enable in a channel to enable it
-- Dig Tunnels: You can dig tunnels to channels of other servers, this allows you two connect two textchannels, the messages of one channel will be mirrored to the channel on the other side and vice versa!
+- Dig Tunnels: You can dig tunnels to channels of other servers (or your own), this allows you two connect two textchannels. The messages of one channel will be mirrored to the channel and vice versa!
 - Play with Gerald: The Bot includes implementations of various "mini-games" like "Would you rather", Deathmatches or Fruit Guessing
 - Compile Code: You can use Gerald to let an online compiler run some code for you
 - Various other commands: Because we have lots of random commands like 8ball, inspiro, random facts, emojify and much much more!
@@ -13,8 +13,8 @@ Welcome to Gerald! Gerald is just another bot for your lovely Discord server! To
 To invite Gerald you can just [click here](https://discord.com/api/oauth2/authorize?client_id=555816892141404163&permissions=805694544&scope=bot)
 ## About us
 Are you having troubles or questions about Gerald or want to talk to the developers? You can join our development Discord server and get the support you need there:
-**Discord invite link is coming soon, we are currently making our development server ready for the public**
-**You can message us on Discord privately in the meantime: Montori#4707 / ElementalMP4#7458**
+
+[![Discord Banner 2](https://discordapp.com/api/guilds/729317146127106059/widget.png?style=banner2)](https://discord.gg/mNmgHgjDGz)
 
 Optionally you can also send us an [email](mailto:gerald@voidtech.de).
 
