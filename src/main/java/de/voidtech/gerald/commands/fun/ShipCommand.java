@@ -13,7 +13,9 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class ShipCommand extends AbstractCommand{
-
+	
+	private final static String HEART = " :heart: ";
+	
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		
@@ -32,7 +34,7 @@ public class ShipCommand extends AbstractCommand{
 		Color color = getColor(shipRating);
 		
 		MessageEmbed shipEmbed = new EmbedBuilder()//
-				.setTitle(name1 + " â�¤ " + name2)
+				.setTitle(name1 + HEART + name2)
 				.setColor(color)
 				.setDescription(String.format("Your love match percentage is %d%c %s", shipRating, '%', phrase))
 				.build();
