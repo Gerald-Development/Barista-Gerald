@@ -69,7 +69,7 @@ public class TunnelCommand extends AbstractCommand {
 						digTunnel(targetChannel, originChannelMessage.getChannel());
 					} else {
 						denyTunnel(originChannelMessage);
-					}
+					} 	
 					removeFromMap(targetChannelID, originChannelID);
 				}, 30, TimeUnit.SECONDS, () -> {
 					originChannelMessage.getChannel().sendMessage("**Request timed out**").queue();
@@ -83,11 +83,13 @@ public class TunnelCommand extends AbstractCommand {
 	}
 
 	private boolean tunnelAcceptedStatement(MessageReceivedEvent event, TextChannel targetChannel) {
-
-		return (event.getMessage().getContentRaw().toLowerCase().equals("accept")
-				&& (event.getAuthor().getId() != event.getJDA().getSelfUser().getId())
-				&& event.getChannel().getId().equals(targetChannel.getId()));
-
+		
+		boolean messageEqualsAccept = event.getMessage().getContentRaw().toLowerCase().equals("accept");
+		boolean messageIsNotFromSelf = (event.getAuthor().getId() != event.getJDA().getSelfUser().getId());
+		boolean messageIsFromTargetChannel = event.getChannel().getId().equals(targetChannel.getId());
+		boolean memberHasPermissions = event.getMember().hasPermission(Permission.MANAGE_CHANNEL);
+		
+		return messageEqualsAccept && messageIsNotFromSelf && messageIsFromTargetChannel && memberHasPermissions;
 	}
 
 	private void denyTunnel(Message originChannelMessage) {
@@ -188,7 +190,7 @@ public class TunnelCommand extends AbstractCommand {
 
 	@Override
 	public String getDescription() {
-		return "Tunnels allow you to form a bridge between two servers/channels! Using this command, Gerald will forward all text messages between the chosen channels";
+		return "Tunnels allow you to form a bridge between two servers/channels! Using this command, Gerald will forward all text messages between the chosen channels. Note: Users who wish to set up Tunnels must have Manage Channels permissions.";
 	}
 
 	@Override
