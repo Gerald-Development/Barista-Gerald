@@ -110,7 +110,7 @@ public class CountCommand extends AbstractCommand {
 
 	@Override
 	public String getDescription() {
-		return "Allows you to create a designated Counting channel in your server! Each user must in turn count up starting from 0, if someone gets the count wrong, the counter resets!";
+		return "Allows you to create a designated Counting channel in your server! Each user must in turn count up starting from 0, if someone gets the count wrong, the counter resets! Original idea: https://top.gg/bot/769855226425245706";
 	}
 
 	@Override

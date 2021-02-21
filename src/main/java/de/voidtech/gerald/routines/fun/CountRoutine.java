@@ -10,9 +10,9 @@ import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import net.dv8tion.jda.api.entities.Message;
 
 @Routine
-public class CountingRoutine extends AbstractRoutine {
-	private final static String CHECK = "U+2705";
-	private final static String CROSS = "U+274E";
+public class CountRoutine extends AbstractRoutine {
+	private final static String CORRECT = "U+2705";
+	private final static String INCORRECT = "U+274E";
 	
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -105,7 +105,7 @@ public class CountingRoutine extends AbstractRoutine {
 	}
 	
 	@Override
-	public void executeInternal(Message message) {
+	public void executeInternal(Message message) {		
 		if (isCountingChannel(message.getChannel().getId())) {
 			if (isInteger(message.getContentRaw())) {
 				if (isDifferentUser(message.getMember().getId(), message.getChannel().getId())) {
@@ -114,10 +114,10 @@ public class CountingRoutine extends AbstractRoutine {
 					
 					if (countGiven == currentCount + 1) {
 						incrementCount(currentCount, message.getChannel().getId(), message.getMember().getId());
-						message.addReaction(CHECK).queue();
+						message.addReaction(CORRECT).queue();
 					} else {
 						resetCount(message.getChannel().getId());
-						message.addReaction(CROSS).queue();
+						message.addReaction(INCORRECT).queue();
 						message.getChannel().sendMessage("**You failed! The counter has been reset!**").queue();
 					}		
 				} else {
@@ -133,3 +133,6 @@ public class CountingRoutine extends AbstractRoutine {
 	}
 
 }
+
+
+
