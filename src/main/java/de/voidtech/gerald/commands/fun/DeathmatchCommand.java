@@ -16,7 +16,9 @@ import net.dv8tion.jda.api.entities.User;
 
 @Command
 public class DeathmatchCommand extends AbstractCommand {
-
+	
+	private final static String HEART = ":heart:";
+	
 	private enum Turn {
 		PLAYER_ONE,
 		PLAYER_TWO
@@ -85,7 +87,7 @@ public class DeathmatchCommand extends AbstractCommand {
 
 	private MessageEmbed craftEmbed(int playerOneHealth, int playerTwoHealth, int damage, Turn playerTurn) {
 		return new EmbedBuilder()
-				.setTitle(userList.get(0).getName() + " (" + playerOneHealth + " â�¤) VS " + userList.get(1).getName() + " (" + playerTwoHealth + " â�¤)")
+				.setTitle(userList.get(0).getName() + " (" + playerOneHealth + " " + HEART + ") VS " + userList.get(1).getName() + " (" + playerTwoHealth + " " + HEART + ")")
 				.setAuthor((playerTurn == Turn.PLAYER_ONE ? userList.get(0).getName() : userList.get(1).getName()) + "'s Attack!")
 				.setThumbnail(playerTurn == Turn.PLAYER_ONE ? userList.get(0).getAvatarUrl() : userList.get(1).getAvatarUrl())
 				.setDescription(craftMessage(damage, playerTurn))
