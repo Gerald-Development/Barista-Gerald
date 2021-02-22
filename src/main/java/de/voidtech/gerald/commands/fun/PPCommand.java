@@ -16,8 +16,10 @@ public class PPCommand extends AbstractCommand{
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-
-		int ppSizeNumber = new Random().nextInt(12);
+		
+		long seed = Long.valueOf(message.getAuthor().getId());
+		
+		int ppSizeNumber = new Random(seed).nextInt(12);
 		String phrase = getPhrase(ppSizeNumber);
 		Color color = getColor(ppSizeNumber);
 		
