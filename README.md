@@ -43,4 +43,5 @@ We will soon make a follow up wiki entry for the whole GeraldConfig topic since 
 
 ## Contributions
 Do you want to contribute to the bot yourself? Great news: you can! Just join our Discord and coordinate with us. 
+
 We are currently not maintaining our GitHub issues due to the fact that we are a small team and mostly write all the code ourselves, if you want to contribute in that way check in after a week or two when we have finally managed to maintain our repo page!

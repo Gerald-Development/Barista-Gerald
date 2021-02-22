@@ -41,7 +41,7 @@ public class Gerald {
 		
 		
 		return JDABuilder.createDefault(configService.getToken())//
-				.enableIntents(getNonPrivilegeIntens())//
+				.enableIntents(getNonPrivilegedIntents())//
 				.setMemberCachePolicy(MemberCachePolicy.DEFAULT)//
 				.setBulkDeleteSplittingEnabled(false)//
 				.setCompression(Compression.NONE)//
@@ -52,7 +52,7 @@ public class Gerald {
 				.awaitReady();
 	}
 	
-	private List<GatewayIntent> getNonPrivilegeIntens() {
+	private List<GatewayIntent> getNonPrivilegedIntents() {
 		List<GatewayIntent> gatewayIntents = new ArrayList<GatewayIntent>(Arrays.asList(GatewayIntent.values()));
 		gatewayIntents.remove(GatewayIntent.GUILD_MEMBERS);
 		gatewayIntents.remove(GatewayIntent.GUILD_PRESENCES);
