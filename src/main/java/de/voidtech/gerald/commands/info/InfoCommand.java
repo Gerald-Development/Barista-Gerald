@@ -14,6 +14,7 @@ import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -40,7 +41,7 @@ public class InfoCommand extends AbstractCommand {
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		long guildCount = message.getJDA().getGuildCache().size();
-		long memberCount = message.getJDA().getUserCache().size();
+		long memberCount = message.getJDA().getGuildCache().stream().mapToInt(Guild::getMemberCount).sum();
 		
 		MessageEmbed informationEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
