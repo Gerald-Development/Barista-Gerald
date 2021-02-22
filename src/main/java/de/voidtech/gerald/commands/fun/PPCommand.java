@@ -19,7 +19,7 @@ public class PPCommand extends AbstractCommand{
 		
 		long seed = Long.valueOf(message.getAuthor().getId());
 		
-		int ppSizeNumber = new Random(seed).nextInt(12);
+		float ppSizeNumber = new Random(seed).nextFloat()*12;
 		String phrase = getPhrase(ppSizeNumber);
 		Color color = getColor(ppSizeNumber);
 		
