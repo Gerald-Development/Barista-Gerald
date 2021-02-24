@@ -18,36 +18,15 @@ public class EnlargeCommand extends AbstractCommand{
 	private static final String CDN_URL = "https://cdn.discordapp.com/emojis/";
 	private static final Logger LOGGER = Logger.getLogger(EnlargeCommand.class.getName());
 	
-	private boolean checkForPNG(String emoteID) {
+	private boolean checkForImage(String emoteID, String extension) {
 		try {
-			URL url = new URL(CDN_URL + emoteID + ".png");
+			URL url = new URL(CDN_URL + emoteID + "." + extension);
 			HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
 			httpConnection.setRequestMethod("HEAD");
 			
-			if (httpConnection.getResponseCode() == 415 || httpConnection.getResponseCode() == 404) {
-				return false;
-			} else {
-				return true;
-			}
+			return httpConnection.getContentLength() != 0;
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
-		}
-		return false;
-	}
-	
-	private boolean checkForGIF(String emoteID) {
-		try {
-			URL url = new URL(CDN_URL + emoteID + ".gif");
-			HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
-			httpConnection.setRequestMethod("HEAD");
-			
-			if (httpConnection.getResponseCode() == 415 || httpConnection.getResponseCode() == 404) {
-				return false;
-			} else {
-				return true;
-			}
-		} catch (IOException e) {
-		LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());	
 		}
 		return false;
 	}
@@ -57,9 +36,10 @@ public class EnlargeCommand extends AbstractCommand{
 		String emoteText = args.get(0);
 		String regexPattern = "([^0-9])";
 		String emoteID = emoteText.replaceAll(regexPattern, "");
-		if (checkForGIF(emoteID)) {
+
+		if (checkForImage(emoteID, "gif")) {
 			message.getChannel().sendMessage(CDN_URL + emoteID + ".gif").queue();
-		} else if (checkForPNG(emoteID)) {
+		} else if (checkForImage(emoteID, "png")) {
 			message.getChannel().sendMessage(CDN_URL + emoteID + ".png").queue();
 		} else {
 			message.getChannel().sendMessage("Couldn't find that emote").queue();
@@ -95,5 +75,4 @@ public class EnlargeCommand extends AbstractCommand{
 	public boolean requiresArguments() {
 		return true;
 	}
-
 }
