@@ -32,7 +32,7 @@ public class TunnelCommand extends AbstractCommand {
 	private BidiMap<String, String> pendingRequests = new DualHashBidiMap<String, String>();
 
 	private void fillTunnel(Message message) {
-		if (tunnelExists(message.getChannel().getId())) {
+		if (tunnelExists(message.getChannel().getId(), "")) {
 			message.getChannel().sendMessage("Filling tunnel...").queue(sentMessage -> {
 				Tunnel tunnel = getTunnel(message.getChannel().getId());
 
@@ -52,29 +52,38 @@ public class TunnelCommand extends AbstractCommand {
 		}
 	}
 
-	private void sendChannelVerificationRequest(TextChannel targetChannel, Message originChannelMessage) {
+	private void sendChannelVerificationRequest(TextChannel targetChannel, Message originChannelMessage, String tunnelInstantiator) {
 		String targetChannelID = targetChannel.getId();
 		String originChannelID = originChannelMessage.getChannel().getId();
 		//TODO: Redo this, it doesn't work
 		//pendingRequests.put(targetChannel.getId(), originChannelMessage.getChannel().getLatestMessageId());
+		
+		if (targetChannel.getGuild().getMemberById(tunnelInstantiator) == null) {
+			originChannelMessage.getChannel().sendMessage("**You need to be in that guild to dig a tunnel there!**").queue();
+		} else {
+		
+			if (targetChannel.getGuild().getMemberById(tunnelInstantiator).hasPermission(Permission.MANAGE_CHANNEL)) {
+				targetChannel.sendMessage("**Incoming tunnel request from " + originChannelMessage.getGuild().getName() + " > "
+						+ originChannelMessage.getChannel().getName()
+						+ "**\nSay 'accept' within 15 seconds to allow this tunnel to be dug!").queue();
 
-		targetChannel.sendMessage("**Incoming tunnel request from " + originChannelMessage.getGuild().getName() + " > "
-				+ originChannelMessage.getChannel().getName()
-				+ "**\nSay 'accept' within 15 seconds to allow this tunnel to be dug!").queue();
-
-		waiter.waitForEvent(MessageReceivedEvent.class,
-				event -> tunnelAcceptedStatement(((MessageReceivedEvent) event), targetChannel), event -> {
-					boolean allowTunnel = event.getMessage().getContentRaw().toLowerCase().equals("accept");
-					if (allowTunnel) {
-						digTunnel(targetChannel, originChannelMessage.getChannel());
-					} else {
-						denyTunnel(originChannelMessage);
-					} 	
-					removeFromMap(targetChannelID, originChannelID);
-				}, 30, TimeUnit.SECONDS, () -> {
-					originChannelMessage.getChannel().sendMessage("**Request timed out**").queue();
-					removeFromMap(targetChannelID, originChannelID);
-				});
+				waiter.waitForEvent(MessageReceivedEvent.class,
+						event -> tunnelAcceptedStatement(((MessageReceivedEvent) event), targetChannel), event -> {
+							boolean allowTunnel = event.getMessage().getContentRaw().toLowerCase().equals("accept");
+							if (allowTunnel) {
+								digTunnel(targetChannel, originChannelMessage.getChannel());
+							} else {
+								denyTunnel(originChannelMessage);
+							} 	
+							removeFromMap(targetChannelID, originChannelID);
+						}, 30, TimeUnit.SECONDS, () -> {
+							originChannelMessage.getChannel().sendMessage("**Request timed out**").queue();
+							removeFromMap(targetChannelID, originChannelID);
+						});
+			} else {
+				originChannelMessage.getChannel().sendMessage("**You do not have permission to do that there!**").queue();
+			}
+		}	
 	}
 
 	private void removeFromMap(String targetChannelID, String originChannelID) {
@@ -117,14 +126,30 @@ public class TunnelCommand extends AbstractCommand {
 		}
 	}
 
-	private boolean tunnelExists(String senderChannelID) {
-
-		try (Session session = sessionFactory.openSession()) {
-			Tunnel tunnel = (Tunnel) session
-					.createQuery(
-							"FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
-					.setParameter("senderChannelID", senderChannelID).uniqueResult();
-			return tunnel != null;
+	private boolean tunnelExists(String senderChannelID, String destChannelID) {
+		if (destChannelID.equals("")) {
+			try (Session session = sessionFactory.openSession()) {
+				Tunnel tunnel = (Tunnel) session
+						.createQuery(
+								"FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
+						.setParameter("senderChannelID", senderChannelID).uniqueResult();
+				return tunnel != null;
+			}	
+		} else {
+			try (Session sessionFirst = sessionFactory.openSession()) {
+				Tunnel tunnelFirst = (Tunnel) sessionFirst
+						.createQuery(
+								"FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
+						.setParameter("senderChannelID", senderChannelID).uniqueResult();
+				
+				try (Session sessionLast = sessionFactory.openSession()) {
+					Tunnel tunnelLast = (Tunnel) sessionLast
+							.createQuery(
+									"FROM Tunnel WHERE sourceChannelID = :destChannelID OR destChannelID = :destChannelID")
+							.setParameter("destChannelID", destChannelID).uniqueResult();
+					return tunnelFirst != null || tunnelLast != null;
+				}	
+			}	
 		}
 	}
 
@@ -176,10 +201,10 @@ public class TunnelCommand extends AbstractCommand {
 						|| pendingRequests.containsKey(targetChannelID)) {
 					message.getChannel().sendMessage("**There is already a pending tunnel request!**").queue();
 				} else {
-					if (tunnelExists(message.getChannel().getId())) {
+					if (tunnelExists(message.getChannel().getId(), targetChannel.getId())) {
 						message.getChannel().sendMessage("**There is already a tunnel here!**").queue();
 					} else {
-						sendChannelVerificationRequest(targetChannel, message);
+						sendChannelVerificationRequest(targetChannel, message, message.getAuthor().getId());
 					}
 				}
 			}
