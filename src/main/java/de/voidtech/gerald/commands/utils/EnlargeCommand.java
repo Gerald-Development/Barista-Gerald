@@ -13,18 +13,20 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import net.dv8tion.jda.api.entities.Message;
 
 @Command
-public class EnlargeCommand extends AbstractCommand{
-	
+public class EnlargeCommand extends AbstractCommand {
+
 	private static final String CDN_URL = "https://cdn.discordapp.com/emojis/";
+	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64; Trident/7.0; rv:11.0) like Gecko";
 	private static final Logger LOGGER = Logger.getLogger(EnlargeCommand.class.getName());
-	
+
 	private boolean checkForImage(String emoteID, String extension) {
 		try {
 			URL url = new URL(CDN_URL + emoteID + "." + extension);
 			HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
 			httpConnection.setRequestMethod("HEAD");
-			
-			return httpConnection.getContentLength() != 0;
+			httpConnection.setRequestProperty("User-Agent", USER_AGENT);
+
+			return (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK);
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
 		}
