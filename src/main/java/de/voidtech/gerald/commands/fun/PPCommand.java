@@ -34,9 +34,9 @@ public class PPCommand extends AbstractCommand{
 	
 	private Color getColor(int ppSize)
 	{
-		return ppSize > 10 
+		return ppSize > 8 
 				? Color.GREEN 
-				: ppSize > 6 
+				: ppSize > 4 
 				? Color.ORANGE 
 				: Color.RED;
 	}
