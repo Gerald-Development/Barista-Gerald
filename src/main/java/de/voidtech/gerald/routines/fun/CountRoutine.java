@@ -98,6 +98,7 @@ public class CountRoutine extends AbstractRoutine {
                     .setParameter("channelID", channelID)
                     .uniqueResult();
 			dbChannel.setChannelCount(0);
+			dbChannel.setLastUser("");
 			
 			session.saveOrUpdate(dbChannel);
 			session.getTransaction().commit();			
@@ -121,7 +122,8 @@ public class CountRoutine extends AbstractRoutine {
 						message.getChannel().sendMessage("**You failed! The counter has been reset!**").queue();
 					}		
 				} else {
-					message.getChannel().sendMessage("**You cannot count twice in a row!**").queue();
+					message.getChannel().sendMessage("**You cannot count twice in a row! The counter has not been reset.**").queue();
+					message.addReaction(INCORRECT).queue();
 				}
 			}			
 		}		
