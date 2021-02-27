@@ -3,6 +3,7 @@ package main.java.de.voidtech.gerald.commands.utils;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,6 +19,7 @@ public class EnlargeCommand extends AbstractCommand {
 	private static final String CDN_URL = "https://cdn.discordapp.com/emojis/";
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64; Trident/7.0; rv:11.0) like Gecko";
 	private static final Logger LOGGER = Logger.getLogger(EnlargeCommand.class.getName());
+	private static final List<String> FILE_EXTENSIONS = Arrays.asList("gif", "png", "jpg", "jpeg");
 
 	private boolean checkForImage(String emoteID, String extension) {
 		try {
@@ -39,13 +41,13 @@ public class EnlargeCommand extends AbstractCommand {
 		String regexPattern = "([^0-9])";
 		String emoteID = emoteText.replaceAll(regexPattern, "");
 
-		if (checkForImage(emoteID, "gif")) {
-			message.getChannel().sendMessage(CDN_URL + emoteID + ".gif").queue();
-		} else if (checkForImage(emoteID, "png")) {
-			message.getChannel().sendMessage(CDN_URL + emoteID + ".png").queue();
-		} else {
-			message.getChannel().sendMessage("Couldn't find that emote").queue();
+		for (String extension : FILE_EXTENSIONS) {
+			if (checkForImage(emoteID, extension)) {
+				message.getChannel().sendMessage(CDN_URL + emoteID + "." + extension).queue();
+				return;
+			}
 		}
+		message.getChannel().sendMessage("Couldn't find that emote").queue();
 	}
 
 	@Override
