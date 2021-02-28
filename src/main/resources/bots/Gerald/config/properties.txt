@@ -1,0 +1,8 @@
+url:https://linktr.ee/GeraldBot
+name:Gerald
+email:gerald@voidtech.de
+gender:male
+botmaster:ElementalMP4
+organization:ALICE AI Foundation
+version:0.0.4
+

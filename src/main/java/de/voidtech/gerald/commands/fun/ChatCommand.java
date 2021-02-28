@@ -75,7 +75,7 @@ public class ChatCommand extends AbstractCommand{
 			}
 		} else {
 			message.getChannel().sendTyping().queue();
-			String reply = chatBot.getReply(String.join(" ", args), message.getAuthor().getId());
+			String reply = chatBot.getReply(String.join(" ", args), message.getMember().getId());
 			message.getChannel().sendMessage(reply).queue();
 		}
 		
