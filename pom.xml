@@ -74,6 +74,16 @@
 			<name>jcenter-bintray</name>
 			<url>https://jcenter.bintray.com</url>
 		</repository>
+		<repository>
+        <id>soluvas-public-snapshots</id>
+        <url>http://nexus.bippo.co.id/nexus/content/repositories/soluvas-public-snapshots/</url>
+        <releases>
+            <enabled>false</enabled>
+        </releases>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>
 	</repositories>
 	<dependencies>
 		<dependency>
@@ -165,5 +175,10 @@
 	    	<artifactId>commons-text</artifactId>
 	    	<version>1.9</version>
 		</dependency>
+		<dependency>
+        	<groupId>org.alicebot.ab</groupId>
+        	<artifactId>ab</artifactId>
+        	<version>4.0.4-SNAPSHOT</version>
+    	</dependency>
 	</dependencies>
 </project>
