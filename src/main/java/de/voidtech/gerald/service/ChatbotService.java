@@ -12,12 +12,14 @@ import org.springframework.stereotype.Service;
 public class ChatbotService {	
 	
 	private Map<String, Chat> chatInstances = new HashMap<String, Chat>();
+	private static final String URI = new File("src/main/resources").getAbsolutePath();
+	private static Bot GERALD_AI = new Bot("gerald", URI);
 	
 	private Chat getChatInstance(String userID) {
 		if (chatInstances.containsKey(userID)) {
 			return chatInstances.get(userID);	
 		} else {
-		    Chat chatSession = new Chat(new Bot("gerald", getResourcesPath()));
+		    Chat chatSession = new Chat(GERALD_AI);
 			chatInstances.put(userID, chatSession);
 			return chatSession;
 		}
@@ -26,11 +28,4 @@ public class ChatbotService {
 	public String getReply(String stimulus, String userID) {
 	    return getChatInstance(userID).multisentenceRespond(stimulus);
 	}
-	
-	private static String getResourcesPath() {
-        File currDir = new File(".");
-        String path = currDir.getAbsolutePath();
-        path = path.substring(0, path.length() - 2);
-        return path + File.separator + "src" + File.separator + "main" + File.separator + "resources";
-    }
 }
