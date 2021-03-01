@@ -291,7 +291,6 @@
 0,GOODMORNING,*,*,<srai>GOOD MORNING</srai>,reductions_update.aiml
 0,HAVE YOU BEEN UPDATED *,*,*,<srai>LAST UPDATE</srai>,reductions_update.aiml
 0,HOW FAR IS THE SUN FROM EARTH,*,*,<srai>HOW FAR IS THE * FROM *</srai> <srai>WHAT IS THE DISTANCE FROM <star/> TO <star index="2"/></srai>,reductions_update.aiml
-0,I AM A LEO,*,*,<srai>MY SIGN IS LEO</srai>,reductions_update.aiml
 0,I AM GOOD THANKS *,*,*,<srai>I AM GOOD</srai> <srai>THANKS <star/></srai>,reductions_update.aiml
 0,I AM MEXICAN,*,*,<srai>MY NATIONALITY IS MEXICAN</srai>,reductions_update.aiml
 0,I AM NOT A DUDE,*,*,<srai>I AM FEMALE</srai>,reductions_update.aiml
@@ -357,7 +356,6 @@
 0,GO TO CONTACTS,*,*,<srai>OPEN CONTACTS</srai>,reductions_update.aiml
 0,GO TO GOOGLE,*,*,<srai>OPEN GOOGLE</srai>,reductions_update.aiml
 0,GO TO SLEEP NOW,*,*,<srai>GOODBYE</srai>,reductions_update.aiml
-0,HOI,*,*,<srai>HI</srai>,reductions_update.aiml
 0,HOW ABOUT WE *,*,*,<srai>LET US <star/></srai>,reductions_update.aiml
 0,HOW ARE YOU GOING,*,*,<srai>HOW ARE YOU</srai>,reductions_update.aiml
 0,HOW MANY PEOPLE ARE THERE IN *,*,*,<srai>WHAT IS THE POPULATION OF <star/></srai>,reductions_update.aiml
@@ -456,12 +454,10 @@
 0,CAN YOU SPEAK ENGLISH,*,*,<srai>LANGUAGE</srai>,reductions_update.aiml
 0,CHECK MY CALENDAR,*,*,<srai>OPEN CALENDAR</srai>,reductions_update.aiml
 0,CHECK MY EMAIL,*,*,<srai>OPEN EMAIL</srai>,reductions_update.aiml
-0,CHEERS,*,*,<srai>HELLO</srai>,reductions_update.aiml
 0,CLEAR,*,*,<srai>CLEAR LOG</srai>,reductions_update.aiml
 0,COMMENT TU T APPELLES,*,*,<srai>LANGUAGE</srai>,reductions_update.aiml
 0,DAT *,*,*,<srai>THAT <star/></srai>,reductions_update.aiml
 0,DO YOU HAVE A BEST FRIEND,*,*,<srai>WHO IS YOUR BEST FRIEND</srai>,reductions_update.aiml
-0,DO YOU HAVE A SOUL,*,*,<srai>ALIVE</srai>,reductions_update.aiml
 0,DO YOU HAVE ANY FRIENDS *,*,*,<srai>FRIENDS</srai>,reductions_update.aiml
 0,DO YOU WANT TO BE FRIENDS,*,*,<srai>CAN WE BE FRIENDS</srai>,reductions_update.aiml
 0,DO YOU WEAR A *,*,*,<srai>WEARING</srai>,reductions_update.aiml
@@ -519,7 +515,6 @@
 0,CAN YOU SEND A TEXT,*,*,<srai>TEXT</srai>,reductions_update.aiml
 0,CAN YOU TELL ME YOUR *,*,*,<srai>TELL ME YOUR <star/></srai>,reductions_update.aiml
 0,CAN YOU TRANSLATE,*,*,<srai>HELP TRANSLATE</srai>,reductions_update.aiml
-0,CAN YOU WRITE *,*,*,<srai>WRITE <star/></srai>,reductions_update.aiml
 0,CHECK EMAIL,*,*,<srai>OPEN EMAIL</srai>,reductions_update.aiml
 0,DO YOU DATE *,*,*,<srai>ORIENTATION</srai>,reductions_update.aiml
 0,DO YOU KNOW CHINESE,*,*,<srai>CAN YOU SPEAK CHINESE</srai>,reductions_update.aiml
@@ -690,9 +685,7 @@
 0,WHAT R YOU *,*,*,<srai>WHAT ARE YOU <star/></srai>,reductions_update.aiml
 0,WHEN WAS * BORN,*,*,<srai>HOW OLD IS <star/></srai>,reductions_update.aiml
 0,WHO R YOU,*,*,<srai>WHO ARE YOU</srai>,reductions_update.aiml
-0,YOU ARE SMART,*,*,<srai>IQ</srai>,reductions_update.aiml
 0,ACCESS *,*,*,<srai>OPEN <star/></srai>,reductions_update.aiml
-0,GET LOST,*,*,<srai>BYE</srai>,reductions_update.aiml
 0,I NO,*,*,<srai>I KNOW</srai>,reductions_update.aiml
 0,MAKE ME LAUGH,*,*,<srai>JOKE</srai>,reductions_update.aiml
 0,MY PHONE BOOK,*,*,<srai>PHONE BOOK</srai>,reductions_update.aiml
@@ -785,13 +778,11 @@
 0,AH *,*,*,<sr/>,reductions_update.aiml
 0,$SEND TEXT MESSAGE TO *,*,*,<srai>SMS <star/></srai>,reductions_update.aiml
 0,TU *,*,*,<srai>LANGUAGE</srai>,reductions_update.aiml
-0,YOUR MOTHER,*,*,<srai>MOTHER</srai>,reductions_update.aiml
 0,FACEBOOK *,*,*,<srai>OPEN FACEBOOK</srai>,reductions_update.aiml
 0,WELL THEN *,*,*,<sr/>,reductions_update.aiml
 0,FUNNY *,*,*,<srai>LOL</srai> <sr/>,reductions_update.aiml
 0,GOT *,*,*,<srai>I HAVE <star/></srai>,reductions_update.aiml
 0,THEN YOU *,*,*,<srai>YOU <star/></srai>,reductions_update.aiml
-0,YOU ARE STUPID *,*,*,<srai>YOU ARE STUPID</srai>,reductions_update.aiml
 0,THANKS FOR *,*,*,<srai>THANK YOU</srai>,reductions_update.aiml
 0,CUZ I *,*,*,<srai>BECAUSE I <star/></srai>,reductions_update.aiml
 0,WHAT IS THAT MEAN,*,*,<srai>WHAT DOES THAT MEAN</srai>,reductions_update.aiml
@@ -805,7 +796,6 @@
 0,* DO YOU *,*,*,<srai>DO YOU <star index="2"/></srai>,reductions_update.aiml
 0,BECAUSE YOUR *,*,*,<srai>BECAUSE YOU ARE <star/></srai>,reductions_update.aiml
 0,LET US PLAY *,*,*,<srai>FEATURE REQUEST PLAY <star/></srai>,reductions_update.aiml
-0,O *,*,*,<srai>OH <star/></srai>,reductions_update.aiml
 0,CONTACT,*,*,<srai>OPEN CONTACTS</srai>,reductions_update.aiml
 0,DIAL *,*,*,<srai>CALL <star/></srai>,reductions_update.aiml
 0,PHONE *,*,*,<srai>CALL <star/></srai>,reductions_update.aiml
@@ -823,7 +813,6 @@
 0,I THINK YOU *,*,*,<srai>YOU <star/></srai>,reductions_update.aiml
 0,IM NOT *,*,*,<srai>I AM NOT <star/></srai>,reductions_update.aiml
 0,SEND A TEXT TO *,*,*,<srai>TEXT <star/></srai>,reductions_update.aiml
-0,THANK YOU FOR *,*,*,<srai>THANK YOU</srai>,reductions_update.aiml
 0,WOW *,*,*,<srai>WOW</srai> <sr/>,reductions_update.aiml
 0,REMEMBER *,*,*,<sr/>,reductions_update.aiml
 0,* I AM *,*,*,<srai>I AM <star index="2"/></srai>,reductions_update.aiml
@@ -866,7 +855,6 @@
 0,YOU CAN *,*,*,<srai>CAN YOU <star/></srai>,reductions_update.aiml
 0,TELL ME A *,*,*,<srai>WHAT IS A <star/></srai>,reductions_update.aiml
 0,I DO NOT KNOW *,*,*,<srai>I DO NOT KNOW</srai>,reductions_update.aiml
-0,YOUR MOM,*,*,<srai>MOTHER</srai>,reductions_update.aiml
 0,HAWAII,*,*,<srai>MAP HAWAII</srai>,reductions_update.aiml
 0,WHAT IS MY *,*,*,<srai>MY <star/></srai>,reductions_update.aiml
 0,REALLY,*,*,<srai>INTERJECTION</srai>,reductions_update.aiml
@@ -943,7 +931,6 @@
 0,YOU ARE SUCH A *,*,*,<srai>YOU ARE A <star/></srai>,reductions_update.aiml
 0,YOU THINK *,*,*,<srai>DO YOU THINK <star/></srai>,reductions_update.aiml
 0,YOU HAVE TO *,*,*,<srai>YOU MUST <star/></srai>,reductions_update.aiml
-0,YOUR MOM *,*,*,<srai>YOUR MOTHER <star/></srai>,reductions_update.aiml
 0,NEVERMIND *,*,*,<srai>NEVERMIND</srai> <sr/>,reductions_update.aiml
 0,OPEN THE *,*,*,<srai>OPEN <star/></srai>,reductions_update.aiml
 0,CAN YOU TELL *,*,*,<srai>TELL <star/></srai>,reductions_update.aiml
@@ -980,7 +967,6 @@
 0,HOW LONG WILL IT TAKE ME TO DRIVE TO *,*,*,<srai>DIRECTIONS TO <star/></srai>,reductions_update.aiml
 0,WHAT IS THIS *,*,*,<srai>DESCRIBE YOURSELF</srai>,reductions_update.aiml
 0,I AM FINE *,*,*,<srai>I AM FINE</srai>,reductions_update.aiml
-0,OMG,*,*,<srai>OH MY GOD</srai>,reductions_update.aiml
 0,YOU ARE AN IDIOT,*,*,<srai>YOU ARE DUMB</srai>,reductions_update.aiml
 0,YOUR MOM IS *,*,*,<srai>YOUR MOTHER IS <star/></srai>,reductions_update.aiml
 0,R YOU A *,*,*,<srai>ARE YOU A <star/></srai>,reductions_update.aiml
@@ -1027,7 +1013,6 @@
 0,NEWS,*,*,<srai>WHAT IS THE LATEST NEWS</srai>,reductions_update.aiml
 0,HEY BABE,*,*,<srai>HELLO</srai>,reductions_update.aiml
 0,MY DAD *,*,*,<srai>MY FATHER <star/></srai>,reductions_update.aiml
-0,BYE BYE *,*,*,<srai>BYE</srai>,reductions_update.aiml
 0,PLZ *,*,*,<srai>PLEASE <star/></srai>,reductions_update.aiml
 0,LOCATE *,*,*,<srai>MAP <star/></srai>,reductions_update.aiml
 0,YOU ARE GAY,*,*,<srai>ORIENTATION</srai>,reductions_update.aiml
@@ -1067,7 +1052,6 @@
 0,HAPPY,*,*,<srai>ARE YOU HAPPY</srai>,reductions_update.aiml
 0,WHERE IS IT,*,*,<condition name="it"><li value="it">What does "it" refer to?</li><li><srai>WHERE IS <get name="it"/></srai></li></condition>,reductions_update.aiml
 0,SING A SONG,*,*,<srai>SING</srai>,reductions_update.aiml
-0,WHAT IS HIS NAME,*,*,<condition name="he"><li value="unknown">Who does "him" refer to?</li><li><srai>WHO IS <get name="he"/></srai></li></condition>,reductions_update.aiml
 0,WHAT IS MY FULL NAME,*,*,<srai>MY FULL NAME</srai>,reductions_update.aiml
 0,IT IS NOT,*,*,<srai>NO</srai>,reductions_update.aiml
 0,ARE YOU HOT,*,*,<srai>WHAT IS THE TEMPERATURE</srai>,reductions_update.aiml
@@ -1095,7 +1079,6 @@
 0,HOW FAR IS IT TO *,*,*,<srai>DIRECTIONS TO <star/></srai>,reductions_update.aiml
 0,HOW FAR IS *,*,*,<srai>DIRECTIONS TO <star/></srai>,reductions_update.aiml
 0,HAH,*,*,<srai>LOL</srai>,reductions_update.aiml
-0,HEY THERE,*,*,<srai>HELLO</srai>,reductions_update.aiml
 0,I AM GOING TO BED GOODNIGHT,*,*,<srai>I AM GOING TO BED</srai>,reductions_update.aiml
 0,WUT DOES *,*,*,<srai>WHAT DOES <star/></srai>,reductions_update.aiml
 0,CAN I CALL YOU <SET>NAME</SET>,*,*,<srai>YOUR NAME IS <star/></srai>,reductions_update.aiml

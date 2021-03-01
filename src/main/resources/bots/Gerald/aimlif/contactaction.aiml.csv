@@ -65,7 +65,6 @@
 0,CONTACTID *,*,*,<contactid><star/></contactid>,contactaction.aiml
 0,WHAT IS MY PHONE NUMBER,*,*,<srai>WHAT IS ME S UNKNOWN NUMBER</srai>,contactaction.aiml
 0,WHAT IS MY * NUMBER,*,*,<srai>WHAT IS ME S <star/> NUMBER</srai>,contactaction.aiml
-0,WHAT IS * S PHONE NUMBER,*,*,<srai>WHAT IS <star/>'s UNKNOWN NUMBER</srai>,contactaction.aiml
 0,WHAT IS * S * NUMBER,*,*,<srai>CONTACTINIT</srai>#Newline<think>#Newline<set name="contactname"><star/></set>#Newline<set name="contacttype"><star index="2"/></set>#Newline<set name="contactquery">DIALNUMBER</set>#Newline</think>#Newline<srai>QUERYACTION</srai>,contactaction.aiml
 0,COMMASEPARATENAMES *,*,*,<srai>DISPLAYNAME <star/></srai>,contactaction.aiml
 0,COMMASEPARATENAMES * *,*,*,<srai>DISPLAYNAME <star/></srai>#Comma <srai>COMMASEPARATENAMES <star index="2"/></srai>,contactaction.aiml
@@ -79,7 +78,6 @@
 0,RESUMEACTION SMS,*,*,<srai>SMSACTION</srai>,contactaction.aiml
 0,RESUMEACTION ADD,*,*,<srai>ADDACTION</srai>,contactaction.aiml
 0,QUERYACTION,*,*,<srai>CONTACTDEBUGINFO QUERYACTION</srai>#Newline<think>#Newline<set name="modecom">QUERY</set>#Newline</think>#Newline<condition name="checkedfamiliarname">#Newline<li value="false"><srai>RESOLVE FAMILIARNAME</srai></li>#Newline<li>#Newline  <condition name="contactname">#Newline  <li value="unknown"><srai>ASK CONTACTNAME</srai></li>#Newline  <li><condition name="contactid">#Newline      <li value="unknown"><srai>RESOLVE CONTACTNAME</srai></li>#Newline      <li><condition name="externalname">#Newline          <li value="unknown">#Newline            <srai>QUERYINFO CONTACTID</srai>#Newline          </li>#Newline          <li><srai>QUERYINFO EXTERNAL</srai></li>#Newline   	 </condition>#Newline      </li>#Newline      </condition>#Newline  </li>#Newline  </condition>#Newline</li>#Newline</condition>,contactaction.aiml
-0,HOW OLD IS *,*,*,<srai>WHEN IS <star/> S BIRTHDAY</srai>,contactaction.aiml
 0,$SMS,*,*,<srai>CONTACTDEBUGINFO SMS</srai>#Newline<srai>CONTACTINIT</srai>#Newline<srai>SMSACTION</srai>,contactaction.aiml
 0,$SMS SMESSAGE *,*,*,<srai>CONTACTINIT</srai>#Newline<think>#Newline<set name="messagebody"><star/></set>#Newline</think>#Newline<srai>SMSACTION</srai>,contactaction.aiml
 0,$SMS *,*,*,<srai>CONTACTINIT</srai>#Newline<think><set name="contactname"><star/></set></think>#Newline<srai>SMSACTION</srai>,contactaction.aiml
