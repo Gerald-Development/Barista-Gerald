@@ -1,6 +1,5 @@
 package main.java.de.voidtech.gerald.service;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,14 +11,18 @@ import org.springframework.stereotype.Service;
 public class ChatbotService {	
 	
 	private Map<String, Chat> chatInstances = new HashMap<String, Chat>();
-	private static final String URI = new File("src/main/resources").getAbsolutePath();
-	private static Bot GERALD_AI = new Bot("gerald", URI);
+	private final String URI = getClass().getClassLoader().getResource("ai").getPath();
+	private Bot geraldAI;
+	
+	public ChatbotService() {
+		this.geraldAI = new Bot("Gerald", URI);
+	}
 	
 	private Chat getChatInstance(String userID) {
 		if (chatInstances.containsKey(userID)) {
 			return chatInstances.get(userID);	
 		} else {
-		    Chat chatSession = new Chat(GERALD_AI);
+		    Chat chatSession = new Chat(geraldAI);
 			chatInstances.put(userID, chatSession);
 			return chatSession;
 		}
