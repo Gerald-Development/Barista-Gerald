@@ -73,8 +73,14 @@ public class CountRoutine extends AbstractRoutine {
 		}		
 	}
 	
-	private void incrementCount(int currentCount, String channelID, String lastUserID) {
-		int newCount = currentCount + 1;
+	private void setCount(int currentCount, String channelID, String lastUserID, String mode) {
+		int newCount = 0;
+		if (mode == "increment") {
+			newCount = currentCount + 1;
+		} else if (mode == "decrement") {
+			newCount = currentCount - 1;
+		}
+		
 		try(Session session = sessionFactory.openSession())
 		{
 			session.beginTransaction();
@@ -87,7 +93,6 @@ public class CountRoutine extends AbstractRoutine {
 			session.saveOrUpdate(dbChannel);
 			session.getTransaction().commit();			
 		}	
-		
 	}
 	
 	private void resetCount(String channelID) {
@@ -114,9 +119,12 @@ public class CountRoutine extends AbstractRoutine {
 					int countGiven = Integer.parseInt(message.getContentRaw());
 					
 					if (countGiven == currentCount + 1) {
-						incrementCount(currentCount, message.getChannel().getId(), message.getMember().getId());
+						setCount(currentCount, message.getChannel().getId(), message.getMember().getId(), "increment");
 						message.addReaction(CORRECT).queue();
-					} else {
+					} else if (countGiven == currentCount - 1) {
+						setCount(currentCount, message.getChannel().getId(), message.getMember().getId(), "decrement");
+						message.addReaction(CORRECT).queue();
+					}else {
 						resetCount(message.getChannel().getId());
 						message.addReaction(INCORRECT).queue();
 						message.getChannel().sendMessage("**You failed! The counter has been reset!**").queue();
@@ -135,6 +143,3 @@ public class CountRoutine extends AbstractRoutine {
 	}
 
 }
-
-
-
