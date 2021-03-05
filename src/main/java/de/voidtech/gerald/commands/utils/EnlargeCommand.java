@@ -39,7 +39,13 @@ public class EnlargeCommand extends AbstractCommand {
 	public void executeInternal(Message message, List<String> args) {
 		String emoteText = args.get(0);
 		String regexPattern = "([^0-9])";
-		String emoteID = emoteText.replaceAll(regexPattern, "");
+		String emoteID = "";
+		
+		if (emoteText.startsWith("<")) {
+			emoteID = Arrays.asList(emoteText.split(":")).get(2).replace(">", "");
+		} else {
+			emoteText.replaceAll(regexPattern, "");	
+		}
 
 		for (String extension : FILE_EXTENSIONS) {
 			if (checkForImage(emoteID, extension)) {
