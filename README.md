@@ -34,10 +34,9 @@ You want to host Gerald yourself? No problem just follow the following steps and
         token=DISCORD_TOKEN
         hibernate.User=POSTGRES_USER
         hibernate.Password=POSTGRES_PASSWORD
-        personalityForgeToken=CHAT_API_TOKEN
 ```
 - Set up a local Postgres Database with a database named "BaristaDB"
-- If you want to use the ChatAPI you also need to grab a token from [Personality Forge](https://www.personalityforge.com/)
+- If you want to use the ChatAPI you also need to grab the AIML files from our [CDN](https://cdn.voidtech.de/ai/) and place them in an AIML folder at the root of the project. This folder will also need to be present at the root of the JAR folder.
 
 We will soon make a follow up wiki entry for the whole GeraldConfig topic since there are more options to configure if you like!
 

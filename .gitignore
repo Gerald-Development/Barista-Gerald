@@ -23,6 +23,7 @@
 hs_err_pid*
 /bin/
 /target/
+/AIML/
 .settings
 dependency-reduced-pom.xml
 GeraldConfig.properties
