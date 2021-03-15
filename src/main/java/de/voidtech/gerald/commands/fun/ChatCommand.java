@@ -20,7 +20,7 @@ public class ChatCommand extends AbstractCommand{
 	private SessionFactory sessionFactory;
 	
 	@Autowired
-	private ChatbotService chatBot;
+	ChatbotService chatBot;
 	
 	private boolean chatChannelEnabled(String channelID) {
 		try(Session session = sessionFactory.openSession())
@@ -75,7 +75,7 @@ public class ChatCommand extends AbstractCommand{
 			}
 		} else {
 			message.getChannel().sendTyping().queue();
-			String reply = chatBot.getReply(String.join(" ", args), message.getMember().getId());
+			String reply = chatBot.getReply(String.join(" ", args), message.getAuthor().getId());
 			message.getChannel().sendMessage(reply).queue();
 		}
 		
@@ -83,7 +83,7 @@ public class ChatCommand extends AbstractCommand{
 
 	@Override
 	public String getDescription() {
-		return "This command allows you to enable automatic replies from GeraldAI! (Powered by our own AI)";
+		return "This command allows you to enable automatic replies from GeraldAI! (Powered by PersonalityForge)";
 	}
 	@Override
 	public String getUsage() {

@@ -75,4 +75,8 @@ public class GeraldConfig {
 		List<String> masters = Arrays.asList(StringUtils.split(config.getProperty("masters"), ','));
 		return masters;
 	}
+
+	public String getPersonalityForgeToken() {
+		return config.getProperty("PFToken");
+	}
 }
