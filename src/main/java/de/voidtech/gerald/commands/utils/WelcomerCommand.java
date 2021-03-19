@@ -1,11 +1,13 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
@@ -15,6 +17,7 @@ import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 @Command
 public class WelcomerCommand extends AbstractCommand{
@@ -24,6 +27,9 @@ public class WelcomerCommand extends AbstractCommand{
 	
 	@Autowired
 	private SessionFactory sessionFactory;
+	
+	@Autowired
+	private EventWaiter waiter;
 
 	private boolean customMessageEnabled(long guildID) {
 		try(Session session = sessionFactory.openSession())
@@ -77,29 +83,6 @@ public class WelcomerCommand extends AbstractCommand{
 		} else {
 			return false;
 		}
-	}
-	
-	private boolean inputIsValid(List<String> arguments) {
-		String argsString = String.join(" ", arguments);
-	
-		
-		if (!argsString.contains("-")) {
-			return false;
-		}
-		
-		List<String> dashesCheckList = Arrays.asList(argsString.split("-"));
-		if (dashesCheckList.size() < 3) {
-			return false;	
-		}
-		
-		String channel = arguments.get(1);
-		channel = parseChannel(channel);
-		
-		if (channel.equals("")) {
-			return false;
-		}
-		
-		return true;
 	}
 	
 	private String parseChannel(String inputString) {
@@ -178,86 +161,126 @@ public class WelcomerCommand extends AbstractCommand{
 		}
 	}
 	
+	private void clearWelcomer(Server server, Message message) {
+		if (customMessageEnabled(server.getId())) {
+			deleteCustomMessage(server.getId());
+			message.getChannel().sendMessage("**The Welcomer has been disabled.**").queue();
+		} else {
+			message.getChannel().sendMessage("**The Welcomer has not been set up yet!**").queue();
+		}
+	}
+	
+	private void setupWelcomer(Server server, Message message) {
+		if (customMessageEnabled(server.getId())) {
+			message.getChannel().sendMessage("**The Welcomer is already set up!**").queue();
+		} else {
+			message.getChannel().sendMessage("**Enter the ID or a mention of the channel you wish to use:**").queue();
+			
+			waiter.waitForEvent(MessageReceivedEvent.class,
+					channelEntryEvent -> ((MessageReceivedEvent) channelEntryEvent).getAuthor().getId().equals(message.getAuthor().getId()),
+					channelEntryEvent -> {
+						String channel = parseChannel(channelEntryEvent.getMessage().getContentRaw());
+						
+						if (channelExists(channel, message)) {
+							
+							message.getChannel().sendMessage("**Please enter your welcome message:**").queue();
+							waiter.waitForEvent(MessageReceivedEvent.class,
+									welcomeMessageInputEvent -> ((MessageReceivedEvent) welcomeMessageInputEvent).getAuthor().getId().equals(message.getAuthor().getId()),
+									welcomeMessageInputEvent -> {
+										String welcomeMessage = welcomeMessageInputEvent.getMessage().getContentRaw();
+										
+										message.getChannel().sendMessage("**Please enter your leave message:**").queue();
+										waiter.waitForEvent(MessageReceivedEvent.class,
+												leaveMessageInputEvent -> ((MessageReceivedEvent) leaveMessageInputEvent).getAuthor().getId().equals(message.getAuthor().getId()),
+												leaveMessageEvent -> {
+													String leaveMessage = leaveMessageEvent.getMessage().getContentRaw();
+													
+													addJoinLeaveMessage(server.getId(), channel, welcomeMessage, leaveMessage);
+													message.getChannel().sendMessage("**The Welcomer has been set up!**\n\n"
+															+ "Channel: <#" + channel + ">\n"
+															+ "Join message: " + welcomeMessage + "\n"
+															+ "Leave message: " + leaveMessage).queue();
+													
+												}, 30, TimeUnit.SECONDS, 
+												() -> message.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());	
+										
+									}, 30, TimeUnit.SECONDS, 
+									() -> message.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());	
+					
+						} else {
+							message.getChannel().sendMessage("**You need to mention a channel or use its ID!**").queue();
+						}
+						
+					}, 15, TimeUnit.SECONDS, 
+					() -> message.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());	
+
+		}	
+	}
+	
+	private void changeChannel(Server server, Message message, List<String> args) {
+		if (customMessageEnabled(server.getId())) {
+			String channel = parseChannel(args.get(1));
+			
+			if (channelExists(channel, message)) {
+				updateChannel(server.getId(), channel, message);
+				message.getChannel().sendMessage("**The channel has been changed to** <#" + channel + ">").queue();
+			} else {
+				message.getChannel().sendMessage("**You need to mention a channel or use its ID!**").queue();
+			}
+		} else {
+			message.getChannel().sendMessage("**The Welcomer has not been set up yet! See below:\n\n**" + this.getUsage()).queue();
+		}
+	}
+	
+	private void changeWelcomeMessage(Server server, Message message, List<String> args) {
+		if (customMessageEnabled(server.getId())) {
+			
+			String joinMessage = "";
+			
+			for (int i = 1; i < args.size(); i++) {
+				joinMessage = joinMessage + args.get(i);
+			}
+		
+			updateJoinMessage(server.getId(), joinMessage, message);
+			message.getChannel().sendMessage("**The join message has been changed to** " + joinMessage).queue();
+
+		} else {
+			message.getChannel().sendMessage("**The Welcomer has not been set up yet! See below:\n\n**" + this.getUsage()).queue();
+		}
+	}
+	
+	private void changeLeaveMessage(Server server, Message message, List<String> args) {
+		if (customMessageEnabled(server.getId())) {
+			
+			String leaveMessage = "";
+			
+			for (int i = 1; i < args.size(); i++) {
+				leaveMessage = leaveMessage + args.get(i);
+			}
+			
+			updateLeaveMessage(server.getId(), leaveMessage, message);
+			message.getChannel().sendMessage("**The leave message has been changed to** " + leaveMessage).queue();
+
+		} else {
+			message.getChannel().sendMessage("**The Welcomer has not been set up yet! See below:\n\n**" + this.getUsage()).queue();
+		}
+	}
+	
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		
 		Server server = serverService.getServer(message.getGuild().getId());
 		
 		if (args.get(0).equals("clear")) {
-			if (customMessageEnabled(server.getId())) {
-				deleteCustomMessage(server.getId());
-				message.getChannel().sendMessage("**The Welcomer has been disabled.**").queue();
-			} else {
-				message.getChannel().sendMessage("**The Welcomer has not been set up yet!**").queue();
-			}
-		} else if (args.get(0).equals("set")) {
-			if (customMessageEnabled(server.getId())) {
-				message.getChannel().sendMessage("**The Welcomer is already set up!**").queue();
-			} else {
-				if (inputIsValid(args)) {
-					String channel = parseChannel(args.get(1));
-					
-					if (channelExists(channel, message)) {
-						List<String> commandArgs = Arrays.asList(String.join(" ", args).split("-"));
-						String joinMessage = commandArgs.get(1);
-						String leaveMessage = commandArgs.get(2);
-						addJoinLeaveMessage(server.getId(), channel, joinMessage, leaveMessage);
-						message.getChannel().sendMessage("**The Welcomer has been set up!**\n\n"
-								+ "Channel: <#" + channel + ">\n"
-								+ "Join message: " + joinMessage + "\n"
-								+ "Leave message: " + leaveMessage).queue();
-				
-					} else {
-						message.getChannel().sendMessage("**You need to mention a channel or use its ID!**").queue();
-					}
-					
-				} else {
-					message.getChannel().sendMessage("**Your arguments haven't been set up right:\n\nExample: **" + this.getUsage()).queue();
-				}	
-			}
+			clearWelcomer(server, message);
+		} else if (args.get(0).equals("setup")) {			
+			setupWelcomer(server, message);			
 		} else if (args.get(0).equals("channel")) {
-			if (customMessageEnabled(server.getId())) {
-				String channel = parseChannel(args.get(1));
-				
-				if (channelExists(channel, message)) {
-					updateChannel(server.getId(), channel, message);
-					message.getChannel().sendMessage("**The channel has been changed to** <#" + channel + ">").queue();
-				} else {
-					message.getChannel().sendMessage("**You need to mention a channel or use its ID!**").queue();
-				}
-			} else {
-				message.getChannel().sendMessage("**The Welcomer has not been set up yet! See below:\n\n**" + this.getUsage()).queue();
-			}
+			changeChannel(server, message, args);
 		} else if (args.get(0).equals("joinmsg")) {
-			if (customMessageEnabled(server.getId())) {
-				
-				String joinMessage = "";
-				
-				for (int i = 1; i < args.size(); i++) {
-					joinMessage = joinMessage + args.get(i);
-				}
-			
-				updateJoinMessage(server.getId(), joinMessage, message);
-				message.getChannel().sendMessage("**The join message has been changed to** " + joinMessage).queue();
-
-			} else {
-				message.getChannel().sendMessage("**The Welcomer has not been set up yet! See below:\n\n**" + this.getUsage()).queue();
-			}
+			changeWelcomeMessage(server, message, args);
 		} else if (args.get(0).equals("leavemsg")) {
-			if (customMessageEnabled(server.getId())) {
-				
-				String leaveMessage = "";
-				
-				for (int i = 1; i < args.size(); i++) {
-					leaveMessage = leaveMessage + args.get(i);
-				}
-				
-				updateLeaveMessage(server.getId(), leaveMessage, message);
-				message.getChannel().sendMessage("**The leave message has been changed to** " + leaveMessage).queue();
-
-			} else {
-				message.getChannel().sendMessage("**The Welcomer has not been set up yet! See below:\n\n**" + this.getUsage()).queue();
-			}
+			changeLeaveMessage(server, message, args);
 		}
 		
 	}
@@ -269,10 +292,10 @@ public class WelcomerCommand extends AbstractCommand{
 
 	@Override
 	public String getUsage() {
-		return "welcomer set #welcome -has joined the server! -has left the server :(\n"
-				+ "welcomer channel #welcome-new-members\n"
-				+ "welcomer joinmsg welcome to our server!\n"
-				+ "welcomer leavemsg we will miss you!\n"
+		return "welcomer setup (then follow the steps you are shown)\n\n"
+				+ "welcomer channel #welcome-new-members (to change the channel)\n\n"
+				+ "welcomer joinmsg welcome to our server! (to change the welcome message)\n\n"
+				+ "welcomer leavemsg we will miss you! (to change the leave message)\n\n"
 				+ "welcomer clear";
 	}
 
