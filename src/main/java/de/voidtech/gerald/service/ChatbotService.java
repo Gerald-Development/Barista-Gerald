@@ -1,41 +1,34 @@
 package main.java.de.voidtech.gerald.service;
 
-import java.io.IOException;
+import java.util.HashMap;
 
-import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.alicebot.ab.Bot;
+import org.alicebot.ab.Chat;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ChatbotService {
+
+	private Bot Gerald_AI = null;
+
+	private HashMap<String, Chat> chatInstances = new HashMap<String, Chat>();
 	
-	@Autowired
-	GeraldConfig config;
-	
-    public String getReply(String message, String ID) {
-    	String API_KEY = config.getPersonalityForgeToken();
-		String REQUEST_URL = "https://www.personalityforge.com/api/chat/?apiKey=" + API_KEY + "&chatBotID=6&message=" + message + "&externalID=" + ID;
+	private Chat getChatInstance(String userID) {
 		
-		try {
-			Document doc = Jsoup.connect(REQUEST_URL).get();
-			String jsonText = doc.select("body").text();
-			
-			JSONObject json = new JSONObject(jsonText.toString());	
-			
-			String reply = json.getJSONObject("message").getString("message");
-			
-			reply.replaceAll("<br>", "");
-			reply.replaceAll("</br>", "");
-			
-			return reply;
-			
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (!chatInstances.containsKey(userID)) {
+			chatInstances.put(userID, new Chat(Gerald_AI));
 		}
-		
-		return "no message";
+		return chatInstances.get(userID);
 	}
 	
-}
+    public String getReply(String message, String ID) {
+    	
+    	if (Gerald_AI == null) {
+    		GeraldConfig config = new GeraldConfig();
+    		Gerald_AI = new Bot("Gerald", config.getAIMLFolderDirectory());	
+    	}
+    	
+    	String reply = getChatInstance(ID).multisentenceRespond(message);
+    	return reply == "" ? "What?" : reply;
+	}
+	}

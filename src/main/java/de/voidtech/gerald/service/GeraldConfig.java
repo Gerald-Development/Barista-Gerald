@@ -76,7 +76,8 @@ public class GeraldConfig {
 		return masters;
 	}
 
-	public String getPersonalityForgeToken() {
-		return config.getProperty("PFToken");
+	public String getAIMLFolderDirectory() {
+		String dir = config.getProperty("AIMLDirectory"); 
+		return dir != null ? dir : "AIML";
 	}
 }
