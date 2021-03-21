@@ -15,27 +15,34 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class HelpCommand extends AbstractCommand{	
-	 @Autowired
-	 private List<AbstractCommand> commands;
+	@Autowired
+	private List<AbstractCommand> commands;
 	
 	private String capitaliseFirstLetter(String word) {
 		return word.substring(0, 1).toUpperCase() + word.substring(1);
 	}
 	
-	private void showCategoryList(Message message) {		
-		String commandCategoryList = "";
+	private void showCategoryList(Message message) {
+		
+		boolean inlineFieldState = true;
+		
+		EmbedBuilder categoryListEmbedBuilder = new EmbedBuilder();
+		categoryListEmbedBuilder.setColor(Color.ORANGE);
+		categoryListEmbedBuilder.setTitle("Barista Gerald Help", GlobalConstants.LINKTREE_URL);
+		categoryListEmbedBuilder.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl());
+		categoryListEmbedBuilder.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, message.getJDA().getSelfUser().getAvatarUrl());
 		
 		for (CommandCategory commandCategory : CommandCategory.values()) {
-			commandCategoryList = commandCategoryList + "```\n► " + capitaliseFirstLetter(commandCategory.getCategory()) + "```\n"; 
+			String title = capitaliseFirstLetter(commandCategory.getCategory()) + " " + commandCategory.getIcon();
+			String description = "```\nhelp " + commandCategory.getCategory() + "\n```";
+			categoryListEmbedBuilder.addField(title, description, inlineFieldState);
+			inlineFieldState = !inlineFieldState;
 		}
 		
-		MessageEmbed categoryListEmbed = new EmbedBuilder()
-				.setColor(Color.ORANGE)
-				.setTitle("Barista Gerald Help", GlobalConstants.LINKTREE_URL)
-				.setDescription("**The command categories are as follows:** \n\n" + commandCategoryList + "\nUse `help [commandName]` or `help [categoryName]` For more information!")
-				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
-				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, message.getJDA().getSelfUser().getAvatarUrl())
-				.build();
+		categoryListEmbedBuilder.addField("Any Command :clipboard: ", "```\nhelp [command]\n```",true);
+		
+		MessageEmbed categoryListEmbed = categoryListEmbedBuilder.build();
+		
 		message.getChannel().sendMessage(categoryListEmbed).queue();
 	}
 	
@@ -47,6 +54,16 @@ public class HelpCommand extends AbstractCommand{
 		}
 		return false;
 	};
+	
+	
+	private String getCategoryIconByName(String name) {
+		for (CommandCategory commandCategory : CommandCategory.values()) {
+			if (commandCategory.getCategory().equals(name)) {
+				return commandCategory.getIcon();
+			}
+		}
+		return "";
+	}
 	
 	private boolean isCommand(String commandName) {
 		for (AbstractCommand command : commands) {
@@ -68,8 +85,8 @@ public class HelpCommand extends AbstractCommand{
 		
 		MessageEmbed commandHelpEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
-				.setTitle("Barista Gerald Help", GlobalConstants.LINKTREE_URL)
-				.addField(capitaliseFirstLetter(categoryName) + " Commands", commandList, false)
+				.setTitle(capitaliseFirstLetter(categoryName) + " Commands Help", GlobalConstants.LINKTREE_URL)
+				.addField(capitaliseFirstLetter(categoryName) + " Commands " + getCategoryIconByName(categoryName), commandList, false)
 				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
 				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, message.getJDA().getSelfUser().getAvatarUrl())
 				.build();
@@ -86,14 +103,14 @@ public class HelpCommand extends AbstractCommand{
 		}
 		MessageEmbed commandHelpEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
-				.setTitle("Barista Gerald Help", GlobalConstants.LINKTREE_URL)
+				.setTitle("How it works: " + capitaliseFirstLetter(commandToBeDisplayed.getName()) + " Command", GlobalConstants.LINKTREE_URL)
 				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
-				.addField("Command Name", "```" + capitaliseFirstLetter(commandToBeDisplayed.getName()) + "```", false)
+				.addField("Command Name", "```" + capitaliseFirstLetter(commandToBeDisplayed.getName()) + "```", true)
+				.addField("Category", "```" + capitaliseFirstLetter(commandToBeDisplayed.getCommandCategory().getCategory()) + "```", true)
 				.addField("Description", "```" + commandToBeDisplayed.getDescription() + "```", false)
 				.addField("Usage", "```" + commandToBeDisplayed.getUsage() + "```", false)
 				.addField("Requires Arguments", "```" + commandToBeDisplayed.requiresArguments() + "```", true)
 				.addField("Is DM Capable", "```" + commandToBeDisplayed.isDMCapable() + "```", true)
-				.addField("Category", "```" + capitaliseFirstLetter(commandToBeDisplayed.getCommandCategory().getCategory()) + "```", true)
 				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, message.getJDA().getSelfUser().getAvatarUrl())
 				.build();
 		message.getChannel().sendMessage(commandHelpEmbed).queue();
@@ -101,6 +118,10 @@ public class HelpCommand extends AbstractCommand{
 	
 	@Override
 	public void executeInternal(Message message, List<String> args) {
+		
+		//Don't ask...
+		commands.add(this);
+		
 		if (args.size() == 0) {
 			showCategoryList(message);
 		} else {

@@ -1,31 +1,34 @@
 package main.java.de.voidtech.gerald.service;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import org.alicebot.ab.Bot;
 import org.alicebot.ab.Chat;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ChatbotService {	
+public class ChatbotService {
+
+	private Bot Gerald_AI = null;
+
+	private HashMap<String, Chat> chatInstances = new HashMap<String, Chat>();
 	
-	private Map<String, Chat> chatInstances = new HashMap<String, Chat>();
-
-	private Bot GERALD_AI = new Bot("gerald", "AIML");
-
 	private Chat getChatInstance(String userID) {
-		if (chatInstances.containsKey(userID)) {
-			return chatInstances.get(userID);	
-		} else {
-		    Chat chatSession = new Chat(GERALD_AI);
-			chatInstances.put(userID, chatSession);
-			return chatSession;
+		
+		if (!chatInstances.containsKey(userID)) {
+			chatInstances.put(userID, new Chat(Gerald_AI));
 		}
+		return chatInstances.get(userID);
 	}
 	
-	public String getReply(String stimulus, String userID) {
-		String response = getChatInstance(userID).multisentenceRespond(stimulus); 
-	    return response == "" ? "What?" : response;
+    public String getReply(String message, String ID) {
+    	
+    	if (Gerald_AI == null) {
+    		GeraldConfig config = new GeraldConfig();
+    		Gerald_AI = new Bot("Gerald", config.getAIMLFolderDirectory());	
+    	}
+    	
+    	String reply = getChatInstance(ID).multisentenceRespond(message);
+    	return reply == "" ? "What?" : reply;
 	}
-}
+	}

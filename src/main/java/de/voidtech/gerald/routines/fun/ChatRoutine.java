@@ -36,7 +36,7 @@ public class ChatRoutine extends AbstractRoutine{
 		}
 		
 		if (chatChannelEnabled(message.getChannel().getId())) {
-			String reply = chatBot.getReply(message.getContentRaw(), message.getMember().getId());
+			String reply = chatBot.getReply(message.getContentRaw(), message.getAuthor().getId());
 			message.getChannel().sendMessage(reply).queue();
 		}
 	}

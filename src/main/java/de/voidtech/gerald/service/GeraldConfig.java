@@ -75,4 +75,9 @@ public class GeraldConfig {
 		List<String> masters = Arrays.asList(StringUtils.split(config.getProperty("masters"), ','));
 		return masters;
 	}
+
+	public String getAIMLFolderDirectory() {
+		String dir = config.getProperty("AIMLDirectory"); 
+		return dir != null ? dir : "AIML";
+	}
 }
