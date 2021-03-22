@@ -25,7 +25,7 @@ public class ChatbotService {
     	
     	if (Gerald_AI == null) {
     		GeraldConfig config = new GeraldConfig();
-    		Gerald_AI = new Bot("Gerald", config.getAIMLFolderDirectory());	
+    		Gerald_AI = new Bot("Gerald", config.getAIMLFolderDirectory());
     	}
     	
     	String reply = getChatInstance(ID).multisentenceRespond(message);
