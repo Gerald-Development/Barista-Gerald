@@ -1,4 +1,4 @@
-package main.java.de.voidtech.gerald.commands.fun;
+package main.java.de.voidtech.gerald.commands.utils;
 
 import java.awt.Color;
 import java.io.BufferedReader;
@@ -184,7 +184,7 @@ public class CompileCommand extends AbstractCommand {
 
 	@Override
 	public CommandCategory getCommandCategory() {
-		return CommandCategory.FUN;
+		return CommandCategory.UTILS;
 	}
 
 	@Override

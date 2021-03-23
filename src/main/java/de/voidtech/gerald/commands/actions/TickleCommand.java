@@ -31,7 +31,7 @@ public class TickleCommand extends ActionsCommand{
 
 	@Override
 	public CommandCategory getCommandCategory() {
-		return CommandCategory.FUN;
+		return CommandCategory.ACTIONS;
 	}
 
 	@Override

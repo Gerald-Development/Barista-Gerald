@@ -1,0 +1,186 @@
+package main.java.de.voidtech.gerald.commands.fun;
+
+import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+
+@Command
+public class XKCDCommand extends AbstractCommand {
+	
+	@Autowired
+	private EventWaiter waiter;
+	
+	private static final Logger LOGGER = Logger.getLogger(XKCDCommand.class.getName());
+	
+	private static final String XKCD_URL = "https://xkcd.com/";
+	private static final String SUFFIX = "info.0.json";
+	private static final String EMOTE_UNICODE = "U+1f539";
+
+	private boolean isInteger(String str) {
+	    if (str == null) {
+	        return false;
+	    }
+	    int length = str.length();
+	    if (length == 0) {
+	        return false;
+	    }
+	    int i = 0;
+	    if (str.charAt(0) == '-') {
+	        if (length == 1) {
+	            return false;
+	        }
+	        i = 1;
+	    }
+	    for (; i < length; i++) {
+	        char c = str.charAt(i);
+	        if (c < '0' || c > '9') {
+	            return false;
+	        }
+	    }
+	    return true;
+	}
+	
+	private String makeRequest(String URL) {
+		try {
+			HttpURLConnection con = (HttpURLConnection) new URL(URL).openConnection();
+			con.setRequestMethod("GET");
+			con.disconnect();
+			if (con.getResponseCode() == 200) {
+				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+					return in.lines().collect(Collectors.joining());
+				}
+			} else {
+				return "";
+			}
+			
+		} catch (IOException | JSONException e) {
+			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
+		}
+		return "";
+	}
+	
+	private String getCurrentXKCD() {
+		return makeRequest(XKCD_URL + SUFFIX);
+	}
+	
+	private String getXKCDById(int id) {
+		return makeRequest(XKCD_URL + id + "/" + SUFFIX);
+	}
+	
+	private void sendXKCD(JSONObject xkcd, Message message) {
+		String day = xkcd.get("day").toString();
+		String month = xkcd.get("month").toString();
+		String year = xkcd.get("year").toString();
+		String title = xkcd.get("safe_title").toString();
+		String alt = xkcd.get("alt").toString();
+		String img = xkcd.get("img").toString();
+		String num = xkcd.get("num").toString();
+		
+		MessageEmbed xkcdEmbed = new EmbedBuilder()
+				.setColor(Color.CYAN)
+				.setTitle(num + " - " + title, img)
+				.setImage(img)
+				.setFooter(day + "-" + month + "-" + year)
+				.build();
+		message.getChannel().sendMessage(xkcdEmbed).queue(sentMessage -> {
+			sentMessage.addReaction(EMOTE_UNICODE).queue();
+			waiter.waitForEvent(MessageReactionAddEvent.class,
+					event -> ((MessageReactionAddEvent) event).getUser().getId().equals(message.getAuthor().getId()),
+					event -> {
+					boolean moreInfoButtonPressed = event.getReactionEmote().toString().equals("RE:" + EMOTE_UNICODE);
+					if (moreInfoButtonPressed) {
+						MessageEmbed newXkcdEmbed = new EmbedBuilder()
+								.setColor(Color.CYAN)
+								.setTitle(num + " - " + title, img)
+								.setDescription(alt)
+								.setImage(img)
+								.setFooter(day + "-" + month + "-" + year)
+								.build();
+						sentMessage.editMessage(newXkcdEmbed).queue();
+					}
+				}, 30, TimeUnit.SECONDS, () -> {});
+		});
+		
+	}
+	
+	@Override
+	public void executeInternal(Message message, List<String> args) {
+		if (args.size() == 0) {
+			String response = getCurrentXKCD();
+			String current = new JSONObject(response).get("num").toString();
+			String randomResponse = getXKCDById(new Random().nextInt(Integer.parseInt(current)));
+			sendXKCD(new JSONObject(randomResponse), message);
+		} else if (args.get(0).equals("latest")) {
+			String currentResponse = getCurrentXKCD();
+			sendXKCD(new JSONObject(currentResponse), message);
+		} else if (args.get(0).equals("id")) {
+			
+			if (isInteger(args.get(1))) {
+				String byIdResponse = getXKCDById(Integer.parseInt(args.get(1)));
+				if (byIdResponse.equals("")) {
+					message.getChannel().sendMessage("**That ID could not be found!**").queue();
+				} else {
+					sendXKCD(new JSONObject(byIdResponse), message);
+				}	
+			} else {
+				message.getChannel().sendMessage("**That ID is not valid!**").queue();
+			}
+		}
+	}
+
+	@Override
+	public String getDescription() {
+		return "Gets a random XKCD comic, the latest XKCD comic, or an XKCD comic by id";
+	}
+
+	@Override
+	public String getUsage() {
+		return "xkcd\n"
+				+ "xkcd latest\n"
+				+ "xkcd id [id]";
+	}
+
+	@Override
+	public String getName() {
+		return "xkcd";
+	}
+
+	@Override
+	public CommandCategory getCommandCategory() {
+		return CommandCategory.FUN;
+	}
+
+	@Override
+	public boolean isDMCapable() {
+		return true;
+	}
+
+	@Override
+	public boolean requiresArguments() {
+		return false;
+	}
+
+}
