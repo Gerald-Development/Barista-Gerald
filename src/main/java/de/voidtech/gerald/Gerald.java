@@ -1,8 +1,6 @@
 package main.java.de.voidtech.gerald;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 
 import javax.security.auth.login.LoginException;
@@ -20,6 +18,7 @@ import main.java.de.voidtech.gerald.listeners.ChannelDeleteListener;
 import main.java.de.voidtech.gerald.listeners.GuildGoneListener;
 import main.java.de.voidtech.gerald.listeners.MemberListener;
 import main.java.de.voidtech.gerald.listeners.MessageListener;
+import main.java.de.voidtech.gerald.listeners.ReactionAddListener;
 import main.java.de.voidtech.gerald.listeners.ReadyListener;
 import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.GlobalConfigService;
@@ -28,6 +27,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 
 @SpringBootApplication
@@ -36,29 +36,22 @@ public class Gerald {
 	@Bean
 	@DependsOn(value = "sessionFactory")
 	@Autowired
-	public JDA getJDA(MessageListener msgListener, GuildGoneListener guildGoneListener, ChannelDeleteListener channelDeleteListener,  GeraldConfig configService, GlobalConfigService globalConfService, EventWaiter eventWaiter, MemberListener memberListener) throws LoginException, InterruptedException
+	public JDA getJDA(MessageListener msgListener, GuildGoneListener guildGoneListener, ChannelDeleteListener channelDeleteListener,  GeraldConfig configService, GlobalConfigService globalConfService, EventWaiter eventWaiter, MemberListener memberListener, ReactionAddListener reactionAddListener) throws LoginException, InterruptedException
 	{
 		GlobalConfig globalConf = globalConfService.getGlobalConfig();
 		
 		
 		return JDABuilder.createDefault(configService.getToken())//
-				.enableIntents(getNonPrivilegedIntents())//
-				.setMemberCachePolicy(MemberCachePolicy.DEFAULT)//
+				.enableCache(CacheFlag.CLIENT_STATUS)//
+				.enableIntents(Arrays.asList(GatewayIntent.values()))//
+				.setMemberCachePolicy(MemberCachePolicy.ALL)//
 				.setBulkDeleteSplittingEnabled(false)//
 				.setCompression(Compression.NONE)//
-				.addEventListeners(eventWaiter, msgListener, new ReadyListener(), guildGoneListener, channelDeleteListener, memberListener)//
+				.addEventListeners(eventWaiter, msgListener, new ReadyListener(), guildGoneListener, channelDeleteListener, memberListener, reactionAddListener)//
 				.setActivity(EntityBuilder.createActivity(globalConf.getStatus(),
 						 GlobalConstants.STREAM_URL, globalConf.getActivity()))
 				.build()//
 				.awaitReady();
-	}
-	
-	private List<GatewayIntent> getNonPrivilegedIntents() {
-		List<GatewayIntent> gatewayIntents = new ArrayList<GatewayIntent>(Arrays.asList(GatewayIntent.values()));
-		gatewayIntents.remove(GatewayIntent.GUILD_MEMBERS);
-		gatewayIntents.remove(GatewayIntent.GUILD_PRESENCES);
-		
-		return gatewayIntents;
 	}
 	
 	@Bean
