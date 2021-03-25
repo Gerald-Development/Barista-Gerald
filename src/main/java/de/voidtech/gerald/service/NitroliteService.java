@@ -1,18 +1,23 @@
 package main.java.de.voidtech.gerald.service;
 
+import java.util.EnumSet;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.json.JSONObject;
+
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
-import okhttp3.*;
-import org.json.JSONObject;
-
-import java.util.EnumSet;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class NitroliteService {
 	private static volatile NitroliteService instance;
@@ -42,7 +47,6 @@ public class NitroliteService {
 
                 if (!sendWebhookMessage(originMessage, content)) 
                 {
-                    // TODO: super.sendErrorOccurred() work around
                     LOGGER.log(Level.INFO, "Error during CommandExecution: Webhook creation has failed");
                 } else attemptMessageDelete(originMessage, perms);
                 
@@ -105,7 +109,6 @@ public class NitroliteService {
                     }
                     response.close();
                 } catch (Exception ex) {
-                    // TODO: super.sendErrorOccurred() work around
                     LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + ex.getMessage());
                 }
                 return true;

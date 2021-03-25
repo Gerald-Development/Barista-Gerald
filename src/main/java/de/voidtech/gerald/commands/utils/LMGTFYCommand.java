@@ -34,6 +34,7 @@ public class LMGTFYCommand extends AbstractCommand{
 		return searchEngineMap;
 	}
 	
+	//TODO REVIEW: tf is this? This is a Class field but I don't feel like it should be. It's not even private :intenseCat:
 	String embedMessage = "";
 	
 	@Override

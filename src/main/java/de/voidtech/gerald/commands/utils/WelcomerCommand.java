@@ -52,6 +52,7 @@ public class WelcomerCommand extends AbstractCommand{
 		}
 	}
 
+	//TODO REVIEW: Code duplication in CountRoutine. Make a Utils class for this. This can be a static method in the Utils class. Maybe consider using NumberUtils from apache
 	private boolean isInt(String str) {
 	    if (str == null) {
 	        return false;
@@ -99,6 +100,7 @@ public class WelcomerCommand extends AbstractCommand{
 		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
 		
+			//TODO REVIEW: variable name not comforming code conventions.
 			JoinLeaveMessage JLM = new JoinLeaveMessage(serverID, channel, joinMessage, leaveMessage);
 		
 			JLM.setServerID(serverID);
@@ -115,6 +117,7 @@ public class WelcomerCommand extends AbstractCommand{
 	private JoinLeaveMessage getJoinLeaveMessageEntity(long guildID) {
 		try(Session session = sessionFactory.openSession())
 		{
+			//TODO REVIEW: variable name not comforming code conventions.
 			JoinLeaveMessage JLM = (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
                     .setParameter("serverID", guildID)
                     .uniqueResult();
@@ -123,6 +126,7 @@ public class WelcomerCommand extends AbstractCommand{
 	}
 	
 	private void updateChannel(long serverID, String channel, Message message) {
+		//TODO REVIEW: variable name not comforming code conventions.
 		JoinLeaveMessage JLM = getJoinLeaveMessageEntity(serverID);
 		
 		try (Session session = sessionFactory.openSession()) {
@@ -136,6 +140,7 @@ public class WelcomerCommand extends AbstractCommand{
 	}
 	
 	private void updateJoinMessage(long serverID, String joinMessage, Message message) {
+		//TODO REVIEW: variable name not comforming code conventions.
 		JoinLeaveMessage JLM = getJoinLeaveMessageEntity(serverID);
 		
 		try (Session session = sessionFactory.openSession()) {
@@ -149,6 +154,7 @@ public class WelcomerCommand extends AbstractCommand{
 	}
 	
 	private void updateLeaveMessage(long serverID, String leaveMessage, Message message) {
+		//TODO REVIEW: variable name not comforming code conventions.
 		JoinLeaveMessage JLM = getJoinLeaveMessageEntity(serverID);
 		
 		try (Session session = sessionFactory.openSession()) {
@@ -170,6 +176,7 @@ public class WelcomerCommand extends AbstractCommand{
 		}
 	}
 	
+	//TODO REVIEW: This b is fatter than yo mama. I have no idea rn because it's 1AM but this should be refactored.
 	private void setupWelcomer(Server server, Message message) {
 		if (customMessageEnabled(server.getId())) {
 			message.getChannel().sendMessage("**The Welcomer is already set up!**").queue();
@@ -270,7 +277,7 @@ public class WelcomerCommand extends AbstractCommand{
 	public void executeInternal(Message message, List<String> args) {
 		
 		Server server = serverService.getServer(message.getGuild().getId());
-		
+		//TODO REVIEW: maybe use switch case instead of a billion if statements
 		if (args.get(0).equals("clear")) {
 			clearWelcomer(server, message);
 		} else if (args.get(0).equals("setup")) {			

@@ -19,6 +19,7 @@ public class CountRoutine extends AbstractRoutine {
 	
 	//I did not make this function: 
 	//https://stackoverflow.com/questions/237159/whats-the-best-way-to-check-if-a-string-represents-an-integer-in-java
+	//TODO REVIEW: Code duplication in WelcomerCommand. Make a Utils class for this. This can be a static method in the Utils class. Maybe consider using NumberUtils from apache
 	private boolean isInteger(String str) {
 	    if (str == null) {
 	        return false;

@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class ChatbotService {
 
+	//TODO REVIEW: This is not a constant. Variable name is not according to code conventions.
 	private Bot Gerald_AI = null;
+	//TODO REVIEW: This is not a constant. Variable name is not according to code conventions.
 	private ExecutorService Chat_Thread = null;
 	private HashMap<String, Chat> chatInstances = new HashMap<String, Chat>();
 	

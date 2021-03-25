@@ -28,6 +28,7 @@ public class JoinLeaveMessageService {
 	private boolean customMessageEnabled(long guildID) {
 		try(Session session = sessionFactory.openSession())
 		{
+			//TODO REVIEW: variable name not comforming code conventions.
 			JoinLeaveMessage JLM = (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
                     .setParameter("serverID", guildID)
                     .uniqueResult();
@@ -38,6 +39,7 @@ public class JoinLeaveMessageService {
 	private JoinLeaveMessage getJoinLeaveMessageEntity(long guildID) {
 		try(Session session = sessionFactory.openSession())
 		{
+			//TODO REVIEW: variable name not comforming code conventions.
 			JoinLeaveMessage JLM = (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
                     .setParameter("serverID", guildID)
                     .uniqueResult();
@@ -48,6 +50,7 @@ public class JoinLeaveMessageService {
 	public void sendJoinMessage(GuildMemberJoinEvent event) {
 		Server server = serverService.getServer(event.getGuild().getId());
 		if (customMessageEnabled(server.getId())) {
+			//TODO REVIEW: variable name not comforming code conventions.
 			JoinLeaveMessage JLM = getJoinLeaveMessageEntity(server.getId());
 			GuildChannel channel = event.getJDA().getGuildChannelById(JLM.getChannelID());
 			String message = JLM.getJoinMessage();
@@ -66,6 +69,7 @@ public class JoinLeaveMessageService {
 	public void sendLeaveMessage(GuildMemberRemoveEvent event) {
 		Server server = serverService.getServer(event.getGuild().getId());
 		if (customMessageEnabled(server.getId())) {
+			//TODO REVIEW: variable name not comforming code conventions.
 			JoinLeaveMessage JLM = getJoinLeaveMessageEntity(server.getId());
 			GuildChannel channel = event.getJDA().getGuildChannelById(JLM.getChannelID());
 			String message = JLM.getLeaveMessage();
