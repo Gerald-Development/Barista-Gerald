@@ -15,6 +15,7 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.JoinLeaveMessage;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
+import main.java.de.voidtech.gerald.util.IntegerEvaluator;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -51,34 +52,9 @@ public class WelcomerCommand extends AbstractCommand{
 			session.getTransaction().commit();
 		}
 	}
-
-	//TODO REVIEW: Code duplication in CountRoutine. Make a Utils class for this. This can be a static method in the Utils class. Maybe consider using NumberUtils from apache
-	private boolean isInt(String str) {
-	    if (str == null) {
-	        return false;
-	    }
-	    int length = str.length();
-	    if (length == 0) {
-	        return false;
-	    }
-	    int i = 0;
-	    if (str.charAt(0) == '-') {
-	        if (length == 1) {
-	            return false;
-	        }
-	        i = 1;
-	    }
-	    for (; i < length; i++) {
-	        char c = str.charAt(i);
-	        if (c < '0' || c > '9') {
-	            return false;
-	        }
-	    }
-	    return true;
-	}
 	
 	private boolean channelExists (String channel, Message message) {
-		if (isInt(channel)) {
+		if (new IntegerEvaluator().isInteger(channel)) {
 			GuildChannel guildChannel = message.getJDA().getGuildChannelById(Long.parseLong(channel));
 			return guildChannel != null;	
 		} else {
