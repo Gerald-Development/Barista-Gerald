@@ -17,10 +17,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ChatbotService {
 
-	//TODO REVIEW: This is not a constant. Variable name is not according to code conventions.
-	private Bot Gerald_AI = null;
-	//TODO REVIEW: This is not a constant. Variable name is not according to code conventions.
-	private ExecutorService Chat_Thread = null;
+	private Bot geraldAI = null;
+	private ExecutorService chatThread = null;
 	private HashMap<String, Chat> chatInstances = new HashMap<String, Chat>();
 	
 	private static final Logger LOGGER = Logger.getLogger(ChatbotService.class.getName());
@@ -28,21 +26,21 @@ public class ChatbotService {
 	private Chat getChatInstance(String sessionID) {
 		
 		if (!chatInstances.containsKey(sessionID)) {
-			chatInstances.put(sessionID, new Chat(Gerald_AI));
+			chatInstances.put(sessionID, new Chat(geraldAI));
 		}
 		return chatInstances.get(sessionID);
 	}
 	
 	private ExecutorService getChatThread() {
-		if (Chat_Thread == null) {
+		if (chatThread == null) {
 			 BasicThreadFactory factory = new BasicThreadFactory.Builder()
 				     .namingPattern("GeraldAI-%d")
 				     .daemon(true)
 				     .priority(Thread.NORM_PRIORITY)
 				     .build();
-			Chat_Thread = Executors.newSingleThreadExecutor(factory);
+			chatThread = Executors.newSingleThreadExecutor(factory);
 		}	
-		return Chat_Thread;		
+		return chatThread;		
 	}
 	
 	public int getSessionCount() {
@@ -50,7 +48,7 @@ public class ChatbotService {
 	}
 	
 	public boolean isChatInitialised() {
-		return Chat_Thread != null;
+		return chatThread != null;
 	}
 	
     public String getReply(String message, String ID) {
@@ -59,9 +57,9 @@ public class ChatbotService {
             Callable<String> responseThreadCallable = new Callable<String>() {
                 @Override
                 public String call() {
-                	if (Gerald_AI == null) {
+                	if (geraldAI == null) {
                 		GeraldConfig config = new GeraldConfig();
-                		Gerald_AI = new Bot("Gerald", config.getAIMLFolderDirectory());
+                		geraldAI = new Bot("Gerald", config.getAIMLFolderDirectory());
                 	}
                 	
                 	String reply = getChatInstance(ID).multisentenceRespond(message);
