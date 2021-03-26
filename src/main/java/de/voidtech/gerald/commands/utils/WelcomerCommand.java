@@ -34,10 +34,10 @@ public class WelcomerCommand extends AbstractCommand{
 	private boolean customMessageEnabled(long guildID) {
 		try(Session session = sessionFactory.openSession())
 		{
-			JoinLeaveMessage JLM = (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
+			JoinLeaveMessage joinLeaveMessage = (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
                     .setParameter("serverID", guildID)
                     .uniqueResult();
-			return JLM != null;
+			return joinLeaveMessage != null;
 		}
 	}
 	
@@ -100,15 +100,14 @@ public class WelcomerCommand extends AbstractCommand{
 		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
 		
-			//TODO REVIEW: variable name not comforming code conventions.
-			JoinLeaveMessage JLM = new JoinLeaveMessage(serverID, channel, joinMessage, leaveMessage);
+			JoinLeaveMessage joinLeaveMessage = new JoinLeaveMessage(serverID, channel, joinMessage, leaveMessage);
 		
-			JLM.setServerID(serverID);
-			JLM.setChannelID(channel);
-			JLM.setJoinMessage(joinMessage);
-			JLM.setLeaveMessage(leaveMessage);
+			joinLeaveMessage.setServerID(serverID);
+			joinLeaveMessage.setChannelID(channel);
+			joinLeaveMessage.setJoinMessage(joinMessage);
+			joinLeaveMessage.setLeaveMessage(leaveMessage);
 			
-			session.saveOrUpdate(JLM);
+			session.saveOrUpdate(joinLeaveMessage);
 			session.getTransaction().commit();
 		}
 		
@@ -117,52 +116,48 @@ public class WelcomerCommand extends AbstractCommand{
 	private JoinLeaveMessage getJoinLeaveMessageEntity(long guildID) {
 		try(Session session = sessionFactory.openSession())
 		{
-			//TODO REVIEW: variable name not comforming code conventions.
-			JoinLeaveMessage JLM = (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
+			JoinLeaveMessage joinLeaveMessage = (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
                     .setParameter("serverID", guildID)
                     .uniqueResult();
-			return JLM;
+			return joinLeaveMessage;
 		}
 	}
 	
 	private void updateChannel(long serverID, String channel, Message message) {
-		//TODO REVIEW: variable name not comforming code conventions.
-		JoinLeaveMessage JLM = getJoinLeaveMessageEntity(serverID);
+		JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(serverID);
 		
 		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
 
-			JLM.setChannelID(channel);
+			joinLeaveMessage.setChannelID(channel);
 			
-			session.saveOrUpdate(JLM);
+			session.saveOrUpdate(joinLeaveMessage);
 			session.getTransaction().commit();
 		}
 	}
 	
 	private void updateJoinMessage(long serverID, String joinMessage, Message message) {
-		//TODO REVIEW: variable name not comforming code conventions.
-		JoinLeaveMessage JLM = getJoinLeaveMessageEntity(serverID);
+		JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(serverID);
 		
 		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
 
-			JLM.setJoinMessage(joinMessage);
+			joinLeaveMessage.setJoinMessage(joinMessage);
 			
-			session.saveOrUpdate(JLM);
+			session.saveOrUpdate(joinLeaveMessage);
 			session.getTransaction().commit();
 		}
 	}
 	
 	private void updateLeaveMessage(long serverID, String leaveMessage, Message message) {
-		//TODO REVIEW: variable name not comforming code conventions.
-		JoinLeaveMessage JLM = getJoinLeaveMessageEntity(serverID);
+		JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(serverID);
 		
 		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
 
-			JLM.setLeaveMessage(leaveMessage);
+			joinLeaveMessage.setLeaveMessage(leaveMessage);
 			
-			session.saveOrUpdate(JLM);
+			session.saveOrUpdate(joinLeaveMessage);
 			session.getTransaction().commit();
 		}
 	}
@@ -277,17 +272,26 @@ public class WelcomerCommand extends AbstractCommand{
 	public void executeInternal(Message message, List<String> args) {
 		
 		Server server = serverService.getServer(message.getGuild().getId());
-		//TODO REVIEW: maybe use switch case instead of a billion if statements
-		if (args.get(0).equals("clear")) {
+		switch(args.get(0)) {
+		case "clear":
 			clearWelcomer(server, message);
-		} else if (args.get(0).equals("setup")) {			
-			setupWelcomer(server, message);			
-		} else if (args.get(0).equals("channel")) {
+			break;
+		
+		case "setup":
+			setupWelcomer(server, message);
+			break;
+		
+		case "channel":
 			changeChannel(server, message, args);
-		} else if (args.get(0).equals("joinmsg")) {
+			break;
+		
+		case "joinmsg":
 			changeWelcomeMessage(server, message, args);
-		} else if (args.get(0).equals("leavemsg")) {
+			break;
+		
+		case "leavemsg":
 			changeLeaveMessage(server, message, args);
+			break;
 		}
 		
 	}
