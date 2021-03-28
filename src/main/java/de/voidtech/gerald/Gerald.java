@@ -55,7 +55,6 @@ public class Gerald {
 	
 	private List<GatewayIntent> getNonPrivilegedIntents() {
 		List<GatewayIntent> gatewayIntents = new ArrayList<GatewayIntent>(Arrays.asList(GatewayIntent.values()));
-		gatewayIntents.remove(GatewayIntent.GUILD_MEMBERS);
 		gatewayIntents.remove(GatewayIntent.GUILD_PRESENCES);
 		
 		return gatewayIntents;
