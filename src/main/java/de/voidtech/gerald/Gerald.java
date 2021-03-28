@@ -1,6 +1,8 @@
 package main.java.de.voidtech.gerald;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import javax.security.auth.login.LoginException;
@@ -39,10 +41,9 @@ public class Gerald {
 	{
 		GlobalConfig globalConf = globalConfService.getGlobalConfig();
 		
-		
 		return JDABuilder.createDefault(configService.getToken())//
 				.enableCache(CacheFlag.CLIENT_STATUS)//
-				.enableIntents(Arrays.asList(GatewayIntent.values()))//
+				.enableIntents(removeNonPrivilegedIntents())//
 				.setMemberCachePolicy(MemberCachePolicy.ALL)//
 				.setBulkDeleteSplittingEnabled(false)//
 				.setCompression(Compression.NONE)//
@@ -58,6 +59,13 @@ public class Gerald {
     {
 		return new EventWaiter();
     }
+	
+	private List<GatewayIntent> removeNonPrivilegedIntents() {
+		List<GatewayIntent> intents = new ArrayList<GatewayIntent>(Arrays.asList(GatewayIntent.values()));
+		 intents.remove(GatewayIntent.GUILD_PRESENCES);
+		 
+		 return intents;
+	}
 
 	public static void main(String[] args) {
 		SpringApplication springApp = new SpringApplication(Gerald.class);
