@@ -46,4 +46,8 @@ public class ChatRoutine extends AbstractRoutine{
 		return "GeraldAI Routine";
 	}
 
+	@Override
+	public boolean allowsBotResponses() {
+		return false;
+	}
 }

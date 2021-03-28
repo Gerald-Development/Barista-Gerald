@@ -46,5 +46,9 @@ public class BottiusResponseRoutine extends AbstractRoutine{
 		return "Greets bottius mightily";
 	}
 
-
+	@Override
+	public boolean allowsBotResponses() {
+		return true;
+	}
+	
 }

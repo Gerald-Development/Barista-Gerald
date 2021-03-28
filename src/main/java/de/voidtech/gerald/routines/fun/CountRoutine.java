@@ -116,5 +116,10 @@ public class CountRoutine extends AbstractRoutine {
 	public String getDescription() {
 		return "Handles counting channels";
 	}
+	
+	@Override
+	public boolean allowsBotResponses() {
+		return false;
+	}
 
 }
