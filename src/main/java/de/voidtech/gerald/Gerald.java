@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 
 @SpringBootApplication
@@ -41,10 +40,10 @@ public class Gerald {
 	{
 		GlobalConfig globalConf = globalConfService.getGlobalConfig();
 		
+		
 		return JDABuilder.createDefault(configService.getToken())//
-				.enableCache(CacheFlag.CLIENT_STATUS)//
-				.enableIntents(removeNonPrivilegedIntents())//
-				.setMemberCachePolicy(MemberCachePolicy.ALL)//
+				.enableIntents(getNonPrivilegedIntents())//
+				.setMemberCachePolicy(MemberCachePolicy.DEFAULT)//
 				.setBulkDeleteSplittingEnabled(false)//
 				.setCompression(Compression.NONE)//
 				.addEventListeners(eventWaiter, msgListener, new ReadyListener(), guildGoneListener, channelDeleteListener, memberListener)//
@@ -54,18 +53,19 @@ public class Gerald {
 				.awaitReady();
 	}
 	
+	private List<GatewayIntent> getNonPrivilegedIntents() {
+		List<GatewayIntent> gatewayIntents = new ArrayList<GatewayIntent>(Arrays.asList(GatewayIntent.values()));
+		gatewayIntents.remove(GatewayIntent.GUILD_MEMBERS);
+		gatewayIntents.remove(GatewayIntent.GUILD_PRESENCES);
+		
+		return gatewayIntents;
+	}
+	
 	@Bean
 	public EventWaiter getEventWaiter()
     {
 		return new EventWaiter();
     }
-	
-	private List<GatewayIntent> removeNonPrivilegedIntents() {
-		List<GatewayIntent> intents = new ArrayList<GatewayIntent>(Arrays.asList(GatewayIntent.values()));
-		 intents.remove(GatewayIntent.GUILD_PRESENCES);
-		 
-		 return intents;
-	}
 
 	public static void main(String[] args) {
 		SpringApplication springApp = new SpringApplication(Gerald.class);
