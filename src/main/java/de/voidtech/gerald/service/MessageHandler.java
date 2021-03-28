@@ -33,16 +33,23 @@ public class MessageHandler {
 
     // ENTRY POINT FROM MESSAGE LISTENER
     public void handleMessage(Message message) {
-    	if(message.getAuthor().isBot()) return;
     	
-        handleCommandOnDemand(message);
+    	if (message.isWebhookMessage()) return;
         runMessageRoutines(message);
+    	
+    	if(message.getAuthor().isBot()) return;
+        handleCommandOnDemand(message);
     }
     
     private void runMessageRoutines(Message message) {
         for (AbstractRoutine routine : routines) {
-        	
-        	routine.run(message);
+        	if (message.getAuthor().isBot()) {
+        		if (routine.allowsBotResponses()) {
+                	routine.run(message);
+        		}
+        	} else {
+            	routine.run(message);
+        	}
 			LOGGER.log(Level.FINE, "Routine executed: " + routine.getClass().getName());
         }
     }

@@ -15,6 +15,7 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.JoinLeaveMessage;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
+import main.java.de.voidtech.gerald.util.IntegerEvaluator;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -34,10 +35,10 @@ public class WelcomerCommand extends AbstractCommand{
 	private boolean customMessageEnabled(long guildID) {
 		try(Session session = sessionFactory.openSession())
 		{
-			JoinLeaveMessage JLM = (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
+			JoinLeaveMessage joinLeaveMessage = (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
                     .setParameter("serverID", guildID)
                     .uniqueResult();
-			return JLM != null;
+			return joinLeaveMessage != null;
 		}
 	}
 	
@@ -51,33 +52,9 @@ public class WelcomerCommand extends AbstractCommand{
 			session.getTransaction().commit();
 		}
 	}
-
-	private boolean isInt(String str) {
-	    if (str == null) {
-	        return false;
-	    }
-	    int length = str.length();
-	    if (length == 0) {
-	        return false;
-	    }
-	    int i = 0;
-	    if (str.charAt(0) == '-') {
-	        if (length == 1) {
-	            return false;
-	        }
-	        i = 1;
-	    }
-	    for (; i < length; i++) {
-	        char c = str.charAt(i);
-	        if (c < '0' || c > '9') {
-	            return false;
-	        }
-	    }
-	    return true;
-	}
 	
 	private boolean channelExists (String channel, Message message) {
-		if (isInt(channel)) {
+		if (new IntegerEvaluator().isInteger(channel)) {
 			GuildChannel guildChannel = message.getJDA().getGuildChannelById(Long.parseLong(channel));
 			return guildChannel != null;	
 		} else {
@@ -99,14 +76,14 @@ public class WelcomerCommand extends AbstractCommand{
 		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
 		
-			JoinLeaveMessage JLM = new JoinLeaveMessage(serverID, channel, joinMessage, leaveMessage);
+			JoinLeaveMessage joinLeaveMessage = new JoinLeaveMessage(serverID, channel, joinMessage, leaveMessage);
 		
-			JLM.setServerID(serverID);
-			JLM.setChannelID(channel);
-			JLM.setJoinMessage(joinMessage);
-			JLM.setLeaveMessage(leaveMessage);
+			joinLeaveMessage.setServerID(serverID);
+			joinLeaveMessage.setChannelID(channel);
+			joinLeaveMessage.setJoinMessage(joinMessage);
+			joinLeaveMessage.setLeaveMessage(leaveMessage);
 			
-			session.saveOrUpdate(JLM);
+			session.saveOrUpdate(joinLeaveMessage);
 			session.getTransaction().commit();
 		}
 		
@@ -115,48 +92,48 @@ public class WelcomerCommand extends AbstractCommand{
 	private JoinLeaveMessage getJoinLeaveMessageEntity(long guildID) {
 		try(Session session = sessionFactory.openSession())
 		{
-			JoinLeaveMessage JLM = (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
+			JoinLeaveMessage joinLeaveMessage = (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
                     .setParameter("serverID", guildID)
                     .uniqueResult();
-			return JLM;
+			return joinLeaveMessage;
 		}
 	}
 	
 	private void updateChannel(long serverID, String channel, Message message) {
-		JoinLeaveMessage JLM = getJoinLeaveMessageEntity(serverID);
+		JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(serverID);
 		
 		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
 
-			JLM.setChannelID(channel);
+			joinLeaveMessage.setChannelID(channel);
 			
-			session.saveOrUpdate(JLM);
+			session.saveOrUpdate(joinLeaveMessage);
 			session.getTransaction().commit();
 		}
 	}
 	
 	private void updateJoinMessage(long serverID, String joinMessage, Message message) {
-		JoinLeaveMessage JLM = getJoinLeaveMessageEntity(serverID);
+		JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(serverID);
 		
 		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
 
-			JLM.setJoinMessage(joinMessage);
+			joinLeaveMessage.setJoinMessage(joinMessage);
 			
-			session.saveOrUpdate(JLM);
+			session.saveOrUpdate(joinLeaveMessage);
 			session.getTransaction().commit();
 		}
 	}
 	
 	private void updateLeaveMessage(long serverID, String leaveMessage, Message message) {
-		JoinLeaveMessage JLM = getJoinLeaveMessageEntity(serverID);
+		JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(serverID);
 		
 		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
 
-			JLM.setLeaveMessage(leaveMessage);
+			joinLeaveMessage.setLeaveMessage(leaveMessage);
 			
-			session.saveOrUpdate(JLM);
+			session.saveOrUpdate(joinLeaveMessage);
 			session.getTransaction().commit();
 		}
 	}
@@ -170,6 +147,7 @@ public class WelcomerCommand extends AbstractCommand{
 		}
 	}
 	
+	//TODO REVIEW: This b is fatter than yo mama. I have no idea rn because it's 1AM but this should be refactored.
 	private void setupWelcomer(Server server, Message message) {
 		if (customMessageEnabled(server.getId())) {
 			message.getChannel().sendMessage("**The Welcomer is already set up!**").queue();
@@ -270,17 +248,26 @@ public class WelcomerCommand extends AbstractCommand{
 	public void executeInternal(Message message, List<String> args) {
 		
 		Server server = serverService.getServer(message.getGuild().getId());
-		
-		if (args.get(0).equals("clear")) {
+		switch(args.get(0)) {
+		case "clear":
 			clearWelcomer(server, message);
-		} else if (args.get(0).equals("setup")) {			
-			setupWelcomer(server, message);			
-		} else if (args.get(0).equals("channel")) {
+			break;
+		
+		case "setup":
+			setupWelcomer(server, message);
+			break;
+		
+		case "channel":
 			changeChannel(server, message, args);
-		} else if (args.get(0).equals("joinmsg")) {
+			break;
+		
+		case "joinmsg":
 			changeWelcomeMessage(server, message, args);
-		} else if (args.get(0).equals("leavemsg")) {
+			break;
+		
+		case "leavemsg":
 			changeLeaveMessage(server, message, args);
+			break;
 		}
 		
 	}

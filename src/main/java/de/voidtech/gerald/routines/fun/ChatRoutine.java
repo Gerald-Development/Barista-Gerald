@@ -36,7 +36,7 @@ public class ChatRoutine extends AbstractRoutine{
 		}
 		
 		if (chatChannelEnabled(message.getChannel().getId())) {
-			String reply = chatBot.getReply(message.getContentRaw(), message.getAuthor().getId());
+			String reply = chatBot.getReply(message.getContentRaw(), message.getGuild().getId());
 			message.getChannel().sendMessage(reply).queue();
 		}
 	}
@@ -46,4 +46,8 @@ public class ChatRoutine extends AbstractRoutine{
 		return "GeraldAI Routine";
 	}
 
+	@Override
+	public boolean allowsBotResponses() {
+		return false;
+	}
 }

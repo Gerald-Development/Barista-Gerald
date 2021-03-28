@@ -15,6 +15,7 @@ import main.java.de.voidtech.gerald.entities.Tunnel;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
 import okhttp3.MediaType;
@@ -69,6 +70,13 @@ public class TunnelRoutine extends AbstractRoutine {
 	}
 	
 	private void sendWebhookMessage(Webhook webhook, String content, Message message) {
+		
+		if (message.getAttachments().size() != 0) {
+			for (Attachment attachment: message.getAttachments()) {
+				content = content + "\n" + attachment.getUrl();
+			}	
+		}
+		
 		JSONObject webhookPayload = new JSONObject();
         webhookPayload.put("content", content);
         webhookPayload.put("username", message.getAuthor().getName());
@@ -85,15 +93,16 @@ public class TunnelRoutine extends AbstractRoutine {
                     .addHeader("Content-Type", "application/json")
                     .build();
             Response response = client.newCall(request).execute();
-
+            System.out.println(response.code());
             if (response.code() != 204) {
                 response.close();
                 throw new Exception("Webhook " + webhook.getName() + " from " + webhook.getChannel().getName()
                         + " did not respond with 204");
+
             }
             response.close();
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + ex.getMessage());
+            LOGGER.log(Level.SEVERE, "Error during RoutineExecution: " + ex.getMessage());
         }
 	}
 	
@@ -116,6 +125,9 @@ public class TunnelRoutine extends AbstractRoutine {
 
 	@Override
 	public void executeInternal(Message message) {
+		
+		if (message.getAuthor().getId().equals(message.getJDA().getSelfUser().getId())) return;
+		
 		if (tunnelExists(message.getChannel().getId())) {
 			sendTunnelMessage(getTunnel(message.getChannel().getId()), message);
 		}
@@ -124,5 +136,10 @@ public class TunnelRoutine extends AbstractRoutine {
 	@Override
 	public String getDescription() {
 		return "The routine for handling tunnels";
+	}
+
+	@Override
+	public boolean allowsBotResponses() {
+		return true;
 	}
 }

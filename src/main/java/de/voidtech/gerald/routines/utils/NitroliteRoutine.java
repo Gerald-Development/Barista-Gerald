@@ -52,5 +52,10 @@ public class NitroliteRoutine extends AbstractRoutine {
     public String getDescription() {
         return "Service for sending emotes without nitro";
     }
+    
+	@Override
+	public boolean allowsBotResponses() {
+		return false;
+	}
 
 }

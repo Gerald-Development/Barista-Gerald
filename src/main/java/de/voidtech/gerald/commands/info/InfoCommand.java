@@ -49,7 +49,8 @@ public class InfoCommand extends AbstractCommand {
 				.addField("Gerald Owner", "```ElementalMP4#7458```", false)
 				.addField("Barista Gerald Developers", "```ElementalMP4#7458\r\n"
 						+ "Montori#4707\r\n"
-						+ "0xffset#2267```", false)
+						+ "0xffset#2267\r\n"
+						+ "Scot_Survivor#8625```", false)
 				.addField("Gerald Guild Count", "```" + String.valueOf(guildCount) + "```", true)
 				.addField("Gerald Member Count", "```" + String.valueOf(memberCount) + "```", false)
 				.addField("Latest Build Number", "```" + getLatestBuild() + "```", true)

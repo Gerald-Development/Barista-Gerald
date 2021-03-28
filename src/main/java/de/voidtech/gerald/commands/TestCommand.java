@@ -32,21 +32,18 @@ public class TestCommand extends AbstractCommand{
 
 	@Override
 	public CommandCategory getCommandCategory() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 
 	@Override
 	public boolean isDMCapable() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 
 	@Override
 	public boolean requiresArguments() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }
