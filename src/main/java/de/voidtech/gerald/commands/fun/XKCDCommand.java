@@ -22,6 +22,7 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.util.IntegerEvaluator;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -38,30 +39,6 @@ public class XKCDCommand extends AbstractCommand {
 	private static final String XKCD_URL = "https://xkcd.com/";
 	private static final String SUFFIX = "info.0.json";
 	private static final String EMOTE_UNICODE = "U+1f539";
-
-	private boolean isInteger(String str) {
-	    if (str == null) {
-	        return false;
-	    }
-	    int length = str.length();
-	    if (length == 0) {
-	        return false;
-	    }
-	    int i = 0;
-	    if (str.charAt(0) == '-') {
-	        if (length == 1) {
-	            return false;
-	        }
-	        i = 1;
-	    }
-	    for (; i < length; i++) {
-	        char c = str.charAt(i);
-	        if (c < '0' || c > '9') {
-	            return false;
-	        }
-	    }
-	    return true;
-	}
 	
 	private String makeRequest(String URL) {
 		try {
@@ -138,7 +115,7 @@ public class XKCDCommand extends AbstractCommand {
 			sendXKCD(new JSONObject(currentResponse), message);
 		} else if (args.get(0).equals("id")) {
 			
-			if (isInteger(args.get(1))) {
+			if (new IntegerEvaluator().isInteger(args.get(1))) {
 				String byIdResponse = getXKCDById(Integer.parseInt(args.get(1)));
 				if (byIdResponse.equals("")) {
 					message.getChannel().sendMessage("**That ID could not be found!**").queue();
