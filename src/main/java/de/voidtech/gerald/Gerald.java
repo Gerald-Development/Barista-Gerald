@@ -36,34 +36,19 @@ public class Gerald {
 	@Bean
 	@DependsOn(value = "sessionFactory")
 	@Autowired
-	public JDA getJDA(
-			MessageListener msgListener,
-			GuildGoneListener guildGoneListener,
-			ChannelDeleteListener channelDeleteListener,
-			GeraldConfig configService,
-			GlobalConfigService globalConfService,
-			EventWaiter eventWaiter,
-			MemberListener memberListener,
-			ReadyListener readyListener
-	) throws LoginException, InterruptedException
+	public JDA getJDA(MessageListener msgListener, GuildGoneListener guildGoneListener,	ChannelDeleteListener channelDeleteListener, GeraldConfig configService, GlobalConfigService globalConfService,	EventWaiter eventWaiter, MemberListener memberListener,	ReadyListener readyListener) throws LoginException, InterruptedException
 	{
 		GlobalConfig globalConf = globalConfService.getGlobalConfig();
 
 		return JDABuilder.createDefault(configService.getToken())
 				.enableIntents(getNonPrivilegedIntents())
-				.setMemberCachePolicy(MemberCachePolicy.DEFAULT)
+				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.setBulkDeleteSplittingEnabled(false)
 				.setCompression(Compression.NONE)
-				.addEventListeners(
-						eventWaiter,
-						msgListener,
-						readyListener,
-						guildGoneListener,
-						channelDeleteListener,
-						memberListener
-				)
+				.addEventListeners(eventWaiter,	msgListener, readyListener,	guildGoneListener, channelDeleteListener, memberListener)
 				.setActivity(EntityBuilder.createActivity(globalConf.getStatus(),
-						 GlobalConstants.STREAM_URL, globalConf.getActivity()))
+							 GlobalConstants.STREAM_URL,
+						     globalConf.getActivity()))
 				.build()
 				.awaitReady(); 
 	}

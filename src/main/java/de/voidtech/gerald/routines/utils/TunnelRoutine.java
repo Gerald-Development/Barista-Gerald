@@ -43,6 +43,17 @@ public class TunnelRoutine extends AbstractRoutine {
 		}
 	}
 	
+	private boolean targetChannelExists(Tunnel tunnel, Message message) {
+		
+		String sourceChannelId = message.getChannel().getId();
+		
+		String targetChannelId = tunnel.getSourceChannel().equals(sourceChannelId)
+				? tunnel.getDestChannel() 
+				: tunnel.getSourceChannel();
+		
+		return message.getJDA().getTextChannelById(targetChannelId) != null;
+	}
+	
 	private Tunnel getTunnel(String senderChannelID) {
 		
 		try(Session session = sessionFactory.openSession())
@@ -93,7 +104,6 @@ public class TunnelRoutine extends AbstractRoutine {
                     .addHeader("Content-Type", "application/json")
                     .build();
             Response response = client.newCall(request).execute();
-            System.out.println(response.code());
             if (response.code() != 204) {
                 response.close();
                 throw new Exception("Webhook " + webhook.getName() + " from " + webhook.getChannel().getName()
@@ -122,6 +132,21 @@ public class TunnelRoutine extends AbstractRoutine {
 			channel.sendMessage("**" + message.getAuthor().getAsTag() + ":** " + messageContent).queue();
 		}
 	}
+	
+	private void deleteTunnel(String channelId) {
+		try (Session session = sessionFactory.openSession()) {
+			session.getTransaction().begin();
+			session.createQuery(
+					"DELETE FROM Tunnel WHERE sourceChannelID = :channelID OR destChannelID = :channelID")
+					.setParameter("channelID", channelId).executeUpdate();
+			session.getTransaction().commit();
+		}		
+	}
+	
+	private void deleteTunnelAndSendError(Message message) {
+		message.getChannel().sendMessage("**This tunnel no longer exists! It has now been deleted.**").queue();
+		deleteTunnel(message.getChannel().getId());
+	}
 
 	@Override
 	public void executeInternal(Message message) {
@@ -129,7 +154,13 @@ public class TunnelRoutine extends AbstractRoutine {
 		if (message.getAuthor().getId().equals(message.getJDA().getSelfUser().getId())) return;
 		
 		if (tunnelExists(message.getChannel().getId())) {
-			sendTunnelMessage(getTunnel(message.getChannel().getId()), message);
+			Tunnel tunnel = getTunnel(message.getChannel().getId());
+			
+			if (targetChannelExists(tunnel, message)) {
+				sendTunnelMessage(getTunnel(message.getChannel().getId()), message);				
+			} else {
+				deleteTunnelAndSendError(message);
+			}
 		}
 	}
 
