@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
@@ -14,9 +15,12 @@ import net.dv8tion.jda.api.entities.Message;
 
 @Command
 public class NitroliteCommand extends AbstractCommand {
-    @Override
+    
+	@Autowired
+	NitroliteService nitroliteService;
+	
+	@Override
     public void executeInternal(Message message, List<String> args) {
-        NitroliteService nls = NitroliteService.getInstance();
 
         List<Emote> emotes = message.getJDA()//
                 .getEmoteCache()//
@@ -26,9 +30,9 @@ public class NitroliteCommand extends AbstractCommand {
 
         if (!emotes.isEmpty()) {
             final String content = StringUtils.join(args.subList(1, args.size()), " ") +
-                    " " + nls.constructEmoteString(emotes.get(0));
+                    " " + nitroliteService.constructEmoteString(emotes.get(0));
 
-            nls.sendMessage(message, content);
+            nitroliteService.sendMessage(message, content);
         }
     }
 

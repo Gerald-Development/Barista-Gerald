@@ -61,7 +61,7 @@ public class SuggestCommand extends AbstractCommand {
 					.setColor(Color.ORANGE)
 					.setTitle("New Suggestion!")
 					.addField("Suggestion", String.join(" ", args), false)
-					.addField("Original Message", "[Click Here](" + message.getJumpUrl() + ")", false)
+					.addField("Original Message", "**[Click Here](" + message.getJumpUrl() + ")**", false)
 					.setFooter("Suggested By " + message.getAuthor().getAsTag(), message.getAuthor().getAvatarUrl())
 					.build();					
 			

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
@@ -14,10 +15,12 @@ import net.dv8tion.jda.api.entities.Message;
 
 @Routine
 public class NitroliteRoutine extends AbstractRoutine {
-    @Override
+    
+	@Autowired
+	NitroliteService nitroliteService;
+	
+	@Override
     public void executeInternal(Message message) {
-        NitroliteService nls = NitroliteService.getInstance();
-
         List<String> messageTokens = Arrays.asList(message.getContentRaw().split(" "));
         List<Emote> emoteList = message.getJDA()//
                 .getEmoteCache()//
@@ -37,14 +40,14 @@ public class NitroliteRoutine extends AbstractRoutine {
 
                 if (emoteOpt != null) {
                     foundOne = true;
-                    messageTokens.set(i, nls.constructEmoteString(emoteOpt));
+                    messageTokens.set(i, nitroliteService.constructEmoteString(emoteOpt));
                 }
             }
         }
         if (foundOne) {
             final String content = StringUtils.join(messageTokens, " ");
 
-            nls.sendMessage(message, content);
+            nitroliteService.sendMessage(message, content);
         }
     }
 
