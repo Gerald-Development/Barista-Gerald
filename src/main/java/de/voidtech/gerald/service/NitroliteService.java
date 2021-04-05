@@ -24,6 +24,8 @@ public class NitroliteService {
     	
         if (perms.contains(Permission.MANAGE_WEBHOOKS)) {
            sendWebhookMessage(originMessage, content);
+           if (perms.contains(Permission.MESSAGE_MANAGE))
+               originMessage.delete().complete();
         } else {
             if (perms.contains(Permission.MESSAGE_MANAGE)) {
                 originMessage.delete().complete();
