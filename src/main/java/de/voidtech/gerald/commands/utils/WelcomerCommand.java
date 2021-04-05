@@ -69,7 +69,6 @@ public class WelcomerCommand extends AbstractCommand{
 			.replaceAll("!", "")
 			.replaceAll(">", "");
 		return output;
-		
 	}
 	
 	private void addJoinLeaveMessage(long serverID, String channel, String joinMessage, String leaveMessage) {

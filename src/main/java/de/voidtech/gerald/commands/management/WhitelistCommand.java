@@ -93,8 +93,10 @@ public class WhitelistCommand extends AbstractCommand
 				.map(channel -> channel.getAsMention())
 				.collect(Collectors.toList());
 		
+		String usableChannels = StringUtils.join(channelList, "\n") == "" ? "All Channels" : StringUtils.join(channelList, "\n");
+		
 		message.getChannel().sendMessage(String.format("Gerald can be used in the following channels:\n%s",
-				StringUtils.join(channelList, "\n"))).queue();
+				usableChannels)).queue();
 	}
 	
 	@Override

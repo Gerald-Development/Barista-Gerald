@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 @Command
@@ -52,38 +53,39 @@ public class TunnelCommand extends AbstractCommand {
 		}
 	}
 
-	private void sendChannelVerificationRequest(TextChannel targetChannel, Message originChannelMessage, String tunnelInstantiator) {
+	private void sendChannelVerificationRequest(TextChannel targetChannel, Message originChannelMessage, User tunnelInstantiator) {
 		String targetChannelID = targetChannel.getId();
 		String originChannelID = originChannelMessage.getChannel().getId();
 		//TODO: Redo this, it doesn't work
 		//pendingRequests.put(targetChannel.getId(), originChannelMessage.getChannel().getLatestMessageId());
 		
-		if (targetChannel.getGuild().getMemberById(tunnelInstantiator) == null) {
-			originChannelMessage.getChannel().sendMessage("**You need to be in that guild to dig a tunnel there!**").queue();
-		} else {
-		
-			if (targetChannel.getGuild().getMemberById(tunnelInstantiator).hasPermission(Permission.MANAGE_CHANNEL)) {
-				targetChannel.sendMessage("**Incoming tunnel request from " + originChannelMessage.getGuild().getName() + " > "
-						+ originChannelMessage.getChannel().getName()
-						+ "**\nSay 'accept' within 15 seconds to allow this tunnel to be dug!").queue();
-
-				waiter.waitForEvent(MessageReceivedEvent.class,
-						event -> tunnelAcceptedStatement(((MessageReceivedEvent) event), targetChannel), event -> {
-							boolean allowTunnel = event.getMessage().getContentRaw().toLowerCase().equals("accept");
-							if (allowTunnel) {
-								digTunnel(targetChannel, originChannelMessage.getChannel());
-							} else {
-								denyTunnel(originChannelMessage);
-							} 	
-							removeFromMap(targetChannelID, originChannelID);
-						}, 30, TimeUnit.SECONDS, () -> {
-							originChannelMessage.getChannel().sendMessage("**Request timed out**").queue();
-							removeFromMap(targetChannelID, originChannelID);
-						});
+		targetChannel.getGuild().retrieveMember(tunnelInstantiator).queue(member -> {
+			if (member == null) {
+				originChannelMessage.getChannel().sendMessage("**You need to be in that guild to dig a tunnel there!**").queue();
 			} else {
-				originChannelMessage.getChannel().sendMessage("**You do not have permission to do that there!**").queue();
+				if (member.hasPermission(Permission.MANAGE_CHANNEL)) {
+					targetChannel.sendMessage("**Incoming tunnel request from " + originChannelMessage.getGuild().getName() + " > "
+							+ originChannelMessage.getChannel().getName()
+							+ "**\nSay 'accept' within 15 seconds to allow this tunnel to be dug!").queue();
+					
+					waiter.waitForEvent(MessageReceivedEvent.class,
+							event -> tunnelAcceptedStatement(((MessageReceivedEvent) event), targetChannel), event -> {
+								boolean allowTunnel = event.getMessage().getContentRaw().toLowerCase().equals("accept");
+								if (allowTunnel) {
+									digTunnel(targetChannel, originChannelMessage.getChannel());
+								} else {
+									denyTunnel(originChannelMessage);
+								} 	
+								removeFromMap(targetChannelID, originChannelID);
+							}, 30, TimeUnit.SECONDS, () -> {
+								originChannelMessage.getChannel().sendMessage("**Request timed out**").queue();
+								removeFromMap(targetChannelID, originChannelID);
+							});
+				} else {
+					originChannelMessage.getChannel().sendMessage("**You do not have permission to do that there!**").queue();
+				}	
 			}
-		}	
+		});
 	}
 
 	private void removeFromMap(String targetChannelID, String originChannelID) {
@@ -174,21 +176,16 @@ public class TunnelCommand extends AbstractCommand {
 		}
 	}
 
-	@Override
-	public void executeInternal(Message message, List<String> args) {
-		if (!message.getMember().hasPermission(Permission.MANAGE_CHANNEL))
-			return;
+	private void doTheDigging(List<String> args, Message message) {
+		if (args.size() < 2) {
+			message.getChannel().sendMessage("**You need to supply a channel snowflake ID!**").queue();
 
-		if (args.get(0).equals("fill")) {
-			fillTunnel(message);
-
-		} else if (args.get(0).equals("dig")) {
-
-			if (args.size() < 2) {
-				message.getChannel().sendMessage("**You need to supply a channel snowflake ID!**").queue();
-
+		} else {
+			String targetChannelID = args.get(1).replaceAll("([^0-9])", "");
+			
+			if (targetChannelID == "") {
+				message.getChannel().sendMessage("**That is not a valid channel.**").queue();
 			} else {
-				String targetChannelID = args.get(1).replaceAll("([^0-9])", "");
 				TextChannel targetChannel = message.getJDA().getTextChannelCache().getElementById(targetChannelID);
 
 				if (targetChannel == null) {
@@ -204,10 +201,23 @@ public class TunnelCommand extends AbstractCommand {
 					if (tunnelExists(message.getChannel().getId(), targetChannel.getId())) {
 						message.getChannel().sendMessage("**There is already a tunnel here!**").queue();
 					} else {
-						sendChannelVerificationRequest(targetChannel, message, message.getAuthor().getId());
+						sendChannelVerificationRequest(targetChannel, message, message.getAuthor());
 					}
-				}
+				}	
 			}
+		}
+	}
+	
+	@Override
+	public void executeInternal(Message message, List<String> args) {
+		if (!message.getMember().hasPermission(Permission.MANAGE_CHANNEL))
+			return;
+
+		if (args.get(0).equals("fill")) {
+			fillTunnel(message);
+
+		} else if (args.get(0).equals("dig")) {
+			doTheDigging(args, message);
 		} else {
 			message.getChannel().sendMessage("**" + this.getUsage() + "**").queue();
 		}

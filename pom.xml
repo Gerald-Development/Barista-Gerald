@@ -83,13 +83,19 @@
         <snapshots>
             <enabled>true</enabled>
         </snapshots>
-    </repository>
+    </repository>    
 	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>net.dv8tion</groupId>
 			<artifactId>JDA</artifactId>
-			<version>4.2.0_224</version>
+			<version>4.2.0_247</version>
+			<exclusions>
+        		<exclusion>
+	            	<groupId>club.minnced</groupId>
+	            	<artifactId>opus-java</artifactId>
+        		</exclusion>
+    		</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -179,7 +185,15 @@
         	<groupId>org.alicebot.ab</groupId>
         	<artifactId>ab</artifactId>
         	<version>4.0.4-SNAPSHOT</version>
-    	</dependency>
+    	</dependency>  
     	
+<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
+<dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-java</artifactId>
+    <version>3.1.0</version>
+</dependency>
+
+        
 	</dependencies>
 </project>

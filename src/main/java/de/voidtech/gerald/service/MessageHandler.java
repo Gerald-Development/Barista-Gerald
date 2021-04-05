@@ -58,9 +58,9 @@ public class MessageHandler {
     	String prefix = getPrefix(message);
     	
 		if (!shouldHandleAsCommand(prefix, message)) return;
-
+		
         String messageContent = message.getContentRaw().substring(prefix.length());
-        List<String> messageArray = Arrays.asList(messageContent.split(" "));
+        List<String> messageArray = Arrays.asList(messageContent.trim().split("\\s+"));
 
 		AbstractCommand commandOpt = commands.stream()
 				.filter(command -> command.getName().equals(messageArray.get(0).toLowerCase()))

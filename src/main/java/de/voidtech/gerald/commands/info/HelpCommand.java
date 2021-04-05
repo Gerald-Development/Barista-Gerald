@@ -120,7 +120,9 @@ public class HelpCommand extends AbstractCommand{
 	public void executeInternal(Message message, List<String> args) {
 		
 		//Don't ask...
-		commands.add(this);
+		if (!commands.contains(this)) {
+			commands.add(this);	
+		}
 		
 		if (args.size() == 0) {
 			showCategoryList(message);
