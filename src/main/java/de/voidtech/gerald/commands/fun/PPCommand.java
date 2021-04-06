@@ -22,11 +22,18 @@ public class PPCommand extends AbstractCommand{
 		int ppSizeNumber = new Random(seed).nextInt(12);
 		String phrase = getPhrase(ppSizeNumber);
 		Color color = getColor(ppSizeNumber);
+		String ppSize = String.valueOf(ppSizeNumber);		
+		
+		if (message.getAuthor().getId().equals("341300268660555778")) {
+			ppSize = "YEEEEEEEEEEEEEEEEEEEEEEESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS";
+			phrase = "G a r g a n t u a n.";
+			color = Color.magenta;
+		}
 		
 		MessageEmbed ppSizeEmbed = new EmbedBuilder()//
 				.setTitle("How big is your PP?")
 				.setColor(color)
-				.setDescription("Your PP is **" + ppSizeNumber + (ppSizeNumber == 1 ? " inch.** " : " inches.** ") + phrase)
+				.setDescription("Your PP is **" + ppSize + (ppSizeNumber == 1 ? " inch.** " : " inches.** ") + phrase)
 				.build();
 		
 		message.getChannel().sendMessage(ppSizeEmbed).queue();
