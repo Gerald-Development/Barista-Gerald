@@ -24,11 +24,13 @@ public class PPCommand extends AbstractCommand{
 		Color color = getColor(ppSizeNumber);
 		String ppSize = String.valueOf(ppSizeNumber);		
 		
+		//It's best if nobody questions this
 		if (message.getAuthor().getId().equals("341300268660555778")) {
 			ppSize = "YEEEEEEEEEEEEEEEEEEEEEEESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS";
 			phrase = "G a r g a n t u a n.";
 			color = Color.magenta;
 		}
+		//You saw nothing...
 		
 		MessageEmbed ppSizeEmbed = new EmbedBuilder()//
 				.setTitle("How big is your PP?")

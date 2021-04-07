@@ -1,5 +1,6 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,7 +19,11 @@ import org.json.JSONObject;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class MemeCommand extends AbstractCommand {
@@ -96,7 +101,17 @@ public class MemeCommand extends AbstractCommand {
 		if (apiResponse.equals("template not found")) {
 			message.getChannel().sendMessage("Couldn't find that template :(").queue();
 		} else {
-			message.getChannel().sendMessage(apiResponse).queue();	
+			
+			MessageEmbed memeImageEmbed = new EmbedBuilder()
+					.setColor(Color.ORANGE)
+					.setTitle("Image URL", apiResponse)
+					.setImage(apiResponse)
+					.setFooter("Requested By " + message.getAuthor().getAsTag(), message.getAuthor().getAvatarUrl())
+					.build();
+			message.getChannel().sendMessage(memeImageEmbed).queue();
+	    	if (message.getGuild().getSelfMember().getPermissions((GuildChannel) message.getChannel()).contains(Permission.MESSAGE_MANAGE)) {
+	    		message.delete().complete();
+	    	}
 		}
 	}
 
