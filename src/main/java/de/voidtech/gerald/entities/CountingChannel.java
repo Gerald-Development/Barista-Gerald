@@ -27,18 +27,21 @@ public class CountingChannel {
 	@Column
 	private boolean hasReached69;
 	
+	@Column 
+	private int numberOfTimesItHasBeenNice;
+	
 	@Deprecated
 	//ONLY FOR HIBERNATE, DO NOT USE
 	CountingChannel() {
 	}
 	
-	public CountingChannel(String channelID, int count, String lastUser, boolean hasReached69)
+	public CountingChannel(String channelID, int count, String lastUser, boolean hasReached69, int numberOfTimesItHasBeenNice)
 	{
 	  this.channelID = channelID;
 	  this.count = count;
 	  this.lastUser = lastUser;
 	  this.hasReached69 = hasReached69;
-	  
+	  this.numberOfTimesItHasBeenNice = numberOfTimesItHasBeenNice;
 	}
 	
 	public String getCountingChannel() {
@@ -71,6 +74,13 @@ public class CountingChannel {
 	
 	public void setReached69(boolean newState) {
 		this.hasReached69 = newState;
+	}	
+	
+	public int get69ReachedCount() {
+		return this.numberOfTimesItHasBeenNice;
 	}
 	
+	public void setNumberOfTimes69HasBeenReached(int newCount) {
+		this.numberOfTimesItHasBeenNice = newCount;
+	}
 }

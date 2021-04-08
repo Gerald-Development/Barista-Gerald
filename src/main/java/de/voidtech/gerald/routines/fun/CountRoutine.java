@@ -32,6 +32,7 @@ public class CountRoutine extends AbstractRoutine {
 			CountingChannel dbChannel = (CountingChannel) session.createQuery("FROM CountingChannel WHERE ChannelID = :channelID")
                     .setParameter("channelID", channelID)
                     .uniqueResult();
+			
 			return dbChannel != null;
 		}		
 	}
@@ -42,6 +43,7 @@ public class CountRoutine extends AbstractRoutine {
 			CountingChannel dbChannel = (CountingChannel) session.createQuery("FROM CountingChannel WHERE ChannelID = :channelID")
                     .setParameter("channelID", channelID)
                     .uniqueResult();
+			
 			return !dbChannel.getLastUser().equals(userID);
 		}	
 	}
@@ -52,6 +54,7 @@ public class CountRoutine extends AbstractRoutine {
 			CountingChannel dbChannel = (CountingChannel) session.createQuery("FROM CountingChannel WHERE ChannelID = :channelID")
                     .setParameter("channelID", channelID)
                     .uniqueResult();
+			
 			return dbChannel.hasReached69();
 		}	
 	}
@@ -62,6 +65,7 @@ public class CountRoutine extends AbstractRoutine {
 			CountingChannel dbChannel = (CountingChannel) session.createQuery("FROM CountingChannel WHERE ChannelID = :channelID")
                     .setParameter("channelID", channelID)
                     .uniqueResult();
+			
 			return dbChannel.getChannelCount();
 		}		
 	}
@@ -80,6 +84,7 @@ public class CountRoutine extends AbstractRoutine {
 			CountingChannel dbChannel = (CountingChannel) session.createQuery("FROM CountingChannel WHERE ChannelID = :channelID")
                     .setParameter("channelID", channelID)
                     .uniqueResult();
+			
 			dbChannel.setChannelCount(newCount);
 			dbChannel.setLastUser(lastUserID);
 			
@@ -95,6 +100,7 @@ public class CountRoutine extends AbstractRoutine {
 			CountingChannel dbChannel = (CountingChannel) session.createQuery("FROM CountingChannel WHERE ChannelID = :channelID")
                     .setParameter("channelID", channelID)
                     .uniqueResult();
+			
 			dbChannel.setChannelCount(0);
 			dbChannel.setLastUser("");
 			dbChannel.setReached69(false);
@@ -102,8 +108,8 @@ public class CountRoutine extends AbstractRoutine {
 			session.saveOrUpdate(dbChannel);
 			session.getTransaction().commit();			
 		}	
-	}
-	
+	}	
+
 	private boolean shouldSendNice(int countGiven, String channelID) {
 		return ((countGiven == 69 || countGiven == -69) && !hasChannelReached69(channelID));
 	}
@@ -117,6 +123,7 @@ public class CountRoutine extends AbstractRoutine {
                     .uniqueResult();
 			
 			dbChannel.setReached69(true);
+			dbChannel.setNumberOfTimes69HasBeenReached(dbChannel.get69ReachedCount() + 1);
 			
 			session.saveOrUpdate(dbChannel);
 			session.getTransaction().commit();			
@@ -132,6 +139,26 @@ public class CountRoutine extends AbstractRoutine {
 		update69ReachedStatus(message.getChannel().getId());
 	}
 
+	private void sendFailureMessage(Message message) {
+		MessageEmbed failureEmbed = new EmbedBuilder()
+				.setColor(Color.RED)
+				.setTitle("You failed! :no_entry:")
+				.setDescription("**You failed! The counter has been reset!**")
+				.build();
+		message.addReaction(INCORRECT).queue();
+		message.getChannel().sendMessage(failureEmbed).queue();
+	}
+
+	private void sendWarning(Message message, String warning) {
+		MessageEmbed warningEmbed = new EmbedBuilder()
+				.setColor(Color.ORANGE)
+				.setTitle("Wait a minute! :warning:")
+				.setDescription("**" + warning + "**")
+				.build();
+		message.addReaction(INCORRECT).queue();
+		message.getChannel().sendMessage(warningEmbed).queue();
+	}
+	
 	@Override
 	public void executeInternal(Message message) {		
 		if (isCountingChannel(message.getChannel().getId())) {
@@ -155,33 +182,12 @@ public class CountRoutine extends AbstractRoutine {
 					}else {
 						resetCount(message.getChannel().getId());
 						sendFailureMessage(message);
-					}		
-					
+					}
 				} else {
-					sendDoubleCountWarning(message);
+					sendWarning(message, "You cannot count twice in a row! The counter has not been reset.");
 				}
 			}			
 		}		
-	}
-
-	private void sendFailureMessage(Message message) {
-		MessageEmbed failureEmbed = new EmbedBuilder()
-				.setColor(Color.RED)
-				.setTitle("You failed! :no_entry:")
-				.setDescription("**You failed! The counter has been reset!**")
-				.build();
-		message.addReaction(INCORRECT).queue();
-		message.getChannel().sendMessage(failureEmbed).queue();
-	}
-
-	private void sendDoubleCountWarning(Message message) {
-		MessageEmbed warningEmbed = new EmbedBuilder()
-				.setColor(Color.ORANGE)
-				.setTitle("Wait a minute! :warning:")
-				.setDescription("**You cannot count twice in a row! The counter has not been reset.**")
-				.build();
-		message.addReaction(INCORRECT).queue();
-		message.getChannel().sendMessage(warningEmbed).queue();
 	}
 
 	@Override
