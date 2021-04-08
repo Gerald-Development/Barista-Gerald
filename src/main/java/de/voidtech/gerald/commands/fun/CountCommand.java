@@ -37,11 +37,12 @@ public class CountCommand extends AbstractCommand {
 		{
 			session.getTransaction().begin();
 			
-			CountingChannel newCountChannel = new CountingChannel(channelID, 0, "");
+			CountingChannel newCountChannel = new CountingChannel(channelID, 0, "", false);
 			
 			newCountChannel.setCountingChannel(channelID);
 			newCountChannel.setChannelCount(0);
 			newCountChannel.setLastUser("");
+			newCountChannel.setReached69(false);
 			
 			session.saveOrUpdate(newCountChannel);
 			session.getTransaction().commit();
