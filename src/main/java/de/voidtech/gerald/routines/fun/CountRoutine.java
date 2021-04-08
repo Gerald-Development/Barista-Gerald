@@ -1,5 +1,7 @@
 package main.java.de.voidtech.gerald.routines.fun;
 
+import java.awt.Color;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +10,9 @@ import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.entities.CountingChannel;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.util.IntegerEvaluator;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Routine
 public class CountRoutine extends AbstractRoutine {
@@ -150,16 +154,34 @@ public class CountRoutine extends AbstractRoutine {
 						}
 					}else {
 						resetCount(message.getChannel().getId());
-						message.addReaction(INCORRECT).queue();
-						message.getChannel().sendMessage("**You failed! The counter has been reset!**").queue();
+						sendFailureMessage(message);
 					}		
 					
 				} else {
-					message.getChannel().sendMessage("**You cannot count twice in a row! The counter has not been reset.**").queue();
-					message.addReaction(INCORRECT).queue();
+					sendDoubleCountWarning(message);
 				}
 			}			
 		}		
+	}
+
+	private void sendFailureMessage(Message message) {
+		MessageEmbed failureEmbed = new EmbedBuilder()
+				.setColor(Color.RED)
+				.setTitle("You failed! :no_entry:")
+				.setDescription("**You failed! The counter has been reset!**")
+				.build();
+		message.addReaction(INCORRECT).queue();
+		message.getChannel().sendMessage(failureEmbed).queue();
+	}
+
+	private void sendDoubleCountWarning(Message message) {
+		MessageEmbed warningEmbed = new EmbedBuilder()
+				.setColor(Color.ORANGE)
+				.setTitle("Wait a minute! :warning:")
+				.setDescription("**You cannot count twice in a row! The counter has not been reset.**")
+				.build();
+		message.addReaction(INCORRECT).queue();
+		message.getChannel().sendMessage(warningEmbed).queue();
 	}
 
 	@Override
