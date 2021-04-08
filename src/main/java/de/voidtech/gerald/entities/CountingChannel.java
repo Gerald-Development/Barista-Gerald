@@ -24,16 +24,20 @@ public class CountingChannel {
 	@Column
 	private String lastUser; 
 	
+	@Column
+	private boolean hasReached69;
+	
 	@Deprecated
 	//ONLY FOR HIBERNATE, DO NOT USE
 	CountingChannel() {
 	}
 	
-	public CountingChannel(String channelID, int count, String lastUser)
+	public CountingChannel(String channelID, int count, String lastUser, boolean hasReached69)
 	{
 	  this.channelID = channelID;
 	  this.count = count;
 	  this.lastUser = lastUser;
+	  this.hasReached69 = hasReached69;
 	  
 	}
 	
@@ -59,6 +63,14 @@ public class CountingChannel {
 	
 	public void setLastUser(String newUser) {
 		this.lastUser = newUser;
+	}
+	
+	public boolean hasReached69() {
+		return this.hasReached69;
+	}
+	
+	public void setReached69(boolean newState) {
+		this.hasReached69 = newState;
 	}
 	
 }
