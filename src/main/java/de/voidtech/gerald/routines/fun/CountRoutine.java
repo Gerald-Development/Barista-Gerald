@@ -179,7 +179,7 @@ public class CountRoutine extends AbstractRoutine {
 						if (shouldSendNice(countGiven, message.getChannel().getId())) {
 							sendNice(message);
 						}
-					}else {
+					} else {
 						resetCount(message.getChannel().getId());
 						sendFailureMessage(message);
 					}

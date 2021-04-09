@@ -1,5 +1,6 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
+import java.awt.Color;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -10,9 +11,11 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.CountingChannel;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class CountCommand extends AbstractCommand {
@@ -31,8 +34,8 @@ public class CountCommand extends AbstractCommand {
 		}
 	}
 	
-	private void startCount(MessageChannel channel) {
-		String channelID = channel.getId();
+	private void startCount(Message message) {
+		String channelID = message.getChannel().getId();
 		try(Session session = sessionFactory.openSession())
 		{
 			session.getTransaction().begin();
@@ -41,14 +44,14 @@ public class CountCommand extends AbstractCommand {
 			
 			newCountChannel.setCountingChannel(channelID);
 			newCountChannel.setChannelCount(0);
-			newCountChannel.setLastUser("");
+			newCountChannel.setLastUser(message.getJDA().getSelfUser().getId());
 			newCountChannel.setReached69(false);
 			newCountChannel.setNumberOfTimes69HasBeenReached(0);
 			
 			session.saveOrUpdate(newCountChannel);
 			session.getTransaction().commit();
 		}
-		channel.sendMessage("**The count has started! Send 1 to begin the game!**").queue();
+		message.getChannel().sendMessage("**The count has started! Send 1 to begin the game!**").queue();
 	}
 	
 	private void stopCount(MessageChannel channel) {
@@ -64,17 +67,34 @@ public class CountCommand extends AbstractCommand {
 		channel.sendMessage("**This count has been ended. If you wish to start again, you will have to start from 0!**").queue();
 	}
 	
-	private void getCurrentCount(MessageChannel channel) {
+	private String formatAsMarkdown(String input) {
+		return "```\n" + input + "\n```";
+	}
+	
+	private void sendCountStatistics(MessageChannel channel) {
 		String channelID = channel.getId();
 		try(Session session = sessionFactory.openSession())
 		{
 			CountingChannel dbChannel = (CountingChannel) session.createQuery("FROM CountingChannel WHERE ChannelID = :channelID")
                     .setParameter("channelID", channelID)
                     .uniqueResult();
+						
+			String current = formatAsMarkdown(String.valueOf(dbChannel.getChannelCount()));
+			String lastUser = formatAsMarkdown(channel.getJDA().getUserById(dbChannel.getLastUser()).getAsTag());
+			String next = formatAsMarkdown(String.valueOf(dbChannel.getChannelCount() - 1) + " or " + String.valueOf(dbChannel.getChannelCount() + 1));
+			String reached69 = formatAsMarkdown(String.valueOf(dbChannel.hasReached69()));
+			String numberOf69 = formatAsMarkdown(String.valueOf(dbChannel.get69ReachedCount()));
 			
-			int current = dbChannel.getChannelCount();
-			int next = dbChannel.getChannelCount() + 1;
-			channel.sendMessage("The current count is **" + current + "**. Send **" + next + "** or the count will reset!").queue();
+			MessageEmbed countStatsEmbed = new EmbedBuilder()
+					.setColor(Color.ORANGE)
+					.setTitle("Counting Statistics")
+					.addField("Current Count", current, true)
+					.addField("Next Count", next, true)
+					.addField("Last User", lastUser, false)
+					.addField("Has reached 69?", reached69, true)
+					.addField("No. of times 69 has been reached", numberOf69, true)
+					.build();
+			channel.sendMessage(countStatsEmbed).queue();
 		}	
 	}
 	
@@ -86,7 +106,7 @@ public class CountCommand extends AbstractCommand {
 				if (countingChannelExists(message.getChannel().getId())) {
 					message.getChannel().sendMessage("**There is already a count set up here!**").queue();
 				} else {
-					startCount(message.getChannel());	
+					startCount(message);	
 				}
 			} else {
 				message.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();
@@ -103,8 +123,12 @@ public class CountCommand extends AbstractCommand {
 				message.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();
 			}
 			
-		} else if (args.get(0).equals("current")) {
-			getCurrentCount(message.getChannel());
+		} else if (args.get(0).equals("stats")) {
+			if (countingChannelExists(message.getChannel().getId())) {
+				sendCountStatistics(message.getChannel());
+			} else {
+				message.getChannel().sendMessage("**You need to use this command in a counting channel!**").queue();
+			}
 		} else {
 			message.getChannel().sendMessage("**You need to use a valid subcommand!**\n" + this.getUsage()).queue();
 		}
@@ -117,7 +141,7 @@ public class CountCommand extends AbstractCommand {
 
 	@Override
 	public String getUsage() {
-		return "count [start/stop/current]";
+		return "count [start/stop/stats]";
 	}
 
 	@Override
