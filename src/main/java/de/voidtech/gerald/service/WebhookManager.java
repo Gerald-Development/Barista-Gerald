@@ -1,19 +1,18 @@
 package main.java.de.voidtech.gerald.service;
 
+import java.io.OutputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 @Service
 public class WebhookManager {
@@ -38,26 +37,27 @@ public class WebhookManager {
         webhookPayload.put("username", username);
         webhookPayload.put("avatar_url", avatarUrl);
         webhookPayload.put("tts", false);
-        try {
-            OkHttpClient client = new OkHttpClient().newBuilder().build();
-            MediaType mediaType = MediaType.parse("application/json");
-            RequestBody body = RequestBody.create(mediaType, webhookPayload.toString());
-            Request request = new Request.Builder()
-                    .url(webhook.getUrl())
-                    .method("POST", body)
-                    .addHeader("Content-Type", "application/json")
-                    .build();
-            Response response = client.newCall(request).execute();
-            if (response.code() != 204) {
-                response.close();
-                LOGGER.log(Level.SEVERE, "Error during ServiceExecution: " 
-                + "Webhook " + webhook.getName() + " from " + webhook.getChannel().getName()
-                + " Did not respond with 204");
+        try {              			
+        	
+            URL url = new URL(webhook.getUrl());
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            
+            connection.addRequestProperty("Content-Type", "application/json");
+            connection.addRequestProperty("User-Agent", "Barista-Gerald");
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
 
-            }
-            response.close();
+            OutputStream stream = connection.getOutputStream();
+            stream.write(webhookPayload.toString().getBytes());
+            stream.flush();
+            stream.close();
+
+            connection.getInputStream().close();
+            connection.disconnect();
+        	
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Error during ServiceExecution: " + ex.getMessage());
+            ex.printStackTrace();
         }
 	}
 	

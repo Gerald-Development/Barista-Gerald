@@ -75,18 +75,8 @@ public class InfoCommand extends AbstractCommand {
 				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
 				.setFooter("Command Count: " + commands.size() + "\nRoutine Count: " + routines.size(), message.getJDA().getSelfUser().getAvatarUrl());
 		
-		if (geraldConfig.getMasters().contains(message.getAuthor().getId())) {
-			long totalMemory = Runtime.getRuntime().totalMemory();
-			long freeMemory =  Runtime.getRuntime().freeMemory();
-			long usedMemory = totalMemory - freeMemory;
-			
+		if (geraldConfig.getMasters().contains(message.getAuthor().getId())) {			
 			informationEmbed.addField("Application Uptime", "```" + getUptime() + "```", false);
-			informationEmbed.addField("Memory Statistics", "```prolog\n"
-					+ "Total Memory: " + totalMemory + "KB\n"
-					+ "Free Memory: " + freeMemory + "KB\n"
-					+ "Used Memory: " + usedMemory + "KB\n"
-					+ "```"
-			, false);
 			informationEmbed.addField("Active Threads", "```" + Thread.activeCount() + "```", true);
 		}
 		

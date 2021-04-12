@@ -32,11 +32,13 @@ public abstract class ActionsCommand extends AbstractCommand {
             {
             	String phrase = String.format("%s %s %s", message.getMember().getEffectiveName(), conjugateAction(action), message.getMentionedMembers().get(0).getEffectiveName());
             	
-                MessageEmbed actionEmbed = new EmbedBuilder()
-                        .setTitle(phrase)
-                        .setColor(Color.ORANGE)
-                        .setImage(gifURL)
-                        .build();
+                EmbedBuilder actionEmbedBuilder = new EmbedBuilder();
+                actionEmbedBuilder.setTitle(phrase);
+                actionEmbedBuilder.setColor(Color.ORANGE);
+                if (!gifURL.equals("")) {
+                	actionEmbedBuilder.setImage(gifURL);	
+                }
+                MessageEmbed actionEmbed = actionEmbedBuilder.build();
                 message.getChannel().sendMessage(actionEmbed).queue();
             }
         }
@@ -72,6 +74,6 @@ public abstract class ActionsCommand extends AbstractCommand {
 		} catch (IOException | JSONException e) {
 			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
 		}
-		return null;
+		return "";
 	}
 }

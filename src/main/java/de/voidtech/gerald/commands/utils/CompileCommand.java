@@ -79,7 +79,11 @@ public class CompileCommand extends AbstractCommand {
 			titleMessage = "Compilation Error!";
 			statusCode = compilerResponse.getString("status").toString();
 		} else {
-			responseText = compilerResponse.get("program_output").toString();
+			if (compilerResponse.has("program_output")) {
+				responseText = compilerResponse.get("program_output").toString();	
+			} else {
+				responseText = "No return";
+			}
 			color = Color.GREEN;
 			titleMessage = "Compilation Successful!";
 			statusCode = "0";
