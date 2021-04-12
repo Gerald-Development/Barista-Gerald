@@ -26,6 +26,7 @@ import main.java.de.voidtech.gerald.entities.MemeBlocklist;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -161,6 +162,26 @@ public class MemeCommand extends AbstractCommand {
 		}
 	}
 	
+	private void deliverMeme(Message message, JSONObject payload) {
+		String apiResponse = postPayload(payload);
+		if (apiResponse.equals("template not found")) {
+			message.getChannel().sendMessage("Couldn't find that template :(").queue();
+		} else {
+			MessageEmbed memeImageEmbed = new EmbedBuilder()
+					.setColor(Color.ORANGE)
+					.setTitle("Image URL", apiResponse)
+					.setImage(apiResponse)
+					.setFooter("Requested By " + message.getAuthor().getAsTag(), message.getAuthor().getAvatarUrl())
+					.build();
+			message.getChannel().sendMessage(memeImageEmbed).queue();
+			if (message.getChannel().getType() != ChannelType.PRIVATE) {
+		    	if (message.getGuild().getSelfMember().getPermissions((GuildChannel) message.getChannel()).contains(Permission.MESSAGE_MANAGE)) {
+		    		message.delete().complete();
+		    	}	
+			}
+		}	
+	}
+	
 	private void sendMeme(Message message, List<String> args) {
 		String messageText = String.join(" ", args);
 		JSONObject payload = null;
@@ -170,26 +191,14 @@ public class MemeCommand extends AbstractCommand {
 		} else {
 			payload = assemblePayloadWithoutCaptions(messageText);
 		}
-		
-		if (payloadIsUnblocked(payload, serverService.getServer(message.getGuild().getId()).getId(), message)) {
-			String apiResponse = postPayload(payload);
-			if (apiResponse.equals("template not found")) {
-				message.getChannel().sendMessage("Couldn't find that template :(").queue();
+		if (message.getChannel().getType() != ChannelType.PRIVATE) {
+			if (payloadIsUnblocked(payload, serverService.getServer(message.getGuild().getId()).getId(), message)) {
+				deliverMeme(message, payload);
 			} else {
-				
-				MessageEmbed memeImageEmbed = new EmbedBuilder()
-						.setColor(Color.ORANGE)
-						.setTitle("Image URL", apiResponse)
-						.setImage(apiResponse)
-						.setFooter("Requested By " + message.getAuthor().getAsTag(), message.getAuthor().getAvatarUrl())
-						.build();
-				message.getChannel().sendMessage(memeImageEmbed).queue();
-		    	if (message.getGuild().getSelfMember().getPermissions((GuildChannel) message.getChannel()).contains(Permission.MESSAGE_MANAGE)) {
-		    		message.delete().complete();
-		    	}
+				message.getChannel().sendMessage("**This template has been blocked**").queue();
 			}	
 		} else {
-			message.getChannel().sendMessage("**This template has been blocked**").queue();
+			deliverMeme(message, payload);
 		}
 	}
 
