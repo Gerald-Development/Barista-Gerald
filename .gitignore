@@ -29,3 +29,6 @@ dependency-reduced-pom.xml
 GeraldConfig.properties
 .metadata
 .classpath
+
+# environment variables
+.env
