@@ -12,9 +12,12 @@
 	<artifactId>BaristaGerald</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>BaristaGerald</name>
-
-	<build>
-		<sourceDirectory>src</sourceDirectory>
+    <properties>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+    </properties>
+    <build>
+        <sourceDirectory>src</sourceDirectory>
+        <finalName>${finalName}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
