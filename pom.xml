@@ -12,12 +12,9 @@
 	<artifactId>BaristaGerald</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>BaristaGerald</name>
-    <properties>
-        <finalName>${project.artifactId}-${project.version}</finalName>
-    </properties>
-    <build>
-        <sourceDirectory>src</sourceDirectory>
-        <finalName>${finalName}</finalName>
+
+	<build>
+		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -76,7 +73,17 @@
 			<id>jcenter</id>
 			<name>jcenter-bintray</name>
 			<url>https://jcenter.bintray.com</url>
-		</repository>    
+		</repository>
+		<repository>
+        <id>soluvas-public-snapshots</id>
+        <url>http://nexus.bippo.co.id/nexus/content/repositories/soluvas-public-snapshots/</url>
+        <releases>
+            <enabled>false</enabled>
+        </releases>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>    
 	</repositories>
 	<dependencies>
 		<dependency>
@@ -174,6 +181,6 @@
 	    	<artifactId>commons-text</artifactId>
 	    	<version>1.9</version>
 		</dependency>
-       
+        
 	</dependencies>
 </project>
