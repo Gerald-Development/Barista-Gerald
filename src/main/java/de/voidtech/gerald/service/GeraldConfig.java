@@ -65,7 +65,7 @@ public class GeraldConfig {
 	public String getConnectionURL()
 	{
 		String dbURL = config.getProperty("hibernate.ConnectionURL");
-		return dbURL != null ? dbURL : "jdbc:postgresql://localhost:5432/BaristaDB";
+		return dbURL != null ? dbURL : "jdbc:postgresql://localhost:5432/baristadb";
 	}
 	
 	public List<String> getMasters()
