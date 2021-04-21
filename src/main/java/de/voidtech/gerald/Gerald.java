@@ -25,6 +25,7 @@ import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.GlobalConfigService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -44,6 +45,7 @@ public class Gerald {
 				.enableIntents(getNonPrivilegedIntents())
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.setBulkDeleteSplittingEnabled(false)
+				.setStatus(OnlineStatus.IDLE)
 				.setCompression(Compression.NONE)
 				.addEventListeners(eventWaiter,	msgListener, readyListener,	guildGoneListener, channelDeleteListener, memberListener)
 				.setActivity(EntityBuilder.createActivity(globalConf.getStatus(),
