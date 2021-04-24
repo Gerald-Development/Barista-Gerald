@@ -27,7 +27,6 @@ import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -174,11 +173,6 @@ public class MemeCommand extends AbstractCommand {
 					.setFooter("Requested By " + message.getAuthor().getAsTag(), message.getAuthor().getAvatarUrl())
 					.build();
 			message.getChannel().sendMessage(memeImageEmbed).queue();
-			if (message.getChannel().getType() != ChannelType.PRIVATE) {
-		    	if (message.getGuild().getSelfMember().getPermissions((GuildChannel) message.getChannel()).contains(Permission.MESSAGE_MANAGE)) {
-		    		message.delete().complete();
-		    	}	
-			}
 		}	
 	}
 	
