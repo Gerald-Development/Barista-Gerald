@@ -76,8 +76,13 @@ public class GeraldConfig {
 		return masters;
 	}
 
-	public String getAIMLFolderDirectory() {
-		String dir = config.getProperty("AIMLDirectory"); 
-		return dir != null ? dir : "AIML";
+	public String getGavinURL() {
+		String url = config.getProperty("gavinUrl"); 
+		return url != null ? url : "http://localhost:8000/chat_bot/";
+	}
+
+	public String getSeleniumDriverPath() {
+		String dir = config.getProperty("seleniumDirectory"); 
+		return dir != null ? dir : "bin/geckodriver.exe";
 	}
 }

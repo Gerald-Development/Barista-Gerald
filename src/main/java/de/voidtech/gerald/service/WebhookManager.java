@@ -32,8 +32,10 @@ public class WebhookManager {
 	}
 	
 	public void postMessage(String content, String avatarUrl, String username, Webhook webhook) {
+		String messageToBeSent = content.replaceAll("@", "`@`");
+		
 		JSONObject webhookPayload = new JSONObject();
-        webhookPayload.put("content", content);
+        webhookPayload.put("content", messageToBeSent);
         webhookPayload.put("username", username);
         webhookPayload.put("avatar_url", avatarUrl);
         webhookPayload.put("tts", false);

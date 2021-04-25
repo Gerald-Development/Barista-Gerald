@@ -43,11 +43,11 @@ public class BerryCommand extends AbstractCommand{
 		waiter.waitForEvent(MessageReceivedEvent.class,
 				event -> ((MessageReceivedEvent) event).getAuthor().getId().equals(message.getAuthor().getId()),
 				event -> {
-					boolean correctberry = event.getMessage().getContentRaw().equals(currentBerry);
+					boolean correctberry = event.getMessage().getContentRaw().toLowerCase().equals(currentBerry);
 					message.getChannel().sendMessage(String.format("%s! The Berry was **%s**",
 							correctberry ? "Correct" : "Incorrect", currentBerry)).queue();;
 				}, 15, TimeUnit.SECONDS, 
-				() -> message.getChannel().sendMessage(String.format("Time is up! The Citrus was **%s**", currentBerry)).queue());
+				() -> message.getChannel().sendMessage(String.format("Time is up! The Berry was **%s**", currentBerry)).queue());
 	}
 	
 	private BidiMap<String, String> getBerryMap()
