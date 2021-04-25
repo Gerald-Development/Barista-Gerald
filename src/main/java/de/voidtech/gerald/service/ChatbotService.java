@@ -24,7 +24,10 @@ public class ChatbotService {
 	private static final String ERROR_STRING = "I'm not sure how to respond to that.";
 	
 	private String getGavinResponse(String message) {
-		String requestURL = configService.getGavinURL() + message.replaceAll(" ", "%20");
+		String inputMessage = message;
+		inputMessage = inputMessage.replaceAll("/", "");
+		inputMessage = inputMessage.replaceAll(" ", "%20");
+		String requestURL = configService.getGavinURL() + inputMessage;
 		
 		try {
             HttpURLConnection con = (HttpURLConnection) new URL(requestURL).openConnection();
