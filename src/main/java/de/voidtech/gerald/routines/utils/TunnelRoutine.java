@@ -24,7 +24,7 @@ public class TunnelRoutine extends AbstractRoutine {
 	private SessionFactory sessionFactory;
 	
 	@Autowired
-	WebhookManager webhookManager;
+	private WebhookManager webhookManager;
 	
 	private boolean tunnelExists(String senderChannelID) {
 		

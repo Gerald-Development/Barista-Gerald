@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.entities.Message;
 public class NitroliteRoutine extends AbstractRoutine {
     
 	@Autowired
-	NitroliteService nitroliteService;
+	private NitroliteService nitroliteService;
 	
 	@Override
     public void executeInternal(Message message) {
