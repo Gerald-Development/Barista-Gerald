@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.entities.Message;
 public class NitroliteCommand extends AbstractCommand {
     
 	@Autowired
-	NitroliteService nitroliteService;
+	private NitroliteService nitroliteService;
 	
 	@Override
     public void executeInternal(Message message, List<String> args) {

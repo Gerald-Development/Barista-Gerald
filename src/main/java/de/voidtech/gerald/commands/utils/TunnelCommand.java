@@ -28,8 +28,10 @@ public class TunnelCommand extends AbstractCommand {
 
 	@Autowired
 	private EventWaiter waiter;
+	
 	@Autowired
 	private SessionFactory sessionFactory;
+	
 	@Autowired
 	private CommonClasses commonClasses; 
 

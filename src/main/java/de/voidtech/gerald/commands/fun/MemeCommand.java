@@ -37,10 +37,10 @@ public class MemeCommand extends AbstractCommand {
 	private static final Logger LOGGER = Logger.getLogger(MemeCommand.class.getName());	
 	
 	@Autowired
-	SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
 	
 	@Autowired
-	ServerService serverService;
+	private ServerService serverService;
 	
 	private MemeBlocklist getBlocklist(long serverID) {
 		try(Session session = sessionFactory.openSession())
