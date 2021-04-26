@@ -1,7 +1,9 @@
 package main.java.de.voidtech.gerald.util;
 
+import org.springframework.stereotype.Component;
 
-public class IntegerEvaluator {
+@Component
+public class CommonClasses {
 	public boolean isInteger(String str) {
 	    if (str == null) {
 	        return false;
@@ -24,5 +26,10 @@ public class IntegerEvaluator {
 	        }
 	    }
 	    return true;
+	}
+	
+	public String filterSnowflake(String inputString) {
+		String outputString = inputString.replaceAll("([^0-9])", "");
+		return outputString;
 	}
 }

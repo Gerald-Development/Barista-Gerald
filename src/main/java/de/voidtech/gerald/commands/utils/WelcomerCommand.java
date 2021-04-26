@@ -15,7 +15,7 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.JoinLeaveMessage;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
-import main.java.de.voidtech.gerald.util.IntegerEvaluator;
+import main.java.de.voidtech.gerald.util.CommonClasses;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -31,6 +31,9 @@ public class WelcomerCommand extends AbstractCommand{
 	
 	@Autowired
 	private EventWaiter waiter;
+	
+	@Autowired 
+	private CommonClasses commonClasses;
 
 	private boolean customMessageEnabled(long guildID) {
 		try(Session session = sessionFactory.openSession())
@@ -54,21 +57,12 @@ public class WelcomerCommand extends AbstractCommand{
 	}
 	
 	private boolean channelExists (String channel, Message message) {
-		if (new IntegerEvaluator().isInteger(channel)) {
+		if (commonClasses.isInteger(channel)) {
 			GuildChannel guildChannel = message.getJDA().getGuildChannelById(Long.parseLong(channel));
 			return guildChannel != null;	
 		} else {
 			return false;
 		}
-	}
-	
-	private String parseChannel(String inputString) {
-		String output = inputString
-			.replaceAll("<", "")
-			.replaceAll("#", "")
-			.replaceAll("!", "")
-			.replaceAll(">", "");
-		return output;
 	}
 	
 	private void addJoinLeaveMessage(long serverID, String channel, String joinMessage, String leaveMessage) {
@@ -156,7 +150,7 @@ public class WelcomerCommand extends AbstractCommand{
 			waiter.waitForEvent(MessageReceivedEvent.class,
 					channelEntryEvent -> ((MessageReceivedEvent) channelEntryEvent).getAuthor().getId().equals(message.getAuthor().getId()),
 					channelEntryEvent -> {
-						String channel = parseChannel(channelEntryEvent.getMessage().getContentRaw());
+						String channel = commonClasses.filterSnowflake(channelEntryEvent.getMessage().getContentRaw());
 						
 						if (channelExists(channel, message)) {
 							
@@ -178,17 +172,17 @@ public class WelcomerCommand extends AbstractCommand{
 															+ "Join message: " + welcomeMessage + "\n"
 															+ "Leave message: " + leaveMessage).queue();
 													
-												}, 30, TimeUnit.SECONDS, 
+												}, 60, TimeUnit.SECONDS, 
 												() -> message.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());	
 										
-									}, 30, TimeUnit.SECONDS, 
+									}, 60, TimeUnit.SECONDS, 
 									() -> message.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());	
 					
 						} else {
 							message.getChannel().sendMessage("**You need to mention a channel or use its ID!**").queue();
 						}
 						
-					}, 15, TimeUnit.SECONDS, 
+					}, 60, TimeUnit.SECONDS, 
 					() -> message.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());	
 
 		}	
@@ -196,7 +190,7 @@ public class WelcomerCommand extends AbstractCommand{
 	
 	private void changeChannel(Server server, Message message, List<String> args) {
 		if (customMessageEnabled(server.getId())) {
-			String channel = parseChannel(args.get(1));
+			String channel = commonClasses.filterSnowflake(args.get(1));
 			
 			if (channelExists(channel, message)) {
 				updateChannel(server.getId(), channel, message);
