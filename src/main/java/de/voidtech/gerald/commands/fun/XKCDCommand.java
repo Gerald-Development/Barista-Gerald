@@ -22,7 +22,7 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.util.CommonClasses;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -33,9 +33,6 @@ public class XKCDCommand extends AbstractCommand {
 	
 	@Autowired
 	private EventWaiter waiter;
-	
-	@Autowired
-	private CommonClasses commonClasses;
 	
 	private static final Logger LOGGER = Logger.getLogger(XKCDCommand.class.getName());
 	
@@ -119,7 +116,7 @@ public class XKCDCommand extends AbstractCommand {
 			sendXKCD(new JSONObject(currentResponse), message);
 			
 		} else if (args.get(0).equals("id")) {
-			if (commonClasses.isInteger(args.get(1))) {
+			if (ParsingUtils.isInteger(args.get(1))) {
 				String byIdResponse = getXKCDById(Integer.parseInt(args.get(1)));
 				if (byIdResponse.equals("")) {
 					message.getChannel().sendMessage("**That ID could not be found!**").queue();

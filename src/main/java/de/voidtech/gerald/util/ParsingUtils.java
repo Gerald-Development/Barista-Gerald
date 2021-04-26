@@ -1,10 +1,7 @@
 package main.java.de.voidtech.gerald.util;
 
-import org.springframework.stereotype.Component;
-
-@Component
-public class CommonClasses {
-	public boolean isInteger(String str) {
+public class ParsingUtils {
+	public static boolean isInteger(String str) {
 	    if (str == null) {
 	        return false;
 	    }
@@ -28,7 +25,7 @@ public class CommonClasses {
 	    return true;
 	}
 	
-	public String filterSnowflake(String inputString) {
+	public static String filterSnowflake(String inputString) {
 		String outputString = inputString.replaceAll("([^0-9])", "");
 		return outputString;
 	}

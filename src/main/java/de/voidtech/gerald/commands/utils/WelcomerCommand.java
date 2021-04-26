@@ -15,7 +15,7 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.JoinLeaveMessage;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
-import main.java.de.voidtech.gerald.util.CommonClasses;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -31,9 +31,6 @@ public class WelcomerCommand extends AbstractCommand{
 	
 	@Autowired
 	private EventWaiter waiter;
-	
-	@Autowired 
-	private CommonClasses commonClasses;
 
 	private boolean customMessageEnabled(long guildID) {
 		try(Session session = sessionFactory.openSession())
@@ -57,7 +54,7 @@ public class WelcomerCommand extends AbstractCommand{
 	}
 	
 	private boolean channelExists (String channel, Message message) {
-		if (commonClasses.isInteger(channel)) {
+		if (ParsingUtils.isInteger(channel)) {
 			GuildChannel guildChannel = message.getJDA().getGuildChannelById(Long.parseLong(channel));
 			return guildChannel != null;	
 		} else {
@@ -150,7 +147,7 @@ public class WelcomerCommand extends AbstractCommand{
 			waiter.waitForEvent(MessageReceivedEvent.class,
 					channelEntryEvent -> ((MessageReceivedEvent) channelEntryEvent).getAuthor().getId().equals(message.getAuthor().getId()),
 					channelEntryEvent -> {
-						String channel = commonClasses.filterSnowflake(channelEntryEvent.getMessage().getContentRaw());
+						String channel = ParsingUtils.filterSnowflake(channelEntryEvent.getMessage().getContentRaw());
 						
 						if (channelExists(channel, message)) {
 							
@@ -190,7 +187,7 @@ public class WelcomerCommand extends AbstractCommand{
 	
 	private void changeChannel(Server server, Message message, List<String> args) {
 		if (customMessageEnabled(server.getId())) {
-			String channel = commonClasses.filterSnowflake(args.get(1));
+			String channel = ParsingUtils.filterSnowflake(args.get(1));
 			
 			if (channelExists(channel, message)) {
 				updateChannel(server.getId(), channel, message);

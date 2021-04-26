@@ -13,7 +13,7 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.entities.SuggestionChannel;
 import main.java.de.voidtech.gerald.service.ServerService;
-import main.java.de.voidtech.gerald.util.CommonClasses;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -27,9 +27,6 @@ public class SuggestCommand extends AbstractCommand {
 	
 	@Autowired
 	private SessionFactory sessionFactory;
-	
-	@Autowired
-	private CommonClasses commonClasses;
 	
 	private final static String CHECK = "U+2705";
 	private final static String CROSS = "U+274E";
@@ -115,7 +112,7 @@ public class SuggestCommand extends AbstractCommand {
 	}
 	
 	private void validateInput(String channelID, Server server, Message message) {
-		if (commonClasses.isInteger(channelID)) {
+		if (ParsingUtils.isInteger(channelID)) {
 			if (isGuildChannel(channelID, message)) {
 				if (suggestionChannelExists(server.getId())) {
 					updateSuggestionChannel(server.getId(), channelID);
@@ -137,7 +134,7 @@ public class SuggestCommand extends AbstractCommand {
 			if (args.size() < 2) {
 				message.getChannel().sendMessage("**You need to specify a channel! Use a channel mention or its ID**").queue();
 			} else {
-				String channelID = commonClasses.filterSnowflake(args.get(1));
+				String channelID = ParsingUtils.filterSnowflake(args.get(1));
 				Server server = serverService.getServer(message.getGuild().getId());
 				
 				validateInput(channelID, server, message);
