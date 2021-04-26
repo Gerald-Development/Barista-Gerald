@@ -125,4 +125,9 @@ public class TunnelRoutine extends AbstractRoutine {
 	public boolean allowsBotResponses() {
 		return true;
 	}
+
+	@Override
+	public String getName() {
+		return "Tunnels";
+	}
 }

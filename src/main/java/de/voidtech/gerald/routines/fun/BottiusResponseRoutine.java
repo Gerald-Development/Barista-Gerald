@@ -50,5 +50,10 @@ public class BottiusResponseRoutine extends AbstractRoutine{
 	public boolean allowsBotResponses() {
 		return true;
 	}
+
+	@Override
+	public String getName() {
+		return "Bottius-Routine";
+	}
 	
 }

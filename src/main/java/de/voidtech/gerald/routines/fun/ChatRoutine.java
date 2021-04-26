@@ -51,4 +51,9 @@ public class ChatRoutine extends AbstractRoutine{
 	public boolean allowsBotResponses() {
 		return false;
 	}
+
+	@Override
+	public String getName() {
+		return "GeraldAI";
+	}
 }

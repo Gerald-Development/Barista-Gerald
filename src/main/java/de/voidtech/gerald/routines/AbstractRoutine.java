@@ -25,6 +25,8 @@ public abstract class AbstractRoutine {
 
     public abstract void executeInternal(Message message);
 
+    public abstract String getName();
+    
     public abstract String getDescription();
     
     public abstract boolean allowsBotResponses();

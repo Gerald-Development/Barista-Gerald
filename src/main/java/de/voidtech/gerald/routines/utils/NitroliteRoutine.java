@@ -61,4 +61,9 @@ public class NitroliteRoutine extends AbstractRoutine {
 		return false;
 	}
 
+	@Override
+	public String getName() {
+		return "Nitrolite";
+	}
+
 }
