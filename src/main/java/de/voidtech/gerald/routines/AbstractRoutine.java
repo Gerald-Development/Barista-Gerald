@@ -29,6 +29,8 @@ public abstract class AbstractRoutine {
     
     public abstract String getDescription();
     
+	public abstract RoutineCategory getRoutineCategory();
+    
     public abstract boolean allowsBotResponses();
 
 }

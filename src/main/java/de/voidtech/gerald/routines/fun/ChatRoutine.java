@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.entities.ChatChannel;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
+import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.service.ChatbotService;
 import net.dv8tion.jda.api.entities.Message;
 
@@ -55,5 +56,10 @@ public class ChatRoutine extends AbstractRoutine{
 	@Override
 	public String getName() {
 		return "GeraldAI";
+	}
+	
+	@Override
+	public RoutineCategory getRoutineCategory() {
+		return RoutineCategory.FUN;
 	}
 }

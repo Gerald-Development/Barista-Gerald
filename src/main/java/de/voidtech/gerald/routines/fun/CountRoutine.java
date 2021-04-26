@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.entities.CountingChannel;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
+import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.util.IntegerEvaluator;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -203,6 +204,11 @@ public class CountRoutine extends AbstractRoutine {
 	@Override
 	public String getName() {
 		return "Counting";
+	}
+	
+	@Override
+	public RoutineCategory getRoutineCategory() {
+		return RoutineCategory.FUN;
 	}
 
 }

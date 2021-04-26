@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
+import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.service.NitroliteService;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Message;
@@ -64,6 +65,11 @@ public class NitroliteRoutine extends AbstractRoutine {
 	@Override
 	public String getName() {
 		return "Nitrolite";
+	}
+	
+	@Override
+	public RoutineCategory getRoutineCategory() {
+		return RoutineCategory.UTILS;
 	}
 
 }
