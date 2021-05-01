@@ -43,7 +43,7 @@ public class NitroliteCommand extends AbstractCommand {
 
     @Override
     public String getUsage() {
-        return "emote_name [text](optional)";
+        return "[:an_awesome_emote:]";
     }
 
 	@Override
