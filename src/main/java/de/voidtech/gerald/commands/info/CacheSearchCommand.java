@@ -36,7 +36,7 @@ public class CacheSearchCommand extends AbstractCommand{
 			String imageURL = "";
 			boolean foundItem = true;
 			
-			if (client.getUserById(args.get(0)) != null) {
+			if (client.retrieveUserById(args.get(0)).complete() != null) {
 				User user = client.retrieveUserById(args.get(0)).complete();
 				resultMessage = "**User Cache**\n```\n"
 				+ "Username: " + user.getAsTag() 
