@@ -58,7 +58,7 @@ public class NitroliteService {
 
     private void sendWebhookMessage(Message message, String content) {    	
     	Webhook webhook = webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGNitrolite");
-    	webhookManager.postMessage(content, message.getAuthor().getAvatarUrl(), message.getAuthor().getName(), webhook);
+    	webhookManager.postMessage(content, message.getAuthor().getAvatarUrl(), message.getMember().getEffectiveName(), webhook);
     	
         
     }
