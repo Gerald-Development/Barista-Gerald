@@ -36,15 +36,7 @@ public class CacheSearchCommand extends AbstractCommand{
 			String imageURL = "";
 			boolean foundItem = true;
 			
-			if (client.retrieveUserById(args.get(0)).complete() != null) {
-				User user = client.retrieveUserById(args.get(0)).complete();
-				resultMessage = "**User Cache**\n```\n"
-				+ "Username: " + user.getAsTag() 
-				+ "\nUser ID: " + user.getId() 
-				+ "```";
-				imageURL = user.getAvatarUrl(); 
-				
-			} else if (client.getGuildById(args.get(0)) != null) {
+			if (client.getGuildById(args.get(0)) != null) {
 				Guild guild = client.getGuildById(args.get(0));
 				Member owner = guild.retrieveOwner().complete();
 				resultMessage = "**Guild Cache**\n```\n"
@@ -67,6 +59,15 @@ public class CacheSearchCommand extends AbstractCommand{
 				+ "\nBarista Guild ID: " + serverService.getServer(channel.getGuild().getId()).getId() 
 				+ "```";
 				imageURL = channel.getGuild().getIconUrl();
+				
+			} else if (client.retrieveUserById(args.get(0)).complete() != null) {
+					User user = client.retrieveUserById(args.get(0)).complete();
+					resultMessage = "**User Cache**\n```\n"
+					+ "Username: " + user.getAsTag() 
+					+ "\nUser ID: " + user.getId() 
+					+ "```";
+					imageURL = user.getAvatarUrl(); 
+					
 			} else {
 				foundItem = false;
 			}
