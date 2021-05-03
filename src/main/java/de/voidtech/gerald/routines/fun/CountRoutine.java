@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.entities.CountingChannel;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
-import main.java.de.voidtech.gerald.util.IntegerEvaluator;
+import main.java.de.voidtech.gerald.routines.RoutineCategory;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -162,7 +163,7 @@ public class CountRoutine extends AbstractRoutine {
 	@Override
 	public void executeInternal(Message message) {		
 		if (isCountingChannel(message.getChannel().getId())) {
-			if (new IntegerEvaluator().isInteger(message.getContentRaw())) {
+			if (ParsingUtils.isInteger(message.getContentRaw())) {
 				if (isDifferentUser(message.getMember().getId(), message.getChannel().getId())) {
 					int currentCount = getCount(message.getChannel().getId());
 					int countGiven = Integer.parseInt(message.getContentRaw());
@@ -198,6 +199,16 @@ public class CountRoutine extends AbstractRoutine {
 	@Override
 	public boolean allowsBotResponses() {
 		return false;
+	}
+
+	@Override
+	public String getName() {
+		return "Counting";
+	}
+	
+	@Override
+	public RoutineCategory getRoutineCategory() {
+		return RoutineCategory.FUN;
 	}
 
 }

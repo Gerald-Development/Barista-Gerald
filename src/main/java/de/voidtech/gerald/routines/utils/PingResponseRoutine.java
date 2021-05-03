@@ -8,6 +8,7 @@ import main.java.de.voidtech.gerald.GlobalConstants;
 import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
+import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -58,6 +59,16 @@ public class PingResponseRoutine extends AbstractRoutine {
 	@Override
 	public boolean allowsBotResponses() {
 		return false;
+	}
+
+	@Override
+	public String getName() {
+		return "PingResponder";
+	}
+	
+	@Override
+	public RoutineCategory getRoutineCategory() {
+		return RoutineCategory.UTILS;
 	}
 
 }

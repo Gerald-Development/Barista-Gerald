@@ -1,8 +1,7 @@
 package main.java.de.voidtech.gerald.util;
 
-
-public class IntegerEvaluator {
-	public boolean isInteger(String str) {
+public class ParsingUtils {
+	public static boolean isInteger(String str) {
 	    if (str == null) {
 	        return false;
 	    }
@@ -24,5 +23,10 @@ public class IntegerEvaluator {
 	        }
 	    }
 	    return true;
+	}
+	
+	public static String filterSnowflake(String inputString) {
+		String outputString = inputString.replaceAll("([^0-9])", "");
+		return outputString;
 	}
 }

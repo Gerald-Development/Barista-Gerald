@@ -31,7 +31,7 @@ public class InspiroCommand extends AbstractCommand{
 		if (inspiroImageURLOpt != null)
 		{
 			MessageEmbed inspiroEmbed = new EmbedBuilder()//
-					.setTitle("InspiroBot says:")//
+					.setTitle("InspiroBot says:", inspiroImageURLOpt)//
 					.setColor(Color.ORANGE)//
 					.setImage(inspiroImageURLOpt)//
 					.setFooter("Data from InspiroBot", INSPIRO_ICON)//

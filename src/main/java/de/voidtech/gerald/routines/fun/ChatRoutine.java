@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.entities.ChatChannel;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
+import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.service.ChatbotService;
 import net.dv8tion.jda.api.entities.Message;
 
@@ -17,7 +18,7 @@ public class ChatRoutine extends AbstractRoutine{
 	private SessionFactory sessionFactory;
 	
 	@Autowired
-	ChatbotService chatBot;
+	private ChatbotService chatBot;
 	
 	private boolean chatChannelEnabled(String channelID) {
 		try(Session session = sessionFactory.openSession())
@@ -50,5 +51,15 @@ public class ChatRoutine extends AbstractRoutine{
 	@Override
 	public boolean allowsBotResponses() {
 		return false;
+	}
+
+	@Override
+	public String getName() {
+		return "GeraldAI";
+	}
+	
+	@Override
+	public RoutineCategory getRoutineCategory() {
+		return RoutineCategory.FUN;
 	}
 }

@@ -64,7 +64,7 @@ public class CompileCommand extends AbstractCommand {
 	}
 	
 	private void sendResponse(String finalCode, String compiler, Message sentMessage) {
-		String payload = new JSONObject().put("code", finalCode).put("compiler", compiler).toString();
+		String payload = new JSONObject().put("code", finalCode).put("compiler", compiler).put("save", true).toString();
 		String response = getWandboxResponse(payload);
 		
 		JSONObject compilerResponse = new JSONObject(response);
@@ -72,6 +72,7 @@ public class CompileCommand extends AbstractCommand {
 		Color color = null;
 		String titleMessage = "";
 		String statusCode = "";
+		String permLink = compilerResponse.getString("url");
 		
 		if (compilerResponse.has("program_error")) {
 			responseText = compilerResponse.get("program_error").toString();
@@ -92,8 +93,9 @@ public class CompileCommand extends AbstractCommand {
 		MessageEmbed compilationCompleteMessage = new EmbedBuilder()//
 				.setColor(color)//
 				.setTitle(titleMessage)//
-				.addField("Program Output", "```" + responseText + "```", false)//
+				.addField("Program Output", "```" + responseText.substring(0, 500) + "```", false)//
 				.addField("Status", "```\nCompiler responded with status code " + statusCode + "```", false)
+				.addField("Permalink", "[Wandbox URL](" + permLink + ")", false)
 				.build();
 		
 		sentMessage.editMessage(compilationCompleteMessage).queue();

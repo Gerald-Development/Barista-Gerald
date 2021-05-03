@@ -30,7 +30,8 @@ public abstract class ActionsCommand extends AbstractCommand {
             String gifURL = getActionGif(action);
             if (gifURL != null)
             {
-            	String phrase = String.format("%s %s %s", message.getMember().getEffectiveName(), conjugateAction(action), message.getMentionedMembers().get(0).getEffectiveName());
+            	String phrase = String.format("%s %s %s", message.getMember().getEffectiveName(), conjugateAction(action), 
+            			message.getMentionedMembers().get(0).getId().equals(message.getAuthor().getId()) ? "Themself" : message.getMentionedMembers().get(0).getEffectiveName());
             	
                 EmbedBuilder actionEmbedBuilder = new EmbedBuilder();
                 actionEmbedBuilder.setTitle(phrase);

@@ -15,6 +15,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.Tunnel;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -27,6 +28,7 @@ public class TunnelCommand extends AbstractCommand {
 
 	@Autowired
 	private EventWaiter waiter;
+	
 	@Autowired
 	private SessionFactory sessionFactory;
 
@@ -181,7 +183,7 @@ public class TunnelCommand extends AbstractCommand {
 			message.getChannel().sendMessage("**You need to supply a channel snowflake ID!**").queue();
 
 		} else {
-			String targetChannelID = args.get(1).replaceAll("([^0-9])", "");
+			String targetChannelID = ParsingUtils.filterSnowflake(args.get(1));
 			
 			if (targetChannelID == "") {
 				message.getChannel().sendMessage("**That is not a valid channel.**").queue();
