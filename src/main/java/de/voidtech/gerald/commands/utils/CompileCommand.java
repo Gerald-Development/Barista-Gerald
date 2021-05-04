@@ -90,10 +90,7 @@ public class CompileCommand extends AbstractCommand {
 			statusCode = "0";
 		}
 		
-		System.out.println(responseText);
-		
 		String output = responseText.length() <= 500 ? responseText : responseText.substring(0, 500);
-		
 		MessageEmbed compilationCompleteMessage = new EmbedBuilder()//
 				.setColor(color)//
 				.setTitle(titleMessage)//
