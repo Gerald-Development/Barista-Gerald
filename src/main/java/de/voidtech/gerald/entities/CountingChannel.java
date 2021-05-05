@@ -19,7 +19,10 @@ public class CountingChannel {
 	private String channelID; 
 	
 	@Column
-	private int count; 
+	private String serverID;
+	
+	@Column
+	private int countPosition; 
 	
 	@Column
 	private String lastUser; 
@@ -35,10 +38,11 @@ public class CountingChannel {
 	CountingChannel() {
 	}
 	
-	public CountingChannel(String channelID, int count, String lastUser, boolean hasReached69, int numberOfTimesItHasBeenNice)
+	public CountingChannel(String channelID, String serverID, int count, String lastUser, boolean hasReached69, int numberOfTimesItHasBeenNice)
 	{
 	  this.channelID = channelID;
-	  this.count = count;
+	  this.serverID = serverID;
+	  this.countPosition = count;
 	  this.lastUser = lastUser;
 	  this.hasReached69 = hasReached69;
 	  this.numberOfTimesItHasBeenNice = numberOfTimesItHasBeenNice;
@@ -52,12 +56,20 @@ public class CountingChannel {
 		this.channelID = newChannelID;
 	}
 	
+	public String getServerID() {
+		return serverID;
+	}
+
+	public void setServerID(String newServerID) {
+		this.serverID = newServerID;
+	}
+	
 	public int getChannelCount() {
-		return this.count;
+		return this.countPosition;
 	}
 	
 	public void setChannelCount(int newCount) {
-		this.count = newCount;
+		this.countPosition = newCount;
 	}
 	
 	public String getLastUser() {
