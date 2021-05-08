@@ -10,11 +10,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.entities.ActionStats;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -23,6 +28,80 @@ public abstract class ActionsCommand extends AbstractCommand {
 	private static final String API_URL = "http://api.nekos.fun:8080/api/";
 	private static final Logger LOGGER = Logger.getLogger(ActionsCommand.class.getName());
 
+	@Autowired
+	private SessionFactory sessionFactory;
+	
+	private ActionStats getStatsProfile(String id, String action) {
+		try(Session session = sessionFactory.openSession())
+		{
+			ActionStats stats = (ActionStats) session.createQuery("FROM ActionStats WHERE memberID = :member AND type = :type")
+                    .setParameter("member", id)
+                    .setParameter("type", action)
+                    .uniqueResult();
+			return stats;
+		}
+	}
+	
+	private void createStatsProfile(String id, String action) {
+		try(Session session = sessionFactory.openSession())
+		{
+			session.getTransaction().begin();
+			
+			ActionStats stats = new ActionStats(action, id, 0, 0);
+			stats.setGivenCount(0);
+			stats.setReceivedCount(0);
+			stats.setMember(id);
+			stats.setType(action);
+			
+			session.saveOrUpdate(stats);
+			session.getTransaction().commit();
+		}
+	}
+	
+	private ActionStats getOrCreateProfile(String id, String action) {
+		ActionStats stats = getStatsProfile(id, action);
+		if (stats == null) {
+			createStatsProfile(id, action);
+			stats = getStatsProfile(id, action);
+		}
+		return stats;
+	}
+
+	private void updateStatsProfile(ActionStats stats) {
+		try(Session session = sessionFactory.openSession())
+		{
+			session.getTransaction().begin();
+			session.saveOrUpdate(stats);
+			session.getTransaction().commit();
+		}
+	}
+	
+	private void updateActionStats(String giver, String receiver, String action, Message message) {
+		if (giver != receiver && message.getChannel().getType() != ChannelType.PRIVATE) {
+			ActionStats giverStats = getOrCreateProfile(giver, action);
+			ActionStats receiverStats = getOrCreateProfile(receiver, action);
+			
+			giverStats.setGivenCount(giverStats.getGivenCount() + 1);
+			receiverStats.setReceivedCount(receiverStats.getReceivedCount() + 1);
+			
+			updateStatsProfile(giverStats);
+			updateStatsProfile(receiverStats);	
+		}
+	}
+	
+	private String getStatsString(String giver, String receiver, String action, Message message) {
+		ActionStats giverStats = getOrCreateProfile(giver, action);
+		ActionStats receiverStats = getOrCreateProfile(receiver, action);
+		
+		String giverTag = message.getJDA().retrieveUserById(giver).complete().getAsTag();
+		String receiverTag = message.getJDA().retrieveUserById(receiver).complete().getAsTag();
+		
+		String statsString = giverTag + " has " + conjugateAction(action) + " people " + giverStats.getGivenCount() + " times\n"
+				+ receiverTag + " has been " + conjugateAction(action) + " by people " + receiverStats.getReceivedCount() + " times";
+		
+		return statsString;
+	}
+
 	public void sendAction(Message message, String action) {
 		if(message.getMentionedMembers().isEmpty()) {
             message.getChannel().sendMessage("You need to mention someone to " + action).queue();
@@ -30,8 +109,9 @@ public abstract class ActionsCommand extends AbstractCommand {
             String gifURL = getActionGif(action);
             if (gifURL != null)
             {
+            	updateActionStats(message.getAuthor().getId(), message.getMentionedMembers().get(0).getId(), action, message);
             	String phrase = String.format("%s %s %s", message.getMember().getEffectiveName(), conjugateAction(action), 
-            			message.getMentionedMembers().get(0).getId().equals(message.getAuthor().getId()) ? "Themself" : message.getMentionedMembers().get(0).getEffectiveName());
+            			message.getMentionedMembers().get(0).getId().equals(message.getAuthor().getId()) ? "themself" : message.getMentionedMembers().get(0).getEffectiveName());
             	
                 EmbedBuilder actionEmbedBuilder = new EmbedBuilder();
                 actionEmbedBuilder.setTitle(phrase);
@@ -39,6 +119,7 @@ public abstract class ActionsCommand extends AbstractCommand {
                 if (!gifURL.equals("")) {
                 	actionEmbedBuilder.setImage(gifURL);	
                 }
+                actionEmbedBuilder.setFooter(getStatsString(message.getAuthor().getId(), message.getMentionedMembers().get(0).getId(), action, message));
                 MessageEmbed actionEmbed = actionEmbedBuilder.build();
                 message.getChannel().sendMessage(actionEmbed).queue();
             }
