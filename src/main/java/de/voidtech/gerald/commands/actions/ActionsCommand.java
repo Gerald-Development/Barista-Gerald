@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.entities.ActionStats;
+import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
@@ -31,38 +32,43 @@ public abstract class ActionsCommand extends AbstractCommand {
 	@Autowired
 	private SessionFactory sessionFactory;
 	
-	private ActionStats getStatsProfile(String id, String action) {
+	@Autowired
+	private ServerService serverService;
+	
+	private ActionStats getStatsProfile(String id, String action, long serverID) {
 		try(Session session = sessionFactory.openSession())
 		{
-			ActionStats stats = (ActionStats) session.createQuery("FROM ActionStats WHERE memberID = :member AND type = :type")
+			ActionStats stats = (ActionStats) session.createQuery("FROM ActionStats WHERE memberID = :member AND type = :type AND serverID = :serverID")
                     .setParameter("member", id)
                     .setParameter("type", action)
+                    .setParameter("serverID", serverID)
                     .uniqueResult();
 			return stats;
 		}
 	}
 	
-	private void createStatsProfile(String id, String action) {
+	private void createStatsProfile(String id, String action, long serverID) {
 		try(Session session = sessionFactory.openSession())
 		{
 			session.getTransaction().begin();
 			
-			ActionStats stats = new ActionStats(action, id, 0, 0);
+			ActionStats stats = new ActionStats(action, id, 0, 0, 0);
 			stats.setGivenCount(0);
 			stats.setReceivedCount(0);
 			stats.setMember(id);
 			stats.setType(action);
+			stats.setServer(serverID);
 			
 			session.saveOrUpdate(stats);
 			session.getTransaction().commit();
 		}
 	}
 	
-	private ActionStats getOrCreateProfile(String id, String action) {
-		ActionStats stats = getStatsProfile(id, action);
+	private ActionStats getOrCreateProfile(String id, String action, long serverID) {
+		ActionStats stats = getStatsProfile(id, action, serverID);
 		if (stats == null) {
-			createStatsProfile(id, action);
-			stats = getStatsProfile(id, action);
+			createStatsProfile(id, action, serverID);
+			stats = getStatsProfile(id, action, serverID);
 		}
 		return stats;
 	}
@@ -77,9 +83,12 @@ public abstract class ActionsCommand extends AbstractCommand {
 	}
 	
 	private void updateActionStats(String giver, String receiver, String action, Message message) {
+		
+		long serverID = serverService.getServer(message.getGuild().getId()).getId();
+		
 		if (giver != receiver && message.getChannel().getType() != ChannelType.PRIVATE) {
-			ActionStats giverStats = getOrCreateProfile(giver, action);
-			ActionStats receiverStats = getOrCreateProfile(receiver, action);
+			ActionStats giverStats = getOrCreateProfile(giver, action, serverID);
+			ActionStats receiverStats = getOrCreateProfile(receiver, action, serverID);
 			
 			giverStats.setGivenCount(giverStats.getGivenCount() + 1);
 			receiverStats.setReceivedCount(receiverStats.getReceivedCount() + 1);
@@ -90,8 +99,10 @@ public abstract class ActionsCommand extends AbstractCommand {
 	}
 	
 	private String getStatsString(String giver, String receiver, String action, Message message) {
-		ActionStats giverStats = getOrCreateProfile(giver, action);
-		ActionStats receiverStats = getOrCreateProfile(receiver, action);
+		long serverID = serverService.getServer(message.getGuild().getId()).getId();
+		
+		ActionStats giverStats = getOrCreateProfile(giver, action, serverID);
+		ActionStats receiverStats = getOrCreateProfile(receiver, action, serverID);
 		
 		String giverTag = message.getJDA().retrieveUserById(giver).complete().getAsTag();
 		String receiverTag = message.getJDA().retrieveUserById(receiver).complete().getAsTag();
