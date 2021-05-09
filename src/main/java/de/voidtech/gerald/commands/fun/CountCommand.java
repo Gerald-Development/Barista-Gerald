@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
 import java.awt.Color;
+import java.time.Instant;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -34,15 +35,28 @@ public class CountCommand extends AbstractCommand {
 		}
 	}
 	
+	private List<CountingChannel> getTopFive() {
+		try(Session session = sessionFactory.openSession())
+		{
+			@SuppressWarnings("unchecked")
+			List<CountingChannel> channels = (List<CountingChannel>) session.createQuery("FROM CountingChannel"
+					+ " ORDER BY CountPosition ASC")
+					.setMaxResults(5).list();
+			return channels;
+		}	
+	}
+	
 	private void startCount(Message message) {
 		String channelID = message.getChannel().getId();
+		
 		try(Session session = sessionFactory.openSession())
 		{
 			session.getTransaction().begin();
 			
-			CountingChannel newCountChannel = new CountingChannel(channelID, 0, "", false, 0);
+			CountingChannel newCountChannel = new CountingChannel("", "", 0, "", false, 0);
 			
 			newCountChannel.setCountingChannel(channelID);
+			newCountChannel.setServerID(message.getGuild().getId());
 			newCountChannel.setChannelCount(0);
 			newCountChannel.setLastUser(message.getJDA().getSelfUser().getId());
 			newCountChannel.setReached69(false);
@@ -130,6 +144,35 @@ public class CountCommand extends AbstractCommand {
 		}
 	}
 	
+	private void countLeaderboardMethod(Message message) {
+		List<CountingChannel> topFiveChannels = getTopFive();
+		
+		String leaderboard = "```js\n";
+		
+		int pos = 0;
+		for (Object channel : topFiveChannels) {
+			pos++;
+			String channelID = ((CountingChannel) channel).getCountingChannel();
+			String serverID = ((CountingChannel) channel).getServerID();
+			int count = ((CountingChannel) channel).getChannelCount();
+			
+			leaderboard += "\n" + pos + ") Channel: " + message.getJDA().getGuildById(serverID).getName() + " > "
+			+ message.getJDA().getGuildChannelById(channelID).getName() + "\n"
+					+ "Count: " + count + "\n";
+			
+		}
+		leaderboard += "```";
+		
+		MessageEmbed leaderboardEmbed = new EmbedBuilder()
+				.setColor(Color.ORANGE)
+				.setTitle("The 5 Highest Counts")
+				.setDescription(leaderboard)
+				.setTimestamp(Instant.now())
+				.build();
+		message.getChannel().sendMessage(leaderboardEmbed).queue();
+		
+	}
+	
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		
@@ -146,6 +189,10 @@ public class CountCommand extends AbstractCommand {
 			countStatsMethod(message);
 			break;
 		
+		case "leaderboard":
+			countLeaderboardMethod(message);
+			break;
+			
 		default:
 			message.getChannel().sendMessage("**You need to use a valid subcommand!**\n" + this.getUsage()).queue();
 			break;
@@ -177,7 +224,7 @@ public class CountCommand extends AbstractCommand {
 
 	@Override
 	public boolean isDMCapable() {
-		return false;
+		return true;
 	}
 
 	@Override

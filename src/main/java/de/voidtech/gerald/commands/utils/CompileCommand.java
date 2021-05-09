@@ -90,12 +90,13 @@ public class CompileCommand extends AbstractCommand {
 			statusCode = "0";
 		}
 		
+		String output = responseText.length() <= 500 ? responseText : responseText.substring(0, 500);
 		MessageEmbed compilationCompleteMessage = new EmbedBuilder()//
 				.setColor(color)//
 				.setTitle(titleMessage)//
-				.addField("Program Output", "```" + responseText.substring(0, 500) + "```", false)//
+				.addField("Program Output", "```" + output + "```", false)//
 				.addField("Status", "```\nCompiler responded with status code " + statusCode + "```", false)
-				.addField("Permalink", "[Wandbox URL](" + permLink + ")", false)
+				.addField("Permalink", "**[Wandbox URL](" + permLink + ")**", false)
 				.build();
 		
 		sentMessage.editMessage(compilationCompleteMessage).queue();

@@ -39,7 +39,7 @@ public class HelpCommand extends AbstractCommand{
 			inlineFieldState = !inlineFieldState;
 		}
 		
-		categoryListEmbedBuilder.addField("Any Command :clipboard: ", "```\nhelp [command]\n```",true);
+		categoryListEmbedBuilder.addField("Any Command :clipboard: ", "```\nhelp [command]\n```", true);
 		
 		MessageEmbed categoryListEmbed = categoryListEmbedBuilder.build();
 		
