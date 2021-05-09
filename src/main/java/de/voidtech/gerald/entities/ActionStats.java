@@ -27,17 +27,21 @@ public class ActionStats {
 	@Column
 	private long receivedCount;
 	
+	@Column
+	long serverID;
+	
 	@Deprecated
 	//ONLY FOR HIBERNATE, DO NOT USE
 	ActionStats() {
 	}
 	
-	public ActionStats(String type, String memberID, long givenCount, long receivedCount)
+	public ActionStats(String type, String memberID, long givenCount, long receivedCount, long serverID)
 	{
 	  this.type = type;
 	  this.memberID = memberID;
 	  this.givenCount = givenCount;
 	  this.receivedCount = receivedCount;
+	  this.serverID = serverID;
 	}
 	
 	public void setType(String newType) {
@@ -56,6 +60,10 @@ public class ActionStats {
 		this.receivedCount = newCount;
 	}
 	
+	public void setServer(long newID) {
+		this.serverID = newID;
+	}
+	
 	public String getType() {
 		return this.type;
 	}
@@ -70,5 +78,9 @@ public class ActionStats {
 	
 	public long getReceivedCount() {
 		return this.receivedCount;
+	}
+	
+	public long getServer() {
+		return this.serverID;
 	}
 }
