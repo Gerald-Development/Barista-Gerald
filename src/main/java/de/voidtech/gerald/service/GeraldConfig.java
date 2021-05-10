@@ -22,10 +22,16 @@ public class GeraldConfig {
 
 	//PRIVATE FOR SINGLETON
 	public GeraldConfig() {
-		try (FileInputStream fis = new FileInputStream(new File("GeraldConfig.properties"))){
-			config.load(fis);
-		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, "an error has occurred while reading the config\n" + e.getMessage());
+
+		File configFile = new File("GeraldConfig.properties");
+		if (configFile.exists()) {
+			try (FileInputStream fis = new FileInputStream(configFile)){
+				config.load(fis);
+			} catch (IOException e) {
+				LOGGER.log(Level.SEVERE, "an error has occurred while reading the config\n" + e.getMessage());
+			}	
+		} else {
+			LOGGER.log(Level.SEVERE, "There is no config file. You need a file called GeraldConfig.properties at the root of the project!");
 		}
 	}
 

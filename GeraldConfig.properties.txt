@@ -1,0 +1,3 @@
+token=NzI4MzY0MTA0MzcyNDUzNDU2.Xv5T7g.6aEF06cmOoUtuPohmCPWRdHDxGE
+defaultPrefix=%
+seleniumDirectory=C:\\bin\\geckodriver.exe

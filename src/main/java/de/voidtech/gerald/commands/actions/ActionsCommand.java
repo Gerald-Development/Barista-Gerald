@@ -20,7 +20,6 @@ import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.entities.ActionStats;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -86,7 +85,7 @@ public abstract class ActionsCommand extends AbstractCommand {
 		
 		long serverID = serverService.getServer(message.getGuild().getId()).getId();
 		
-		if (giver != receiver && message.getChannel().getType() != ChannelType.PRIVATE) {
+		if (!giver.equals(receiver)) {
 			ActionStats giverStats = getOrCreateProfile(giver, action, serverID);
 			ActionStats receiverStats = getOrCreateProfile(receiver, action, serverID);
 			
