@@ -42,6 +42,7 @@ public class MessageHandler {
     }
     
     private void runMessageRoutines(Message message) {
+    	if (message.getChannel().getType().equals(ChannelType.PRIVATE)) return;
         for (AbstractRoutine routine : routines) {
         	if (message.getAuthor().isBot()) {
         		if (routine.allowsBotResponses()) {
