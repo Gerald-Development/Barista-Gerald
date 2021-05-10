@@ -57,6 +57,17 @@ public class NitroliteCommand extends AbstractCommand {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	private List<NitroliteAlias> getAliases(long serverID) {
+		try(Session session = sessionFactory.openSession())
+		{
+			List<NitroliteAlias> aliases = (List<NitroliteAlias>) session.createQuery("FROM NitroliteAlias WHERE ServerID = :serverID")
+                    .setParameter("serverID", serverID)
+                    .list();
+			return (List<NitroliteAlias>) aliases;
+		}
+	}
+	
 	private void createEmoteAlias(Message message, String aliasName, String aliasID) {
 		long serverID = serverService.getServer(message.getGuild().getId()).getId();
 		try (Session session = sessionFactory.openSession()) {
@@ -119,6 +130,23 @@ public class NitroliteCommand extends AbstractCommand {
     	}
     }
 
+    private void sendAllAliases(Message message) {
+    	long serverID = serverService.getServer(message.getGuild().getId()).getId();
+    	List<NitroliteAlias> aliasesList = getAliases(serverID);
+    	
+    	String aliasMessage = "**Aliases for this server:**\n";
+    	
+    	if (aliasesList.size() == 0) {
+    		aliasMessage += "Nothing here... Create some aliases!";
+    	} else {
+        	for (NitroliteAlias alias : aliasesList) {
+        		Emote emote = message.getJDA().getEmoteById(alias.getEmoteID());
+        		aliasMessage += nitroliteService.constructEmoteString(emote) + " - **Alias:** `" + alias.getAliasName() + "` **ID:** `" + alias.getEmoteID() + "`\n";
+        	}	
+    	}
+    	message.getChannel().sendMessage(aliasMessage).queue();
+    }
+    
 	@Override
     public void executeInternal(Message message, List<String> args) {
 		switch (args.get(0)) {
@@ -135,6 +163,7 @@ public class NitroliteCommand extends AbstractCommand {
 			break;
 		
 		case "aliases":
+			sendAllAliases(message);
 			break;
 			
 		default:
