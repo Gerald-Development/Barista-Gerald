@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.service;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +31,18 @@ public class MessageHandler {
     
     @Autowired
     private List<AbstractRoutine> routines;
+    
+    private HashMap<String, String> aliases = new HashMap<String, String>();
+    
+    public void loadAliases() {
+    	for (AbstractCommand command: commands) {
+    		List<String> commandAliases = Arrays.asList(command.getCommandAliases());
+    		for (String alias: commandAliases) {
+    			aliases.put(alias, command.getName());
+    		}
+    	}
+		LOGGER.log(Level.INFO, "Command aliases have been loaded");
+    }
 
     // ENTRY POINT FROM MESSAGE LISTENER
     public void handleMessage(Message message) {
@@ -55,6 +68,16 @@ public class MessageHandler {
         }
     }
 
+    private String findCommand(String prompt) {
+        String commandToBeFound = "";
+        if (aliases.containsKey(prompt.toLowerCase())) {
+        	commandToBeFound = aliases.get(prompt.toLowerCase());
+        } else {
+        	commandToBeFound = prompt.toLowerCase();
+        }
+        return commandToBeFound;
+    }
+    
     private void handleCommandOnDemand(Message message) {
     	String prefix = getPrefix(message);
     	
@@ -62,9 +85,9 @@ public class MessageHandler {
 		
         String messageContent = message.getContentRaw().substring(prefix.length());
         List<String> messageArray = Arrays.asList(messageContent.trim().split("\\s+"));
-
+        
 		AbstractCommand commandOpt = commands.stream()
-				.filter(command -> command.getName().equals(messageArray.get(0).toLowerCase()))
+				.filter(command -> command.getName().equals(findCommand(messageArray.get(0))))
 				.collect(CustomCollectors.toSingleton());
 
         if (commandOpt == null) {

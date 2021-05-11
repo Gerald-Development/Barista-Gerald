@@ -66,7 +66,7 @@ public class PingCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"pong"};
 		return aliases;
 	}
 
