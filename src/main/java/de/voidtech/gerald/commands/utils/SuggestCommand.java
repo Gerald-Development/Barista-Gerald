@@ -218,5 +218,11 @@ public class SuggestCommand extends AbstractCommand {
 	public boolean requiresArguments() {
 		return true;
 	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {};
+		return aliases;
+	}
 
 }

@@ -43,5 +43,11 @@ public class HugCommand extends ActionsCommand {
 	public boolean requiresArguments() {
 		return true;
 	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {};
+		return aliases;
+	}
 
 }

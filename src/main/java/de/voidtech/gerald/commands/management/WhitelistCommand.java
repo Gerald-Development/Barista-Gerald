@@ -128,5 +128,11 @@ public class WhitelistCommand extends AbstractCommand
 	public boolean requiresArguments() {
 		return false;
 	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {};
+		return aliases;
+	}
 
 }
