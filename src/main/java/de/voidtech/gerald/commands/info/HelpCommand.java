@@ -111,6 +111,7 @@ public class HelpCommand extends AbstractCommand{
 				.addField("Usage", "```" + commandToBeDisplayed.getUsage() + "```", false)
 				.addField("Requires Arguments", "```" + commandToBeDisplayed.requiresArguments() + "```", true)
 				.addField("Is DM Capable", "```" + commandToBeDisplayed.isDMCapable() + "```", true)
+				.addField("Command Aliases", "```" + String.join(", ", commandToBeDisplayed.getCommandAliases()) + "```", false)
 				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, message.getJDA().getSelfUser().getAvatarUrl())
 				.build();
 		message.getChannel().sendMessage(commandHelpEmbed).queue();
