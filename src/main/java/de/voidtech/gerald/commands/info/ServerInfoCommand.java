@@ -32,7 +32,7 @@ public class ServerInfoCommand extends AbstractCommand {
 								guild.getTimeCreated().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)),
 								guild.getRegion().getName(), guild.getVerificationLevel().name()),false)//
 				.addField("Member Information", String.format("```Member count: %s\n```", guild.getMemberCount()), false)
-				.addField("Server Boost Status", "Tier: " + guild.getBoostTier() + "\nBoost Count: " + guild.getBoostCount(), false)
+				.addField("Server Boost Status", String.format("```Tier: %s\nBoost Count: %s", guild.getBoostTier(), guild.getBoostCount() + "```"), false)
 				.build();
 
 		message.getChannel().sendMessage(serverInfoEmbed).queue();
