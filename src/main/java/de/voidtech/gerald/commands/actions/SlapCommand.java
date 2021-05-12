@@ -46,7 +46,7 @@ public class SlapCommand extends ActionsCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"smack", "hit", "punch", "kill"};
 		return aliases;
 	}
 

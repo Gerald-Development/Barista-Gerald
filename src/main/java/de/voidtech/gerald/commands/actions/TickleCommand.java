@@ -46,7 +46,7 @@ public class TickleCommand extends ActionsCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"fondle"};
 		return aliases;
 	}
 

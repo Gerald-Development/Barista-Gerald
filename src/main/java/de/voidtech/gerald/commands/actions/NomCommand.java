@@ -46,7 +46,7 @@ public class NomCommand extends ActionsCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"bite"};
 		return aliases;
 	}
 }

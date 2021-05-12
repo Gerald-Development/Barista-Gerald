@@ -46,7 +46,7 @@ public class KissCommand extends ActionsCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"peck", "canoodle"};
 		return aliases;
 	}
 

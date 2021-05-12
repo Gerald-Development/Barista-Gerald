@@ -46,7 +46,7 @@ public class HugCommand extends ActionsCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"hold"};
 		return aliases;
 	}
 

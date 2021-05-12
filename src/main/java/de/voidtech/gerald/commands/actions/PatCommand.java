@@ -46,7 +46,7 @@ public class PatCommand extends ActionsCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"headpat"};
 		return aliases;
 	}
 }

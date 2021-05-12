@@ -46,7 +46,7 @@ public class PokeCommand extends ActionsCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"boop"};
 		return aliases;
 	}
 }
