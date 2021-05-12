@@ -85,7 +85,7 @@ public class EnableCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"unblock"};
 		return aliases;
 	}
 

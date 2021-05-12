@@ -131,7 +131,7 @@ public class WhitelistCommand extends AbstractCommand
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"allowlist", "allowedchannels", "allow"};
 		return aliases;
 	}
 
