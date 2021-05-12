@@ -124,7 +124,7 @@ public class CheatCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"cheatsheet", "cs"};
 		return aliases;
 	}
 

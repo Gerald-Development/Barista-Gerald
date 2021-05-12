@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -19,12 +20,27 @@ import net.dv8tion.jda.api.entities.Role;
 @Command
 public class WhoisCommand extends AbstractCommand{
 
+	private Member getMember(Message message, List<String> args) {
+		
+		if (args.size() > 0) {
+			String memberID = ParsingUtils.filterSnowflake(args.get(0));
+			Member member = message.getGuild().retrieveMemberById(memberID).complete();
+			if (member != null) {
+				return member;
+			}
+		} else {
+			 Member member = message.getMentionedMembers().size() >= 1// 
+						? message.getMentionedMembers().get(0)//
+						: message.getMember();
+			 return member;	
+		}
+		return message.getMember();
+	}
+	
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		
-		Member member = message.getMentionedMembers().size() >= 1// 
-				? message.getMentionedMembers().get(0)//
-				: message.getMember();
+		Member member = getMember(message, args);
 		
 		List<String> memberRoles = member.getRoles().stream().map(Role::getAsMention).collect(Collectors.toList());
 		
@@ -78,7 +94,7 @@ public class WhoisCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"user", "userinfo", "ui"};
 		return aliases;
 	}
 }

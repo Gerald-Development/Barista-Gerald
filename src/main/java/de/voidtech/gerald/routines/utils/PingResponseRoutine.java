@@ -46,12 +46,14 @@ public class PingResponseRoutine extends AbstractRoutine {
 	@Override
 	public void executeInternal(Message message) {
 		if (message.getChannelType().equals(ChannelType.TEXT)) {
-			if (message.getMentionedUsers().contains(message.getJDA().getSelfUser()) && (message.getContentRaw().length() < 23)) {
-				sendPingInfoMessage(message);
-			} else {
-				message.getChannel().sendTyping();
-				String aiMessage = geraldAI.getReply(message.getContentDisplay(), message.getId());
-				message.getChannel().sendMessage(aiMessage).queue();
+			if (message.getMentionedUsers().contains(message.getJDA().getSelfUser())) {
+				if (message.getContentRaw().length() < 23) {
+					sendPingInfoMessage(message);	
+				} else {
+					message.getChannel().sendTyping();
+					String aiMessage = geraldAI.getReply(message.getContentDisplay(), message.getId());
+					message.getChannel().sendMessage(aiMessage).queue();
+				}
 			}
 		}
 	}

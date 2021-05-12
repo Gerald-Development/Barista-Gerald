@@ -117,7 +117,7 @@ public class CacheSearchCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"cache", "csearch"};
 		return aliases;
 	}
 

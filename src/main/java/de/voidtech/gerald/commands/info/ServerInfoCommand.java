@@ -25,12 +25,14 @@ public class ServerInfoCommand extends AbstractCommand {
 
 		MessageEmbed serverInfoEmbed = new EmbedBuilder()//
 				.setTitle(guild.getName())
+				.setThumbnail(guild.getIconUrl())
 				.addField("Owner Information", String.format("```Owner ID: %s\nOwner Tag: %s```", owner.getId(), owner.getUser().getAsTag()), false)//
 				.addField("General Server Info", String.format("```Server ID: %s\nCreated at: %s\nRegion: %s\nUser Verification Level: %s```", //
 								guild.getId(),
 								guild.getTimeCreated().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)),
 								guild.getRegion().getName(), guild.getVerificationLevel().name()),false)//
-				.addField("Member Information", String.format("```Member count: %s```", guild.getMemberCount()), false)
+				.addField("Member Information", String.format("```Member count: %s\n```", guild.getMemberCount()), false)
+				.addField("Server Boost Status", "Tier: " + guild.getBoostTier() + "\nBoost Count: " + guild.getBoostCount(), false)
 				.build();
 
 		message.getChannel().sendMessage(serverInfoEmbed).queue();
@@ -69,7 +71,7 @@ public class ServerInfoCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"si", "server"};
 		return aliases;
 	}
 

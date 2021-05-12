@@ -82,7 +82,7 @@ public class HttpCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"httpcat", "httpcode"};
 		return aliases;
 	}
 
