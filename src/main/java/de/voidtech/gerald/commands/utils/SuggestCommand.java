@@ -221,7 +221,7 @@ public class SuggestCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"idea", "suggestion"};
 		return aliases;
 	}
 

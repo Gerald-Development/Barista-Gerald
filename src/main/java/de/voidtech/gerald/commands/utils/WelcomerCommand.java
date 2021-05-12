@@ -298,7 +298,7 @@ public class WelcomerCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"jm", "joinmessage"};
 		return aliases;
 	}
 

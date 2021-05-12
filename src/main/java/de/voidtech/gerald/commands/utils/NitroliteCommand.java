@@ -211,7 +211,7 @@ public class NitroliteCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"nitro", "nl"};
 		return aliases;
 	}
 }

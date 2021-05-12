@@ -257,7 +257,7 @@ public class TunnelCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"spaceport", "connection"};
 		return aliases;
 	}
 

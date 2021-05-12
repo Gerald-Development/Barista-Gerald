@@ -206,7 +206,7 @@ public class CompileCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"execute", "run"};
 		return aliases;
 	}
 

@@ -140,7 +140,7 @@ public class ActivityCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"setactivity", "status", "setstatus"};
 		return aliases;
 	}
 
