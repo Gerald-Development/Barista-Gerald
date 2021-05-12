@@ -11,7 +11,7 @@ public class HugCommand extends ActionsCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		super.sendAction(message, "hug");
+		super.sendAction(message, ActionType.HUG);
 	}
 
 	@Override

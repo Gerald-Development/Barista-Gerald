@@ -11,7 +11,7 @@ public class TickleCommand extends ActionsCommand{
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		super.sendAction(message, "tickle");
+		super.sendAction(message, ActionType.TICKLE);
 	}
 
 	@Override

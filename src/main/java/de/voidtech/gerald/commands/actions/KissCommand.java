@@ -11,7 +11,7 @@ public class KissCommand extends ActionsCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		super.sendAction(message, "kiss");
+		super.sendAction(message, ActionType.KISS);
 	}
 
 	@Override

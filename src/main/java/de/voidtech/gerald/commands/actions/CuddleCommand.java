@@ -11,7 +11,7 @@ public class CuddleCommand extends ActionsCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		super.sendAction(message, "cuddle");
+		super.sendAction(message, ActionType.CUDDLE);
 	}
 
 	@Override

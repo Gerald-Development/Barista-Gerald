@@ -11,7 +11,7 @@ public class NomCommand extends ActionsCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		super.sendAction(message, "nom");
+		super.sendAction(message, ActionType.NOM);
 	}
 
 	@Override

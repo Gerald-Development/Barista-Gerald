@@ -11,7 +11,7 @@ public class PatCommand extends ActionsCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		super.sendAction(message, "pat");
+		super.sendAction(message, ActionType.PAT);
 	}
 
 	@Override

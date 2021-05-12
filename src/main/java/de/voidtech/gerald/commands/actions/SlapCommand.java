@@ -11,7 +11,7 @@ public class SlapCommand extends ActionsCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		super.sendAction(message, "slap");
+		super.sendAction(message, ActionType.SLAP);
 	}
 
 	@Override
