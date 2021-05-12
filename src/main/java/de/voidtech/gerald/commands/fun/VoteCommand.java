@@ -49,7 +49,7 @@ public class VoteCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"poll"};
 		return aliases;
 	}
 

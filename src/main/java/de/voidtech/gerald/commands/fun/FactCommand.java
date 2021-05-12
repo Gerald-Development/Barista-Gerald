@@ -81,7 +81,7 @@ public class FactCommand extends AbstractCommand
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"uselessfact"};
 		return aliases;
 	}
 

@@ -90,7 +90,7 @@ public class InspiroCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"inspire", "inspirobot", "ib"};
 		return aliases;
 	}
 

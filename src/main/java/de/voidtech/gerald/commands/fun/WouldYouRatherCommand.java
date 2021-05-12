@@ -67,7 +67,7 @@ public class WouldYouRatherCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"wouldyourather"};
 		return aliases;
 	}
 

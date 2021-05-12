@@ -92,7 +92,7 @@ public class ShipCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"stan"};
 		return aliases;
 	}
 

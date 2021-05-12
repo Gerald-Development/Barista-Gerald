@@ -91,7 +91,7 @@ public class DogCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"doge", "doggo"};
 		return aliases;
 	}
 

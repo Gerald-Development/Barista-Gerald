@@ -96,7 +96,7 @@ public class ZalgoCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"zalgoify", "fucktext"};
 		return aliases;
 	}
 

@@ -111,7 +111,7 @@ public class SpinCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"spinner", "speen"};
 		return aliases;
 	}
 

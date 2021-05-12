@@ -139,7 +139,7 @@ public class DeathmatchCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"fight", "battle", "challenge"};
 		return aliases;
 	}
 

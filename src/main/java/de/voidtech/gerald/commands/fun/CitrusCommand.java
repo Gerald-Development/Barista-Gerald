@@ -105,7 +105,7 @@ public class CitrusCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"cguess", "citrusguess"};
 		return aliases;
 	}
 

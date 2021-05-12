@@ -99,7 +99,7 @@ public class SignCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"bunnysign", "protest"};
 		return aliases;
 	}
 

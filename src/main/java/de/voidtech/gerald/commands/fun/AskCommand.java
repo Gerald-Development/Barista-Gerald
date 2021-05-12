@@ -74,7 +74,7 @@ public class AskCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"whatif"};
 		return aliases;
 	}
 }

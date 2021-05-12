@@ -91,7 +91,7 @@ public class CatCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"gato", "catto"};
 		return aliases;
 	}
 

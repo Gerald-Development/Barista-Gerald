@@ -311,7 +311,7 @@ public class MemeCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"mememaker", "makememe"};
 		return aliases;
 	}
 }

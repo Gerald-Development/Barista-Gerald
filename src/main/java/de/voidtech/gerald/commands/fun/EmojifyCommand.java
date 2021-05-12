@@ -94,7 +94,7 @@ public class EmojifyCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"big"};
 		return aliases;
 	}
 }

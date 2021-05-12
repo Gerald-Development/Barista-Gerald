@@ -91,7 +91,7 @@ public class PPCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"ppsize"};
 		return aliases;
 	}
 

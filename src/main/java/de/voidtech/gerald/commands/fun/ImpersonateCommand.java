@@ -86,7 +86,7 @@ public class ImpersonateCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {};
+		String[] aliases = {"become", "pretend"};
 		return aliases;
 	}
 
