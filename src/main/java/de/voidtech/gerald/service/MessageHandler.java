@@ -32,7 +32,7 @@ public class MessageHandler {
     @Autowired
     private List<AbstractRoutine> routines;
     
-    private HashMap<String, String> aliases = new HashMap<String, String>();
+    public HashMap<String, String> aliases = new HashMap<String, String>();
     
     public void loadAliases() {
     	for (AbstractCommand command: commands) {
