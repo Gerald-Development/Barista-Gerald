@@ -1,5 +1,10 @@
 package main.java.de.voidtech.gerald.util;
 
+import java.util.List;
+
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+
 public class ParsingUtils {
 	public static boolean isInteger(String str) {
 	    if (str == null) {
@@ -28,5 +33,22 @@ public class ParsingUtils {
 	public static String filterSnowflake(String inputString) {
 		String outputString = inputString.replaceAll("([^0-9])", "");
 		return outputString;
+	}
+	
+	public static Member getMember(Message message, List<String> args) {
+		
+		if (args.size() > 0) {
+			String memberID = ParsingUtils.filterSnowflake(args.get(0));
+			Member member = message.getGuild().retrieveMemberById(memberID).complete();
+			if (member != null) {
+				return member;
+			}
+		} else {
+			 Member member = message.getMentionedMembers().size() >= 1// 
+						? message.getMentionedMembers().get(0)//
+						: message.getMember();
+			 return member;	
+		}
+		return message.getMember();
 	}
 }
