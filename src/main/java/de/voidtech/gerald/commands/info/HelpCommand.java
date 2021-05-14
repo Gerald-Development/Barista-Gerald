@@ -9,14 +9,19 @@ import main.java.de.voidtech.gerald.GlobalConstants;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.service.MessageHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class HelpCommand extends AbstractCommand{	
+	
 	@Autowired
 	private List<AbstractCommand> commands;
+	
+	@Autowired
+	MessageHandler msgHandler;
 	
 	private String capitaliseFirstLetter(String word) {
 		return word.substring(0, 1).toUpperCase() + word.substring(1);
@@ -66,10 +71,15 @@ public class HelpCommand extends AbstractCommand{
 	}
 	
 	private boolean isCommand(String commandName) {
-		for (AbstractCommand command : commands) {
-			if(command.getName().equals(commandName)) {
-				return true;
-			}
+		String commandToBeFound = commandName;
+		if (msgHandler.aliases.containsKey(commandToBeFound)) {
+			return true;
+		} else {
+			for (AbstractCommand command : commands) {
+				if(command.getName().equals(commandToBeFound)) {
+					return true;
+				}
+			}	
 		}
 		return false;
 	};
@@ -93,14 +103,23 @@ public class HelpCommand extends AbstractCommand{
 		message.getChannel().sendMessage(commandHelpEmbed).queue();
 		
 	};
-	
-	private void showCommand(Message message, String commandName) {
-		AbstractCommand commandToBeDisplayed = null;		
+
+	private AbstractCommand getCommand(String name) {
+		String commandToBeFound = name;
+		if (msgHandler.aliases.containsKey(name)) {
+			commandToBeFound = msgHandler.aliases.get(name);
+		}
 		for (AbstractCommand command : commands) {
-			if(command.getName().equals(commandName)) {
-				commandToBeDisplayed = command;
+			if(command.getName().equals(commandToBeFound)) {
+				return command;
 			}
 		}
+		return null;
+	}
+	
+	private void showCommand(Message message, String commandName) {
+		AbstractCommand commandToBeDisplayed = getCommand(commandName);	
+
 		MessageEmbed commandHelpEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle("How it works: " + capitaliseFirstLetter(commandToBeDisplayed.getName()) + " Command", GlobalConstants.LINKTREE_URL)
