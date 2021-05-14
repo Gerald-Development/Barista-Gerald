@@ -19,33 +19,13 @@ import net.dv8tion.jda.api.entities.Role;
 
 @Command
 public class WhoisCommand extends AbstractCommand{
-
-	private Member getMember(Message message, List<String> args) {
-		
-		if (args.size() > 0) {
-			String memberID = ParsingUtils.filterSnowflake(args.get(0));
-			Member member = message.getGuild().retrieveMemberById(memberID).complete();
-			if (member != null) {
-				return member;
-			}
-		} else {
-			 Member member = message.getMentionedMembers().size() >= 1// 
-						? message.getMentionedMembers().get(0)//
-						: message.getMember();
-			 return member;	
-		}
-		return message.getMember();
-	}
 	
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		
-		Member member = getMember(message, args);
-		
+		Member member = ParsingUtils.getMember(message, args);
 		List<String> memberRoles = member.getRoles().stream().map(Role::getAsMention).collect(Collectors.toList());
-		
 		MessageEmbed whoisEmbed = buildEmbed(member, memberRoles);
-		
 		message.getChannel().sendMessage(whoisEmbed).queue();
 	}
 	
@@ -54,6 +34,7 @@ public class WhoisCommand extends AbstractCommand{
 		return new EmbedBuilder()//
 				.setTitle("Who is " + member.getUser().getAsTag() + "?")//
 				.setThumbnail(member.getUser().getAvatarUrl())
+				.setColor(member.getColor())
 				.addField("Nickname:", member.getEffectiveName(), true)
 				.addField("Account created on:", member.getUser().getTimeCreated().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)), false)
 				.addField("Server joined on:", member.getTimeJoined().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)), true)
@@ -64,12 +45,13 @@ public class WhoisCommand extends AbstractCommand{
 	
 	@Override
 	public String getDescription() {
-		return "returns information about the specified user";
+		return "returns information about the specified user or yourself";
 	}
 
 	@Override
 	public String getUsage() {
-		return "whois @BaristaBoi#4029";
+		return "whois\n"
+				+ "whois @BaristaBoi#4029";
 	}
 
 	@Override
