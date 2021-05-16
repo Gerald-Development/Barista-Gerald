@@ -11,7 +11,7 @@ public class HugCommand extends ActionsCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		super.sendAction(message, "hug");
+		super.sendAction(message, ActionType.HUG);
 	}
 
 	@Override
@@ -42,6 +42,12 @@ public class HugCommand extends ActionsCommand {
 	@Override
 	public boolean requiresArguments() {
 		return true;
+	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"hold"};
+		return aliases;
 	}
 
 }

@@ -12,13 +12,13 @@ public class ClapCommand extends AbstractCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		String finalMessage = "ðŸ‘�" + String.join("ðŸ‘�", args) + "ðŸ‘�";
+		String finalMessage = ":clap: " + String.join(" :clap: ", args) + " :clap:";
 		message.getChannel().sendMessage(finalMessage).queue();
 	}
 
 	@Override
 	public String getDescription() {
-		return "ðŸ‘�doesðŸ‘�thisðŸ‘�toðŸ‘�yourðŸ‘�messagesðŸ‘�";
+		return ":clap: claps :clap: your :clap: messages :clap: ";
 	}
 
 	@Override
@@ -44,5 +44,11 @@ public class ClapCommand extends AbstractCommand {
 	@Override
 	public boolean requiresArguments() {
 		return true;
+	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"clapback"};
+		return aliases;
 	}
 }

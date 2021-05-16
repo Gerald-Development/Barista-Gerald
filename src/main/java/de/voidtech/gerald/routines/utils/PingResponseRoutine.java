@@ -9,6 +9,7 @@ import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
+import main.java.de.voidtech.gerald.service.ChatbotService;
 import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -24,30 +25,36 @@ public class PingResponseRoutine extends AbstractRoutine {
 	
     @Autowired
     private GeraldConfig config;
+    
+    @Autowired
+    private ChatbotService geraldAI;
 	
+    private void sendPingInfoMessage(Message message) {
+    	Server guild = serverService.getServer(message.getGuild().getId());
+		String prefix = guild.getPrefix() == null ? config.getDefaultPrefix() : guild.getPrefix();
+		new GlobalConstants();
+		String linktree = GlobalConstants.LINKTREE_URL;
+		
+		MessageEmbed pingResponseEmbed = new EmbedBuilder()
+				.setColor(Color.ORANGE)
+				.setTitle("You called? :telephone:", linktree)
+				.setDescription("**This Guild's prefix is:** " + prefix + "\nTry " + prefix + "help to see some commands!")
+				.build();
+		message.getChannel().sendMessage(pingResponseEmbed).queue();
+    }
+    
 	@Override
 	public void executeInternal(Message message) {
-		
 		if (message.getChannelType().equals(ChannelType.TEXT)) {
-			String strippedContent = message.getContentRaw()
-					.replaceAll("<", "")
-					.replaceAll("!", "")
-					.replaceAll("@", "")
-					.replaceAll(">", "");
-			
-			if (strippedContent.equals(message.getJDA().getSelfUser().getId())) {
-				Server guild = serverService.getServer(message.getGuild().getId());
-				String prefix = guild.getPrefix() == null ? config.getDefaultPrefix() : guild.getPrefix();
-				new GlobalConstants();
-				String linktree = GlobalConstants.LINKTREE_URL;
-				
-				MessageEmbed pingResponseEmbed = new EmbedBuilder()
-						.setColor(Color.ORANGE)
-						.setTitle("You called? :telephone:", linktree)
-						.setDescription("**This Guild's prefix is:** " + prefix + "\nTry " + prefix + "help to see some commands!")
-						.build();
-				message.getChannel().sendMessage(pingResponseEmbed).queue();
-			}	
+			if (message.getMentionedUsers().contains(message.getJDA().getSelfUser())) {
+				if (message.getContentRaw().length() < 23) {
+					sendPingInfoMessage(message);	
+				} else {
+					message.getChannel().sendTyping();
+					String aiMessage = geraldAI.getReply(message.getContentDisplay(), message.getId());
+					message.getChannel().sendMessage(aiMessage).queue();
+				}
+			}
 		}
 	}
 

@@ -37,12 +37,12 @@ public class ComplimentCommand extends AbstractCommand{
 
 	@Override
 	public String getDescription() {
-		return "Receive a heartwarming compliment";
+		return "Receive a heartwarming compliment, or compliment someone else";
 	}
 
 	@Override
 	public String getUsage() {
-		return "compliment";
+		return "compliment [optional @user#1234]";
 	}
 
 	@Override
@@ -63,6 +63,12 @@ public class ComplimentCommand extends AbstractCommand{
 	@Override
 	public boolean requiresArguments() {
 		return false;
+	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"respect"};
+		return aliases;
 	}
 
 }

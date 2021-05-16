@@ -121,5 +121,11 @@ public class BerryCommand extends AbstractCommand{
 	public boolean requiresArguments() {
 		return false;
 	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"bguess", "berryguess"};
+		return aliases;
+	}
 
 }

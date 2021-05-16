@@ -109,5 +109,11 @@ public class ChatCommand extends AbstractCommand{
 	public boolean requiresArguments() {
 		return true;
 	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"ai", "geraldai", "geraldchat"};
+		return aliases;
+	}
 
 }

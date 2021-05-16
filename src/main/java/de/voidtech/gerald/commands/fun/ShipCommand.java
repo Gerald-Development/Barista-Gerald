@@ -89,5 +89,11 @@ public class ShipCommand extends AbstractCommand{
 	public boolean requiresArguments() {
 		return true;
 	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"stan"};
+		return aliases;
+	}
 
 }

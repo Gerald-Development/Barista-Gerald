@@ -38,7 +38,7 @@ public class XKCDCommand extends AbstractCommand {
 	
 	private static final String XKCD_URL = "https://xkcd.com/";
 	private static final String SUFFIX = "info.0.json";
-	private static final String EMOTE_UNICODE = "U+1f539";
+	private static final String EMOTE_UNICODE = "U+1F440";
 	
 	private String makeRequest(String URL) {
 		try {
@@ -161,6 +161,12 @@ public class XKCDCommand extends AbstractCommand {
 	@Override
 	public boolean requiresArguments() {
 		return false;
+	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"getxkcd"};
+		return aliases;
 	}
 
 }

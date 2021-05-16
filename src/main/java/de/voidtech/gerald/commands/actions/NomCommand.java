@@ -11,7 +11,7 @@ public class NomCommand extends ActionsCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		super.sendAction(message, "nom");
+		super.sendAction(message, ActionType.NOM);
 	}
 
 	@Override
@@ -44,4 +44,9 @@ public class NomCommand extends ActionsCommand {
 		return true;
 	}
 	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"bite"};
+		return aliases;
+	}
 }

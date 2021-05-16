@@ -46,4 +46,10 @@ public class TestCommand extends AbstractCommand{
 	public boolean requiresArguments() {
 		return false;
 	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"test"};
+		return aliases;
+	}
 }

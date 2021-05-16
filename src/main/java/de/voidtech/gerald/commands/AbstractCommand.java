@@ -61,4 +61,6 @@ public abstract class AbstractCommand{
 
 	public abstract boolean requiresArguments();
 	
+	public abstract String[] getCommandAliases();
+	
 }

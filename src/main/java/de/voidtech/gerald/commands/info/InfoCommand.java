@@ -113,5 +113,11 @@ public class InfoCommand extends AbstractCommand {
 	public boolean requiresArguments() {
 		return false;
 	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"botinfo", "botstats", "bi", "bs"};
+		return aliases;
+	}
 
 }

@@ -87,5 +87,11 @@ public class InspiroCommand extends AbstractCommand{
 	public boolean requiresArguments() {
 		return false;
 	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"inspire", "inspirobot", "ib"};
+		return aliases;
+	}
 
 }

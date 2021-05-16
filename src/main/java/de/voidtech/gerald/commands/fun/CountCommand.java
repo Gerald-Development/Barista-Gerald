@@ -231,4 +231,10 @@ public class CountCommand extends AbstractCommand {
 	public boolean requiresArguments() {
 		return true;
 	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"counting"};
+		return aliases;
+	}
 }

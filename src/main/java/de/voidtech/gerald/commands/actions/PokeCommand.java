@@ -11,7 +11,7 @@ public class PokeCommand extends ActionsCommand{
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		super.sendAction(message, "poke");
+		super.sendAction(message, ActionType.POKE);
 	}
 
 	@Override
@@ -42,5 +42,11 @@ public class PokeCommand extends ActionsCommand{
 	@Override
 	public boolean requiresArguments() {
 		return true;
+	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"boop"};
+		return aliases;
 	}
 }
