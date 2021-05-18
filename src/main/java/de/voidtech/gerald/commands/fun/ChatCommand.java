@@ -83,7 +83,7 @@ public class ChatCommand extends AbstractCommand{
 
 	@Override
 	public String getDescription() {
-		return "This command allows you to enable automatic replies from GeraldAI! (Powered by GeraldAI)";
+		return "This command allows you to talk to our Chat AI! (Powered by Gavin)";
 	}
 	@Override
 	public String getUsage() {
