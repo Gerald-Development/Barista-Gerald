@@ -186,7 +186,7 @@ public class NitroliteCommand extends AbstractCommand {
 			break;
 			
 		default:
-			message.getChannel().sendMessage("**That's not a valid subcommand! Try something like this:\n\n" + this.getUsage()).queue();
+			message.getChannel().sendMessage("**That's not a valid subcommand! Try something like this:**\n\n" + this.getUsage()).queue();
 		}
     }
 
@@ -230,7 +230,7 @@ public class NitroliteCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"nitro", "nl"};
+		String[] aliases = {"nitro", "nl", "emotes", "emote"};
 		return aliases;
 	}
 }
