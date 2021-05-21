@@ -2,7 +2,6 @@ package main.java.de.voidtech.gerald.routines.utils;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
@@ -11,11 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.entities.NitroliteAlias;
+import main.java.de.voidtech.gerald.entities.NitroliteEmote;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
+import main.java.de.voidtech.gerald.service.EmoteService;
 import main.java.de.voidtech.gerald.service.NitroliteService;
 import main.java.de.voidtech.gerald.service.ServerService;
-import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Message;
 
 @Routine
@@ -30,6 +30,9 @@ public class NitroliteRoutine extends AbstractRoutine {
 	@Autowired
 	private SessionFactory sessionFactory;
 	
+	@Autowired
+	private EmoteService emoteService;
+	
 	private boolean aliasExists(String name, long serverID) {
 		try(Session session = sessionFactory.openSession())
 		{
@@ -41,7 +44,7 @@ public class NitroliteRoutine extends AbstractRoutine {
 		}
 	}
 	
-    private Emote getEmoteFromAlias(String name, long serverID, Message message) {
+    private NitroliteEmote getEmoteFromAlias(String name, long serverID, Message message) {
     	try(Session session = sessionFactory.openSession())
 		{
 			NitroliteAlias alias = (NitroliteAlias) session.createQuery("FROM NitroliteAlias WHERE ServerID = :serverID AND aliasName = :aliasName")
@@ -49,24 +52,20 @@ public class NitroliteRoutine extends AbstractRoutine {
                     .setParameter("aliasName", name)
                     .uniqueResult();
 			
-			return message.getJDA().getEmoteById(alias.getEmoteID());
+			return emoteService.getEmoteById(alias.getEmoteID(), message.getJDA());
 		}
 	}
 	
 	@Override
     public void executeInternal(Message message) {
         List<String> messageTokens = Arrays.asList(message.getContentRaw().split(" "));
-        List<Emote> emoteList = message.getJDA()//
-                .getEmoteCache()//
-                .stream()//
-                .collect(Collectors.toList());
         
         long serverID = serverService.getServer(message.getGuild().getId()).getId();
         boolean foundOne = false;
 
         for (int i = 0; i < messageTokens.size(); i++) {
             String token = messageTokens.get(i);
-            Emote emoteOpt = null;
+            NitroliteEmote emoteOpt = null;
             
             if (token.matches("\\[:[^:]*:]")) {
                 String searchWord = token.substring(2, token.length() - 2);
@@ -74,10 +73,7 @@ public class NitroliteRoutine extends AbstractRoutine {
                 if (aliasExists(searchWord, serverID)) {
             		emoteOpt = getEmoteFromAlias(searchWord, serverID, message);
             	} else {
-                	emoteOpt = emoteList//
-                            .stream()//
-                            .filter(emote -> emote.getName().equals(searchWord))
-                            .findFirst().orElse(null);	
+                	emoteOpt = emoteService.getEmoteByName(searchWord, message.getJDA());
             	}
 
                 if (emoteOpt != null) {
