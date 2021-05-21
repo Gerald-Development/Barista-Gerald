@@ -74,6 +74,7 @@ public class NitroliteCollectorRoutine extends AbstractRoutine {
 			
 			NitroliteEmote emote = new NitroliteEmote(emoteName, emoteID, emoteIsAnimated);
 			
+			//TODO REVIEW: Useless calls? Fields are already set in the line above via constructor.
 			emote.setID(emoteID);
 			emote.setName(emoteName);
 			emote.setIsAnimated(emoteIsAnimated);
