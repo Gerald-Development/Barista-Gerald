@@ -1,6 +1,5 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import java.util.EnumSet;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -17,8 +16,6 @@ import main.java.de.voidtech.gerald.service.NitroliteService;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.WebhookManager;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
@@ -106,15 +103,12 @@ public class NitroliteCommand extends AbstractCommand {
             }
         }
         
-        EnumSet<Permission> perms = message.getGuild().getSelfMember().getPermissions((GuildChannel) message.getChannel());
-        if (perms.contains(Permission.MANAGE_WEBHOOKS)) {
-            webhookManager.postMessage(searchResult,
-            		message.getJDA().getSelfUser().getAvatarUrl(),
-            		message.getJDA().getSelfUser().getName(),
-            		webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGNitrolite"));
-         } else {
-             message.getChannel().sendMessage(searchResult).queue();
-         }
+        webhookManager.postMessageWithFallback(
+        		message, searchResult,
+        		message.getJDA().getSelfUser().getAvatarUrl(),
+        		message.getJDA().getSelfUser().getName(),
+        		webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGNitrolite"));
+
 	}
 	
     private void addEmoteAlias(Message message, List<String> args) {    
@@ -163,7 +157,12 @@ public class NitroliteCommand extends AbstractCommand {
         		aliasMessage += nitroliteService.constructEmoteString(emote) + " - **Alias:** `" + alias.getAliasName() + "` **ID:** `" + alias.getEmoteID() + "`\n";
         	}	
     	}
-    	message.getChannel().sendMessage(aliasMessage).queue();
+    	
+        webhookManager.postMessageWithFallback(
+        		message, aliasMessage,
+        		message.getJDA().getSelfUser().getAvatarUrl(),
+        		message.getJDA().getSelfUser().getName(),
+        		webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGNitrolite"));
     }
     
 	@Override

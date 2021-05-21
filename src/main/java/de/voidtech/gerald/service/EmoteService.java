@@ -22,8 +22,8 @@ public class EmoteService {
 	private List<NitroliteEmote> getPersistentEmotes(String name) {
 		try(Session session = sessionFactory.openSession())
 		{
-			List<NitroliteEmote> emotes = (List<NitroliteEmote>) session.createQuery("FROM NitroliteEmote WHERE name = :name", NitroliteEmote.class)
-                    .setParameter("name", name)
+			List<NitroliteEmote> emotes = (List<NitroliteEmote>) session.createQuery("FROM NitroliteEmote WHERE LOWER(name) = :name", NitroliteEmote.class)
+                    .setParameter("name", name.toLowerCase())
                     .list();
 			return emotes;
 		}
@@ -44,8 +44,8 @@ public class EmoteService {
 	private NitroliteEmote getPersistentEmoteByName(String name) {
 		try(Session session = sessionFactory.openSession())
 		{
-			NitroliteEmote emote = (NitroliteEmote) session.createQuery("FROM NitroliteEmote WHERE name = :name")
-                    .setParameter("name", name)
+			NitroliteEmote emote = (NitroliteEmote) session.createQuery("FROM NitroliteEmote WHERE LOWER(name) = :name")
+                    .setParameter("name", name.toLowerCase())
                     .setFirstResult(0)
                     .setMaxResults(1)
                     .uniqueResult();
@@ -72,7 +72,7 @@ public class EmoteService {
         
         Emote emoteOpt = emoteList//
                 .stream()//
-                .filter(emote -> emote.getName().equals(searchWord))
+                .filter(emote -> emote.getName().toLowerCase().equals(searchWord.toLowerCase()))
                 .findFirst().orElse(null);
         if (emoteOpt != null) {
 			NitroliteEmote returnedEmote = new NitroliteEmote(
@@ -94,7 +94,7 @@ public class EmoteService {
 		List<NitroliteEmote> finalResult = new ArrayList<NitroliteEmote>();
 		
         List<Emote> jdaCacheResult = emoteList.stream()//
-                .filter(emote -> emote.getName().equals(name)).collect(Collectors.toList());
+                .filter(emote -> emote.getName().toLowerCase().equals(name.toLowerCase())).collect(Collectors.toList());
         List<NitroliteEmote> persistentCacheResult = getPersistentEmotes(name);
        
         if (jdaCacheResult.size() > 0) {
