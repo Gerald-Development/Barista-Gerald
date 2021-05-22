@@ -44,7 +44,7 @@ public class NitroliteCollectorRoutine extends AbstractRoutine {
 		}
 	}
 	
-	private boolean emoteIsAlreadyCached(String name, String id, JDA jda) {	
+	private boolean emoteIsAlreadyStored(String name, String id, JDA jda) {	
 		if (jda.getEmoteById(id) == null) {
 			if (emoteNotInDatabase(name, id)) {
 				return false;
@@ -67,7 +67,7 @@ public class NitroliteCollectorRoutine extends AbstractRoutine {
 		return components.get(2).substring(0, components.get(2).length() - 1);
 	}
 	
-	private void cacheNewEmote(String emoteName, String emoteID, boolean emoteIsAnimated) {
+	private void storeNewEmote(String emoteName, String emoteID, boolean emoteIsAnimated) {
 		try(Session session = sessionFactory.openSession())
 		{
 			session.getTransaction().begin();
@@ -82,7 +82,7 @@ public class NitroliteCollectorRoutine extends AbstractRoutine {
 			session.saveOrUpdate(emote);
 			session.getTransaction().commit();
 			
-			LOGGER.log(Level.INFO, "New emote '" + emoteName + "' Has been cached!");
+			LOGGER.log(Level.INFO, "New emote '" + emoteName + "' Has been saved!");
 		}
 	}
 	
@@ -91,8 +91,8 @@ public class NitroliteCollectorRoutine extends AbstractRoutine {
 		String emoteName = getEmoteName(word);
 		String emoteID = getEmoteID(word);
 		
-		if (!emoteIsAlreadyCached(emoteName, emoteID, jda)) {
-			cacheNewEmote(emoteName, emoteID, emoteIsAnimated);
+		if (!emoteIsAlreadyStored(emoteName, emoteID, jda)) {
+			storeNewEmote(emoteName, emoteID, emoteIsAnimated);
 		}
 	}
 

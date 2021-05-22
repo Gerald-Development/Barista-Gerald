@@ -89,12 +89,12 @@ public class NitroliteCommand extends AbstractCommand {
 		message.getChannel().sendMessage("**Alias with name **`" + aliasName + "`** has been deleted!**").queue();
 	}
 	
-	private void searchEmoteCache(Message message, List<String> args) {
+	private void searchEmoteDatabase(Message message, List<String> args) {
 		String search = args.get(1);
 		
         List<NitroliteEmote> result = emoteService.getEmotes(search, message.getJDA());
         
-        String searchResult = "**Cache searched for: **`" + search + "`\n";
+        String searchResult = "**Database searched for: **`" + search + "`\n";
         if (result.size() == 0) {
         	searchResult += "Nothing found :(";
         } else {
@@ -169,7 +169,7 @@ public class NitroliteCommand extends AbstractCommand {
     public void executeInternal(Message message, List<String> args) {
 		switch (args.get(0)) {
 		case "search":
-			searchEmoteCache(message, args);
+			searchEmoteDatabase(message, args);
 			break;
 		
 		case "add":
@@ -191,7 +191,7 @@ public class NitroliteCommand extends AbstractCommand {
 
 	@Override
     public String getDescription() {
-        return "Don't have nitro? You want nitro emotes? We got you covered.\n\n"
+        return "No Nitro? No problem!\n\n"
         		+ "Nitrolite uses some magic code to allow you to use your favourite emotes anywhere with Gerald!\n"
         		+ "To do so, simply write out your message, but add your emotes like this: [:a_cool_emote:] (note the square brackets, they are required)\n"
         		+ "If you want to use a specific emote, add an alias! Use the search to first find the emote you are looking for, Then add an alias using its ID and a name of your choice!\n"
