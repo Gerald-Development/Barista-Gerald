@@ -1,8 +1,8 @@
 package main.java.de.voidtech.gerald.service;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.logging.Level;
@@ -24,26 +24,30 @@ public class ChatbotService {
 	private static final String ERROR_STRING = "I'm not sure how to respond to that.";
 	
 	private String getGavinResponse(String message) {
-		String inputMessage = message;
-		inputMessage = inputMessage.replaceAll("/", "");
-		inputMessage = inputMessage.replaceAll(" ", "%20");
-		String requestURL = configService.getGavinURL() + inputMessage;
-		
 		try {
-            HttpURLConnection con = (HttpURLConnection) new URL(requestURL).openConnection();
-            con.setRequestMethod("GET");
-
-            if (con.getResponseCode() == 200) {
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-                    return in.lines().collect(Collectors.joining());
-                }
-            }
-
-            con.disconnect();
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error during ServiceExecution: " + e.getMessage());
-        }
-        return ERROR_STRING;
+			
+			String payload = new JSONObject().put("data", message).toString();
+			URL requestURL = new URL(configService.getGavinURL());
+			HttpURLConnection con = (HttpURLConnection) requestURL.openConnection();
+			
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Content-Type", "application/json; utf-8");
+			con.setDoOutput(true);
+			con.setRequestProperty("Accept", "application/json");
+			
+			OutputStream os = con.getOutputStream();
+			byte[] input = payload.getBytes("utf-8");
+			os.write(input, 0, input.length);
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));			
+			String output = in.lines().collect(Collectors.joining());
+			con.disconnect();
+			
+			return output;
+			
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		return ERROR_STRING;
 	}
 	
     public String getReply(String message, String ID) {

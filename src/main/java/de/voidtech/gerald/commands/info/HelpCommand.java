@@ -193,7 +193,7 @@ public class HelpCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"commands"};
+		String[] aliases = {"commands", "h"};
 		return aliases;
 	}
 

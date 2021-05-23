@@ -2,6 +2,7 @@ package main.java.de.voidtech.gerald.service;
 
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,6 +12,9 @@ import javax.net.ssl.HttpsURLConnection;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
 
@@ -61,6 +65,17 @@ public class WebhookManager {
             LOGGER.log(Level.SEVERE, "Error during ServiceExecution: " + ex.getMessage());
             ex.printStackTrace();
         }
+	}
+	
+	public void postMessageWithFallback(Message message, String content, String avatarUrl, String username, Webhook webhook) {
+		EnumSet<Permission> perms = message.getGuild().getSelfMember().getPermissions((GuildChannel) message.getChannel());
+		
+        if (perms.contains(Permission.MANAGE_WEBHOOKS)) {
+        	postMessage(content, avatarUrl, username,
+            		getOrCreateWebhook((TextChannel) message.getChannel(), "BGNitrolite"));
+         } else {
+             message.getChannel().sendMessage(content).queue();
+         }
 	}
 	
 }
