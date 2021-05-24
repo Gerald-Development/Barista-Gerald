@@ -85,11 +85,7 @@ public class SuggestCommand extends AbstractCommand {
 		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
 		
-			SuggestionChannel suggestionChannel = new SuggestionChannel(serverID, channelID);
-		
-			suggestionChannel.setServerID(serverID);
-			suggestionChannel.setSuggestionChannel(channelID);
-			
+			SuggestionChannel suggestionChannel = new SuggestionChannel(serverID, channelID);			
 			session.saveOrUpdate(suggestionChannel);
 			session.getTransaction().commit();
 		}		
