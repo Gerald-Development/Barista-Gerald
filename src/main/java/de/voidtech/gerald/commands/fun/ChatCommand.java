@@ -40,8 +40,6 @@ public class ChatCommand extends AbstractCommand{
 			
 			ChatChannel channel = new ChatChannel(channelID);
 			
-			channel.setChatChannel(channelID);
-			
 			session.saveOrUpdate(channel);
 			session.getTransaction().commit();
 		}
@@ -67,14 +65,14 @@ public class ChatCommand extends AbstractCommand{
 					message.getChannel().sendMessage("**GeraldAI is already enabled here!**").queue();
 				} else {
 					enableChatChannel(message.getChannel().getId());
-					message.getChannel().sendMessage("**GeraldAI has been enabled!**").queue();
+					message.getChannel().sendMessage("**GeraldAI has been enabled! He will now automatically reply to your messages.**").queue();
 				}	
 			}
 		} else if (args.get(0).equals("disable")) {
 			if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
 				if (chatChannelEnabled(message.getChannel().getId())) {
 					disableChatChannel(message.getChannel().getId());
-					message.getChannel().sendMessage("**GeraldAI has been disabled!**").queue();
+					message.getChannel().sendMessage("**GeraldAI has been disabled! He will no longer automatically reply to your messages.**").queue();
 				} else {
 					message.getChannel().sendMessage("**GeraldAI is already disabled!**").queue();
 				}
@@ -89,11 +87,13 @@ public class ChatCommand extends AbstractCommand{
 
 	@Override
 	public String getDescription() {
-		return "This command allows you to talk to our Chat AI! (Powered by Gavin)";
+		return "This command allows you to talk to our Chat AI! (Powered by Gavin) You will need the Manage Channels permission to set up a channel!";
 	}
 	@Override
 	public String getUsage() {
-		return "chat enable / chat disable";
+		return "chat enable\n"
+				+ "chat disable\n"
+				+ "chat [a lovely message]";
 	}
 
 	@Override
