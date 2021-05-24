@@ -51,13 +51,7 @@ public abstract class ActionsCommand extends AbstractCommand {
 		{
 			session.getTransaction().begin();
 			
-			ActionStats stats = new ActionStats(action.getType(), id, 0, 0, 0);
-			stats.setGivenCount(0);
-			stats.setReceivedCount(0);
-			stats.setMember(id);
-			stats.setType(action.getType());
-			stats.setServer(serverID);
-			
+			ActionStats stats = new ActionStats(action.getType(), id, 0, 0, serverID);
 			session.saveOrUpdate(stats);
 			session.getTransaction().commit();
 		}
