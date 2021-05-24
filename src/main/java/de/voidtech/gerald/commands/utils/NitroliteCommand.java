@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -10,14 +11,11 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.NitroliteAlias;
-import main.java.de.voidtech.gerald.entities.NitroliteEmote;
-import main.java.de.voidtech.gerald.service.EmoteService;
 import main.java.de.voidtech.gerald.service.NitroliteService;
 import main.java.de.voidtech.gerald.service.ServerService;
-import main.java.de.voidtech.gerald.service.WebhookManager;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
+import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
 
 @Command
 public class NitroliteCommand extends AbstractCommand {
@@ -31,12 +29,23 @@ public class NitroliteCommand extends AbstractCommand {
 	@Autowired
 	private SessionFactory sessionFactory;
 	
-	@Autowired
-	private EmoteService emoteService;
+	private void searchEmoteCache(Message message, List<String> args) {
+		String search = args.get(1);
+        List<Emote> emoteList = message.getJDA().getEmoteCache().stream().collect(Collectors.toList());
+        List<Emote> result = emoteList.stream()//
+                .filter(emote -> emote.getName().equals(search)).collect(Collectors.toList());
+        
+        String searchResult = "**Cache searched for: **`" + search + "`\n";
+        if (result.size() == 0) {
+        	searchResult += "Nothing found :(";
+        } else {
+        	for (Emote emote: result) {
+                searchResult += nitroliteService.constructEmoteString(emote) + " - " + emote.getName() + " - " + emote.getId() + "\n";
+            }
+        }
+        message.getChannel().sendMessage(searchResult).queue();
+	}
 	
-	@Autowired
-	private WebhookManager webhookManager;
-		
 	private boolean aliasAlreadyExists(String name, long serverID) {
 		try(Session session = sessionFactory.openSession())
 		{
@@ -76,6 +85,25 @@ public class NitroliteCommand extends AbstractCommand {
 		message.getChannel().sendMessage("**Alias created with the name **`" + aliasName + "`**!**").queue();
 	}
 	
+    private void addEmoteAlias(Message message, List<String> args) {    
+    	if (args.size() < 3) {
+    		message.getChannel().sendMessage("**You need to supply more arguments!**\n\n" + this.getUsage()).queue();
+    	} else {
+    		long serverID = serverService.getServer(message.getGuild().getId()).getId();
+    		if (aliasAlreadyExists(args.get(1), serverID)) {
+    			message.getChannel().sendMessage("**An alias with that name already exists!**").queue();
+    		} else {
+    			if (!ParsingUtils.isInteger(args.get(2))) {
+    				message.getChannel().sendMessage("**You have not supplied a valid emote ID!**").queue();
+    			} else if (message.getJDA().getEmoteById(args.get(2)) == null) {
+    				message.getChannel().sendMessage("**That emote cannot be accessed. Is Gerald in the server with that emote?**").queue();
+    			} else {
+    				createEmoteAlias(message, args.get(1), args.get(2));
+    			}
+    		}
+    	}
+	}
+
 	private void removeAlias(String aliasName, long serverID, Message message) {
 		try(Session session = sessionFactory.openSession())
 		{
@@ -87,47 +115,6 @@ public class NitroliteCommand extends AbstractCommand {
 			session.getTransaction().commit();
 		}
 		message.getChannel().sendMessage("**Alias with name **`" + aliasName + "`** has been deleted!**").queue();
-	}
-	
-	private void searchEmoteCache(Message message, List<String> args) {
-		String search = args.get(1);
-		
-        List<NitroliteEmote> result = emoteService.getEmotes(search, message.getJDA());
-        
-        String searchResult = "**Cache searched for: **`" + search + "`\n";
-        if (result.size() == 0) {
-        	searchResult += "Nothing found :(";
-        } else {
-        	for (NitroliteEmote emote: result) {
-                searchResult += nitroliteService.constructEmoteString(emote) + " - " + emote.getName() + " - " + emote.getID() + "\n";
-            }
-        }
-        
-        webhookManager.postMessageWithFallback(
-        		message, searchResult,
-        		message.getJDA().getSelfUser().getAvatarUrl(),
-        		message.getJDA().getSelfUser().getName(),
-        		webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGNitrolite"));
-
-	}
-	
-    private void addEmoteAlias(Message message, List<String> args) {    
-    	if (args.size() < 3) {
-    		message.getChannel().sendMessage("**You need to supply more arguments!**\n\n" + this.getUsage()).queue();
-    	} else {
-    		long serverID = serverService.getServer(message.getGuild().getId()).getId();
-    		if (aliasAlreadyExists(args.get(1), serverID)) {
-    			message.getChannel().sendMessage("**An alias with that name already exists!**").queue();
-    		} else {
-    			if (!ParsingUtils.isInteger(args.get(2))) {
-    				message.getChannel().sendMessage("**You have not supplied a valid emote ID!**").queue();
-    			} else if (emoteService.getEmoteById(args.get(2), message.getJDA()) == null) {
-    				message.getChannel().sendMessage("**That emote cannot be accessed. Is Gerald in the server with that emote?**").queue();
-    			} else {
-    				createEmoteAlias(message, args.get(1), args.get(2));
-    			}
-    		}
-    	}
 	}
     
     private void removeEmoteAlias(Message message, List<String> args) {
@@ -153,16 +140,11 @@ public class NitroliteCommand extends AbstractCommand {
     		aliasMessage += "Nothing here... Create some aliases!";
     	} else {
         	for (NitroliteAlias alias : aliasesList) {
-        		NitroliteEmote emote = emoteService.getEmoteById(alias.getEmoteID(), message.getJDA());
+        		Emote emote = message.getJDA().getEmoteById(alias.getEmoteID());
         		aliasMessage += nitroliteService.constructEmoteString(emote) + " - **Alias:** `" + alias.getAliasName() + "` **ID:** `" + alias.getEmoteID() + "`\n";
         	}	
     	}
-    	
-        webhookManager.postMessageWithFallback(
-        		message, aliasMessage,
-        		message.getJDA().getSelfUser().getAvatarUrl(),
-        		message.getJDA().getSelfUser().getName(),
-        		webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGNitrolite"));
+    	message.getChannel().sendMessage(aliasMessage).queue();
     }
     
 	@Override
@@ -185,7 +167,7 @@ public class NitroliteCommand extends AbstractCommand {
 			break;
 			
 		default:
-			message.getChannel().sendMessage("**That's not a valid subcommand! Try something like this:**\n\n" + this.getUsage()).queue();
+			message.getChannel().sendMessage("**That's not a valid subcommand! Try something like this:\n\n" + this.getUsage()).queue();
 		}
     }
 
@@ -229,7 +211,7 @@ public class NitroliteCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"nitro", "nl", "emotes", "emote"};
+		String[] aliases = {"nitro", "nl"};
 		return aliases;
 	}
 }

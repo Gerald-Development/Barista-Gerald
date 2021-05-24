@@ -83,7 +83,7 @@ public class ChatCommand extends AbstractCommand{
 
 	@Override
 	public String getDescription() {
-		return "This command allows you to talk to our Chat AI! (Powered by Gavin)";
+		return "This command allows you to enable automatic replies from GeraldAI! (Powered by GeraldAI)";
 	}
 	@Override
 	public String getUsage() {
@@ -112,7 +112,7 @@ public class ChatCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"ai", "geraldai", "geraldchat", "gavin"};
+		String[] aliases = {"ai", "geraldai", "geraldchat"};
 		return aliases;
 	}
 

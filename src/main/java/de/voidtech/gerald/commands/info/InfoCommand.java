@@ -116,7 +116,7 @@ public class InfoCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"botinfo", "botstats", "bi", "bs", "stats"};
+		String[] aliases = {"botinfo", "botstats", "bi", "bs"};
 		return aliases;
 	}
 
