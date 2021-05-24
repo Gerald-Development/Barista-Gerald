@@ -66,7 +66,8 @@ public class WelcomerCommand extends AbstractCommand{
 		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
 		
-			JoinLeaveMessage joinLeaveMessage = new JoinLeaveMessage(serverID, channel, joinMessage, leaveMessage);			
+			JoinLeaveMessage joinLeaveMessage = new JoinLeaveMessage(serverID, channel, joinMessage, leaveMessage);
+			
 			session.saveOrUpdate(joinLeaveMessage);
 			session.getTransaction().commit();
 		}
@@ -131,51 +132,60 @@ public class WelcomerCommand extends AbstractCommand{
 		}
 	}
 	
+	private void continueToLeaveMessage(Message message, Server server, String channel, String welcomeMessage) {
+		message.getChannel().sendMessage("**Please enter your leave message:**").queue();
+		waiter.waitForEvent(MessageReceivedEvent.class,
+				leaveMessageInputEvent -> ((MessageReceivedEvent) leaveMessageInputEvent).getAuthor().getId().equals(message.getAuthor().getId()),
+				leaveMessageEvent -> {
+					String leaveMessage = leaveMessageEvent.getMessage().getContentRaw();
+					
+					addJoinLeaveMessage(server.getId(), channel, welcomeMessage, leaveMessage);
+					message.getChannel().sendMessage("**The Welcomer has been set up!**\n\n"
+							+ "Channel: <#" + channel + ">\n"
+							+ "Join message: " + welcomeMessage + "\n"
+							+ "Leave message: " + leaveMessage).queue();
+					
+				}, 60, TimeUnit.SECONDS, 
+				() -> message.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());	
+	}
+	
+	
+	private void continueToWelcomeMessage(Message message, Server server, String channel) {
+		message.getChannel().sendMessage("**Please enter your welcome message:**").queue();
+		waiter.waitForEvent(MessageReceivedEvent.class,
+				welcomeMessageInputEvent -> ((MessageReceivedEvent) welcomeMessageInputEvent).getAuthor().getId().equals(message.getAuthor().getId()),
+				welcomeMessageInputEvent -> {
+					String welcomeMessage = welcomeMessageInputEvent.getMessage().getContentRaw();
+					continueToLeaveMessage(message, server, channel, welcomeMessage);
+				}, 60, TimeUnit.SECONDS, 
+				() -> message.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());	
+	}
+	
+	private void beginSetup(Message message, Server server) {
+		message.getChannel().sendMessage("**Enter the ID or a mention of the channel you wish to use:**").queue();
+		
+		waiter.waitForEvent(MessageReceivedEvent.class,
+				channelEntryEvent -> ((MessageReceivedEvent) channelEntryEvent).getAuthor().getId().equals(message.getAuthor().getId()),
+				channelEntryEvent -> {
+					String channel = ParsingUtils.filterSnowflake(channelEntryEvent.getMessage().getContentRaw());
+					
+					if (channelExists(channel, message)) {
+						continueToWelcomeMessage(message, server, channel);
+					} else {
+						message.getChannel().sendMessage("**You need to mention a channel or use its ID!**").queue();
+					}
+					
+				}, 60, TimeUnit.SECONDS, 
+				() -> message.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());	
+	}
+	
 	//TODO REVIEW: This b is fatter than yo mama. I have no idea rn because it's 1AM but this should be refactored.
+	//Update: the chongus algorithm has been de-chongo'd (RIP 19/03/2021 - 24/05/2021)
 	private void setupWelcomer(Server server, Message message) {
 		if (customMessageEnabled(server.getId())) {
 			message.getChannel().sendMessage("**The Welcomer is already set up!**").queue();
 		} else {
-			message.getChannel().sendMessage("**Enter the ID or a mention of the channel you wish to use:**").queue();
-			
-			waiter.waitForEvent(MessageReceivedEvent.class,
-					channelEntryEvent -> ((MessageReceivedEvent) channelEntryEvent).getAuthor().getId().equals(message.getAuthor().getId()),
-					channelEntryEvent -> {
-						String channel = ParsingUtils.filterSnowflake(channelEntryEvent.getMessage().getContentRaw());
-						
-						if (channelExists(channel, message)) {
-							
-							message.getChannel().sendMessage("**Please enter your welcome message:**").queue();
-							waiter.waitForEvent(MessageReceivedEvent.class,
-									welcomeMessageInputEvent -> ((MessageReceivedEvent) welcomeMessageInputEvent).getAuthor().getId().equals(message.getAuthor().getId()),
-									welcomeMessageInputEvent -> {
-										String welcomeMessage = welcomeMessageInputEvent.getMessage().getContentRaw();
-										
-										message.getChannel().sendMessage("**Please enter your leave message:**").queue();
-										waiter.waitForEvent(MessageReceivedEvent.class,
-												leaveMessageInputEvent -> ((MessageReceivedEvent) leaveMessageInputEvent).getAuthor().getId().equals(message.getAuthor().getId()),
-												leaveMessageEvent -> {
-													String leaveMessage = leaveMessageEvent.getMessage().getContentRaw();
-													
-													addJoinLeaveMessage(server.getId(), channel, welcomeMessage, leaveMessage);
-													message.getChannel().sendMessage("**The Welcomer has been set up!**\n\n"
-															+ "Channel: <#" + channel + ">\n"
-															+ "Join message: " + welcomeMessage + "\n"
-															+ "Leave message: " + leaveMessage).queue();
-													
-												}, 60, TimeUnit.SECONDS, 
-												() -> message.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());	
-										
-									}, 60, TimeUnit.SECONDS, 
-									() -> message.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());	
-					
-						} else {
-							message.getChannel().sendMessage("**You need to mention a channel or use its ID!**").queue();
-						}
-						
-					}, 60, TimeUnit.SECONDS, 
-					() -> message.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());	
-
+			beginSetup(message, server);
 		}	
 	}
 	
