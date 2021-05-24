@@ -64,12 +64,7 @@ public class NitroliteCommand extends AbstractCommand {
 		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
 		
-			NitroliteAlias alias = new NitroliteAlias(serverID, aliasName, aliasID);
-			
-			alias.setAliasName(aliasName);
-			alias.setEmoteID(aliasID);
-			alias.setServer(serverID);
-			
+			NitroliteAlias alias = new NitroliteAlias(serverID, aliasName, aliasID);			
 			session.saveOrUpdate(alias);
 			session.getTransaction().commit();
 		}
@@ -200,7 +195,7 @@ public class NitroliteCommand extends AbstractCommand {
 
     @Override
     public String getUsage() {
-        return "[:an_awesome_emote:]\n"
+        return "To use nitrolite, type emotes like this - [:an_awesome_emote:]\n"
         		+ "nitrolite search (emote_name)\n"
         		+ "nitrolite add (alias_name) (emote_id)\n"
         		+ "nitrolite delete (alias_name)\n"
