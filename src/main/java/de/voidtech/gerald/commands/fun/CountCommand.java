@@ -148,9 +148,9 @@ public class CountCommand extends AbstractCommand {
 			String serverID = ((CountingChannel) channel).getServerID();
 			int count = ((CountingChannel) channel).getChannelCount();
 			
-			leaderboard += "\n" + pos + ") Channel: " + message.getJDA().getGuildById(serverID).getName() + " > "
+			leaderboard = "\n" + pos + ") Channel: " + message.getJDA().getGuildById(serverID).getName() + " > "
 			+ message.getJDA().getGuildChannelById(channelID).getName() + "\n"
-					+ "Count: " + count + "\n";
+					+ "Count: " + count + "\n" + leaderboard;
 			
 		}
 		leaderboard += "```";
