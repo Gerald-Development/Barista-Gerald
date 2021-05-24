@@ -121,10 +121,6 @@ public class TunnelCommand extends AbstractCommand {
 			session.getTransaction().begin();
 
 			Tunnel tunnel = new Tunnel(sourceChannelID, destChannelID);
-
-			tunnel.setSourceChannel(sourceChannelID);
-			tunnel.setDestChannel(destChannelID);
-
 			session.saveOrUpdate(tunnel);
 			session.getTransaction().commit();
 		}
@@ -232,7 +228,8 @@ public class TunnelCommand extends AbstractCommand {
 
 	@Override
 	public String getUsage() {
-		return "To create a tunnel: tunnel dig [channel ID/channel mention]\nTo destroy a tunnel: tunnel fill";
+		return "tunnel dig [channel ID/channel mention]\n"
+				+ "tunnel fill";
 	}
 
 	@Override
