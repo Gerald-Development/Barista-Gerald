@@ -51,4 +51,8 @@ public class ParsingUtils {
 		}
 		return message.getMember();
 	}
+	
+	public static boolean isSnowflake(String input) {
+		return isInteger(input) && input.length() == 18;
+	}
 }
