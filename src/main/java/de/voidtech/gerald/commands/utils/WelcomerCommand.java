@@ -66,13 +66,7 @@ public class WelcomerCommand extends AbstractCommand{
 		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
 		
-			JoinLeaveMessage joinLeaveMessage = new JoinLeaveMessage(serverID, channel, joinMessage, leaveMessage);
-		
-			joinLeaveMessage.setServerID(serverID);
-			joinLeaveMessage.setChannelID(channel);
-			joinLeaveMessage.setJoinMessage(joinMessage);
-			joinLeaveMessage.setLeaveMessage(leaveMessage);
-			
+			JoinLeaveMessage joinLeaveMessage = new JoinLeaveMessage(serverID, channel, joinMessage, leaveMessage);			
 			session.saveOrUpdate(joinLeaveMessage);
 			session.getTransaction().commit();
 		}
