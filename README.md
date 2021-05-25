@@ -8,7 +8,7 @@ Welcome to Gerald! Gerald is just another bot for your lovely Discord server! To
 - Dig Tunnels: You can dig tunnels to channels of other servers (or your own), this allows you two connect two textchannels. The messages of one channel will be mirrored to the channel and vice versa!
 - Play with Gerald: The Bot includes implementations of various "mini-games" like "Would you rather", Deathmatches or Fruit Guessing
 - Compile Code: You can use Gerald to let an online compiler run some code for you
-- Hugs, Headpats, all your favourite actions accomapnied by animated gifs!
+- Hugs, Headpats, all your favourite actions accompanied by animated gifs!
 - Various other commands: Because we have lots of random commands like 8ball, inspiro, random facts, emojify and much much more!
 
 **Gerald's Prefix: \\**
