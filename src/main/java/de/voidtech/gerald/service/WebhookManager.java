@@ -67,12 +67,12 @@ public class WebhookManager {
         }
 	}
 	
-	public void postMessageWithFallback(Message message, String content, String avatarUrl, String username, Webhook webhook) {
+	public void postMessageWithFallback(Message message, String content, String avatarUrl, String username, String webhookName) {
 		EnumSet<Permission> perms = message.getGuild().getSelfMember().getPermissions((GuildChannel) message.getChannel());
 		
         if (perms.contains(Permission.MANAGE_WEBHOOKS)) {
         	postMessage(content, avatarUrl, username,
-            		getOrCreateWebhook((TextChannel) message.getChannel(), "BGNitrolite"));
+            		getOrCreateWebhook((TextChannel) message.getChannel(), webhookName));
          } else {
              message.getChannel().sendMessage(content).queue();
          }

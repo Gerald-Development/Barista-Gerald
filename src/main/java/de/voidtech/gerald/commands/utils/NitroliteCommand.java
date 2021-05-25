@@ -17,7 +17,6 @@ import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.WebhookManager;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
 
 @Command
 public class NitroliteCommand extends AbstractCommand {
@@ -102,7 +101,7 @@ public class NitroliteCommand extends AbstractCommand {
         		message, searchResult,
         		message.getJDA().getSelfUser().getAvatarUrl(),
         		message.getJDA().getSelfUser().getName(),
-        		webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGNitrolite"));
+        		"BGNitrolite");
 
 	}
 	
@@ -157,7 +156,7 @@ public class NitroliteCommand extends AbstractCommand {
         		message, aliasMessage,
         		message.getJDA().getSelfUser().getAvatarUrl(),
         		message.getJDA().getSelfUser().getName(),
-        		webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGNitrolite"));
+        		"BGNitrolite");
     }
     
 	@Override
