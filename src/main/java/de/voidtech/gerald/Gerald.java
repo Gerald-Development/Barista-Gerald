@@ -1,3 +1,21 @@
+/*
+	BaristaGerald A General Purpose Discord Bot
+    Copyright (C) 2020-2021  Barista Gerald Dev Team (http://github.com/Montori/Barista-Gerald)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 package main.java.de.voidtech.gerald;
 
 import java.util.ArrayList;
@@ -25,6 +43,7 @@ import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.GlobalConfigService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -44,6 +63,7 @@ public class Gerald {
 				.enableIntents(getNonPrivilegedIntents())
 				// .setMemberCachePolicy(MemberCachePolicy.ALL)
 				.setBulkDeleteSplittingEnabled(false)
+				.setStatus(OnlineStatus.IDLE)
 				.setCompression(Compression.NONE)
 				.addEventListeners(eventWaiter,	msgListener, readyListener,	guildGoneListener, channelDeleteListener, memberListener)
 				.setActivity(EntityBuilder.createActivity(globalConf.getStatus(),

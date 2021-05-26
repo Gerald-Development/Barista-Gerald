@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:alpine
+    container_name: barista-database
+    restart: unless-stopped
+    ports:
+      - 5432:${DATABASE_PORT:-5432}
+    environment:
+      - POSTGRES_USER=${DATABASE_USERNAME:-postgres}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD:?}
+      - POSTGRES_DB=${DATABASE_DATABASE:-BaristaDB}
+  bot:
+    image: barista:latest
+    restart: unless-stopped
+    build:
+      context: .
+    depends_on:
+      - db
+    environment:
+      - DEFAULTPREFIX=${DEFAULT_PREFIX:-\}
+      - TOKEN=${DISCORD_TOKEN:?}
+      - HIBERNATE_USER=${DATABASE_USERNAME:-postgres}
+      - HIBERNATE_PASSWORD=${DATABASE_PASSWORD:?}
+      - HIBERNATE_CONNECTIONURL=jdbc:postgresql://${DATABASE_HOST:-barista-database}:${DATABASE_PORT:-5432}/${DATABASE_DATABASE:-BaristaDB}

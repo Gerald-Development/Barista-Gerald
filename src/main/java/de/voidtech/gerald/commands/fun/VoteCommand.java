@@ -46,5 +46,11 @@ public class VoteCommand extends AbstractCommand{
 	public boolean requiresArguments() {
 		return true;
 	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"poll"};
+		return aliases;
+	}
 
 }

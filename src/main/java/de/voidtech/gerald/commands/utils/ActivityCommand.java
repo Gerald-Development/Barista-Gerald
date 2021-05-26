@@ -10,13 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import main.java.de.voidtech.gerald.GlobalConstants;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.entities.GlobalConfig;
 import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.GlobalConfigService;
 import net.dv8tion.jda.api.entities.Activity.ActivityType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.entities.GlobalConfig;
 
 @Command
 public class ActivityCommand extends AbstractCommand {
@@ -136,6 +136,12 @@ public class ActivityCommand extends AbstractCommand {
 	@Override
 	public boolean requiresArguments() {
 		return true;
+	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"setactivity", "status", "setstatus"};
+		return aliases;
 	}
 
 }

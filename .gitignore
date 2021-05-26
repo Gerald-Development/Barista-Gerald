@@ -26,9 +26,9 @@ hs_err_pid*
 /AIML/
 .settings
 dependency-reduced-pom.xml
-./properties/*
+GeraldConfig.properties
 .metadata
 .classpath
-.idea
-out
-BaristaGerald.iml
+
+# environment variables
+.env

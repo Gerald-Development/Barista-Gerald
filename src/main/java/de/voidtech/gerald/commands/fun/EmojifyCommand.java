@@ -20,8 +20,8 @@ public class EmojifyCommand extends AbstractCommand {
 		List<String> characters = Arrays.asList(String.join(" ", args).split(""));
 		List<String> newCharacters = new ArrayList<String>();
 		characters.forEach(character -> {
-			if (emojiMap.containsKey(character)) {
-				newCharacters.add(emojiMap.get(character));
+			if (emojiMap.containsKey(character.toLowerCase())) {
+				newCharacters.add(emojiMap.get(character.toLowerCase()));
 			} else {
 				newCharacters.add(character);
 			}
@@ -90,5 +90,11 @@ public class EmojifyCommand extends AbstractCommand {
 	@Override
 	public boolean requiresArguments() {
 		return true;
+	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"big"};
+		return aliases;
 	}
 }

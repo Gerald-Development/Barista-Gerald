@@ -1,58 +1,73 @@
 package main.java.de.voidtech.gerald.service;
 
-import java.util.HashMap;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
-import org.alicebot.ab.Bot;
-import org.alicebot.ab.Chat;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ChatbotService {
-
-	@Autowired
-	ThreadManager threadManager;
 	
-	private Bot geraldAI = null;
-	private HashMap<String, Chat> chatInstances = new HashMap<String, Chat>();
+	@Autowired
+	GeraldConfig configService;
 	
 	private static final Logger LOGGER = Logger.getLogger(ChatbotService.class.getName());
+	private static final String ERROR_STRING = "I'm not sure how to respond to that.";
 	
-	private Chat getChatInstance(String sessionID) {
-		
-		if (!chatInstances.containsKey(sessionID)) {
-			chatInstances.put(sessionID, new Chat(geraldAI));
+	private String getGavinResponse(String message) {
+		try {
+			
+			String payload = new JSONObject().put("data", message).toString();
+			URL requestURL = new URL(configService.getGavinURL());
+			HttpURLConnection con = (HttpURLConnection) requestURL.openConnection();
+			
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Content-Type", "application/json; utf-8");
+			con.setDoOutput(true);
+			con.setRequestProperty("Accept", "application/json");
+			
+			OutputStream os = con.getOutputStream();
+			byte[] input = payload.getBytes("utf-8");
+			os.write(input, 0, input.length);
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));			
+			String output = in.lines().collect(Collectors.joining());
+			con.disconnect();
+			
+			return output;
+			
+		} catch (Exception e1) {
+			e1.printStackTrace();
 		}
-		return chatInstances.get(sessionID);
+		return ERROR_STRING;
 	}
 	
     public String getReply(String message, String ID) {
-        try {
-        	ExecutorService aiResponseThreadExecutor = threadManager.getThreadByName("Gerald-AI");
-            Callable<String> responseThreadCallable = new Callable<String>() {
-                @Override
-                public String call() {
-                	if (geraldAI == null) {
-                		GeraldConfig config = new GeraldConfig();
-                		geraldAI = new Bot("Gerald", config.getAIMLFolderDirectory());
-                	}
-                	
-                	String reply = getChatInstance(ID).multisentenceRespond(message);
-                	return reply == "" ? "What?" : reply;
-                }
-            };
-            Future<String> responseAwaiter = aiResponseThreadExecutor.submit(responseThreadCallable);
-			return responseAwaiter.get();
-		} catch (InterruptedException | ExecutionException e) {
+    	try {
+			String gavinResponse = getGavinResponse(message);
+			JSONObject responseObject = new JSONObject(gavinResponse);
+			
+			if (responseObject.has("error")) {
+				return ERROR_STRING;
+			} else {
+				if (responseObject.has("message")) {
+					return responseObject.getString("message");
+				} else {
+					return ERROR_STRING;
+				}
+			}
+			
+		} catch (JSONException e) {
 			LOGGER.log(Level.SEVERE, "Error during ServiceExecution: " + e.getMessage());
 		}
-        
-        return "What?";
+        return ERROR_STRING;
 	}
-	}
+}

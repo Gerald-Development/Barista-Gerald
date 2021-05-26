@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.entities.Message;
 
 @Command
@@ -38,13 +39,12 @@ public class EnlargeCommand extends AbstractCommand {
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		String emoteText = args.get(0);
-		String regexPattern = "([^0-9])";
 		String emoteID = "";
 		
 		if (emoteText.startsWith("<")) {
 			emoteID = Arrays.asList(emoteText.split(":")).get(2).replace(">", "");
 		} else {
-			emoteText.replaceAll(regexPattern, "");	
+			emoteID = ParsingUtils.filterSnowflake(emoteText);	
 		}
 
 		for (String extension : FILE_EXTENSIONS) {
@@ -84,5 +84,11 @@ public class EnlargeCommand extends AbstractCommand {
 	@Override
 	public boolean requiresArguments() {
 		return true;
+	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"jumbo"};
+		return aliases;
 	}
 }

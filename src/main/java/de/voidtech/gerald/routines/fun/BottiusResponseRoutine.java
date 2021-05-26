@@ -6,6 +6,7 @@ import java.util.Random;
 
 import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
+import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import net.dv8tion.jda.api.entities.Message;
 
 @Routine
@@ -49,6 +50,16 @@ public class BottiusResponseRoutine extends AbstractRoutine{
 	@Override
 	public boolean allowsBotResponses() {
 		return true;
+	}
+
+	@Override
+	public String getName() {
+		return "Bottius-Routine";
+	}
+
+	@Override
+	public RoutineCategory getRoutineCategory() {
+		return RoutineCategory.FUN;
 	}
 	
 }

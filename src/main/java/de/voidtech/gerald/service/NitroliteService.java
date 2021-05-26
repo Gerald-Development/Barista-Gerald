@@ -5,13 +5,13 @@ import java.util.EnumSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import main.java.de.voidtech.gerald.entities.NitroliteEmote;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
-import net.dv8tion.jda.api.entities.Message.Attachment;
 
 @Service
 public class NitroliteService {
@@ -52,13 +52,13 @@ public class NitroliteService {
     	originMessage.getChannel().sendMessage(finalMessage).queue();
 	}
 
-	public String constructEmoteString(Emote emote) {
-        return String.format("<%s%s:%s>", emote.isAnimated() ? "a:" : ":", emote.getName(), emote.getId());
+	public String constructEmoteString(NitroliteEmote emote) {
+        return String.format("<%s%s:%s>", emote.isEmoteAnimated() ? "a:" : ":", emote.getName(), emote.getID());
     }
 
     private void sendWebhookMessage(Message message, String content) {    	
     	Webhook webhook = webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGNitrolite");
-    	webhookManager.postMessage(content, message.getAuthor().getAvatarUrl(), message.getAuthor().getName(), webhook);
+    	webhookManager.postMessage(content, message.getAuthor().getAvatarUrl(), message.getMember().getEffectiveName(), webhook);
     	
         
     }

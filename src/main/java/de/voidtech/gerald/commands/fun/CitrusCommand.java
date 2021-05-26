@@ -44,7 +44,7 @@ public class CitrusCommand extends AbstractCommand {
 		waiter.waitForEvent(MessageReceivedEvent.class,
 				event -> ((MessageReceivedEvent) event).getAuthor().getId().equals(message.getAuthor().getId()),
 				event -> {
-					boolean correctCitrus = event.getMessage().getContentRaw().equals(currentCitrus);
+					boolean correctCitrus = event.getMessage().getContentRaw().toLowerCase().equals(currentCitrus);
 					message.getChannel().sendMessage(String.format("%s! The Citrus was **%s**",
 							correctCitrus ? "Correct" : "Incorrect", currentCitrus)).queue();;
 				}, 15, TimeUnit.SECONDS, 
@@ -101,6 +101,12 @@ public class CitrusCommand extends AbstractCommand {
 	@Override
 	public boolean requiresArguments() {
 		return false;
+	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"cguess", "citrusguess"};
+		return aliases;
 	}
 
 }
