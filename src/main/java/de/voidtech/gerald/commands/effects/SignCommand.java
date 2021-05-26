@@ -1,4 +1,4 @@
-package main.java.de.voidtech.gerald.commands.fun;
+package main.java.de.voidtech.gerald.commands.effects;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +84,7 @@ public class SignCommand extends AbstractCommand {
 
 	@Override
 	public CommandCategory getCommandCategory() {
-		return CommandCategory.FUN;
+		return CommandCategory.EFFECTS;
 	}
 
 	@Override

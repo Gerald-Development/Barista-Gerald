@@ -5,7 +5,8 @@ public enum CommandCategory {
     FUN("fun", ":video_game:"), 
     INFO("information", ":books:"), 
     MANAGEMENT("management", ":closed_lock_with_key:"),
-    UTILS("utils", ":desktop:");
+    UTILS("utils", ":desktop:"),
+    EFFECTS("effects", ":sparkles:");
  
     private String category;
     private String iconName;
