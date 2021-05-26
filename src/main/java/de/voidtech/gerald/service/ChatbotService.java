@@ -27,7 +27,7 @@ public class ChatbotService {
 		try {
 			
 			String payload = new JSONObject().put("data", message).toString();
-			URL requestURL = new URL(configService.getGavinURL());
+			URL requestURL = new URL(configService.getGavinChatURL());
 			HttpURLConnection con = (HttpURLConnection) requestURL.openConnection();
 			
 			con.setRequestMethod("POST");
