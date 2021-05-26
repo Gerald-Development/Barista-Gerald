@@ -29,6 +29,3 @@ dependency-reduced-pom.xml
 ./properties/*
 .metadata
 .classpath
-.idea
-out
-BaristaGerald.iml
