@@ -82,16 +82,9 @@ public class GeraldConfig {
 		return masters;
 	}
 
-	public String getGavinChatURL() {
-		String baseurl = config.getProperty("gavinUrl");
-		String url;
-		if (baseurl == null) return "http://localhost:8000/chat_bot/";
-		if (baseurl.endsWith("/")) {
-			url = baseurl + "chat_bot/";
-		} else {
-			url = baseurl + "/chat_bot/";
-		}
-		return url;
+	public String getGavinURL() {
+		String url = config.getProperty("gavinUrl"); 
+		return url != null ? url : "http://localhost:8000/chat_bot/";
 	}
 
 	public String getSeleniumDriverPath() {
