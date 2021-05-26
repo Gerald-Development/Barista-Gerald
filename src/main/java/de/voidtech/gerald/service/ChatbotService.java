@@ -58,7 +58,7 @@ public class ChatbotService {
 			if (responseObject.has("error")) {
 				return ERROR_STRING;
 			} else {
-				if (responseObject.has("message")) {
+				if (responseObject.has("message") && !responseObject.getString("message").equals("")) {
 					return responseObject.getString("message");
 				} else {
 					return ERROR_STRING;
