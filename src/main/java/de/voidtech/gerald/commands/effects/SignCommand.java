@@ -89,7 +89,7 @@ public class SignCommand extends AbstractCommand {
 
 	@Override
 	public boolean isDMCapable() {
-		return false;
+		return true;
 	}
 
 	@Override
