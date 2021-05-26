@@ -92,4 +92,10 @@ public class ApodCommand extends AbstractCommand {
 	public boolean requiresArguments() {
 		return false;
 	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"nasa", "nasaapod", "astronomy"};
+		return aliases;
+	}
 }

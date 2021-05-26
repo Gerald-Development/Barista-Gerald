@@ -13,7 +13,7 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.entities.SuggestionChannel;
 import main.java.de.voidtech.gerald.service.ServerService;
-import main.java.de.voidtech.gerald.util.IntegerEvaluator;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -81,24 +81,11 @@ public class SuggestCommand extends AbstractCommand {
 		return message.getGuild().getTextChannelById(channelID) != null;
 	}
 	
-	private String parseChannel(String inputString) {
-		String output = inputString
-			.replaceAll("<", "")
-			.replaceAll("#", "")
-			.replaceAll("!", "")
-			.replaceAll(">", "");
-		return output;
-	}
-	
 	private void addNewSuggestionChannel(long serverID, String channelID) {
 		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
 		
-			SuggestionChannel suggestionChannel = new SuggestionChannel(serverID, channelID);
-		
-			suggestionChannel.setServerID(serverID);
-			suggestionChannel.setSuggestionChannel(channelID);
-			
+			SuggestionChannel suggestionChannel = new SuggestionChannel(serverID, channelID);			
 			session.saveOrUpdate(suggestionChannel);
 			session.getTransaction().commit();
 		}		
@@ -121,7 +108,7 @@ public class SuggestCommand extends AbstractCommand {
 	}
 	
 	private void validateInput(String channelID, Server server, Message message) {
-		if (new IntegerEvaluator().isInteger(channelID)) {
+		if (ParsingUtils.isInteger(channelID)) {
 			if (isGuildChannel(channelID, message)) {
 				if (suggestionChannelExists(server.getId())) {
 					updateSuggestionChannel(server.getId(), channelID);
@@ -143,7 +130,7 @@ public class SuggestCommand extends AbstractCommand {
 			if (args.size() < 2) {
 				message.getChannel().sendMessage("**You need to specify a channel! Use a channel mention or its ID**").queue();
 			} else {
-				String channelID = parseChannel(args.get(1));
+				String channelID = ParsingUtils.filterSnowflake(args.get(1));
 				Server server = serverService.getServer(message.getGuild().getId());
 				
 				validateInput(channelID, server, message);
@@ -226,6 +213,12 @@ public class SuggestCommand extends AbstractCommand {
 	@Override
 	public boolean requiresArguments() {
 		return true;
+	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"idea", "suggestion"};
+		return aliases;
 	}
 
 }

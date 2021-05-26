@@ -34,7 +34,7 @@ public class ZalgoCommand extends AbstractCommand {
 
 	@Override
 	public String getDescription() {
-		return "Converts your messages into zÃŒâ€ Ã�â€ºÃŒï¿½ÃŒâ€œÃŒâ€ ÃŒâ€˜ÃŒÅ ÃŒÅ“aÃ�Â§ÃŒï¿½ÃŒâ€ ÃŒÂ¸ÃŒÂ±ÃŒÂ¦ÃŒÂªÃŒÂ«ÃŒÂ¯ÃŒÂ¹ÃŒÂ«ÃŒâ„¢lÃ�Â¬Ã�Â¥ÃŒâ€°Ã�Â£Ã�Â¢Ã�â€“gÃ�â€ ÃŒÅ’ÃŒâ€ Ã�Â®ÃŒÂ¢ÃŒÂ³oÃŒï¿½ÃŒÅ½Ã�â€¹ÃŒï¿½ÃŒâ€œÃŒÅ ÃŒÂ¶ÃŒÂ­ÃŒÂ­Ã�Å½";
+		return "Converts your messages into Zalgo Text";
 	}
 
 	@Override
@@ -92,6 +92,12 @@ public class ZalgoCommand extends AbstractCommand {
 	@Override
 	public boolean requiresArguments() {
 		return true;
+	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"zalgoify", "fucktext"};
+		return aliases;
 	}
 
 }

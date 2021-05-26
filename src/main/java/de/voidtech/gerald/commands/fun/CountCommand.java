@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
 import java.awt.Color;
+import java.time.Instant;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -34,20 +35,25 @@ public class CountCommand extends AbstractCommand {
 		}
 	}
 	
+	private List<CountingChannel> getTopFive() {
+		try(Session session = sessionFactory.openSession())
+		{
+			@SuppressWarnings("unchecked")
+			List<CountingChannel> channels = (List<CountingChannel>) session.createQuery("FROM CountingChannel"
+					+ " ORDER BY CountPosition ASC")
+					.setMaxResults(5).list();
+			return channels;
+		}	
+	}
+	
 	private void startCount(Message message) {
 		String channelID = message.getChannel().getId();
+		
 		try(Session session = sessionFactory.openSession())
 		{
 			session.getTransaction().begin();
 			
-			CountingChannel newCountChannel = new CountingChannel(channelID, 0, "", false, 0);
-			
-			newCountChannel.setCountingChannel(channelID);
-			newCountChannel.setChannelCount(0);
-			newCountChannel.setLastUser(message.getJDA().getSelfUser().getId());
-			newCountChannel.setReached69(false);
-			newCountChannel.setNumberOfTimes69HasBeenReached(0);
-			
+			CountingChannel newCountChannel = new CountingChannel(channelID, message.getGuild().getId(), 0, message.getJDA().getSelfUser().getId(), false, 0);			
 			session.saveOrUpdate(newCountChannel);
 			session.getTransaction().commit();
 		}
@@ -98,50 +104,104 @@ public class CountCommand extends AbstractCommand {
 		}	
 	}
 	
+	private void startCountMethod(Message message) {
+		if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+			if (countingChannelExists(message.getChannel().getId())) {
+				message.getChannel().sendMessage("**There is already a count set up here!**").queue();
+			} else {
+				startCount(message);	
+			}
+		} else {
+			message.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();
+		}	
+	}
+	
+	private void stopCountMethod(Message message) {
+		if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+			if (countingChannelExists(message.getChannel().getId())) {
+				stopCount(message.getChannel());
+			} else {
+				message.getChannel().sendMessage("**There is not a count set up here!**").queue();
+			}
+		} else {
+			message.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();
+		}
+	}
+	
+	private void countStatsMethod(Message message) {
+		if (countingChannelExists(message.getChannel().getId())) {
+			sendCountStatistics(message.getChannel());
+		} else {
+			message.getChannel().sendMessage("**You need to use this command in a counting channel!**").queue();
+		}
+	}
+	
+	private void countLeaderboardMethod(Message message) {
+		List<CountingChannel> topFiveChannels = getTopFive();
+		
+		String leaderboard = "```js\n";
+		
+		int pos = 0;
+		for (Object channel : topFiveChannels) {
+			pos++;
+			String channelID = ((CountingChannel) channel).getCountingChannel();
+			String serverID = ((CountingChannel) channel).getServerID();
+			int count = ((CountingChannel) channel).getChannelCount();
+			
+			leaderboard = "\n" + pos + ") Channel: " + message.getJDA().getGuildById(serverID).getName() + " > "
+			+ message.getJDA().getGuildChannelById(channelID).getName() + "\n"
+					+ "Count: " + count + "\n" + leaderboard;
+			
+		}
+		leaderboard += "```";
+		
+		MessageEmbed leaderboardEmbed = new EmbedBuilder()
+				.setColor(Color.ORANGE)
+				.setTitle("The 5 Highest Counts")
+				.setDescription(leaderboard)
+				.setTimestamp(Instant.now())
+				.build();
+		message.getChannel().sendMessage(leaderboardEmbed).queue();
+		
+	}
+	
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		
-		if (args.get(0).equals("start")) {
-			if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-				if (countingChannelExists(message.getChannel().getId())) {
-					message.getChannel().sendMessage("**There is already a count set up here!**").queue();
-				} else {
-					startCount(message);	
-				}
-			} else {
-				message.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();
-			}			
+		switch(args.get(0)) {
+		case "start":
+			startCountMethod(message);
+			break;
 			
-		} else if (args.get(0).equals("stop")) {
-			if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-				if (countingChannelExists(message.getChannel().getId())) {
-					stopCount(message.getChannel());
-				} else {
-					message.getChannel().sendMessage("**There is not a count set up here!**").queue();
-				}
-			} else {
-				message.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();
-			}
+		case "stop":
+			stopCountMethod(message);
+			break;
+		
+		case "stats":
+			countStatsMethod(message);
+			break;
+		
+		case "leaderboard":
+			countLeaderboardMethod(message);
+			break;
 			
-		} else if (args.get(0).equals("stats")) {
-			if (countingChannelExists(message.getChannel().getId())) {
-				sendCountStatistics(message.getChannel());
-			} else {
-				message.getChannel().sendMessage("**You need to use this command in a counting channel!**").queue();
-			}
-		} else {
+		default:
 			message.getChannel().sendMessage("**You need to use a valid subcommand!**\n" + this.getUsage()).queue();
+			break;
+				
 		}
 	}
 
 	@Override
 	public String getDescription() {
-		return "Allows you to create a designated Counting channel in your server! Each user must in turn count up starting from 0, if someone gets the count wrong, the counter resets! Additionally, users may battle between eachother trying to either raise the count as high as possible, or get it as far below zero as possible by counting down. Original idea: https://top.gg/bot/769855226425245706";
+		return "Allows you to create a designated Counting channel in your server! Each user must in turn count up starting from 0, if someone gets the count wrong, the counter resets from 0! Additionally, users may battle between eachother trying to either raise the count as high as possible, or get it as far below zero as possible by counting down.";
 	}
 
 	@Override
 	public String getUsage() {
-		return "count [start/stop/stats]";
+		return "count start\n"
+				+ "count stop\n"
+				+ "count stats\n";
 	}
 
 	@Override
@@ -156,11 +216,17 @@ public class CountCommand extends AbstractCommand {
 
 	@Override
 	public boolean isDMCapable() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean requiresArguments() {
 		return true;
+	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"counting"};
+		return aliases;
 	}
 }

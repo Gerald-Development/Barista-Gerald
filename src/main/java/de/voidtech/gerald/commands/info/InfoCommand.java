@@ -33,7 +33,7 @@ public class InfoCommand extends AbstractCommand {
 	private List<AbstractRoutine> routines;
 	
 	@Autowired
-	GeraldConfig geraldConfig;
+	private GeraldConfig geraldConfig;
 	
 	private static final String JENKINS_LATEST_BUILD_URL = "https://jenkins.voidtech.de/job/Barista%20Gerald/lastSuccessfulBuild/buildNumber";
 	
@@ -112,6 +112,12 @@ public class InfoCommand extends AbstractCommand {
 	@Override
 	public boolean requiresArguments() {
 		return false;
+	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"botinfo", "botstats", "bi", "bs", "stats"};
+		return aliases;
 	}
 
 }

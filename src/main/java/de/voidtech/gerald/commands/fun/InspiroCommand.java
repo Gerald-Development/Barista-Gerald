@@ -31,7 +31,7 @@ public class InspiroCommand extends AbstractCommand{
 		if (inspiroImageURLOpt != null)
 		{
 			MessageEmbed inspiroEmbed = new EmbedBuilder()//
-					.setTitle("InspiroBot says:")//
+					.setTitle("InspiroBot says:", inspiroImageURLOpt)//
 					.setColor(Color.ORANGE)//
 					.setImage(inspiroImageURLOpt)//
 					.setFooter("Data from InspiroBot", INSPIRO_ICON)//
@@ -86,6 +86,12 @@ public class InspiroCommand extends AbstractCommand{
 	@Override
 	public boolean requiresArguments() {
 		return false;
+	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"inspire", "inspirobot", "ib"};
+		return aliases;
 	}
 
 }

@@ -1,61 +1,66 @@
-package main.java.de.voidtech.gerald.commands.info;
+package main.java.de.voidtech.gerald.commands.utils;
 
-import java.awt.Color;
 import java.util.List;
 
-import main.java.de.voidtech.gerald.GlobalConstants;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
-public class InviteCommand extends AbstractCommand {
-
+public class AvatarCommand extends AbstractCommand{
+	
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		MessageEmbed inviteLinkEmbed = new EmbedBuilder()
-				.setColor(Color.cyan)
-				.setDescription("**[Gerald Invite Link](" + GlobalConstants.INVITE_URL + ")**")
+		Member member = ParsingUtils.getMember(message, args);	
+		String avatarUrl = member.getUser().getAvatarUrl() + "?size=2048";
+		MessageEmbed avatarEmbed = new EmbedBuilder()
+				.setColor(member.getColor())
+				.setTitle(member.getUser().getName() + "'s Avatar", avatarUrl)
+				.setImage(avatarUrl)
 				.build();
-		message.getChannel().sendMessage(inviteLinkEmbed).queue();
+		message.getChannel().sendMessage(avatarEmbed).queue();
 	}
 
 	@Override
 	public String getDescription() {
-		return "Gives you the Invite link for Gerald";
+		return "Allows you to view your avatar or somebody else's";
 	}
 
 	@Override
 	public String getUsage() {
-		return "invite";
+		return "avatar\n"
+				+ "avatar [user id]\n"
+				+ "avatar [@user#1234]";
 	}
 
 	@Override
 	public String getName() {
-		return "invite";
+		return "avatar";
 	}
 
 	@Override
 	public CommandCategory getCommandCategory() {
-		return CommandCategory.INFO;
+		return CommandCategory.UTILS;
 	}
 
 	@Override
 	public boolean isDMCapable() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean requiresArguments() {
 		return false;
 	}
-	
+
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"inv", "link"};
+		String[] aliases = {"av", "pfp"};
 		return aliases;
 	}
 

@@ -106,7 +106,10 @@ public class WhitelistCommand extends AbstractCommand
 
 	@Override
 	public String getUsage() {
-		return "whitelist add {channelID}\nwhitelist remove {channelID}\nwhitelist clear\nwhitelist";
+		return "whitelist add {channelID}\n"
+				+ "whitelist remove {channelID}\n"
+				+ "whitelist clear\n"
+				+ "whitelist";
 	}
 
 	@Override
@@ -127,6 +130,12 @@ public class WhitelistCommand extends AbstractCommand
 	@Override
 	public boolean requiresArguments() {
 		return false;
+	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"allowlist", "allowedchannels", "allow"};
+		return aliases;
 	}
 
 }

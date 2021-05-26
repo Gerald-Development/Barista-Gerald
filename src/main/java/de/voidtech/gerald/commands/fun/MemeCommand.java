@@ -27,7 +27,6 @@ import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -38,10 +37,10 @@ public class MemeCommand extends AbstractCommand {
 	private static final Logger LOGGER = Logger.getLogger(MemeCommand.class.getName());	
 	
 	@Autowired
-	SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
 	
 	@Autowired
-	ServerService serverService;
+	private ServerService serverService;
 	
 	private MemeBlocklist getBlocklist(long serverID) {
 		try(Session session = sessionFactory.openSession())
@@ -70,10 +69,6 @@ public class MemeCommand extends AbstractCommand {
 				session.getTransaction().begin();
 				
 				MemeBlocklist blocklist = new MemeBlocklist(serverID, "");
-				
-				blocklist.setServerID(serverID);
-				blocklist.setBlocklist("");
-				
 				session.saveOrUpdate(blocklist);
 				session.getTransaction().commit();
 			}
@@ -174,11 +169,6 @@ public class MemeCommand extends AbstractCommand {
 					.setFooter("Requested By " + message.getAuthor().getAsTag(), message.getAuthor().getAvatarUrl())
 					.build();
 			message.getChannel().sendMessage(memeImageEmbed).queue();
-			if (message.getChannel().getType() != ChannelType.PRIVATE) {
-		    	if (message.getGuild().getSelfMember().getPermissions((GuildChannel) message.getChannel()).contains(Permission.MESSAGE_MANAGE)) {
-		    		message.delete().complete();
-		    	}	
-			}
 		}	
 	}
 	
@@ -313,5 +303,11 @@ public class MemeCommand extends AbstractCommand {
 	@Override
 	public boolean requiresArguments() {
 		return true;
+	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"mememaker", "makememe"};
+		return aliases;
 	}
 }

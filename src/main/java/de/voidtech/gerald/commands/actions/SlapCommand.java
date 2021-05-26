@@ -11,7 +11,7 @@ public class SlapCommand extends ActionsCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		super.sendAction(message, "slap");
+		super.sendAction(message, ActionType.SLAP);
 	}
 
 	@Override
@@ -42,6 +42,12 @@ public class SlapCommand extends ActionsCommand {
 	@Override
 	public boolean requiresArguments() {
 		return true;
+	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"smack", "hit", "punch", "kill"};
+		return aliases;
 	}
 
 }

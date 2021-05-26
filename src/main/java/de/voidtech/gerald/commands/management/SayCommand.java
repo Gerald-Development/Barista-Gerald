@@ -51,5 +51,11 @@ public class SayCommand extends AbstractCommand {
 	public boolean requiresArguments() {
 		return true;
 	}
+	
+	@Override
+	public String[] getCommandAliases() {
+		String[] aliases = {"speak", "blessuswiththevoiceofgerald"};
+		return aliases;
+	}
 
 }
