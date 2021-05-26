@@ -80,8 +80,7 @@ public class ChatCommand extends AbstractCommand{
 		} else {
 			message.getChannel().sendTyping().queue();
 			String reply = chatBot.getReply(String.join(" ", args), message.getGuild().getId());
-			if (!reply.equals("")) message.getChannel().sendMessage(reply).queue();
-			else message.getChannel().sendMessage("Message from API is blank.").queue();
+			message.getChannel().sendMessage(reply).queue();
 		}
 		
 	}
