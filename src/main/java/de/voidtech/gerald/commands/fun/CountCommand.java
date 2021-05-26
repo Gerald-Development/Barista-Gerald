@@ -53,15 +53,7 @@ public class CountCommand extends AbstractCommand {
 		{
 			session.getTransaction().begin();
 			
-			CountingChannel newCountChannel = new CountingChannel("", "", 0, "", false, 0);
-			
-			newCountChannel.setCountingChannel(channelID);
-			newCountChannel.setServerID(message.getGuild().getId());
-			newCountChannel.setChannelCount(0);
-			newCountChannel.setLastUser(message.getJDA().getSelfUser().getId());
-			newCountChannel.setReached69(false);
-			newCountChannel.setNumberOfTimes69HasBeenReached(0);
-			
+			CountingChannel newCountChannel = new CountingChannel(channelID, message.getGuild().getId(), 0, message.getJDA().getSelfUser().getId(), false, 0);			
 			session.saveOrUpdate(newCountChannel);
 			session.getTransaction().commit();
 		}
@@ -156,9 +148,9 @@ public class CountCommand extends AbstractCommand {
 			String serverID = ((CountingChannel) channel).getServerID();
 			int count = ((CountingChannel) channel).getChannelCount();
 			
-			leaderboard += "\n" + pos + ") Channel: " + message.getJDA().getGuildById(serverID).getName() + " > "
+			leaderboard = "\n" + pos + ") Channel: " + message.getJDA().getGuildById(serverID).getName() + " > "
 			+ message.getJDA().getGuildChannelById(channelID).getName() + "\n"
-					+ "Count: " + count + "\n";
+					+ "Count: " + count + "\n" + leaderboard;
 			
 		}
 		leaderboard += "```";
@@ -202,7 +194,7 @@ public class CountCommand extends AbstractCommand {
 
 	@Override
 	public String getDescription() {
-		return "Allows you to create a designated Counting channel in your server! Each user must in turn count up starting from 0, if someone gets the count wrong, the counter resets! Additionally, users may battle between eachother trying to either raise the count as high as possible, or get it as far below zero as possible by counting down.";
+		return "Allows you to create a designated Counting channel in your server! Each user must in turn count up starting from 0, if someone gets the count wrong, the counter resets from 0! Additionally, users may battle between eachother trying to either raise the count as high as possible, or get it as far below zero as possible by counting down.";
 	}
 
 	@Override

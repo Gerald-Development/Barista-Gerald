@@ -69,10 +69,6 @@ public class MemeCommand extends AbstractCommand {
 				session.getTransaction().begin();
 				
 				MemeBlocklist blocklist = new MemeBlocklist(serverID, "");
-				
-				blocklist.setServerID(serverID);
-				blocklist.setBlocklist("");
-				
 				session.saveOrUpdate(blocklist);
 				session.getTransaction().commit();
 			}

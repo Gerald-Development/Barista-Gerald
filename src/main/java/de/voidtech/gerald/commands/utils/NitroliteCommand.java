@@ -17,7 +17,6 @@ import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.WebhookManager;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
 
 @Command
 public class NitroliteCommand extends AbstractCommand {
@@ -64,12 +63,7 @@ public class NitroliteCommand extends AbstractCommand {
 		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
 		
-			NitroliteAlias alias = new NitroliteAlias(serverID, aliasName, aliasID);
-			
-			alias.setAliasName(aliasName);
-			alias.setEmoteID(aliasID);
-			alias.setServer(serverID);
-			
+			NitroliteAlias alias = new NitroliteAlias(serverID, aliasName, aliasID);			
 			session.saveOrUpdate(alias);
 			session.getTransaction().commit();
 		}
@@ -89,12 +83,12 @@ public class NitroliteCommand extends AbstractCommand {
 		message.getChannel().sendMessage("**Alias with name **`" + aliasName + "`** has been deleted!**").queue();
 	}
 	
-	private void searchEmoteCache(Message message, List<String> args) {
+	private void searchEmoteDatabase(Message message, List<String> args) {
 		String search = args.get(1);
 		
         List<NitroliteEmote> result = emoteService.getEmotes(search, message.getJDA());
         
-        String searchResult = "**Cache searched for: **`" + search + "`\n";
+        String searchResult = "**Database searched for: **`" + search + "`\n";
         if (result.size() == 0) {
         	searchResult += "Nothing found :(";
         } else {
@@ -107,7 +101,7 @@ public class NitroliteCommand extends AbstractCommand {
         		message, searchResult,
         		message.getJDA().getSelfUser().getAvatarUrl(),
         		message.getJDA().getSelfUser().getName(),
-        		webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGNitrolite"));
+        		"BGNitrolite");
 
 	}
 	
@@ -162,14 +156,14 @@ public class NitroliteCommand extends AbstractCommand {
         		message, aliasMessage,
         		message.getJDA().getSelfUser().getAvatarUrl(),
         		message.getJDA().getSelfUser().getName(),
-        		webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGNitrolite"));
+        		"BGNitrolite");
     }
     
 	@Override
     public void executeInternal(Message message, List<String> args) {
 		switch (args.get(0)) {
 		case "search":
-			searchEmoteCache(message, args);
+			searchEmoteDatabase(message, args);
 			break;
 		
 		case "add":
@@ -191,7 +185,7 @@ public class NitroliteCommand extends AbstractCommand {
 
 	@Override
     public String getDescription() {
-        return "Don't have nitro? You want nitro emotes? We got you covered.\n\n"
+        return "No Nitro? No problem!\n\n"
         		+ "Nitrolite uses some magic code to allow you to use your favourite emotes anywhere with Gerald!\n"
         		+ "To do so, simply write out your message, but add your emotes like this: [:a_cool_emote:] (note the square brackets, they are required)\n"
         		+ "If you want to use a specific emote, add an alias! Use the search to first find the emote you are looking for, Then add an alias using its ID and a name of your choice!\n"
@@ -200,7 +194,7 @@ public class NitroliteCommand extends AbstractCommand {
 
     @Override
     public String getUsage() {
-        return "[:an_awesome_emote:]\n"
+        return "To use nitrolite, type emotes like this - [:an_awesome_emote:]\n"
         		+ "nitrolite search (emote_name)\n"
         		+ "nitrolite add (alias_name) (emote_id)\n"
         		+ "nitrolite delete (alias_name)\n"

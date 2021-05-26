@@ -95,7 +95,7 @@ public class EmoteService {
 		
         List<Emote> jdaCacheResult = emoteList.stream()//
                 .filter(emote -> emote.getName().toLowerCase().equals(name.toLowerCase())).collect(Collectors.toList());
-        List<NitroliteEmote> persistentCacheResult = getPersistentEmotes(name);
+        List<NitroliteEmote> persistentResult = getPersistentEmotes(name);
        
         if (jdaCacheResult.size() > 0) {
         	jdaCacheResult.forEach(emote -> {
@@ -104,8 +104,8 @@ public class EmoteService {
         	});
         }
         
-        if (persistentCacheResult.size() > 0) {
-        	persistentCacheResult.forEach(emote -> {
+        if (persistentResult.size() > 0) {
+        	persistentResult.forEach(emote -> {
         		finalResult.add(emote);
         	});
         }
