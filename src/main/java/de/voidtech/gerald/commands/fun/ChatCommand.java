@@ -122,6 +122,7 @@ public class ChatCommand extends AbstractCommand{
 	public String getUsage() {
 		return "chat enable\n"
 				+ "chat disable\n"
+				+ "chat hparams\n"
 				+ "chat [a lovely message]";
 	}
 
