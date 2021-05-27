@@ -78,7 +78,7 @@ public class AccentCommand extends AbstractCommand {
 
 	@Override
 	public String[] getCommandAliases() {
-		String[] commandAliases = {"idekwhattocallthisone"};
+		String[] commandAliases = {"a"};
 		return commandAliases;
 	}
 
