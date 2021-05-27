@@ -2,12 +2,9 @@ package main.java.de.voidtech.gerald.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,13 +16,11 @@ public class ServerService {
 	@Autowired
 	private SessionFactory sf;
 	
-	private static final Logger LOGGER = Logger.getLogger(ServerService.class.getName());
-	
 	@SuppressWarnings("unchecked")
 	public Server getServer(String guildID)
 	{
 		List<Server> serverList = new ArrayList<>();
-		Server server = null;
+		Server server;
 		try(Session session = sf.openSession())
 		{
 			serverList = (List<Server>) session.createQuery("FROM Server WHERE guildID = :guildID")
@@ -43,13 +38,9 @@ public class ServerService {
 			{
 				server = serverList.get(0);
 			}
-			
-			return server;
-		} catch (ConstraintViolationException error) {
-			LOGGER.log(Level.SEVERE, "ServerService has tried to create a duplicate server");
-			error.printStackTrace();
-			return server;
 		}
+		
+		return server;
 	}
 	
 	public void saveServer(Server server)
