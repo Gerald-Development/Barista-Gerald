@@ -61,50 +61,60 @@ public class ChatCommand extends AbstractCommand{
 		}
 	}
 	
+	private void enableChannelCheckpoint(Message message) {
+		if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+			if (chatChannelEnabled(message.getChannel().getId())) {
+				message.getChannel().sendMessage("**GeraldAI is already enabled here!**").queue();
+			} else {
+				enableChatChannel(message.getChannel().getId());
+				message.getChannel().sendMessage("**GeraldAI has been enabled! He will now automatically reply to your messages.**").queue();
+			}	
+		}
+	}
+	
+	private void disableChannelCheckpoint(Message message) {
+		if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+			if (chatChannelEnabled(message.getChannel().getId())) {
+				disableChatChannel(message.getChannel().getId());
+				message.getChannel().sendMessage("**GeraldAI has been disabled! He will no longer automatically reply to your messages.**").queue();
+			} else {
+				message.getChannel().sendMessage("**GeraldAI is already disabled!**").queue();
+			}
+		}
+	}
+	private void sendHparams(Message message) {
+		JSONObject hparams = chatBot.getHparams();
+		if (hparams.toMap().containsKey("Error")) {String reply = hparams.getString("Error"); message.getChannel().sendMessage(reply).queue();}
+		else {
+			String title = String.format("Hyper-Parameters for %s", chatBot.getModelName().getString("ModelName"));
+			EmbedBuilder eb = new EmbedBuilder()
+					.setColor(Color.ORANGE)
+					.setTitle(title, GlobalConstants.LINKTREE_URL)
+					.addField("Number of Model Layers", String.valueOf(hparams.getInt("NUM_LAYERS")), false)
+					.addField("Number of Units", String.valueOf(hparams.getInt("UNITS")), false)
+					.addField("Dff", String.valueOf(hparams.getInt("D_MODEL")), false)
+					.addField("Number of Attention Heads", String.valueOf(hparams.getInt("NUM_HEADS")), false)
+					.addField("Layer Dropout", String.valueOf(hparams.getInt("DROPOUT")), false)
+					.addField("Maximum Sequence Length", String.valueOf(hparams.getInt("MAX_LENGTH")), false)
+					.addField("Vocabulary Size", hparams.getString("TOKENIZER"), false)
+					.addField("Using Mixed_Precision", String.valueOf(hparams.getBoolean("FLOAT16")), false)
+					.addField("Number of Epochs Trained For", String.valueOf(hparams.getInt("EPOCHS")), false)
+					.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
+					.setFooter("Paper for reference to what these mean: https://arxiv.org/pdf/1706.03762.pdf");
+			MessageEmbed reply = eb.build();
+			message.getChannel().sendMessage(reply).queue();
+		}
+	}
+			
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		
 		if (args.get(0).equals("enable")) {
-			if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-				if (chatChannelEnabled(message.getChannel().getId())) {
-					message.getChannel().sendMessage("**GeraldAI is already enabled here!**").queue();
-				} else {
-					enableChatChannel(message.getChannel().getId());
-					message.getChannel().sendMessage("**GeraldAI has been enabled! He will now automatically reply to your messages.**").queue();
-				}	
-			}
+			enableChannelCheckpoint(message);
 		} else if (args.get(0).equals("disable")) {
-			if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-				if (chatChannelEnabled(message.getChannel().getId())) {
-					disableChatChannel(message.getChannel().getId());
-					message.getChannel().sendMessage("**GeraldAI has been disabled! He will no longer automatically reply to your messages.**").queue();
-				} else {
-					message.getChannel().sendMessage("**GeraldAI is already disabled!**").queue();
-				}
-			}
+			disableChannelCheckpoint(message);
 		} else if (args.get(0).equals("hparams")) {
-			JSONObject hparams = chatBot.getHparams();
-			if (hparams.toMap().containsKey("Error")) {String reply = hparams.getString("Error"); message.getChannel().sendMessage(reply).queue();}
-			else {
-				String title = String.format("Hyper-Parameters for %s", chatBot.getModelName().getString("ModelName"));
-				EmbedBuilder eb = new EmbedBuilder()
-						.setColor(Color.ORANGE)
-						.setTitle(title, GlobalConstants.LINKTREE_URL)
-						.addField("Number of Model Layers", String.valueOf(hparams.getInt("NUM_LAYERS")), false)
-						.addField("Number of Units", String.valueOf(hparams.getInt("UNITS")), false)
-						.addField("Dff", String.valueOf(hparams.getInt("D_MODEL")), false)
-						.addField("Number of Attention Heads", String.valueOf(hparams.getInt("NUM_HEADS")), false)
-						.addField("Layer Dropout", String.valueOf(hparams.getInt("DROPOUT")), false)
-						.addField("Maximum Sequence Length", String.valueOf(hparams.getInt("MAX_LENGTH")), false)
-						.addField("Vocabulary Size", hparams.getString("TOKENIZER"), false)
-						.addField("Using Mixed_Precision", String.valueOf(hparams.getBoolean("FLOAT16")), false)
-						.addField("Number of Epochs Trained For", String.valueOf(hparams.getInt("EPOCHS")), false)
-						.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
-						.setFooter("Paper for reference to what these mean: https://arxiv.org/pdf/1706.03762.pdf");
-				MessageEmbed reply = eb.build();
-				message.getChannel().sendMessage(reply).queue();
-
-			}
+			sendHparams(message);
 		}
 		else {
 			message.getChannel().sendTyping().queue();
