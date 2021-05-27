@@ -12,10 +12,10 @@ services:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD:?}
       - POSTGRES_DB=${DATABASE_DATABASE:-BaristaDB}
   bot:
-    image: barista:latest
-    restart: unless-stopped
+    restart: "unless-stopped"
     build:
       context: .
+    tty: true
     depends_on:
       - db
     environment:
@@ -23,4 +23,4 @@ services:
       - TOKEN=${DISCORD_TOKEN:?}
       - HIBERNATE_USER=${DATABASE_USERNAME:-postgres}
       - HIBERNATE_PASSWORD=${DATABASE_PASSWORD:?}
-      - HIBERNATE_CONNECTIONURL=jdbc:postgresql://${DATABASE_HOST:-barista-database}:${DATABASE_PORT:-5432}/${DATABASE_DATABASE:-BaristaDB}
+      - HIBERNATE_CONNECTIONURL=jdbc:postgresql://db:${DATABASE_PORT:-5432}/${DATABASE_DATABASE:-BaristaDB}
