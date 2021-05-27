@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import net.dv8tion.jda.api.entities.Message;
 
+@Command
 public class AccentCommand extends AbstractCommand {
 
 	private Map<String, String[]> getAccents() {
@@ -22,7 +24,6 @@ public class AccentCommand extends AbstractCommand {
 		accents.put("i", "ìïīîí".split(""));
 		accents.put("n", "ñ".split(""));
 		accents.put("o", "õōøœòöôó".split(""));
-		accents.put("s", "ß".split(""));
 		accents.put("u", "ūüùûú".split(""));
 		
 		return accents;
