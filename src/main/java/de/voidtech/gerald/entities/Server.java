@@ -24,7 +24,7 @@ public class Server
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column
+	@Column(unique = true)
 	private String guildID;
 	
 	//TODO: Don't fetch EAGER for this.
