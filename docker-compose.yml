@@ -13,6 +13,7 @@ services:
       - POSTGRES_DB=${DATABASE_DATABASE:-BaristaDB}
   bot:
     restart: "unless-stopped"
+    image: justapassenger/barista-bot
     build:
       context: .
     tty: true
