@@ -2,13 +2,10 @@ package main.java.de.voidtech.gerald.commands.info;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +15,8 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
-import main.java.de.voidtech.gerald.service.GeraldConfig;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -29,11 +26,21 @@ public class InfoCommand extends AbstractCommand {
 
 	@Autowired
 	private List<AbstractCommand> commands;
+	
 	@Autowired
 	private List<AbstractRoutine> routines;
 	
 	@Autowired
-	private GeraldConfig geraldConfig;
+	private SessionFactory sessionFactory;
+	
+	private long getEmoteCount(JDA jda) {
+		try(Session session = sessionFactory.openSession())
+		{
+			long count = session.createQuery("SELECT COUNT(*) FROM NitroliteEmote")
+					.getFirstResult();
+			return count + jda.getEmoteCache().size();
+		}
+	}
 	
 	private static final String JENKINS_LATEST_BUILD_URL = "https://jenkins.voidtech.de/job/Barista%20Gerald/lastSuccessfulBuild/buildNumber";
 	
@@ -47,19 +54,13 @@ public class InfoCommand extends AbstractCommand {
 		return doc.select("body").text();
 	}
 	
-	private String getUptime() {
-		Date date = new Date(ManagementFactory.getRuntimeMXBean().getUptime());
-		DateFormat formatter = new SimpleDateFormat("HH:mm:ss.SSS");
-		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-		return formatter.format(date);
-	}
-	
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		long guildCount = message.getJDA().getGuildCache().size();
 		long memberCount = message.getJDA().getGuildCache().stream().mapToInt(Guild::getMemberCount).sum();
+		long emoteCount = getEmoteCount(message.getJDA());
 		
-		EmbedBuilder informationEmbed = new EmbedBuilder()
+		MessageEmbed informationEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle("Barista Gerald - A Java Discord Bot", GlobalConstants.LINKTREE_URL)
 				.addField("Gerald Owner", "```ElementalMP4#7458```", false)
@@ -69,19 +70,15 @@ public class InfoCommand extends AbstractCommand {
 						+ "0xffset#2267\r\n"
 						+ "Scot_Survivor#8625```", false)
 				.addField("Gerald Guild Count", "```" + String.valueOf(guildCount) + "```", true)
-				.addField("Gerald Member Count", "```" + String.valueOf(memberCount) + "```", false)
+				.addField("Gerald Member Count", "```" + String.valueOf(memberCount) + "```", true)
+				.addField("Nitrolite Emote Count", "```" + String.valueOf(emoteCount) + "```", false)
 				.addField("Latest Build Number", "```" + getLatestBuild() + "```", true)
-				.addField("Latest Release", "```"+ GlobalConstants.VERSION +"```", true)
+				.addField("Active Threads", "```" + Thread.activeCount() + "```", true)
+				.addField("Latest Release", "```"+ GlobalConstants.VERSION +"```", false)
 				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
-				.setFooter("Command Count: " + commands.size() + "\nRoutine Count: " + routines.size(), message.getJDA().getSelfUser().getAvatarUrl());
-		
-		if (geraldConfig.getMasters().contains(message.getAuthor().getId())) {			
-			informationEmbed.addField("Application Uptime", "```" + getUptime() + "```", false);
-			informationEmbed.addField("Active Threads", "```" + Thread.activeCount() + "```", true);
-		}
-		
-		MessageEmbed informationEmbedBuilt = informationEmbed.build();
-		message.getChannel().sendMessage(informationEmbedBuilt).queue();
+				.setFooter("Command Count: " + commands.size() + "\nRoutine Count: " + routines.size(), message.getJDA().getSelfUser().getAvatarUrl())
+				.build();
+		message.getChannel().sendMessage(informationEmbed).queue();
 	}
 
 	@Override
