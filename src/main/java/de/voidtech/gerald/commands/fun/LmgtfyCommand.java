@@ -25,7 +25,7 @@ public class LmgtfyCommand extends AbstractCommand {
 
     @Override
     public String getUsage() {
-        return "lmgtfy <search>";
+        return "lmgtfy [search]";
     }
 
     @Override
