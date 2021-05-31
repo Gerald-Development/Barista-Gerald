@@ -26,7 +26,7 @@ public class RoutineCommand extends AbstractCommand {
                 .setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
                 .setFooter("Routine Count: "+ routineCount);
         for (AbstractRoutine routine: routines) {
-            routineInformation.addField("r-" + routine.getName().toLowerCase().replaceAll(" ", "-"), String.format("```Description: %s\nCan be disabled: %s```", routine.getDescription(), routine.canBeDisabled()), false);
+            routineInformation.addField(routine.getFormattedName(), String.format("```Description: %s\nCan be disabled: %s```", routine.getDescription(), routine.canBeDisabled()), false);
         }
         message.getChannel().sendMessage(routineInformation.build()).queue();
     }
