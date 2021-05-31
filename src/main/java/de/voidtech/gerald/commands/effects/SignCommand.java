@@ -1,4 +1,4 @@
-package main.java.de.voidtech.gerald.commands.fun;
+package main.java.de.voidtech.gerald.commands.effects;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.entities.Message;
 @Command
 public class SignCommand extends AbstractCommand {
 	
-	private static final String BUNNY = "(\\__/) â”‚â”‚\n(â€¢ã……â€¢) â”‚â”‚\n/ ã€€ ã�¥";
+	private static final String BUNNY = "(\\__/) ││\n(•ㅅ•) ││\n/ 　 づ";
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
@@ -34,13 +34,13 @@ public class SignCommand extends AbstractCommand {
 	private String generateSign(List<String> signMessage, int maxLength)
 	{
 		String padding = StringUtils.repeat(" ", (int) Math.floor((14-maxLength)/2));	
-		String result = String.format("%sâ”Œ%sâ”�\n", padding, StringUtils.repeat("â”€", maxLength));
+		String result = String.format("%s┌%s┐\n", padding, StringUtils.repeat("─", maxLength));
 		
 		for(String message : signMessage) {
-			 result += String.format("%sâ”‚%s%sâ”‚\n", padding, message, StringUtils.repeat(" ", maxLength-message.length()));
+			 result += String.format("%s│%s%s│\n", padding, message, StringUtils.repeat(" ", maxLength-message.length()));
 		}
 		
-		result += String.format("%sâ””%sâ”˜\n", padding, StringUtils.repeat("â”€", maxLength));
+		result += String.format("%s└%s┘\n", padding, StringUtils.repeat("─", maxLength));
 		
 		return result;
 	}
@@ -84,12 +84,12 @@ public class SignCommand extends AbstractCommand {
 
 	@Override
 	public CommandCategory getCommandCategory() {
-		return CommandCategory.FUN;
+		return CommandCategory.EFFECTS;
 	}
 
 	@Override
 	public boolean isDMCapable() {
-		return false;
+		return true;
 	}
 
 	@Override
