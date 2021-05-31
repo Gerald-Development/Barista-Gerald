@@ -1,5 +1,6 @@
 package main.java.de.voidtech.gerald.commands.management;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,9 @@ public class DisableCommand extends AbstractCommand {
 				AbstractCommand foundCommand = null;
 
 				for (AbstractCommand command : commands) {
-					if (command.getName().equals(commandName)) {
+					if (command.getName().equals(commandName) || Arrays.asList(command.getCommandAliases()).contains(commandName)) {
 						foundCommand = command;
+						commandName = command.getName();
 						break;
 					}
 				}
@@ -42,7 +44,7 @@ public class DisableCommand extends AbstractCommand {
 				else {
 					Server server = serverService.getServer(message.getGuild().getId());
 					if (server.getCommandBlacklist().contains(commandName)) {
-						message.getChannel().sendMessage("This command is already disabled!");
+						message.getChannel().sendMessage("This command is already disabled!").queue();
 					} else {
 						server.addToCommandBlacklist(commandName);
 						serverService.saveServer(server);
