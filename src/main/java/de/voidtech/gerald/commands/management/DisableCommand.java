@@ -28,7 +28,7 @@ public class DisableCommand extends AbstractCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		if (args.size() > 1 && message.getMember().hasPermission(Permission.MANAGE_SERVER)) {
+		if (args.size() > 0 && message.getMember().hasPermission(Permission.MANAGE_SERVER)) {
 			String disableMode = args.get(0);
 			String targetName = args.get(1);
 			if (targetName.matches("enable|disable"))
