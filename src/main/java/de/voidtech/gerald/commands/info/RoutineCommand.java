@@ -6,7 +6,6 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
@@ -27,7 +26,7 @@ public class RoutineCommand extends AbstractCommand {
                 .setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
                 .setFooter("Routine Count: "+ routineCount);
         for (AbstractRoutine routine: routines) {
-            routineInformation.addField(routine.getName(), String.format("```Description: %s\nCan be disabled: %s```", routine.getDescription(), Boolean.toString(routine.canBeDisabled())), false);
+            routineInformation.addField(routine.getName(), String.format("```Description: %s\nCan be disabled: %s```", routine.getDescription(), routine.canBeDisabled()), false);
         }
         message.getChannel().sendMessage(routineInformation.build()).queue();
     }
