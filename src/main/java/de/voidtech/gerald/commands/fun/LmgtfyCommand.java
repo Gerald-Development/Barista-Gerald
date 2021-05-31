@@ -15,7 +15,7 @@ public class LmgtfyCommand extends AbstractCommand {
 
     @Override
     public void executeInternal(Message message, List<String> args) {
-        String replyURL = googleQuery + String.join("+", args);
+        String replyURL = "Follow this: " + googleQuery + String.join("+", args) + " :smile:";
         message.getChannel().sendMessage(replyURL).queue();
     }
 
