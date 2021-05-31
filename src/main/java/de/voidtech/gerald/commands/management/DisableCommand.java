@@ -44,7 +44,7 @@ public class DisableCommand extends AbstractCommand {
 				else {
 					Server server = serverService.getServer(message.getGuild().getId());
 					if (server.getCommandBlacklist().contains(commandName)) {
-						message.getChannel().sendMessage("This command is already disabled!");
+						message.getChannel().sendMessage("This command is already disabled!").queue();
 					} else {
 						server.addToCommandBlacklist(commandName);
 						serverService.saveServer(server);
