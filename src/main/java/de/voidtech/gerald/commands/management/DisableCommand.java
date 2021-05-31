@@ -98,7 +98,7 @@ public class DisableCommand extends AbstractCommand {
 
 	@Override
 	public String getUsage() {
-		return "disable routine ChatRoutine\n"+"disable command ping\n";
+		return "disable routine r-nitrolite\n"+"disable command ping\n";
 	}
 
 	@Override

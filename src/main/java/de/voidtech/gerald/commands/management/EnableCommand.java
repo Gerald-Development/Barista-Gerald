@@ -98,7 +98,7 @@ public class EnableCommand extends AbstractCommand {
 
 	@Override
 	public String getUsage() {
-		return "enable routine ChatRoutine\n"+"enable command ping\n";
+		return "enable routine r-nitrolite\n"+"enable command ping\n";
 	}
 
 	@Override
