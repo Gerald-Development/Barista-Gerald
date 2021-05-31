@@ -68,6 +68,7 @@ public class DisableCommand extends AbstractCommand {
 						}
 					}
 					if (foundRoutine == null) message.getChannel().sendMessage("No Routine was found with name `" + targetName + "`").queue();
+					else if (!foundRoutine.canBeDisabled()) message.getChannel().sendMessage("This routine:  `"+ targetName + "` can't be disabled/enabled. ").queue();
 					else {
 						Server server = serverService.getServer(message.getGuild().getId());
 						if (server.getRoutineBlacklist().contains(targetName)) {
