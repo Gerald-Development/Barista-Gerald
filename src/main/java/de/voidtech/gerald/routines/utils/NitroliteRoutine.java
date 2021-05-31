@@ -99,6 +99,11 @@ public class NitroliteRoutine extends AbstractRoutine {
 	}
 
 	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
+
+	@Override
 	public String getName() {
 		return "Nitrolite";
 	}

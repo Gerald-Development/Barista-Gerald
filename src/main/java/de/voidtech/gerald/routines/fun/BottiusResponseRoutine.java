@@ -53,6 +53,11 @@ public class BottiusResponseRoutine extends AbstractRoutine{
 	}
 
 	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
+
+	@Override
 	public String getName() {
 		return "Bottius-Routine";
 	}

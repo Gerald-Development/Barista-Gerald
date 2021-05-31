@@ -33,4 +33,6 @@ public abstract class AbstractRoutine {
     
     public abstract boolean allowsBotResponses();
 
+    public abstract boolean canBeDisabled();
+
 }

@@ -121,4 +121,9 @@ public class NitroliteCollectorRoutine extends AbstractRoutine {
 		return true;
 	}
 
+	@Override
+	public boolean canBeDisabled() {
+		return false;
+	}
+
 }
