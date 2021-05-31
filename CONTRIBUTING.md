@@ -90,8 +90,6 @@ ultimately accepted.
 ## Styling Guidelines
 ### Git Commit Messages
 
-* Use the present tense ("Add feature" not "Added feature")
-* Use the imperative mood ("Move cursor to..." not "Moves cursor to...")
-* Reference issues and pull requests liberally after the first line
+* Please follow [this guide](https://www.conventionalcommits.org/en/v1.0.0/) for coherent commit messages
   
 (more to come)
