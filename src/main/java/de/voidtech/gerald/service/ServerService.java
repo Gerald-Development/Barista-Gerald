@@ -17,7 +17,7 @@ public class ServerService {
 	private SessionFactory sf;
 	
 	@SuppressWarnings("unchecked")
-	public Server getServer(String guildID)
+	public synchronized Server getServer(String guildID)
 	{
 		List<Server> serverList = new ArrayList<>();
 		Server server;
@@ -43,7 +43,7 @@ public class ServerService {
 		return server;
 	}
 	
-	public void saveServer(Server server)
+	public synchronized void saveServer(Server server)
 	{
 		try(Session session = sf.openSession())
 		{
@@ -53,7 +53,7 @@ public class ServerService {
 		}
 	}
 	
-	public void deleteServer(Server server)
+	public synchronized void deleteServer(Server server)
 	{
 		try(Session session = sf.openSession())
 		{
