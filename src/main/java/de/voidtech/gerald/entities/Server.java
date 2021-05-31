@@ -90,6 +90,18 @@ public class Server
 		this.commandBlacklist.remove(channelID);
 	}
 
+	public Set<String> getRoutineBlacklist() {
+		if (this.routineBlacklist == null) return Collections.unmodifiableSet(new HashSet<String>());
+		else return Collections.unmodifiableSet(this.routineBlacklist);
+	}
+
+	public void addToRoutineBlacklist(String guildID) {
+		this.routineBlacklist.add(guildID);
+	}
+	public void removeFromRoutineBlacklist(String guildID) {
+		this.routineBlacklist.remove(guildID);
+	}
+
 	public String getPrefix() {
 		return prefix;
 	}
