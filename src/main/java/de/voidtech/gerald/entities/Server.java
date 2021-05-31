@@ -37,6 +37,10 @@ public class Server
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Cascade(CascadeType.REMOVE)
 	private Set<String> commandBlacklist;
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Cascade(CascadeType.REMOVE)
+	private Set<String> routineBlacklist;
 	
 	@Column
 	private String prefix;
