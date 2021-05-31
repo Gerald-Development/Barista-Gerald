@@ -28,7 +28,7 @@ public class EnableCommand extends AbstractCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		if (args.size() > 0 && message.getMember().hasPermission(Permission.MANAGE_SERVER)) {
+		if (args.size() > 2 && message.getMember().hasPermission(Permission.MANAGE_SERVER)) {
 			String enableMode = args.get(0);
 			String targetName = args.get(1);
 			if (targetName.matches("enable|disable"))
@@ -85,6 +85,9 @@ public class EnableCommand extends AbstractCommand {
 					message.getChannel().sendMessage(enableMode + ": is not a valid mode.").queue();
 				}
 			}
+		}
+		else {
+			message.getChannel().sendMessage(getUsage()).queue();
 		}
 	}
 
