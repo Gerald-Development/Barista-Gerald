@@ -10,12 +10,11 @@ import java.util.List;
 @Command
 public class LmgtfyCommand extends AbstractCommand {
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private final String googleQuery = "https://www.google.com/search?q=";
+    private static final String GOOGLE_QUERY = "https://www.google.com/search?q=";
 
     @Override
     public void executeInternal(Message message, List<String> args) {
-        String replyURL = "Follow this: " + googleQuery + String.join("+", args);
+        String replyURL = "Follow this: " + GOOGLE_QUERY + String.join("+", args);
         message.getChannel().sendMessage(replyURL).queue();
     }
 
