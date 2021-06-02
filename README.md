@@ -49,15 +49,15 @@ We will soon make a follow up wiki entry for the whole GeraldConfig topic since 
 
 You can run Gerald entirely in Docker using Docker Compose. It is configurable with the following environment variables (supports `.env` file):
 
-| <div style="width:150px">Name</div> |      Default       | Description                                    |
-| :---------------------------------: | :----------------: | :--------------------------------------------- |
-|          `DEFAULT_PREFIX`           |        `\`         | Prefix used if server has no custom set.       |
-|           `DISCORD_TOKEN`           |         -          | Token used to log into Discord.                |
-|         `DATABASE_USERNAME`         |     `postgres`     | Username used to authenticate with PostgreSQL. |
-|         `DATABASE_PASSWORD`         |         -          | Password used to authenticate with PostgreSQL. |
-|           `DATABASE_HOST`           | `barista-database` | Hostname of the PostgreSQL server.             |
-|           `DATABASE_PORT`           |       `5432`       | Port on which PostgreSQL is listening.         |
-|         `DATABASE_DATABASE`         |    `BaristaDB`     | Name of the database to use.                   |
+| <div style="width:150px">Name</div> |      Default       | Description                                                                          |
+| :---------------------------------: | :----------------: | :----------------------------------------------------------------------------------- |
+|          `DEFAULT_PREFIX`           |       `\\\\`       | Prefix used if server has no custom set. Escape characters need to be escaped twice. |
+|           `DISCORD_TOKEN`           |         -          | Token used to log into Discord.                                                      |
+|         `DATABASE_USERNAME`         |     `postgres`     | Username used to authenticate with PostgreSQL.                                       |
+|         `DATABASE_PASSWORD`         |         -          | Password used to authenticate with PostgreSQL.                                       |
+|           `DATABASE_HOST`           | `barista-database` | Hostname of the PostgreSQL server.                                                   |
+|           `DATABASE_PORT`           |       `5432`       | Port on which PostgreSQL is listening.                                               |
+|         `DATABASE_DATABASE`         |    `BaristaDB`     | Name of the database to use.                                                         |
 
 Note: Docker Compose automatically consumes the `.env` file in its working directory.
 

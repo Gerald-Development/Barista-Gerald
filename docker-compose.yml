@@ -19,7 +19,7 @@ services:
     depends_on:
       - db
     environment:
-      - DEFAULTPREFIX=${DEFAULT_PREFIX:-\}
+      - DEFAULTPREFIX=${DEFAULT_PREFIX:-\\\\}
       - TOKEN=${DISCORD_TOKEN:?}
       - HIBERNATE_USER=${DATABASE_USERNAME:-postgres}
       - HIBERNATE_PASSWORD=${DATABASE_PASSWORD:?}
