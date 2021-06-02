@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.Message;
 public class NitroliteCollectorRoutine extends AbstractRoutine {
 
 	private static final Logger LOGGER = Logger.getLogger(NitroliteCollectorRoutine.class.getName());
-	private static final Pattern EMOTE_PATTERN = Pattern.compile("^(:[^:\\s]+:|<:[^:\\s]+:[0-9]+>|<a:[^:\\s]+:[0-9]+>)+$");
+	private static final Pattern EMOTE_PATTERN = Pattern.compile("^(<:[^:\\s]+:[0-9]+>|<a:[^:\\s]+:[0-9]+>)+$");
 	
 	@Autowired
 	private SessionFactory sessionFactory;

@@ -61,7 +61,7 @@ You can run Gerald entirely in Docker using Docker Compose. It is configurable w
 
 Note: Docker Compose automatically consumes the `.env` file in its working directory.
 
-## Contributions
+## Contributions 
 Do you want to contribute to the bot yourself? Great news: you can! Just join our Discord and coordinate with us. 
 
-We are currently not maintaining our GitHub issues due to the fact that we are a small team and mostly write all the code ourselves, if you want to contribute in that way check in after a week or two when we have finally managed to maintain our repo page!
+We are currently not maintaining our GitHub issues due to the fact that we are a small team and mostly write all the code ourselves. If you want to contribute you can either look for some rare issues on the issue tab or join our discord server where we plan and delegate tasks.
