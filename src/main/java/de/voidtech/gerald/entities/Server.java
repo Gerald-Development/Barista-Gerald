@@ -24,7 +24,6 @@ public class Server
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	//THIS IS BEING TESTED. THIS IS NOT A FINAL SOLUTION
 	@Column(unique = true)
 	private String guildID;
 	
