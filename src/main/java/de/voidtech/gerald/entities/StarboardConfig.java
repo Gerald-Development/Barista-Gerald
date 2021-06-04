@@ -15,6 +15,7 @@ public class StarboardConfig {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
+	//TODO: REVIEW Should this be unique?
 	@Column
 	private String starboardChannel; 
 	

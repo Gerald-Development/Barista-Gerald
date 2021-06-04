@@ -25,6 +25,7 @@ public class StarboardCommand extends AbstractCommand {
 	@Autowired
 	private ServerService serverService;
 	
+	//TODO: REVIEW DB Queries in Command?! 
 	private boolean starboardConfigExists(long serverID) {
 		try(Session session = sessionFactory.openSession())
 		{
@@ -34,7 +35,7 @@ public class StarboardCommand extends AbstractCommand {
 			return config != null;
 		}
 	}
-	
+	//TODO: REVIEW DB Queries in Command?! 
 	private StarboardConfig getStarboardConfig(long serverID) {
 		try(Session session = sessionFactory.openSession())
 		{
@@ -44,7 +45,7 @@ public class StarboardCommand extends AbstractCommand {
 			return config;
 		}	
 	}
-	
+	//TODO: REVIEW DB Queries in Command?! 
 	private void deleteStarboardConfig(Message message, Server server) {
 		try(Session session = sessionFactory.openSession())
 		{
@@ -56,7 +57,7 @@ public class StarboardCommand extends AbstractCommand {
 			message.getChannel().sendMessage("**The Starboard has been disabled. You will need to run setup again if you wish to undo this! Your starred messages will not be lost.**").queue();
 		}
 	}
-	
+	//TODO: REVIEW DB Queries in Command?! 
 	private void updateConfig(StarboardConfig config) {
 		try(Session session = sessionFactory.openSession())
 		{
@@ -65,7 +66,7 @@ public class StarboardCommand extends AbstractCommand {
 			session.getTransaction().commit();
 		}		
 	}
-	
+	//TODO: REVIEW DB Queries in Command?! 
 	private void completeStarboardSetup(Message message, String channelID, String starCount, Server server) {
 		int requiredStarCount = Integer.parseInt(starCount);
 		
@@ -88,6 +89,7 @@ public class StarboardCommand extends AbstractCommand {
 	private void setupStarboard(Message message, List<String> args, Server server) {
 		if (starboardConfigExists(server.getId())) {
 			message.getChannel().sendMessage("**A Starboard has already been set up here! Did you mean to use one of these?**\n\n" + this.getUsage()).queue();
+			//TODO: REVIEW if you have an if directly after an else then just do else if(boolean){} and not else { if(boolean) {} }
 		} else {
 			if (args.size() < 3) {
 				message.getChannel().sendMessage("**You need more arguments than that!**\n\n" + this.getUsage()).queue();

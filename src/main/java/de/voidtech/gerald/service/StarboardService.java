@@ -24,6 +24,7 @@ public class StarboardService {
 	
 	private static final String STAR_UNICODE = "U+2b50";
 
+	//TODO: REVIEW this method has the exact same query except the part with return config != null; Reduce code duplication and just use return getConfig(id) != null
 	public boolean serverHasStarboard(long id) {
 		try(Session session = sessionFactory.openSession())
 		{
@@ -33,7 +34,8 @@ public class StarboardService {
 			return config != null;
 		}
 	}
-
+	
+	//TODO: REVIEW see above comment
 	public StarboardConfig getConfig(long id) {
 		try(Session session = sessionFactory.openSession())
 		{
@@ -43,7 +45,7 @@ public class StarboardService {
 			return config;
 		}
 	}
-	
+	//TODO: REVIEW same thing as above, you use the exact same query twice. Reduce Code duplication
 	public boolean reactionIsInStarboardChannel(String channelID, long serverID) {
 		try(Session session = sessionFactory.openSession())
 		{
@@ -80,6 +82,8 @@ public class StarboardService {
 		return starboardEmbed.build();
 	}
 	
+	//TODO: Review Should be synchronized 
+	// Don't want the dupe desaster to happen again.
 	private void persistMessage(String originMessageID, String selfMessageID, long serverID) {		
 		try(Session session = sessionFactory.openSession())
 		{
@@ -92,6 +96,14 @@ public class StarboardService {
 	
 	private void editStarboardMessage(StarboardMessage starboardMessage, Message message, int starCountFromMessage, StarboardConfig config) {
 		//I doubt this is the ugliest code in this service
+		//TODO: REVIew if you have a long method call like this just make a linebreak and but "//" before the line break like this:
+		/*
+		 * Message selfMessage = message.getJDA()//
+		 * .getTextChannelById(config.getChannelID())//
+		 * .retrieveMessageById(starboardMessage.getSelfMessageID())//
+		 * .complete();
+		 * */
+		// That way you can read it much easier. The "//" prevents the autoformatter from putting it in the same line again.
 		Message selfMessage = message.getJDA().getTextChannelById(config.getChannelID()).retrieveMessageById(starboardMessage.getSelfMessageID()).complete();
 		selfMessage.editMessage(":star: **" + starCountFromMessage + "**").queue();
 	}
@@ -105,12 +117,30 @@ public class StarboardService {
 				sentMessage.editMessage(":star: **" + starCountFromMessage + "**").queue();
 				persistMessage(message.getId(), sentMessage.getId(), serverID);
 			});
+			//TODO REVIEW: If you have only one statement after an else you can just remove the {} like this:
+			/*
+			 * if(something){
+			 * 	statement();
+			 * 	statement();
+			 * 	statement();
+			 * }
+			 * else editStarboardMessage(starboardMessage, message, starCountFromMessage, config);
+			 * */
+			//This also works with after the if. When you have one statement only just remove the {}
 		} else {
 			editStarboardMessage(starboardMessage, message, starCountFromMessage, config);
 		}
 	}
 
 	private int getStarsFromMessage(Message message) {
+		//TODO Review: this would also work and is a bit more slick. 
+		/*
+		 * message.getReactions()
+		 * 		.stream()
+		 * 		.filter(reaction -> reaction.getReactionEmote().toString().equals("RE:" + STAR_UNICODE))
+		 * 		.count();
+		 * */
+		// Make sure you understand that code. If you don't understand then just delete this comment and leave it as is.
 		int count = 0;
 		for (MessageReaction reaction: message.getReactions()) {
 			if (reaction.getReactionEmote().toString().equals("RE:" + STAR_UNICODE)) {
