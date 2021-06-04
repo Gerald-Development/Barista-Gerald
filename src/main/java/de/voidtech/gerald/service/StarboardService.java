@@ -44,6 +44,17 @@ public class StarboardService {
 		}
 	}
 	
+	public boolean reactionIsInStarboardChannel(String channelID, long serverID) {
+		try(Session session = sessionFactory.openSession())
+		{
+			StarboardConfig config = (StarboardConfig) session.createQuery("FROM StarboardConfig WHERE serverID = :serverID AND starboardChannel = :channelID")
+                    .setParameter("serverID", serverID)
+                    .setParameter("channelID", channelID)
+                    .uniqueResult();
+			return config != null;
+		}
+	}
+	
 	private StarboardMessage getStarboardMessage(long serverID, String messageID) {
 		try(Session session = sessionFactory.openSession())
 		{
