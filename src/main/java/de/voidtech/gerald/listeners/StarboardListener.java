@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 
-//TODO: add listener annotation (if you feel comfortable doing it Seb you can do that else I will do somewhen)
 @Component
 public class StarboardListener implements EventListener {
 
