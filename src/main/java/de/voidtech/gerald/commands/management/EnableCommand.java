@@ -1,5 +1,6 @@
 package main.java.de.voidtech.gerald.commands.management;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,9 @@ public class EnableCommand extends AbstractCommand {
 				AbstractCommand foundCommand = null;
 
 				for (AbstractCommand command : commands) {
-					if (command.getName().equals(commandName)) {
+					if (command.getName().equals(commandName) || Arrays.asList(command.getCommandAliases()).contains(commandName)) {
 						foundCommand = command;
+						commandName = command.getName();
 						break;
 					}
 				}
