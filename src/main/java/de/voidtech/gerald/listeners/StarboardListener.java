@@ -29,7 +29,7 @@ public class StarboardListener implements EventListener {
 				
 				long serverID = serverService.getServer(reaction.getGuild().getId()).getId();
 				
-				if (starboardService.serverHasStarboard(serverID)) {
+				if (starboardService.getStarboardConfig(serverID) != null) {
 					if (!starboardService.reactionIsInStarboardChannel(reaction.getChannel().getId(), serverID)) {
 						starboardService.checkStars(serverID, reaction);	
 					}

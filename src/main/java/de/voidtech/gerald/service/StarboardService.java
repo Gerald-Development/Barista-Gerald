@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import main.java.de.voidtech.gerald.GlobalConstants;
+import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.entities.StarboardConfig;
 import main.java.de.voidtech.gerald.entities.StarboardMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -23,29 +24,58 @@ public class StarboardService {
 	private SessionFactory sessionFactory;
 	
 	private static final String STAR_UNICODE = "U+2b50";
-
-	//TODO: REVIEW this method has the exact same query except the part with return config != null; Reduce code duplication and just use return getConfig(id) != null
-	public boolean serverHasStarboard(long id) {
+ 
+	public StarboardConfig getStarboardConfig(long serverID) {
 		try(Session session = sessionFactory.openSession())
 		{
-			StarboardConfig config = (StarboardConfig) session.createQuery("FROM StarboardConfig WHERE serverID = :serverID")
-                    .setParameter("serverID", id)
+			StarboardConfig config = (StarboardConfig) session.createQuery("FROM StarboardConfig WHERE ServerID = :serverID")
+                    .setParameter("serverID", serverID)
                     .uniqueResult();
-			return config != null;
+			return config;
+		}	
+	}
+ 
+	public void deleteStarboardConfig(Message message, Server server) {
+		try(Session session = sessionFactory.openSession())
+		{
+			session.getTransaction().begin();
+			session.createQuery("DELETE FROM StarboardConfig WHERE ServerID = :serverID")
+				.setParameter("serverID", server.getId())
+				.executeUpdate();
+			session.getTransaction().commit();
+			message.getChannel().sendMessage("**The Starboard has been disabled. You will need to run setup again if you wish to undo this! Your starred messages will not be lost.**").queue();
+		}
+	}
+
+	public void updateConfig(StarboardConfig config) {
+		try(Session session = sessionFactory.openSession())
+		{
+			session.getTransaction().begin();			
+			session.saveOrUpdate(config);
+			session.getTransaction().commit();
+		}		
+	}
+ 
+	public void completeStarboardSetup(Message message, String channelID, String starCount, Server server) {
+		int requiredStarCount = Integer.parseInt(starCount);
+		
+		try(Session session = sessionFactory.openSession())
+		{
+			session.getTransaction().begin();
+			
+			StarboardConfig config = new StarboardConfig(server.getId(), channelID, requiredStarCount);
+			
+			session.saveOrUpdate(config);
+			session.getTransaction().commit();
+			
+			message.getChannel().sendMessage("**Starboard setup complete!**\n"
+					+ "Channel: <#" + channelID + ">\n"
+					+ "Stars required: " + starCount + "\n"
+					+ "Users must use the :star: emote!").queue();
 		}
 	}
 	
-	//TODO: REVIEW see above comment
-	public StarboardConfig getConfig(long id) {
-		try(Session session = sessionFactory.openSession())
-		{
-			StarboardConfig config = (StarboardConfig) session.createQuery("FROM StarboardConfig WHERE serverID = :serverID")
-                    .setParameter("serverID", id)
-                    .uniqueResult();
-			return config;
-		}
-	}
-	//TODO: REVIEW same thing as above, you use the exact same query twice. Reduce Code duplication
+	//This method may look like something else, but it is used to check if the channel a star is added to is a starboard channel or not
 	public boolean reactionIsInStarboardChannel(String channelID, long serverID) {
 		try(Session session = sessionFactory.openSession())
 		{
@@ -82,9 +112,7 @@ public class StarboardService {
 		return starboardEmbed.build();
 	}
 	
-	//TODO: Review Should be synchronized 
-	// Don't want the dupe desaster to happen again.
-	private void persistMessage(String originMessageID, String selfMessageID, long serverID) {		
+	private synchronized void persistMessage(String originMessageID, String selfMessageID, long serverID) {		
 		try(Session session = sessionFactory.openSession())
 		{
 			session.getTransaction().begin();
@@ -94,21 +122,15 @@ public class StarboardService {
 		}
 	}
 	
-	private void editStarboardMessage(StarboardMessage starboardMessage, Message message, int starCountFromMessage, StarboardConfig config) {
-		//I doubt this is the ugliest code in this service
-		//TODO: REVIew if you have a long method call like this just make a linebreak and but "//" before the line break like this:
-		/*
-		 * Message selfMessage = message.getJDA()//
-		 * .getTextChannelById(config.getChannelID())//
-		 * .retrieveMessageById(starboardMessage.getSelfMessageID())//
-		 * .complete();
-		 * */
-		// That way you can read it much easier. The "//" prevents the autoformatter from putting it in the same line again.
-		Message selfMessage = message.getJDA().getTextChannelById(config.getChannelID()).retrieveMessageById(starboardMessage.getSelfMessageID()).complete();
+	private void editStarboardMessage(StarboardMessage starboardMessage, Message message, long starCountFromMessage, StarboardConfig config) {
+		Message selfMessage = message.getJDA()//
+		 .getTextChannelById(config.getChannelID())//
+		 .retrieveMessageById(starboardMessage.getSelfMessageID())//
+		 .complete();
 		selfMessage.editMessage(":star: **" + starCountFromMessage + "**").queue();
 	}
 
-	private void sendOrUpdateMessage(long serverID, GuildMessageReactionAddEvent reaction, StarboardConfig config, Message message, int starCountFromMessage) {
+	private void sendOrUpdateMessage(long serverID, GuildMessageReactionAddEvent reaction, StarboardConfig config, Message message, long starCountFromMessage) {
 		StarboardMessage starboardMessage = getStarboardMessage(serverID, reaction.getMessageId());
 		
 		if (starboardMessage == null) {
@@ -117,31 +139,14 @@ public class StarboardService {
 				sentMessage.editMessage(":star: **" + starCountFromMessage + "**").queue();
 				persistMessage(message.getId(), sentMessage.getId(), serverID);
 			});
-			//TODO REVIEW: If you have only one statement after an else you can just remove the {} like this:
-			/*
-			 * if(something){
-			 * 	statement();
-			 * 	statement();
-			 * 	statement();
-			 * }
-			 * else editStarboardMessage(starboardMessage, message, starCountFromMessage, config);
-			 * */
-			//This also works with after the if. When you have one statement only just remove the {}
-		} else {
-			editStarboardMessage(starboardMessage, message, starCountFromMessage, config);
-		}
+		} else editStarboardMessage(starboardMessage, message, starCountFromMessage, config);
 	}
 
-	private int getStarsFromMessage(Message message) {
-		//TODO Review: this would also work and is a bit more slick. 
-		/*
-		 * message.getReactions()
-		 * 		.stream()
-		 * 		.filter(reaction -> reaction.getReactionEmote().toString().equals("RE:" + STAR_UNICODE))
-		 * 		.count();
-		 * */
-		// Make sure you understand that code. If you don't understand then just delete this comment and leave it as is.
-		int count = 0;
+	private long getStarsFromMessage(Message message) {
+		long count = message.getReactions()
+				 .stream()
+				 .filter(reaction -> reaction.getReactionEmote().toString().equals("RE:" + STAR_UNICODE))
+				 .count();;
 		for (MessageReaction reaction: message.getReactions()) {
 			if (reaction.getReactionEmote().toString().equals("RE:" + STAR_UNICODE)) {
 				count = reaction.getCount();
@@ -151,10 +156,10 @@ public class StarboardService {
 	}
 	
 	public void checkStars(long serverID, GuildMessageReactionAddEvent reaction) {
-		StarboardConfig config = getConfig(serverID);
+		StarboardConfig config = getStarboardConfig(serverID);
 		Message message = reaction.getChannel().retrieveMessageById(reaction.getMessageId()).complete();
 		
-		int starCountFromMessage = getStarsFromMessage(message);
+		long starCountFromMessage = getStarsFromMessage(message);
 		
 		if (starCountFromMessage >= config.getRequiredStarCount()) {
 			sendOrUpdateMessage(serverID, reaction, config, message, starCountFromMessage);
