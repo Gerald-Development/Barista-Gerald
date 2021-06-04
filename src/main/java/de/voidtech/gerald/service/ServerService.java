@@ -23,7 +23,7 @@ public class ServerService {
 					.setParameter("guildID", guildID)
 					.uniqueResult();
 			
-			if(server != null)
+			if(server == null)
 			{
 				session.getTransaction().begin();
 				server = new Server(guildID);
