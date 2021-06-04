@@ -29,7 +29,7 @@ public class StarboardMessage {
 	StarboardMessage() {
 	}
 	
-	public StarboardMessage(String originMessageID, String selfMessageID, long serverID, long starCount)
+	public StarboardMessage(String originMessageID, String selfMessageID, long serverID)
 	{
 		this.originMessageID = originMessageID;
 		this.selfMessageID = selfMessageID;
