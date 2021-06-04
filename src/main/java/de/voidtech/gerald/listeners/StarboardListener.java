@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.hooks.EventListener;
 @Component
 public class StarboardListener implements EventListener {
 
-	private static final String STAR_UNICODE = " U+2B50";
+	private static final String STAR_UNICODE = "U+2b50";
 	
 	@Autowired
 	private ServerService serverService;

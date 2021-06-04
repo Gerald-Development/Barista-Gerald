@@ -59,6 +59,7 @@ public class StarboardService {
 		EmbedBuilder starboardEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setAuthor(message.getAuthor().getAsTag(), GlobalConstants.LINKTREE_URL, message.getAuthor().getAvatarUrl())
+				.setDescription(message.getContentRaw())
 				.setTitle("Jump to message!", message.getJumpUrl());
 		
 		if (message.getAttachments().size() > 0) {
@@ -105,13 +106,16 @@ public class StarboardService {
 				count = reaction.getCount();
 			}
 		}
-		return count;
+		//return count;
+		return 1;
 	}
 	
 	public void checkStars(long serverID, GuildMessageReactionAddEvent reaction) {
 		StarboardConfig config = getConfig(serverID);
 		Message message = reaction.getChannel().retrieveMessageById(reaction.getMessageId()).complete();
 		int starCountFromMessage = getStarsFromMessage(message);
+		
+		System.out.println("Stars collected: " + starCountFromMessage);
 		
 		if (starCountFromMessage >= config.getRequiredStarCount()) {
 			sendOrUpdateMessage(serverID, reaction, config, message, starCountFromMessage);
