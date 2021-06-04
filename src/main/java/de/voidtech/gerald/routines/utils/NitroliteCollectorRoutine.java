@@ -15,6 +15,7 @@ import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.entities.NitroliteEmote;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 
@@ -64,7 +65,7 @@ public class NitroliteCollectorRoutine extends AbstractRoutine {
 	
 	private String getEmoteID(String word) {
 		List<String> components = Arrays.asList(word.split(":"));
-		return components.get(2).substring(0, components.get(2).length() - 1);
+		return ParsingUtils.filterSnowflake(components.get(2).substring(0, components.get(2).length() - 1));
 	}
 	
 	private void storeNewEmote(String emoteName, String emoteID, boolean emoteIsAnimated) {

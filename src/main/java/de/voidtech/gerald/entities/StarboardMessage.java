@@ -24,9 +24,6 @@ public class StarboardMessage {
 	@Column
 	private long serverID;
 	
-	@Column
-	private long starCount;
-	
 	@Deprecated
 	//ONLY FOR HIBERNATE, DO NOT USE
 	StarboardMessage() {
@@ -37,7 +34,6 @@ public class StarboardMessage {
 		this.originMessageID = originMessageID;
 		this.selfMessageID = selfMessageID;
 		this.serverID = serverID;
-		this.starCount = starCount;
 	}
 	
 	public String getOriginMessageID() {
@@ -62,14 +58,5 @@ public class StarboardMessage {
 	
 	public void setServerID(long ID) {
 		this.serverID = ID;
-	}
-	
-	public long getStarCount() {
-		return starCount;
-	}
-	
-	public void setStarCount(long count) {
-		this.starCount = count;
-	}
-	
+	}	
 }
