@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 public class RedditCommand extends AbstractCommand {
 	
 	private static final String BASE_URL = "https://www.reddit.com/r/";
-	private static final String SUFFIX = "/top/.json?count=20";
+	private static final String SUFFIX = "/top/.json?t=all&limit=10";
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64; Trident/7.0; rv:11.0) like Gecko";
 	private static final Logger LOGGER = Logger.getLogger(RedditCommand.class.getName());
 	
