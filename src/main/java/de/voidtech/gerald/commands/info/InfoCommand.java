@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +37,11 @@ public class InfoCommand extends AbstractCommand {
 	private long getEmoteCount(JDA jda) {
 		try(Session session = sessionFactory.openSession())
 		{
-			long count = session.createQuery("SELECT COUNT(*) FROM NitroliteEmote")
-					.getFirstResult();
-			return count + jda.getEmoteCache().size();
+			@SuppressWarnings("rawtypes")
+			Query query = session.createQuery("select count(*) from NitroliteEmote");
+			long count = ((long)query.uniqueResult()) + jda.getEmoteCache().size();
+			session.close();
+			return count;
 		}
 	}
 	
