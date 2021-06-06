@@ -29,6 +29,7 @@ public class RedditCommand extends AbstractCommand {
 	private static final String SUFFIX = "/top/.json?t=all&limit=10";
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64; Trident/7.0; rv:11.0) like Gecko";
 	private static final Logger LOGGER = Logger.getLogger(RedditCommand.class.getName());
+	private static final String NO_IMAGE_URL = "https://cdn.discordapp.com/attachments/727233195380310016/850452145810964500/no_image_here_buster.gif";
 	
 	private JSONObject getRedditData(String fullUrl) {
 		try {
@@ -38,10 +39,11 @@ public class RedditCommand extends AbstractCommand {
 
 			if (con.getResponseCode() == 200) {
 				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-					return new JSONObject(in.lines().collect(Collectors.joining()));
+					JSONObject response = new JSONObject(in.lines().collect(Collectors.joining()));
+					con.disconnect();
+					return response; 
 				}
 			}
-			con.disconnect();
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
 		}
@@ -57,7 +59,13 @@ public class RedditCommand extends AbstractCommand {
 	}
 
 	private String getImage(JSONObject post) {
-		return post.getJSONObject("data").getString("url_overridden_by_dest");
+		String url = "";
+		if (post.getJSONObject("data").has("url_overriden_by_dest")) {
+			url = post.getJSONObject("data").getString("url_overridden_by_dest");
+		} else {
+			url = NO_IMAGE_URL;
+		}
+		return url; 
 	}
 	
 	private void sendRedditMessage(Message message, JSONObject redditData) {
