@@ -21,6 +21,7 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 @Command
 public class RedditCommand extends AbstractCommand {
@@ -68,6 +69,14 @@ public class RedditCommand extends AbstractCommand {
 		return url; 
 	}
 	
+	private boolean isNsfw(JSONObject post) {
+		return post.getJSONObject("data").getBoolean("over_18");
+	}
+	
+	private boolean channelIsNsfw(Message message) {
+		return ((TextChannel)message.getChannel()).isNSFW();
+	}
+	
 	private void sendRedditMessage(Message message, JSONObject redditData) {
 		
 		JSONArray posts = redditData.getJSONObject("data").getJSONArray("children");
@@ -81,13 +90,17 @@ public class RedditCommand extends AbstractCommand {
 			String title = getTitle(chosenPost);
 			int upvotes = getUpvotes(chosenPost);
 			
-			MessageEmbed redditEmbed = new EmbedBuilder()
-					.setColor(Color.ORANGE)
-					.setTitle(title, imageURL)
-					.setImage(imageURL)
-					.setFooter("Upvotes: " + upvotes)
-					.build();
-			message.getChannel().sendMessage(redditEmbed).queue();	
+			if (isNsfw(chosenPost) && !channelIsNsfw(message)) {
+				message.getChannel().sendMessage("**This post cannot be displayed as it contains 18+ content**").queue();
+			} else {
+				MessageEmbed redditEmbed = new EmbedBuilder()
+						.setColor(Color.ORANGE)
+						.setTitle(title, imageURL)
+						.setImage(imageURL)
+						.setFooter("Upvotes: " + upvotes)
+						.build();
+				message.getChannel().sendMessage(redditEmbed).queue();	
+			}	
 		}
 	}
 
@@ -127,7 +140,7 @@ public class RedditCommand extends AbstractCommand {
 
 	@Override
 	public boolean isDMCapable() {
-		return true;
+		return false;
 	}
 
 	@Override
