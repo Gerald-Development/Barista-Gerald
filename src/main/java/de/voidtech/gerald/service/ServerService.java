@@ -1,8 +1,5 @@
 package main.java.de.voidtech.gerald.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,27 +13,22 @@ public class ServerService {
 	@Autowired
 	private SessionFactory sf;
 	
-	@SuppressWarnings("unchecked")
 	public synchronized Server getServer(String guildID)
 	{
-		List<Server> serverList = new ArrayList<>();
 		Server server;
+		
 		try(Session session = sf.openSession())
 		{
-			serverList = (List<Server>) session.createQuery("FROM Server WHERE guildID = :guildID")
+			server = (Server) session.createQuery("FROM Server WHERE guildID = :guildID")
 					.setParameter("guildID", guildID)
-					.list();
+					.uniqueResult();
 			
-			if(serverList.isEmpty())
+			if(server == null)
 			{
 				session.getTransaction().begin();
 				server = new Server(guildID);
 				session.save(server);
 				session.getTransaction().commit();
-			}
-			else
-			{
-				server = serverList.get(0);
 			}
 		}
 		
