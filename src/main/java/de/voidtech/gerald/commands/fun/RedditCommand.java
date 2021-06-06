@@ -60,7 +60,7 @@ public class RedditCommand extends AbstractCommand {
 
 	private String getImage(JSONObject post) {
 		String url = "";
-		if (post.getJSONObject("data").has("url_overriden_by_dest")) {
+		if (post.getJSONObject("data").has("url_overridden_by_dest")) {
 			url = post.getJSONObject("data").getString("url_overridden_by_dest");
 		} else {
 			url = NO_IMAGE_URL;
