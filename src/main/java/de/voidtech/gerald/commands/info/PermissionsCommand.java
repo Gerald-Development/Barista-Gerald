@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
-public class PermsCommand extends AbstractCommand{
+public class PermissionsCommand extends AbstractCommand{
 	
 	@Override
 	public void executeInternal(Message message, List<String> args) {
@@ -34,20 +34,19 @@ public class PermsCommand extends AbstractCommand{
 			member = ParsingUtils.getMember(message, args).getUser().getAsTag();
 		}
 		
-		sendPermsEmbed(message, perms, member);
+		message.getChannel().sendMessage(buildPermsEmbed(perms, member)).queue();
 	}
 
-	private void sendPermsEmbed(Message message, EnumSet<Permission> perms, String member) {
+	private MessageEmbed buildPermsEmbed(EnumSet<Permission> perms, String member) {
 		String permsList = "";
 		for (Permission perm : perms) {
 			permsList += perm.getName() + "\n";
 		}
-		MessageEmbed permissionsListEmbed = new EmbedBuilder()
+		return new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle("Permissions for " + member)
 				.setDescription("```\n" + permsList + "\n```")
 				.build();
-		message.getChannel().sendMessage(permissionsListEmbed).queue();
 		
 	}
 
@@ -58,12 +57,12 @@ public class PermsCommand extends AbstractCommand{
 
 	@Override
 	public String getUsage() {
-		return "perms [@member#1234/ID/everyone]";
+		return "permissions [@member#1234/ID/everyone]";
 	}
 
 	@Override
 	public String getName() {
-		return "perms";
+		return "permissions";
 	}
 
 	@Override
@@ -83,7 +82,7 @@ public class PermsCommand extends AbstractCommand{
 
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"permissions", "permsin"};
+		String[] aliases = {"perms", "permsin"};
 		return aliases;
 	}
 
