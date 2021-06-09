@@ -179,8 +179,6 @@ public class WelcomerCommand extends AbstractCommand{
 				() -> message.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());	
 	}
 	
-	//TODO REVIEW: This b is fatter than yo mama. I have no idea rn because it's 1AM but this should be refactored.
-	//Update: the chongus algorithm has been de-chongo'd (RIP 19/03/2021 - 24/05/2021)
 	private void setupWelcomer(Server server, Message message) {
 		if (customMessageEnabled(server.getId())) {
 			message.getChannel().sendMessage("**The Welcomer is already set up!**").queue();
