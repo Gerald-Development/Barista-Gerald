@@ -68,7 +68,7 @@ public class Gerald {
 				.enableIntents(getNonPrivilegedIntents())
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.setBulkDeleteSplittingEnabled(false)
-				.setStatus(OnlineStatus.IDLE)
+				.setStatus(OnlineStatus.ONLINE)
 				.setCompression(Compression.NONE)
 				.addEventListeners(eventWaiter,	msgListener, readyListener,	guildGoneListener, channelDeleteListener, memberListener, starboardListener)
 				.setActivity(EntityBuilder.createActivity(globalConf.getStatus(),
