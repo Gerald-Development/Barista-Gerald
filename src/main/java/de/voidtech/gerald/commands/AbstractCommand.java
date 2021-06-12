@@ -21,12 +21,18 @@ public abstract class AbstractCommand{
 	ThreadManager threadManager;
 	
 	private void runCommandInThread(Message message, List<String> args) {
-		Runnable commandThreadRunnable = new Runnable() {
-			public void run() {
-				executeInternal(message, args);
-			}
-		};
-		threadManager.getThreadByName("T-Command").execute(commandThreadRunnable);
+        if (message.getChannel().getType() == ChannelType.PRIVATE && !this.isDMCapable()) {
+        	message.getChannel().sendMessage("**You can only use this command in guilds!**").queue();
+        } else if (this.requiresArguments() && args.size() < 1) {
+        	message.getChannel().sendMessage("**This command needs arguments to work! See the help command for more details!**\n" + this.getUsage()).queue();
+	    } else {
+			Runnable commandThreadRunnable = new Runnable() {
+				public void run() {
+					executeInternal(message, args);
+				}
+			};
+			threadManager.getThreadByName("T-Command").execute(commandThreadRunnable);   
+	    }
 	}
 
 	public void run(Message message, List<String> args) {
@@ -43,7 +49,7 @@ public abstract class AbstractCommand{
 			if((channelWhitelisted && !commandOnBlacklist) || message.getMember().hasPermission(Permission.ADMINISTRATOR))
 			{
 				runCommandInThread(message, args);
-			}	
+		    }	
 		}
 	}
 	

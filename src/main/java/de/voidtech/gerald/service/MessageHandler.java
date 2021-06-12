@@ -44,7 +44,6 @@ public class MessageHandler {
 		LOGGER.log(Level.INFO, "Command aliases have been loaded");
     }
 
-    // ENTRY POINT FROM MESSAGE LISTENER
     public void handleMessage(Message message) {
     	
     	if (message.isWebhookMessage()) return;
@@ -97,11 +96,6 @@ public class MessageHandler {
         
         if (message.getChannel().getType() == ChannelType.PRIVATE && !commandOpt.isDMCapable()) {
         	message.getChannel().sendMessage("**You can only use this command in guilds!**").queue();
-        	return;
-        }
-        
-        if (commandOpt.requiresArguments() && messageArray.size() <= 1) {
-        	message.getChannel().sendMessage("**This command needs arguments to work! See the help command for more details!**\n" + commandOpt.getUsage()).queue();
         	return;
         }
 
