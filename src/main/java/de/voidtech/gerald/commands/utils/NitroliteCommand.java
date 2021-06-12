@@ -129,7 +129,7 @@ public class NitroliteCommand extends AbstractCommand {
         }
     	
     	if (result.size() > 15) {
-    		searchResult += "\n**Send 'more' to see more emotes!**";
+    		searchResult += "\n**Send 'more' to see more results!**";
     		canSendMoreEmotes = true;
     	}
     	
@@ -214,9 +214,8 @@ public class NitroliteCommand extends AbstractCommand {
         		NitroliteEmote emote = emoteService.getEmoteById(alias.getEmoteID(), message.getJDA());
         		aliasMessage += nitroliteService.constructEmoteString(emote) + " - **Alias:** `" + alias.getAliasName() + "` **ID:** `" + alias.getEmoteID() + "`\n";
         	}	
+        	sendFallbackMessage(message, aliasMessage);
     	}
-    	
-        sendFallbackMessage(message, aliasMessage);
     }
     
 	@Override
