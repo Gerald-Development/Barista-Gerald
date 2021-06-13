@@ -35,7 +35,7 @@ public class StarboardCommand extends AbstractCommand {
 				message.getChannel().sendMessage("**The channel you provided is not valid!**").queue();
 			else if (!ParsingUtils.isInteger(args.get(2)))
 				message.getChannel().sendMessage("**You need to specify a number for the star count!**").queue();
-			else if (Integer.parseInt(args.get(2)) > 1) 
+			else if (Integer.parseInt(args.get(2)) < 1) 
 				message.getChannel().sendMessage("**Your star count must be at least 1! We recommend 5**").queue();
 			else
 				starboardService.completeStarboardSetup(message, channelID, args.get(2), server);
