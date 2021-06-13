@@ -35,6 +35,8 @@ public class StarboardCommand extends AbstractCommand {
 				message.getChannel().sendMessage("**The channel you provided is not valid!**").queue();
 			else if (!ParsingUtils.isInteger(args.get(2)))
 				message.getChannel().sendMessage("**You need to specify a number for the star count!**").queue();
+			else if (Integer.parseInt(args.get(2)) > 1) 
+				message.getChannel().sendMessage("**Your star count must be at least 1! We recommend 5**").queue();
 			else
 				starboardService.completeStarboardSetup(message, channelID, args.get(2), server);
 		}
@@ -98,7 +100,7 @@ public class StarboardCommand extends AbstractCommand {
 	public String getDescription() {
 		return "Do you like quoting things? Funny, interesting and more? Perfect!\n"
 				+ "Our starboard system allows you to react to messages with the :star: emote and have them automatically sent to"
-				+ " a starboard channel in your server! Your server admins can choose the channel and number of stars needed to get it pinned!";
+				+ " a starboard channel in your server! Your server admins can choose the channel and number of stars needed to get it pinned! We recommend you use 5 stars";
 	}
 
 	@Override
