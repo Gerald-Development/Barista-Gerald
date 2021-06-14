@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.service;
 
 import java.awt.Color;
+import java.time.Instant;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -11,6 +12,7 @@ import main.java.de.voidtech.gerald.entities.JoinLeaveMessage;
 import main.java.de.voidtech.gerald.entities.Server;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
@@ -51,12 +53,12 @@ public class JoinLeaveMessageService {
 			JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(server.getId());
 			GuildChannel channel = event.getJDA().getGuildChannelById(joinLeaveMessage.getChannelID());
 			String message = joinLeaveMessage.getJoinMessage();
-			String member = event.getMember().getAsMention();
+			Member member = event.getMember();
 			
 			MessageEmbed joinMessageEmbed = new EmbedBuilder()
 					.setColor(Color.green)
-					.setDescription(member + " **" + message + "**")
-					.setTimestamp(null)
+					.setDescription(member.getAsMention() + " **(" + member.getUser().getAsTag() + ")" + message + "**")
+					.setTimestamp(Instant.now())
 					.build();
 			
 			((MessageChannel) channel).sendMessage(joinMessageEmbed).queue();
@@ -69,12 +71,12 @@ public class JoinLeaveMessageService {
 			JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(server.getId());
 			GuildChannel channel = event.getJDA().getGuildChannelById(joinLeaveMessage.getChannelID());
 			String message = joinLeaveMessage.getLeaveMessage();
-			String member = event.getUser().getAsMention();
+			Member member = event.getMember();
 			
 			MessageEmbed leaveMessageEmbed = new EmbedBuilder()
 					.setColor(Color.red)
-					.setDescription(member + " **" + message + "**")
-					.setTimestamp(null)
+					.setDescription(member.getAsMention() + " **(" + member.getUser().getAsTag() + ")" + message + "**")
+					.setTimestamp(Instant.now())
 					.build();
 			
 			((MessageChannel) channel).sendMessage(leaveMessageEmbed).queue();
