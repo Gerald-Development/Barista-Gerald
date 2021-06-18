@@ -104,11 +104,9 @@ public class GoogleCommand extends AbstractCommand {
 		}
 	}
 
-	private boolean getNsfwMode(MessageChannel messageChannel) {
-		if (messageChannel.getType().equals(ChannelType.PRIVATE))
-			return true;
-		else
-			return ((TextChannel)messageChannel).isNSFW();
+	private boolean getNsfwMode(MessageChannel messageChannel) 
+	{
+		return messageChannel.getType().equals(ChannelType.PRIVATE) ? true : ((TextChannel)messageChannel).isNSFW();
 	}
 	
 	private void sendDeleteButtonWithListener(Message sentMessage, Message originMessage) {
