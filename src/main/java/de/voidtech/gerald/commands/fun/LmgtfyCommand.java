@@ -50,7 +50,7 @@ public class LmgtfyCommand extends AbstractCommand {
 
     @Override
     public String[] getCommandAliases() {
-        String[] aliases = {"google"};
+        String[] aliases = {"letmegetthat", "letmegoogle"};
         return aliases;
     }
 }
