@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,6 +41,8 @@ public class GoogleCommand extends AbstractCommand {
 	private static final String BROWSER_VIDEOS_URL = "videos?q=";
 	private static final String SAFE_SEARCH_SUFFIX = "&sfs=true";
 	
+	private static final Logger LOGGER = Logger.getLogger(GoogleCommand.class.getName());
+	
 	private BrowserContext browser = null;
 
 	@Autowired
@@ -49,17 +53,14 @@ public class GoogleCommand extends AbstractCommand {
 				.setViewportSize(1000, 1000);
 	}
 	
-	private Page createNewPage() {
-		if (this.browser == null) {
-			Browser browserInstance = Playwright.create().firefox().launch();
-			this.browser = browserInstance.newContext(getContextOptions());
-		}
-		
-		BrowserContext context = this.browser;
-		return context.newPage();
+	GoogleCommand() {
+		LOGGER.log(Level.INFO, "Firefox is being initialised");
+		Browser browserInstance = Playwright.create().firefox().launch();
+		this.browser = browserInstance.newContext(getContextOptions());
+		LOGGER.log(Level.INFO, "Firefox is ready!");
 	}
 
-	private String removeFirst(List<String> originalList) {
+	private String removeFirstListItem(List<String> originalList) {
 		if (originalList.size() == 1) {
 			return "";
 		} else {
@@ -72,35 +73,35 @@ public class GoogleCommand extends AbstractCommand {
 	}
 	
 	private String constructSearchURL(List<String> args, boolean nsfwAllowed) {
-		String URL = BROWSER_BASE_URL;
+		String urlBuffer = BROWSER_BASE_URL;
 		String queryString = String.join("+", args);
 		
 		if (args.get(0).startsWith("-")) {
 			String flag = args.get(0).substring(1);
-			queryString = String.join("+", removeFirst(args));
+			queryString = String.join("+", removeFirstListItem(args));
 			switch (flag) {
 				case "i":
-					URL += BROWSER_IMAGES_URL;
+					urlBuffer += BROWSER_IMAGES_URL;
 					break;
 				case "n":
-					URL += BROWSER_NEWS_URL;
+					urlBuffer += BROWSER_NEWS_URL;
 					break;
 				case "v":
-					URL += BROWSER_VIDEOS_URL;
+					urlBuffer += BROWSER_VIDEOS_URL;
 					break;
 				default:
-					URL += BROWSER_SEARCH_URL;
+					urlBuffer += BROWSER_SEARCH_URL;
 					break;
 			}
 		} else 
-			URL += BROWSER_SEARCH_URL;
+			urlBuffer += BROWSER_SEARCH_URL;
 		if (queryString == "")
 			return null;
 		else {
-			URL += queryString;
+			urlBuffer += queryString;
 			if (!nsfwAllowed)
-				URL += SAFE_SEARCH_SUFFIX; 
-			return URL;	
+				urlBuffer += SAFE_SEARCH_SUFFIX; 
+			return urlBuffer;	
 		}
 	}
 
@@ -159,7 +160,7 @@ public class GoogleCommand extends AbstractCommand {
 			message.getChannel().sendMessage("**You did not provide something to search for!**").queue();
 		else {
 			message.getChannel().sendTyping().queue();
-			Page searchPage = createNewPage();
+			Page searchPage = this.browser.newPage();
 			searchPage.navigate(url);
 			searchPage.setViewportSize(1000, 1000);
 			
