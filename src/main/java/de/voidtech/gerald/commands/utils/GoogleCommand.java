@@ -136,7 +136,7 @@ public class GoogleCommand extends AbstractCommand {
 		return !event.getMember().getId().equals(event.getJDA().getSelfUser().getId()) && 
 				   (
 						   event.getUser().getId().equals(message.getAuthor().getId()) ||
-						   event.getMember().hasPermission(Permission.MANAGE_CHANNEL)
+						   event.getMember().hasPermission(Permission.MESSAGE_MANAGE)
 				   );
 	}
 
