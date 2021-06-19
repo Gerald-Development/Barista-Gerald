@@ -169,13 +169,16 @@
 	    	<artifactId>commons-text</artifactId>
 	    	<version>1.9</version>
 		</dependency>
-<!-- https://mvnrepository.com/artifact/com.microsoft.playwright/playwright -->
-<dependency>
-    <groupId>com.microsoft.playwright</groupId>
-    <artifactId>playwright</artifactId>
-    <version>1.12.1</version>
-</dependency>
-
-       
+		<dependency>
+    		<groupId>com.microsoft.playwright</groupId>
+    		<artifactId>playwright</artifactId>
+    		<version>1.12.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.twitch4j</groupId>
+			<artifactId>twitch4j</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+		
 	</dependencies>
 </project>

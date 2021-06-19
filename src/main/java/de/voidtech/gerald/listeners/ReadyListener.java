@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.MessageHandler;
+import main.java.de.voidtech.gerald.service.TwitchNotificationService;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
@@ -20,12 +21,17 @@ public class ReadyListener implements EventListener {
 	@Autowired
 	private MessageHandler messageHandler;
 	
+	@Autowired
+	private TwitchNotificationService twitchService;
+	
 	@Override
 	public void onEvent(GenericEvent event) {
 		if (event instanceof ReadyEvent) {
 			String clientName = ((ReadyEvent) event).getJDA().getSelfUser().getAsTag();
 			LOGGER.log(Level.INFO, "Coffee Machine is ready! Serving lattes as " + clientName);	
-			messageHandler.loadAliases();			
+			
+			messageHandler.loadAliases();	
+			twitchService.subscribeToAllStreamers();
 		}
 	}
 }

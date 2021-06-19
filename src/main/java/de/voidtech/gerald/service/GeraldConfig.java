@@ -87,8 +87,11 @@ public class GeraldConfig {
 		return url != null ? url : "http://localhost:8000/chat_bot/";
 	}
 
-	public String getSeleniumDriverPath() {
-		String dir = config.getProperty("seleniumDirectory"); 
-		return dir != null ? dir : "bin/geckodriver.exe";
+	public String getTwitchClientId() {
+		return config.getProperty("twitch.clientId"); 
+	}
+	
+	public String getTwitchSecret() {
+		return config.getProperty("twitch.secret"); 
 	}
 }
