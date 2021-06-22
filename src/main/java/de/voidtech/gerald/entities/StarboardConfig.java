@@ -1,5 +1,8 @@
 package main.java.de.voidtech.gerald.entities;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,16 +27,20 @@ public class StarboardConfig {
 	@Column
 	private long requiredStarCount;
 	
+	@Column
+	private String ignoredChannels;
+	
 	@Deprecated
 	//ONLY FOR HIBERNATE, DO NOT USE
 	StarboardConfig() {
 	}
 	
-	public StarboardConfig(long serverID, String channelID, long requiredStarCount)
+	public StarboardConfig(long serverID, String channelID, long requiredStarCount, String ignoredChannels)
 	{
 		this.serverID = serverID;
 		this.starboardChannel = channelID;
 		this.requiredStarCount = requiredStarCount;
+		this.ignoredChannels = ignoredChannels;
 	}	
 	
 	public long getServerID() {
@@ -58,5 +65,16 @@ public class StarboardConfig {
 	
 	public void setRequiredStarCount(long newCount) {
 		this.requiredStarCount = newCount;
+	}
+	
+	public List<String> getIgnoredChannels() {
+		return ignoredChannels == null ? null : Arrays.asList(ignoredChannels.split(","));
+	}
+	
+	public void setIgnoredChannels(List<String> newList) {
+		String newListCompiled = "";
+		for (String item : newList) 
+			newListCompiled = newListCompiled + item + ",";
+		this.ignoredChannels = newListCompiled;
 	}
 }

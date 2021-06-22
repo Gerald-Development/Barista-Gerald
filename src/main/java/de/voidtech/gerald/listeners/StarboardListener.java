@@ -3,6 +3,7 @@ package main.java.de.voidtech.gerald.listeners;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import main.java.de.voidtech.gerald.entities.StarboardConfig;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.StarboardService;
 import net.dv8tion.jda.api.events.GenericEvent;
@@ -28,8 +29,10 @@ public class StarboardListener implements EventListener {
 				
 				long serverID = serverService.getServer(reaction.getGuild().getId()).getId();
 				
-				if (starboardService.getStarboardConfig(serverID) != null) {
-					if (!starboardService.reactionIsInStarboardChannel(reaction.getChannel().getId(), serverID)) {
+				StarboardConfig config = starboardService.getStarboardConfig(serverID);
+				if (config != null) {
+					if (!starboardService.reactionIsInStarboardChannel(reaction.getChannel().getId(), serverID)
+							&& !config.getIgnoredChannels().contains(reaction.getChannel().getId())) {
 						starboardService.checkStars(serverID, reaction);	
 					}
 				}
