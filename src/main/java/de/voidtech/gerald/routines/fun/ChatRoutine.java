@@ -54,8 +54,13 @@ public class ChatRoutine extends AbstractRoutine{
 	}
 
 	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
+
+	@Override
 	public String getName() {
-		return "GeraldAI";
+		return "Gerald's AI for chatting";
 	}
 	
 	@Override

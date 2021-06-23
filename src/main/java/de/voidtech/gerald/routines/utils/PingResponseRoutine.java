@@ -69,6 +69,11 @@ public class PingResponseRoutine extends AbstractRoutine {
 	}
 
 	@Override
+	public boolean canBeDisabled() {
+		return false;
+	}
+
+	@Override
 	public String getName() {
 		return "PingResponder";
 	}
