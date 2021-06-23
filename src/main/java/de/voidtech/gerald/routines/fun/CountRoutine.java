@@ -193,7 +193,7 @@ public class CountRoutine extends AbstractRoutine {
 
 	@Override
 	public String getDescription() {
-		return "Handles counting channels";
+		return "Allows channels with counting enabled to work";
 	}
 	
 	@Override
@@ -208,7 +208,7 @@ public class CountRoutine extends AbstractRoutine {
 
 	@Override
 	public String getName() {
-		return "Counting";
+		return "r-count";
 	}
 	
 	@Override

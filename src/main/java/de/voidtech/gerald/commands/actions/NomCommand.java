@@ -49,4 +49,9 @@ public class NomCommand extends ActionsCommand {
 		String[] aliases = {"bite"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 }

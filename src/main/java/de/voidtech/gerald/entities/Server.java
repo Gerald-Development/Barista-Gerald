@@ -82,11 +82,11 @@ public class Server
 		else return Collections.unmodifiableSet(this.commandBlacklist);
 	}
 	
-	public void addToCommandBlacklist(String channelID) {
-		this.commandBlacklist.add(channelID);
+	public void addToCommandBlacklist(String commandName) {
+		this.commandBlacklist.add(commandName);
 	}
-	public void removeFromCommandBlacklist(String channelID) {
-		this.commandBlacklist.remove(channelID);
+	public void removeFromCommandBlacklist(String commandName) {
+		this.commandBlacklist.remove(commandName);
 	}
 
 	public Set<String> getRoutineBlacklist() {
@@ -94,11 +94,11 @@ public class Server
 		else return Collections.unmodifiableSet(this.routineBlacklist);
 	}
 
-	public void addToRoutineBlacklist(String guildID) {
-		this.routineBlacklist.add(guildID);
+	public void addToRoutineBlacklist(String routineName) {
+		this.routineBlacklist.add(routineName);
 	}
-	public void removeFromRoutineBlacklist(String guildID) {
-		this.routineBlacklist.remove(guildID);
+	public void removeFromRoutineBlacklist(String routineName) {
+		this.routineBlacklist.remove(routineName);
 	}
 
 	public String getPrefix() {

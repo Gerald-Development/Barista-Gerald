@@ -28,77 +28,65 @@ public class EnableCommand extends AbstractCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		if (args.size() > 1 && message.getMember().hasPermission(Permission.MANAGE_SERVER)) {
-			String enableMode = args.get(0);
-			String targetName = args.get(1);
-			if (targetName.matches("enable|disable"))
-				message.getChannel().sendMessage("This command is not disabled.").queue();
-			else {
-				if (enableMode.equals("command")) {
-					AbstractCommand foundCommand = null;
-
-					for (AbstractCommand command : commands) {
-						if (command.getName().equals(targetName) || Arrays.asList(command.getCommandAliases()).contains(targetName)) {
-							foundCommand = command;
-							targetName = command.getName();
-							break;
-						}
-					}
-
-					if (foundCommand == null)
-						message.getChannel().sendMessage("No command was found with name `" + targetName + "`").queue();
-					else {
-						Server server = serverService.getServer(message.getGuild().getId());
-						if (!server.getCommandBlacklist().contains(targetName)) {
-							message.getChannel().sendMessage("This command is not disabled!").queue();
-						} else {
-							server.removeFromCommandBlacklist(targetName);
-							serverService.saveServer(server);
-							message.getChannel().sendMessage("Command has been enabled: " + targetName).queue();
-						}
+		if (message.getMember().hasPermission(Permission.MANAGE_SERVER)) {
+			String targetName = args.get(0).toLowerCase();
+			if (targetName.startsWith("r-")) {
+				AbstractRoutine foundRoutine = null;
+				
+				for (AbstractRoutine routine: routines) {
+					if (routine.getName().equals(targetName)) {
+						foundRoutine = routine;
+						break;
 					}
 				}
-				else if (enableMode.equals("routine")) {
-					AbstractRoutine foundRoutine = null;
-					
-					for (AbstractRoutine routine: routines) {
-						if (routine.getFormattedName().equals(targetName)) {
-							foundRoutine = routine;
-							break;
-						}
-					}
-					if (foundRoutine == null) message.getChannel().sendMessage("No Routine was found with name `" + targetName + "`").queue();
-					else if (!foundRoutine.canBeDisabled()) message.getChannel().sendMessage("This routine:  `"+ targetName + "` can't be disabled/enabled. ").queue();
-					else {
-						Server server = serverService.getServer(message.getGuild().getId());
-						if (!server.getRoutineBlacklist().contains(targetName)) {
-							message.getChannel().sendMessage("This routine is not disabled!").queue();
-						}
-						else {
-							server.removeFromRoutineBlacklist(targetName);
-							serverService.saveServer(server);
-							message.getChannel().sendMessage("Routine has been enabled: "+ targetName).queue();
-						}
-					}
-				}
+				if (foundRoutine == null) message.getChannel().sendMessage("**No Routine was found with name `" + targetName + "`**").queue();
+				else if (!foundRoutine.canBeDisabled()) message.getChannel().sendMessage("**Routine `"+ targetName + "` cannot be disabled/enabled!**").queue();
 				else {
-					message.getChannel().sendMessage(enableMode + ": is not a valid mode.").queue();
+					Server server = serverService.getServer(message.getGuild().getId());
+					if (!server.getRoutineBlacklist().contains(targetName))
+						message.getChannel().sendMessage("**This routine is not disabled!**").queue();
+					else {
+						server.removeFromRoutineBlacklist(targetName);
+						serverService.saveServer(server);
+						message.getChannel().sendMessage("**Routine `" + targetName + "`has been enabled!**").queue();
+					}
+				}
+			}
+			else {
+				AbstractCommand foundCommand = null;
+				for (AbstractCommand command : commands) {
+					if (command.getName().equals(targetName) || Arrays.asList(command.getCommandAliases()).contains(targetName)) {
+						foundCommand = command;
+						targetName = command.getName();
+						break;
+					}
+				}
+				if (foundCommand == null)
+					message.getChannel().sendMessage("**No command was found with name `" + targetName + "`**").queue();
+				else if (!foundCommand.canBeDisabled()) message.getChannel().sendMessage("**The command `"+ targetName + "` cannot be disabled/enabled!**").queue();
+				else {
+					Server server = serverService.getServer(message.getGuild().getId());
+					if (!server.getCommandBlacklist().contains(targetName)) {
+						message.getChannel().sendMessage("**This command is not disabled!**").queue();
+					} else {
+						server.removeFromCommandBlacklist(targetName);
+						serverService.saveServer(server);
+						message.getChannel().sendMessage("**Command `" + targetName + "` has been enabled!**").queue();
+					}
 				}
 			}
 		}
-		else {
-			message.getChannel().sendMessage(getUsage()).queue();
-		}
 	}
-
+	
 	@Override
 	public String getDescription() {
-		return "enables a command or routine";
+		return "Allows you to enable a command or routine! Note: Some routines or commands cannot be disabled. Routine names always use the format r-[name]";
 	}
 
 	@Override
 	public String getUsage() {
-		return "enable routine r-nitrolite\n"+"enable command ping\n";
+		return "enable r-nitrolite\n"
+				+"enable ping";
 	}
 
 	@Override
@@ -123,8 +111,13 @@ public class EnableCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"unblock"};
+		String[] aliases = {"unlock"};
 		return aliases;
+	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return false;
 	}
 
 }

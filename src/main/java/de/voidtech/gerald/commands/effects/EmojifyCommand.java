@@ -97,4 +97,9 @@ public class EmojifyCommand extends AbstractCommand {
 		String[] aliases = {"big"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 }

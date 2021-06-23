@@ -208,4 +208,9 @@ public class GoogleCommand extends AbstractCommand {
 		String[] aliases = {"search", "ecosia"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 }

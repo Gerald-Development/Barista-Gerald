@@ -196,5 +196,10 @@ public class HelpCommand extends AbstractCommand{
 		String[] aliases = {"commands", "h"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return false;
+	}
 
 }

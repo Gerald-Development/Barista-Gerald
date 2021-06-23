@@ -85,5 +85,10 @@ public class PermissionsCommand extends AbstractCommand{
 		String[] aliases = {"perms", "permsin"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

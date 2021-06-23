@@ -94,5 +94,10 @@ public class CatCommand extends AbstractCommand{
 		String[] aliases = {"gato", "catto"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

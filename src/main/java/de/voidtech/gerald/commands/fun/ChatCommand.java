@@ -161,5 +161,10 @@ public class ChatCommand extends AbstractCommand{
 		String[] aliases = {"ai", "geraldai", "geraldchat", "gavin"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

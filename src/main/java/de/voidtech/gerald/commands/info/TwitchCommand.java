@@ -192,4 +192,9 @@ public class TwitchCommand extends AbstractCommand{
 		String[] aliases = {"tn"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 }

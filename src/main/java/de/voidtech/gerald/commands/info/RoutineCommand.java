@@ -24,9 +24,9 @@ public class RoutineCommand extends AbstractCommand {
                 .setColor(Color.ORANGE)
                 .setTitle("Barista Gerald - Routines")
                 .setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
-                .setFooter("Routine Count: "+ routineCount);
+                .setFooter("Routine Count: "+ routineCount + " | Note: Some routines cannot be disabled. The commands they power require them to function. Try disabling the command instead!");
         for (AbstractRoutine routine: routines) {
-            routineInformation.addField(routine.getFormattedName(), String.format("```Description: %s\nCan be disabled: %s```", routine.getDescription(), routine.canBeDisabled()), false);
+            routineInformation.addField(routine.getName(), String.format("```Description: %s\nCan be disabled: %s```", routine.getDescription(), routine.canBeDisabled()), false);
         }
         message.getChannel().sendMessage(routineInformation.build()).queue();
     }
@@ -66,4 +66,9 @@ public class RoutineCommand extends AbstractCommand {
         String[] aliases = {"routines", "r"};
         return aliases;
     }
+    
+	@Override
+	public boolean canBeDisabled() {
+		return false;
+	}
 }

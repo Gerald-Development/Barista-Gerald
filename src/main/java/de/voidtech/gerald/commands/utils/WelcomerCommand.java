@@ -303,5 +303,10 @@ public class WelcomerCommand extends AbstractCommand{
 		String[] aliases = {"jm", "joinmessage"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

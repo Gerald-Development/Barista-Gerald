@@ -85,5 +85,10 @@ public class HttpCommand extends AbstractCommand {
 		String[] aliases = {"httpcat", "httpcode"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

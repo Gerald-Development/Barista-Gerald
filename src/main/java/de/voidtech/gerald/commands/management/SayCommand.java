@@ -57,5 +57,10 @@ public class SayCommand extends AbstractCommand {
 		String[] aliases = {"speak", "blessuswiththevoiceofgerald"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

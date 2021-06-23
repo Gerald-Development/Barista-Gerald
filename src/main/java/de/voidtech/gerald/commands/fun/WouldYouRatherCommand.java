@@ -70,5 +70,10 @@ public class WouldYouRatherCommand extends AbstractCommand {
 		String[] aliases = {"wouldyourather"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

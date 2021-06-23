@@ -50,4 +50,9 @@ public class CuddleCommand extends ActionsCommand {
 		return aliases;
 	}
 
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
+
 }

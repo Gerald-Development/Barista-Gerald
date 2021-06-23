@@ -70,5 +70,10 @@ public class ComplimentCommand extends AbstractCommand{
 		String[] aliases = {"respect"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

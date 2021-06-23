@@ -60,7 +60,7 @@ public class PingResponseRoutine extends AbstractRoutine {
 
 	@Override
 	public String getDescription() {
-		return "Allows Gerald to respond when he is pinged";
+		return "Allows Gerald to respond when he is mentioned";
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class PingResponseRoutine extends AbstractRoutine {
 
 	@Override
 	public String getName() {
-		return "PingResponder";
+		return "r-ping";
 	}
 	
 	@Override

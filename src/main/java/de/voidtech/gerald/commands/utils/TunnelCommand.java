@@ -261,5 +261,10 @@ public class TunnelCommand extends AbstractCommand {
 		String[] aliases = {"spaceport", "connection"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

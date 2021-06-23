@@ -285,4 +285,9 @@ public class NitroliteCommand extends AbstractCommand {
 		String[] aliases = {"nitro", "nl", "emotes", "emote"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 }

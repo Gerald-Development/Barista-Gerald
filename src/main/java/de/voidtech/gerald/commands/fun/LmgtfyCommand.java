@@ -53,4 +53,9 @@ public class LmgtfyCommand extends AbstractCommand {
         String[] aliases = {"letmegetthat", "letmegoogle"};
         return aliases;
     }
+    
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 }

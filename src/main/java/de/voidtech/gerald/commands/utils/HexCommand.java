@@ -103,5 +103,10 @@ public class HexCommand extends AbstractCommand {
 		String[] aliases = {"hexcolor", "colour", "hexcolour", "color"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

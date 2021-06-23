@@ -226,5 +226,10 @@ public class StarboardCommand extends AbstractCommand {
 		String[] aliases = {"autoquote", "quotechannel", "sb"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

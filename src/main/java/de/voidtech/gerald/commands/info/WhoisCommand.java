@@ -79,4 +79,9 @@ public class WhoisCommand extends AbstractCommand{
 		String[] aliases = {"user", "userinfo", "ui"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 }

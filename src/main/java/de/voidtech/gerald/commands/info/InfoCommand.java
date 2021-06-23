@@ -119,5 +119,10 @@ public class InfoCommand extends AbstractCommand {
 		String[] aliases = {"botinfo", "botstats", "bi", "bs", "stats"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }
