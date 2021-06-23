@@ -88,6 +88,10 @@ public class Server
 	public void removeFromCommandBlacklist(String commandName) {
 		this.commandBlacklist.remove(commandName);
 	}
+	
+	public void clearCommandBlacklist() {
+		this.commandBlacklist.clear();
+	}
 
 	public Set<String> getRoutineBlacklist() {
 		if (this.routineBlacklist == null) return Collections.unmodifiableSet(new HashSet<String>());
