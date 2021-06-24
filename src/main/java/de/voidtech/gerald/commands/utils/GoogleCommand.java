@@ -28,7 +28,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
-//@Command
+//Command
 public class GoogleCommand extends AbstractCommand {
 	
 	private static final String BROWSER_LOGO_IMAGE = "https://e7.pngegg.com/pngimages/293/824/png-clipart-ecosia-computer-icons-web-browser-android-illegal-logging-globe-logo-thumbnail.png";
@@ -180,7 +180,7 @@ public class GoogleCommand extends AbstractCommand {
 				+ "google -i [an image you want to see]\n"
 				+ "google -n [a thing you want to know about]\n"
 				+ "google -v [a thing you want to watch]\n"
-				+ "use the flag -i for images, -v for videos, -s for shopping and -n for news";
+				+ "use the flag -i for images, -v for videos and -n for news";
 	}
 
 	@Override
