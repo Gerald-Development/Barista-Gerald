@@ -40,6 +40,7 @@ public class EnableCommand extends AbstractCommand {
 	
 	private void enableCommand(String targetName, Message message) {
 		AbstractCommand foundCommand = null;
+		String resultMessage = "";
 		for (AbstractCommand command : commands) {
 			if (command.getName().equals(targetName) || Arrays.asList(command.getCommandAliases()).contains(targetName)) {
 				foundCommand = command;
@@ -48,24 +49,24 @@ public class EnableCommand extends AbstractCommand {
 			}
 		}
 		if (foundCommand == null)
-			message.getChannel().sendMessage("**No command was found with name `" + targetName + "`**").queue();
+			resultMessage = "**No command was found with name `" + targetName + "`**";
 		else if (!foundCommand.canBeDisabled()) message.getChannel().sendMessage("**The command `"+ targetName + "` cannot be enabled/disabled!**").queue();
 		else {
 			Server server = serverService.getServer(message.getGuild().getId());
 			if (!server.getCommandBlacklist().contains(targetName)) {
-				message.getChannel().sendMessage("**This command is not enabled!**").queue();
+				resultMessage = "**This command is not disabled!**";
 			} else {
 				server.removeFromCommandBlacklist(targetName);
 				serverService.saveServer(server);
-				message.getChannel().sendMessage("**Command `" + targetName + "` has been enabled!**").queue();
+				resultMessage = "**Command `" + targetName + "` has been enabled!**";
 			}
 		}
+		message.getChannel().sendMessage(resultMessage).queue();
 	}
 
-	//TODO: REVIEW do not alter argument variables.
 	private void enableRoutine(String targetName, Message message) {
 		AbstractRoutine foundRoutine = null;
-		
+		String resultMessage = "";
 		for (AbstractRoutine routine: routines) {
 			if (routine.getName().equals(targetName)) {
 				foundRoutine = routine;
@@ -73,33 +74,34 @@ public class EnableCommand extends AbstractCommand {
 			}
 		}
 		if (foundRoutine == null) 
-			message.getChannel().sendMessage("**No Routine was found with name `" + targetName + "`**").queue();
+			resultMessage = "**No Routine was found with name `" + targetName + "`**";
 		else if (!foundRoutine.canBeDisabled()) 
-			message.getChannel().sendMessage("**Routine `"+ targetName + "` cannot be enabled/disabled!**").queue();
+			resultMessage = "**Routine `"+ targetName + "` cannot be enabled/disabled!**";
 		else {
 			
 			Server server = serverService.getServer(message.getGuild().getId());
 			if (!server.getRoutineBlacklist().contains(targetName))
-				message.getChannel().sendMessage("**This routine is not enabled!**").queue();
+				resultMessage = "**This routine is not enabled!**";
 			else {
 				server.removeFromRoutineBlacklist(targetName);
 				serverService.saveServer(server);
-				message.getChannel().sendMessage("**Routine `" + targetName + "`has been enabled!**").queue();
+				resultMessage = "**Routine `" + targetName + "`has been enabled!**";
 			}
 		}
+		message.getChannel().sendMessage(resultMessage).queue();
 	}
 
 	private void enableAllCommands(Message message) {
 		Server server = serverService.getServer(message.getGuild().getId());
-		//TODO REVIEW: have you heard of server.getCommandBlacklist().isEmpty()
-		//btw it's good that you check that and try to keep database traffic low c:
-		if (server.getCommandBlacklist().size() == 0)
-			message.getChannel().sendMessage("**There are no disabled commands!**").queue();
+		String resultMessage = "";
+		if (server.getCommandBlacklist().isEmpty())
+			resultMessage = "**There are no disabled commands!**";
 		else {
 			server.clearCommandBlacklist();
 			serverService.saveServer(server);
-			message.getChannel().sendMessage("**All commands have been enabled!**").queue();	
+			resultMessage = "**All commands have been enabled!**";	
 		}
+		message.getChannel().sendMessage(resultMessage).queue();
 	}
 
 	@Override
