@@ -3,13 +3,13 @@ package main.java.de.voidtech.gerald.commands.management;
 import java.util.Arrays;
 import java.util.List;
 
-import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.Server;
+import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -28,18 +28,13 @@ public class EnableCommand extends AbstractCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		if (!commands.contains(this)) {
-			commands.add(this);
-		}
+		if (!commands.contains(this)) commands.add(this);
+		
 		if (message.getMember().hasPermission(Permission.MANAGE_SERVER)) {
 			String targetName = args.get(0).toLowerCase();
-			if (targetName.equals("all")) {
-				enableAllCommands(message);
-			} else if (targetName.startsWith("r-")) {
-				enableRoutine(targetName, message);
-			} else {
-				enableCommand(targetName, message);
-			}
+			if (targetName.equals("all")) enableAllCommands(message);
+			else if (targetName.startsWith("r-")) enableRoutine(targetName, message);
+			else enableCommand(targetName, message);
 		}
 	}
 	
@@ -67,6 +62,7 @@ public class EnableCommand extends AbstractCommand {
 		}
 	}
 
+	//TODO: REVIEW do not alter argument variables.
 	private void enableRoutine(String targetName, Message message) {
 		AbstractRoutine foundRoutine = null;
 		
@@ -76,9 +72,12 @@ public class EnableCommand extends AbstractCommand {
 				break;
 			}
 		}
-		if (foundRoutine == null) message.getChannel().sendMessage("**No Routine was found with name `" + targetName + "`**").queue();
-		else if (!foundRoutine.canBeDisabled()) message.getChannel().sendMessage("**Routine `"+ targetName + "` cannot be enabled/disabled!**").queue();
+		if (foundRoutine == null) 
+			message.getChannel().sendMessage("**No Routine was found with name `" + targetName + "`**").queue();
+		else if (!foundRoutine.canBeDisabled()) 
+			message.getChannel().sendMessage("**Routine `"+ targetName + "` cannot be enabled/disabled!**").queue();
 		else {
+			
 			Server server = serverService.getServer(message.getGuild().getId());
 			if (!server.getRoutineBlacklist().contains(targetName))
 				message.getChannel().sendMessage("**This routine is not enabled!**").queue();
@@ -92,6 +91,8 @@ public class EnableCommand extends AbstractCommand {
 
 	private void enableAllCommands(Message message) {
 		Server server = serverService.getServer(message.getGuild().getId());
+		//TODO REVIEW: have you heard of server.getCommandBlacklist().isEmpty()
+		//btw it's good that you check that and try to keep database traffic low c:
 		if (server.getCommandBlacklist().size() == 0)
 			message.getChannel().sendMessage("**There are no disabled commands!**").queue();
 		else {

@@ -29,21 +29,21 @@ public class DisableCommand extends AbstractCommand {
 
 	@Override
 	public void executeInternal(Message message, List<String> args) {
-		if (!commands.contains(this)) {
-			commands.add(this);
-		}
+		//TODO REVIEW: You don't need this line, do you? Since this is a command too it has the canBeDisabled() method.
+		if (!commands.contains(this)) commands.add(this);
+		
 		if (message.getMember().hasPermission(Permission.MANAGE_SERVER)) {
 			String targetName = args.get(0).toLowerCase();
-			if (targetName.equals("all")) {
-				disableAllCommands(message);
-			} else if (targetName.startsWith("r-")) {
-				disableRoutine(targetName, message);
-			} else {
-				disableCommand(targetName, message);
-			}
+			if (targetName.equals("all")) disableAllCommands(message);
+			else if (targetName.startsWith("r-")) disableRoutine(targetName, message);
+			else disableCommand(targetName, message);
 		}
 	}
 
+	//TODO: REVIEW do not alter argument variables.
+	//TODO: REVIEW You see how you do message.getChannel().sendMessage() a bazillion times in this method?
+	// You can have a resultMessage variable and just call the message.getChannel().sendMessage() once in the end of the method.
+	// That way the lines get way shorter since its only resultMessage = "Haha funny error" instead of the big message.getChannel().sendMessage chongus
 	private void disableCommand(String targetName, Message message) {
 		AbstractCommand foundCommand = null;
 		for (AbstractCommand command : commands) {
@@ -55,8 +55,10 @@ public class DisableCommand extends AbstractCommand {
 		}
 		if (foundCommand == null)
 			message.getChannel().sendMessage("**No command was found with name `" + targetName + "`**").queue();
-		else if (!foundCommand.canBeDisabled()) message.getChannel().sendMessage("**The command `"+ targetName + "` cannot be disabled/enabled!**").queue();
+		else if (!foundCommand.canBeDisabled()) 
+			message.getChannel().sendMessage("**The command `"+ targetName + "` cannot be disabled/enabled!**").queue();
 		else {
+			
 			Server server = serverService.getServer(message.getGuild().getId());
 			if (server.getCommandBlacklist().contains(targetName)) {
 				message.getChannel().sendMessage("**This command is already disabled!**").queue();
@@ -77,9 +79,13 @@ public class DisableCommand extends AbstractCommand {
 				break;
 			}
 		}
-		if (foundRoutine == null) message.getChannel().sendMessage("**No Routine was found with name `" + targetName + "`**").queue();
-		else if (!foundRoutine.canBeDisabled()) message.getChannel().sendMessage("**Routine `"+ targetName + "` cannot be disabled/enabled!**").queue();
+		
+		if (foundRoutine == null) 
+			message.getChannel().sendMessage("**No Routine was found with name `" + targetName + "`**").queue();
+		else if (!foundRoutine.canBeDisabled()) 
+			message.getChannel().sendMessage("**Routine `"+ targetName + "` cannot be disabled/enabled!**").queue();
 		else {
+			
 			Server server = serverService.getServer(message.getGuild().getId());
 			if (server.getRoutineBlacklist().contains(targetName))
 				message.getChannel().sendMessage("**This routine is already disabled!**").queue();
@@ -100,8 +106,7 @@ public class DisableCommand extends AbstractCommand {
 			else if (!command.canBeDisabled()) enabledCommands.add(command);		
 		}
 		serverService.saveServer(server);
-		message.getChannel().sendMessage("**All commands have been disabled except for these:**\n```"
-		+ createEnabledCommandString(enabledCommands) + "```").queue();
+		message.getChannel().sendMessage("**All commands have been disabled except for these:**\n```" + createEnabledCommandString(enabledCommands) + "```").queue();
 	}
 
 	private String createEnabledCommandString(List<AbstractCommand> enabledCommands) {
