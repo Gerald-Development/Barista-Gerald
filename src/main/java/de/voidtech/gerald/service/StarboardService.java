@@ -111,11 +111,20 @@ public class StarboardService {
 				.setTimestamp(Instant.now())
 				.setFooter("in #" + message.getChannel().getName());
 		
+		boolean found = false;
 		if (message.getAttachments().size() > 0) {
-			boolean found = false;
+			
 			for (Attachment attachment : message.getAttachments()) {
 				if (attachment.isImage() && !found) {
 					starboardEmbed.setImage(attachment.getUrl());
+					found = true;
+				}
+			}
+		}
+		if (!found && !message.getEmbeds().isEmpty()) {
+			for (MessageEmbed embed : message.getEmbeds()) {
+				if (embed.getImage() != null && !found) {
+					starboardEmbed.setImage(embed.getImage().getUrl());
 					found = true;
 				}
 			}

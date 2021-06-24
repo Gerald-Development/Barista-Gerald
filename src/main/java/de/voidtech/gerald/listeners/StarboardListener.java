@@ -31,12 +31,18 @@ public class StarboardListener implements EventListener {
 				
 				StarboardConfig config = starboardService.getStarboardConfig(serverID);
 				if (config != null) {
-					if (!starboardService.reactionIsInStarboardChannel(reaction.getChannel().getId(), serverID)
-							&& !config.getIgnoredChannels().contains(reaction.getChannel().getId())) {
-						starboardService.checkStars(serverID, reaction);	
-					}
+					pinStarIfAllowed(reaction, config, serverID);
 				}
 			}
 		}	
+	}
+
+	private void pinStarIfAllowed(GuildMessageReactionAddEvent reaction, StarboardConfig config, long serverID) {
+		if (!starboardService.reactionIsInStarboardChannel(reaction.getChannel().getId(), serverID)) {
+			if (config.getIgnoredChannels() != null) {
+				if (!config.getIgnoredChannels().contains(reaction.getChannel().getId()))
+					starboardService.checkStars(serverID, reaction);	
+			} else starboardService.checkStars(serverID, reaction);
+		}
 	}
 }
