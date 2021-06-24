@@ -64,4 +64,9 @@ public class AvatarCommand extends AbstractCommand{
 		return aliases;
 	}
 
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
+	
 }

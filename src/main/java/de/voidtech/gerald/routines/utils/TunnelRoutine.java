@@ -119,7 +119,7 @@ public class TunnelRoutine extends AbstractRoutine {
 
 	@Override
 	public String getDescription() {
-		return "The routine for handling tunnels";
+		return "Allows tunnels to be handled";
 	}
 
 	@Override
@@ -128,8 +128,13 @@ public class TunnelRoutine extends AbstractRoutine {
 	}
 
 	@Override
+	public boolean canBeDisabled() {
+		return false;
+	}
+
+	@Override
 	public String getName() {
-		return "Tunnels";
+		return "r-tunnel";
 	}
 	
 	@Override

@@ -137,5 +137,10 @@ public class WhitelistCommand extends AbstractCommand
 		String[] aliases = {"allowlist", "allowedchannels", "allow"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return false;
+	}
 
 }

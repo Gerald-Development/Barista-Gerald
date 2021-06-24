@@ -51,4 +51,9 @@ public class ClapCommand extends AbstractCommand {
 		String[] aliases = {"clapback"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 }

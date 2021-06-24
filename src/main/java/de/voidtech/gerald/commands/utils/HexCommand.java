@@ -1,13 +1,18 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -15,13 +20,9 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 @Command
 public class HexCommand extends AbstractCommand {
 
-	private static final Pattern HEX_PATTERN = Pattern.compile("^([a-fA-F0-9]{6})$"); 
 	private static final String IMAGE_SOURCE_URL = "https://via.placeholder.com/250/";
-	
-	private boolean isValidHex(String input) {
-		Matcher hexMatcher = HEX_PATTERN.matcher(input);
-		return hexMatcher.find();
-	}
+	private static final String COLOUR_HEXA_BASE_URL = "https://www.colorhexa.com/";
+	private static final Logger LOGGER = Logger.getLogger(HexCommand.class.getName());
 	
 	private Color getEmbedColour(String hex) {
 		return new Color(
@@ -32,19 +33,34 @@ public class HexCommand extends AbstractCommand {
 	
 	private void sendHexImage(Message message, String hexCode) {
 		String finalImageURL = IMAGE_SOURCE_URL + hexCode + "/" + hexCode + ".png";
+		String colourHexaURL = COLOUR_HEXA_BASE_URL + hexCode;
+		String colourName = getColourName(colourHexaURL);
+		
 		MessageEmbed hexColourEmbed = new EmbedBuilder()
 				.setColor(getEmbedColour(hexCode))
 				.setImage(finalImageURL)
-				.setTitle(hexCode.toUpperCase(), finalImageURL)
+				.setTitle("#" + hexCode.toUpperCase(), colourHexaURL)
+				.setFooter(colourName)
 				.build();
 		message.getChannel().sendMessage(hexColourEmbed).queue();
 	}
 	
+	private String getColourName(String colourHexaURL) {
+		try {
+			Document colourHexaPage = Jsoup.connect(colourHexaURL).get();
+			return colourHexaPage.select("#information > div.color-description > p > strong").first().text();
+		} catch (IOException e) {
+			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return "";
+	}
+
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		String hexCode = args.get(0).replaceAll("#", "");
 		
-		if (isValidHex(hexCode)) {
+		if (ParsingUtils.isHexadecimal(hexCode)) {
 			sendHexImage(message, hexCode);
 		} else {
 			message.getChannel().sendMessage("**You did not supply a valid hex code!**").queue();
@@ -86,6 +102,11 @@ public class HexCommand extends AbstractCommand {
 	public String[] getCommandAliases() {
 		String[] aliases = {"hexcolor", "colour", "hexcolour", "color"};
 		return aliases;
+	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
 	}
 
 }

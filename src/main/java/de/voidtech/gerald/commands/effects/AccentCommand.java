@@ -81,5 +81,10 @@ public class AccentCommand extends AbstractCommand {
 		String[] commandAliases = {"a"};
 		return commandAliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

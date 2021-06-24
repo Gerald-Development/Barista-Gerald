@@ -91,4 +91,9 @@ public class EnlargeCommand extends AbstractCommand {
 		String[] aliases = {"jumbo"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 }

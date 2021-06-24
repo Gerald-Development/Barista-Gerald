@@ -93,5 +93,10 @@ public class InspiroCommand extends AbstractCommand{
 		String[] aliases = {"inspire", "inspirobot", "ib"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

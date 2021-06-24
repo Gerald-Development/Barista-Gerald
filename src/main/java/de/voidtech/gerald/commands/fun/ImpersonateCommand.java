@@ -89,5 +89,10 @@ public class ImpersonateCommand extends AbstractCommand{
 		String[] aliases = {"become", "pretend"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

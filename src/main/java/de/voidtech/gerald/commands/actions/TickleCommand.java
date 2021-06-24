@@ -49,5 +49,9 @@ public class TickleCommand extends ActionsCommand{
 		String[] aliases = {"fondle"};
 		return aliases;
 	}
-
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 }

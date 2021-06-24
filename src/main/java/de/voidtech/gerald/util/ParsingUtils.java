@@ -1,11 +1,16 @@
 package main.java.de.voidtech.gerald.util;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 
 public class ParsingUtils {
+	
+	private static final Pattern HEX_PATTERN = Pattern.compile("^([a-fA-F0-9]{6})$"); 
+	
 	public static boolean isInteger(String str) {
 	    if (str == null) {
 	        return false;
@@ -54,5 +59,10 @@ public class ParsingUtils {
 	
 	public static boolean isSnowflake(String input) {
 		return isInteger(input) && input.length() == 18;
+	}
+	
+	public static boolean isHexadecimal(String input) {
+		Matcher hexMatcher = HEX_PATTERN.matcher(input);
+		return hexMatcher.find();
 	}
 }

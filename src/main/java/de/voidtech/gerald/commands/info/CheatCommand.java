@@ -127,5 +127,10 @@ public class CheatCommand extends AbstractCommand {
 		String[] aliases = {"cheatsheet", "cs"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

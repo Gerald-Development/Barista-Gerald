@@ -49,4 +49,9 @@ public class PokeCommand extends ActionsCommand{
 		String[] aliases = {"boop"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 }

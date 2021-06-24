@@ -94,5 +94,10 @@ public class DogCommand extends AbstractCommand{
 		String[] aliases = {"doge", "doggo"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

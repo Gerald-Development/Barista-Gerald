@@ -51,5 +51,10 @@ public class CoinflipCommand extends AbstractCommand{
 		String[] aliases = {"coin", "flip"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

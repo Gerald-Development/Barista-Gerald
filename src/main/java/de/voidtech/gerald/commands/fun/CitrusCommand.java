@@ -108,5 +108,10 @@ public class CitrusCommand extends AbstractCommand {
 		String[] aliases = {"cguess", "citrusguess"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

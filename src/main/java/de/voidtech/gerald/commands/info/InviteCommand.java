@@ -58,5 +58,10 @@ public class InviteCommand extends AbstractCommand {
 		String[] aliases = {"inv", "link"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

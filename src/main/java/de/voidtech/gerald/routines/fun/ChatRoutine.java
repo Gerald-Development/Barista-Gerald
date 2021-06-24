@@ -45,7 +45,7 @@ public class ChatRoutine extends AbstractRoutine{
 
 	@Override
 	public String getDescription() {
-		return "GeraldAI Routine";
+		return "Allows channels with the chat command to work. Communicates with our AI chatbot";
 	}
 
 	@Override
@@ -54,8 +54,13 @@ public class ChatRoutine extends AbstractRoutine{
 	}
 
 	@Override
+	public boolean canBeDisabled() {
+		return false;
+	}
+
+	@Override
 	public String getName() {
-		return "GeraldAI";
+		return "r-chat";
 	}
 	
 	@Override

@@ -49,5 +49,10 @@ public class KissCommand extends ActionsCommand {
 		String[] aliases = {"peck", "canoodle"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

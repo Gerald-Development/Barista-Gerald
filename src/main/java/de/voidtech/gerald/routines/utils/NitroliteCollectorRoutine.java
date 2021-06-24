@@ -104,7 +104,7 @@ public class NitroliteCollectorRoutine extends AbstractRoutine {
 
 	@Override
 	public String getName() {
-		return "EmoteGrabber5000";
+		return "r-EmoteGrabber5000";
 	}
 
 	@Override
@@ -120,6 +120,11 @@ public class NitroliteCollectorRoutine extends AbstractRoutine {
 	@Override
 	public boolean allowsBotResponses() {
 		return true;
+	}
+
+	@Override
+	public boolean canBeDisabled() {
+		return false;
 	}
 
 }

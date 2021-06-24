@@ -77,4 +77,9 @@ public class AskCommand extends AbstractCommand{
 		String[] aliases = {"whatif"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 }

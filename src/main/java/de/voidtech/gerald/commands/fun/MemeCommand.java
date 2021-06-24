@@ -310,4 +310,9 @@ public class MemeCommand extends AbstractCommand {
 		String[] aliases = {"mememaker", "makememe"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 }

@@ -120,5 +120,10 @@ public class CacheSearchCommand extends AbstractCommand{
 		String[] aliases = {"cache", "csearch"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

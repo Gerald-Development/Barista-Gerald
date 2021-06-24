@@ -98,4 +98,9 @@ public class ApodCommand extends AbstractCommand {
 		String[] aliases = {"nasa", "nasaapod", "astronomy"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 }

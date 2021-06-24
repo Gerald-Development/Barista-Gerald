@@ -49,5 +49,10 @@ public class SlapCommand extends ActionsCommand {
 		String[] aliases = {"smack", "hit", "punch", "kill"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

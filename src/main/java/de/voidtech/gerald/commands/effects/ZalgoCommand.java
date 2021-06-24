@@ -99,5 +99,10 @@ public class ZalgoCommand extends AbstractCommand {
 		String[] aliases = {"zalgoify", "fucktext"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }
