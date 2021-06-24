@@ -151,22 +151,25 @@ public class NitroliteCommand extends AbstractCommand {
 	private void searchEmoteDatabase(Message message, List<String> args) {
 		String search = args.get(1);
 		
-        List<NitroliteEmote> result = emoteService.getEmotes(search, message.getJDA());
-        
-        String searchResult = "**Database searched for: **`" + search + "`\n";
-        if (result.size() == 0) {
-        	searchResult += "Nothing found :(";
-        } else {
-        
-        	if (result.size() > 15) {
-        		sendPages(message, result);
-        	} else {
-            	for (NitroliteEmote emote: result) {
-                    searchResult += nitroliteService.constructEmoteString(emote) + " - " + emote.getName() + " - " + emote.getID() + "\n";
-                }	
-            	sendFallbackMessage(message, searchResult);
-        	}
-        }
+		if (search.length() < 3)
+			message.getChannel().sendMessage("**Your search is too small! Please use at least 3 letters!**").queue();
+		else {
+			List<NitroliteEmote> result = emoteService.getEmotes(search, message.getJDA());
+	        
+	        String searchResult = "**Database searched for: **`" + search + "`\n";
+	        if (result.size() == 0) {
+	        	searchResult += "Nothing found :(";
+	        } else {
+	        	if (result.size() > 15) {
+	        		sendPages(message, result);
+	        	} else {
+	            	for (NitroliteEmote emote: result) {
+	                    searchResult += nitroliteService.constructEmoteString(emote) + " - " + emote.getName() + " - " + emote.getID() + "\n";
+	                }	
+	            	sendFallbackMessage(message, searchResult);
+	        	}
+	        }	
+		}
 	}
 
 	private void addEmoteAlias(Message message, List<String> args) {    
