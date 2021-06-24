@@ -143,7 +143,7 @@ public class NitroliteCommand extends AbstractCommand {
     					if (moreRequested) {
     						sendPages(message, listWithFirstFifteenRemoved(result));
     					}
-    				}, 20, TimeUnit.SECONDS, 
+    				}, 60, TimeUnit.SECONDS, 
     				() -> message.getChannel().sendMessage("**Search ended**").queue());
     	}
     }
