@@ -35,9 +35,10 @@ public class TwitchCommand extends AbstractCommand{
 	private ServerService serverService;
 	
 	private static final String TWITCH_BASE_URL = "https://twitch.tv/";
+	private static final String TWITCH_URL_MATCHER = "https:\\/\\/(www\\.)?twitch.tv\\/.*";
 	
 	private boolean validTwitchUrl(String streamerUrl) {
-		return streamerUrl.startsWith(TWITCH_BASE_URL) && Arrays.asList(streamerUrl.split("/")).size() == 4;
+		return streamerUrl.matches(TWITCH_URL_MATCHER) && Arrays.asList(streamerUrl.split("/")).size() == 4;
 	}
 	
 	private boolean validChannelId(String channelId, Message message) {
