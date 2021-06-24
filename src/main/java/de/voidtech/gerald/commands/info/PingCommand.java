@@ -69,5 +69,10 @@ public class PingCommand extends AbstractCommand {
 		String[] aliases = {"pong"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

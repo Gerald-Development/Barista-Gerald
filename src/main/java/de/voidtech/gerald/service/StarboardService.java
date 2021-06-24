@@ -1,6 +1,9 @@
 package main.java.de.voidtech.gerald.service;
 
 import java.awt.Color;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -13,6 +16,7 @@ import main.java.de.voidtech.gerald.entities.StarboardConfig;
 import main.java.de.voidtech.gerald.entities.StarboardMessage;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
@@ -63,7 +67,7 @@ public class StarboardService {
 		{
 			session.getTransaction().begin();
 			
-			StarboardConfig config = new StarboardConfig(server.getId(), channelID, requiredStarCount);
+			StarboardConfig config = new StarboardConfig(server.getId(), channelID, requiredStarCount, null);
 			
 			session.saveOrUpdate(config);
 			session.getTransaction().commit();
@@ -103,10 +107,27 @@ public class StarboardService {
 				.setColor(Color.ORANGE)
 				.setAuthor(message.getAuthor().getAsTag(), GlobalConstants.LINKTREE_URL, message.getAuthor().getAvatarUrl())
 				.setDescription(message.getContentRaw())
-				.setTitle("Jump to message!", message.getJumpUrl());
+				.setTitle("Jump to message!", message.getJumpUrl())
+				.setTimestamp(Instant.now())
+				.setFooter("in #" + message.getChannel().getName());
 		
+		boolean found = false;
 		if (message.getAttachments().size() > 0) {
-			starboardEmbed.setImage(message.getAttachments().get(0).getUrl());
+			
+			for (Attachment attachment : message.getAttachments()) {
+				if (attachment.isImage() && !found) {
+					starboardEmbed.setImage(attachment.getUrl());
+					found = true;
+				}
+			}
+		}
+		if (!found && !message.getEmbeds().isEmpty()) {
+			for (MessageEmbed embed : message.getEmbeds()) {
+				if (embed.getImage() != null && !found) {
+					starboardEmbed.setImage(embed.getImage().getUrl());
+					found = true;
+				}
+			}
 		}
 		
 		return starboardEmbed.build();
@@ -164,5 +185,36 @@ public class StarboardService {
 		if (starCountFromMessage >= config.getRequiredStarCount()) {
 			sendOrUpdateMessage(serverID, reaction, config, message, starCountFromMessage);
 		}
+	}
+
+	public List<String> getIgnoredChannels(long serverID) {
+		StarboardConfig config = getStarboardConfig(serverID);
+		return config.getIgnoredChannels();
+	}
+
+	public void addChannelToIgnorelist(long serverID, String channelID) {
+		List<String> ignoredChannels = getIgnoredChannels(serverID);
+		List<String> newIgnoredChannelList;
+		if (ignoredChannels == null) {
+			newIgnoredChannelList = new ArrayList<String>();
+			newIgnoredChannelList.add(channelID);
+		} else {
+			newIgnoredChannelList = new ArrayList<String>(ignoredChannels);
+			newIgnoredChannelList.add(channelID);
+		}
+		StarboardConfig config = getStarboardConfig(serverID);
+		config.setIgnoredChannels(newIgnoredChannelList);
+		updateConfig(config);
+	}
+
+	public void removeFromIgnorelist(long serverID, String channelID) {
+		List<String> ignoredChannels = getIgnoredChannels(serverID);
+		List<String> newIgnoredChannelList = new ArrayList<String>(ignoredChannels);
+		newIgnoredChannelList.remove(channelID);
+		if (newIgnoredChannelList.size() == 0)
+			newIgnoredChannelList = null;
+		StarboardConfig config = getStarboardConfig(serverID);
+		config.setIgnoredChannels(newIgnoredChannelList);
+		updateConfig(config);
 	}
 }

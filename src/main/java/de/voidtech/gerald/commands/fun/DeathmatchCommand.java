@@ -142,5 +142,10 @@ public class DeathmatchCommand extends AbstractCommand {
 		String[] aliases = {"fight", "battle", "challenge"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

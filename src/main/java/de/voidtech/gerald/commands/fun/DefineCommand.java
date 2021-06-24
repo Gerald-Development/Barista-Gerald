@@ -105,5 +105,10 @@ public class DefineCommand extends AbstractCommand{
 		String[] aliases = {"ud", "urbandictionary"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

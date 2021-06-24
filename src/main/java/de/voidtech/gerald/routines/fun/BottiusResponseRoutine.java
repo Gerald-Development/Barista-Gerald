@@ -44,7 +44,7 @@ public class BottiusResponseRoutine extends AbstractRoutine{
 
 	@Override
 	public String getDescription() {
-		return "Greets bottius mightily";
+		return "Greets bottius mightily in some very special servers";
 	}
 
 	@Override
@@ -53,8 +53,13 @@ public class BottiusResponseRoutine extends AbstractRoutine{
 	}
 
 	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
+
+	@Override
 	public String getName() {
-		return "Bottius-Routine";
+		return "r-bottius";
 	}
 
 	@Override

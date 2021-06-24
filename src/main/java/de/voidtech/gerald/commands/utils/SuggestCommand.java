@@ -220,5 +220,10 @@ public class SuggestCommand extends AbstractCommand {
 		String[] aliases = {"idea", "suggestion"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

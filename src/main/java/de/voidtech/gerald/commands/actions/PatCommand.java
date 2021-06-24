@@ -49,4 +49,9 @@ public class PatCommand extends ActionsCommand {
 		String[] aliases = {"headpat"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 }

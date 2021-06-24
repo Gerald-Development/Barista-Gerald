@@ -90,7 +90,7 @@ public class NitroliteRoutine extends AbstractRoutine {
 
 	@Override
     public String getDescription() {
-        return "Service for sending emotes without nitro";
+        return "Allows nitrolite messages to be detected and handled";
     }
     
 	@Override
@@ -99,8 +99,13 @@ public class NitroliteRoutine extends AbstractRoutine {
 	}
 
 	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
+
+	@Override
 	public String getName() {
-		return "Nitrolite";
+		return "r-nitrolite";
 	}
 	
 	@Override

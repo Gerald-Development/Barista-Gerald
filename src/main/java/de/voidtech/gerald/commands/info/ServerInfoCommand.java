@@ -74,5 +74,10 @@ public class ServerInfoCommand extends AbstractCommand {
 		String[] aliases = {"si", "server"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

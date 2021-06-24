@@ -58,8 +58,8 @@ public class TunnelCommand extends AbstractCommand {
 	private void sendChannelVerificationRequest(TextChannel targetChannel, Message originChannelMessage, User tunnelInstantiator) {
 		String targetChannelID = targetChannel.getId();
 		String originChannelID = originChannelMessage.getChannel().getId();
-		//TODO: Redo this, it doesn't work
-		//pendingRequests.put(targetChannel.getId(), originChannelMessage.getChannel().getLatestMessageId());
+		
+		addToMap(targetChannel, originChannelMessage);
 		
 		targetChannel.getGuild().retrieveMember(tunnelInstantiator).queue(member -> {
 			if (member == null) {
@@ -68,7 +68,7 @@ public class TunnelCommand extends AbstractCommand {
 				if (member.hasPermission(Permission.MANAGE_CHANNEL)) {
 					targetChannel.sendMessage("**Incoming tunnel request from " + originChannelMessage.getGuild().getName() + " > "
 							+ originChannelMessage.getChannel().getName()
-							+ "**\nSay 'accept' within 15 seconds to allow this tunnel to be dug!").queue();
+							+ "**\nSay 'accept' within 30 seconds to allow this tunnel to be dug!").queue();
 					
 					waiter.waitForEvent(MessageReceivedEvent.class,
 							event -> tunnelAcceptedStatement(((MessageReceivedEvent) event), targetChannel), event -> {
@@ -93,6 +93,10 @@ public class TunnelCommand extends AbstractCommand {
 	private void removeFromMap(String targetChannelID, String originChannelID) {
 		this.pendingRequests.remove(targetChannelID);
 		this.pendingRequests.remove(originChannelID);
+	}
+	
+	private void addToMap(TextChannel targetChannel, Message originChannelMessage) {
+		this.pendingRequests.put(targetChannel.getId(), originChannelMessage.getChannel().getId());
 	}
 
 	private boolean tunnelAcceptedStatement(MessageReceivedEvent event, TextChannel targetChannel) {
@@ -256,6 +260,11 @@ public class TunnelCommand extends AbstractCommand {
 	public String[] getCommandAliases() {
 		String[] aliases = {"spaceport", "connection"};
 		return aliases;
+	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
 	}
 
 }

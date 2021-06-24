@@ -80,5 +80,10 @@ public class PrefixCommand extends AbstractCommand {
 		String[] aliases = {"setprefix"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return false;
+	}
 
 }

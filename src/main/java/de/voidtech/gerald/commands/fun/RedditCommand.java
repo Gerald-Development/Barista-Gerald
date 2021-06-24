@@ -153,5 +153,10 @@ public class RedditCommand extends AbstractCommand {
 		String[] aliases = {"subreddit","sub"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

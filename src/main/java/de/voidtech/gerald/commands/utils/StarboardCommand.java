@@ -1,5 +1,6 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
+import java.awt.Color;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,10 @@ import main.java.de.voidtech.gerald.entities.StarboardConfig;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.StarboardService;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class StarboardCommand extends AbstractCommand {
@@ -33,6 +36,8 @@ public class StarboardCommand extends AbstractCommand {
 			String channelID = ParsingUtils.filterSnowflake(args.get(1));
 			if (!ParsingUtils.isSnowflake(channelID))
 				message.getChannel().sendMessage("**The channel you provided is not valid!**").queue();
+			else if (!message.getGuild().getChannels().contains(message.getJDA().getGuildChannelById(channelID)))
+					message.getChannel().sendMessage("**The channel you provided is not in this server!**").queue();
 			else if (!ParsingUtils.isInteger(args.get(2)))
 				message.getChannel().sendMessage("**You need to specify a number for the star count!**").queue();
 			else if (Integer.parseInt(args.get(2)) < 1) 
@@ -52,11 +57,15 @@ public class StarboardCommand extends AbstractCommand {
 	private void changeChannel(Message message, List<String> args, Server server) {
 		if (starboardService.getStarboardConfig(server.getId()) != null) {
 			String channelID = ParsingUtils.filterSnowflake(args.get(1));
-			if (!ParsingUtils.isSnowflake(channelID)) message.getChannel().sendMessage("**The channel you provided is not valid!**").queue();
+			if (!ParsingUtils.isSnowflake(channelID))
+				message.getChannel().sendMessage("**The channel you provided is not valid!**").queue();
+			else if (!message.getGuild().getChannels().contains(message.getJDA().getGuildChannelById(channelID)))
+					message.getChannel().sendMessage("**The channel you provided is not in this server!**").queue();
 			else {
 				StarboardConfig config = starboardService.getStarboardConfig(server.getId());
 				config.setChannelID(channelID);
 				starboardService.updateConfig(config);
+				message.getChannel().sendMessage("**Message channel has been changed to <#" + channelID + ">!**").queue();
 			}
 		} else message.getChannel().sendMessage("**A Starboard has not been set up here! Did you mean to use one of these?**\n\n" + this.getUsage()).queue();	
 	}
@@ -68,10 +77,78 @@ public class StarboardCommand extends AbstractCommand {
 				StarboardConfig config = starboardService.getStarboardConfig(server.getId());
 				config.setRequiredStarCount(Integer.parseInt(args.get(1)));
 				starboardService.updateConfig(config);
+				message.getChannel().sendMessage("**Required count has been changed to " + args.get(1) + "!**").queue();
 			}
 		} else message.getChannel().sendMessage("**A Starboard has not been set up here! Did you mean to use one of these?**\n\n" + this.getUsage()).queue();	
 	}
+
+	private void showIgnoredChannels(Message message, Server server) {
+		if (starboardService.getStarboardConfig(server.getId()) != null) {
+			List<String> ignoredChannels = starboardService.getIgnoredChannels(server.getId());
+			String ignoredChannelMessage = "";
+			if (ignoredChannels == null) {
+				ignoredChannelMessage = "None ignored!";
+			} else {
+				for (String id : ignoredChannels)
+					ignoredChannelMessage = ignoredChannelMessage + "<#" + id + ">\n";
+			}
+		message.getChannel().sendMessage(constructIgnoredChannelEmbed(ignoredChannelMessage)).queue();		
+		} else message.getChannel().sendMessage("**A Starboard has not been set up here! Did you mean to use one of these?**\n\n" + this.getUsage()).queue();
+	}
+
+	private void ignoreChannel(Message message, List<String> args, Server server) {
+		if (message.getMember().getPermissions().contains(Permission.MANAGE_CHANNEL)) {
+			if (starboardService.getStarboardConfig(server.getId()) != null) {
+				String channelID = ParsingUtils.filterSnowflake(args.get(1));
+				if (!ParsingUtils.isSnowflake(channelID))
+					message.getChannel().sendMessage("**The channel you provided is not valid!**").queue();
+				else if (!message.getGuild().getChannels().contains(message.getJDA().getGuildChannelById(channelID)))
+						message.getChannel().sendMessage("**The channel you provided is not in this server!**").queue();
+					else {
+						if (starboardService.getIgnoredChannels(server.getId()) == null) {
+							starboardService.addChannelToIgnorelist(server.getId(), channelID);
+							message.getChannel().sendMessage("<#" + channelID + "> **has been added to the blacklist!**").queue();
+						} else if (starboardService.getIgnoredChannels(server.getId()).contains(channelID))
+							message.getChannel().sendMessage("**This channel is already blacklisted!**").queue();
+						else {
+							starboardService.addChannelToIgnorelist(server.getId(), channelID);
+							message.getChannel().sendMessage("<#" + channelID + "> **has been added to the blacklist!**").queue();							
+						}
+				}
+			} else message.getChannel().sendMessage("**A Starboard has not been set up here! Did you mean to use one of these?**\n\n" + this.getUsage()).queue();
+		}
+	}
 	
+	private void unignoreChannel(Message message, List<String> args, Server server) {
+		if (message.getMember().getPermissions().contains(Permission.MANAGE_CHANNEL)) {
+			if (starboardService.getStarboardConfig(server.getId()) != null) {
+				String channelID = ParsingUtils.filterSnowflake(args.get(1));
+				if (!ParsingUtils.isSnowflake(channelID))
+					message.getChannel().sendMessage("**The channel you provided is not valid!**").queue();
+				else if (!message.getGuild().getChannels().contains(message.getJDA().getGuildChannelById(channelID)))
+						message.getChannel().sendMessage("**The channel you provided is not in this server!**").queue();
+					else {
+						if (starboardService.getIgnoredChannels(server.getId()) == null)
+							message.getChannel().sendMessage("**There is no blacklist yet!**").queue();
+						else if (starboardService.getIgnoredChannels(server.getId()).contains(channelID)) {
+							starboardService.removeFromIgnorelist(server.getId(), channelID);
+							message.getChannel().sendMessage("<#" + channelID + "> **has been removed from the blacklist!**").queue();	
+						} else
+							message.getChannel().sendMessage("**This channel is not yet blacklisted!**").queue();						
+				}
+			} else message.getChannel().sendMessage("**A Starboard has not been set up here! Did you mean to use one of these?**\n\n" + this.getUsage()).queue();
+		}
+	}
+	
+	private MessageEmbed constructIgnoredChannelEmbed(String ignoredChannelMessage) {
+		MessageEmbed ignoredChannelEmbed = new EmbedBuilder()
+				.setTitle("Starboard Ignored Channels")
+				.setColor(Color.ORANGE)
+				.setDescription(ignoredChannelMessage)
+				.build();
+		return ignoredChannelEmbed;
+	}
+
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		if (message.getMember().getPermissions().contains(Permission.MANAGE_CHANNEL)) {
@@ -90,6 +167,15 @@ public class StarboardCommand extends AbstractCommand {
 			case "disable":
 				disableStarboard(message, server);
 				break;
+			case "ignore":
+				ignoreChannel(message, args, server);
+				break;
+			case "unignore":
+				unignoreChannel(message, args, server);
+				break;
+			case "ignored":
+				showIgnoredChannels(message, server);
+				break;
 			default:
 				message.getChannel().sendMessage("**That's not a valid subcommand! Try this instead:**\n\n" + this.getUsage()).queue();
 			}
@@ -100,7 +186,9 @@ public class StarboardCommand extends AbstractCommand {
 	public String getDescription() {
 		return "Do you like quoting things? Funny, interesting and more? Perfect!\n"
 				+ "Our starboard system allows you to react to messages with the :star: emote and have them automatically sent to"
-				+ " a starboard channel in your server! Your server admins can choose the channel and number of stars needed to get it pinned! We recommend you use 5 stars";
+				+ " a starboard channel in your server! Your server admins can choose the channel and number of stars needed to get it pinned!"
+				+ " Additionally, they may choose to ignore some channels. Ignore a channel with the ignore command, allow it again with the"
+				+ " unignore command, and show all the ignored channels with the ignored command!";
 	}
 
 	@Override
@@ -108,7 +196,10 @@ public class StarboardCommand extends AbstractCommand {
 		return "starboard setup [Channel mention / ID] [Required star count]\n"
 				+ "starboard count [New number of stars needed]\n"
 				+ "starboard channel [New channel mention / ID]\n"
-				+ "starboard disable\n\n"
+				+ "starboard disable\n"
+				+ "starboard ignore [channel mention / ID]\n"
+				+ "starboard unignore [channel mention / ID]\n"
+				+ "starboard ignored\n\n"
 				+ "NOTE: You MUST run the setup command first!";
 	}
 
@@ -136,6 +227,11 @@ public class StarboardCommand extends AbstractCommand {
 	public String[] getCommandAliases() {
 		String[] aliases = {"autoquote", "quotechannel", "sb"};
 		return aliases;
+	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
 	}
 
 }

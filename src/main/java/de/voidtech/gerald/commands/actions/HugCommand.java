@@ -49,5 +49,10 @@ public class HugCommand extends ActionsCommand {
 		String[] aliases = {"hold"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

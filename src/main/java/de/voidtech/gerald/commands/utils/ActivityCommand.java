@@ -143,5 +143,10 @@ public class ActivityCommand extends AbstractCommand {
 		String[] aliases = {"setactivity", "status", "setstatus"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

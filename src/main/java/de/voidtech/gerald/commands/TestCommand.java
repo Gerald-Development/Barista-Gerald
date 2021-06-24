@@ -52,4 +52,9 @@ public class TestCommand extends AbstractCommand{
 		String[] aliases = {"test"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 }

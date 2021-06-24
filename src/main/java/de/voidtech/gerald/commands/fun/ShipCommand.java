@@ -95,5 +95,10 @@ public class ShipCommand extends AbstractCommand{
 		String[] aliases = {"stan"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

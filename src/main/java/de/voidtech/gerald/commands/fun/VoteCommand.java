@@ -52,5 +52,10 @@ public class VoteCommand extends AbstractCommand{
 		String[] aliases = {"poll"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

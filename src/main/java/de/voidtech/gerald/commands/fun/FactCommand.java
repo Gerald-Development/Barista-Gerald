@@ -84,5 +84,10 @@ public class FactCommand extends AbstractCommand
 		String[] aliases = {"uselessfact"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

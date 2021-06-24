@@ -15,12 +15,10 @@ public class StarboardMessage {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	//TODO: REVIEW should be unique
-	@Column
+	@Column(unique = true)
 	private String originMessageID;
 	
-	//TODO: REVIEW should this be unique?
-	@Column
+	@Column(unique = true)
 	private String selfMessageID;
 	
 	@Column

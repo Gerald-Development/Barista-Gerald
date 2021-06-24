@@ -1,6 +1,6 @@
 /*
 	BaristaGerald A General Purpose Discord Bot
-    Copyright (C) 2020-2021  Barista Gerald Dev Team (http://github.com/Montori/Barista-Gerald)
+    Copyright (C) 2020-2021  Barista Gerald Dev Team (https://github.com/Gerald-Development/Barista-Gerald)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ public class Gerald {
 				.enableIntents(getNonPrivilegedIntents())
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.setBulkDeleteSplittingEnabled(false)
-				.setStatus(OnlineStatus.IDLE)
+				.setStatus(OnlineStatus.ONLINE)
 				.setCompression(Compression.NONE)
 				.addEventListeners(eventWaiter,	msgListener, readyListener,	guildGoneListener, channelDeleteListener, memberListener, starboardListener)
 				.setActivity(EntityBuilder.createActivity(globalConf.getStatus(),

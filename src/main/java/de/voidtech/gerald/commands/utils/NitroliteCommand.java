@@ -1,10 +1,14 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
@@ -17,6 +21,7 @@ import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.WebhookManager;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 @Command
 public class NitroliteCommand extends AbstractCommand {
@@ -35,6 +40,9 @@ public class NitroliteCommand extends AbstractCommand {
 	
 	@Autowired
 	private WebhookManager webhookManager;
+	
+	@Autowired
+	private EventWaiter waiter;
 		
 	private boolean aliasAlreadyExists(String name, long serverID) {
 		try(Session session = sessionFactory.openSession())
@@ -83,29 +91,88 @@ public class NitroliteCommand extends AbstractCommand {
 		message.getChannel().sendMessage("**Alias with name **`" + aliasName + "`** has been deleted!**").queue();
 	}
 	
-	private void searchEmoteDatabase(Message message, List<String> args) {
-		String search = args.get(1);
-		
-        List<NitroliteEmote> result = emoteService.getEmotes(search, message.getJDA());
-        
-        String searchResult = "**Database searched for: **`" + search + "`\n";
-        if (result.size() == 0) {
-        	searchResult += "Nothing found :(";
-        } else {
-        	for (NitroliteEmote emote: result) {
-                searchResult += nitroliteService.constructEmoteString(emote) + " - " + emote.getName() + " - " + emote.getID() + "\n";
-            }
-        }
-        
+	private void sendFallbackMessage(Message message, String content) {
         webhookManager.postMessageWithFallback(
-        		message, searchResult,
+        		message, content,
         		message.getJDA().getSelfUser().getAvatarUrl(),
         		message.getJDA().getSelfUser().getName(),
         		"BGNitrolite");
-
 	}
 	
-    private void addEmoteAlias(Message message, List<String> args) {    
+	private List<NitroliteEmote> getFirstFifteen(List<NitroliteEmote> list) {
+		List<NitroliteEmote> firstFifteen = new ArrayList<NitroliteEmote>();
+		if (list.size() > 15) {
+			for (int i = 0; i < 15; i++) {
+				firstFifteen.add(list.get(i));
+			}
+			return firstFifteen;	
+		} else {
+			return list;
+		}
+	}
+	
+	private List<NitroliteEmote> listWithFirstFifteenRemoved(List<NitroliteEmote> list) {
+		List<NitroliteEmote> tailOfList = new ArrayList<NitroliteEmote>();
+			for (int i = 15; i < list.size(); i++) {
+				tailOfList.add(list.get(i));
+			}
+			return tailOfList;	
+	}
+	
+    private void sendPages(Message message, List<NitroliteEmote> result) {
+		List<NitroliteEmote> firstFifteenResults = getFirstFifteen(result);
+		String searchResult = "";
+		boolean canSendMoreEmotes = false;
+		
+    	for (NitroliteEmote emote: firstFifteenResults) {
+            searchResult += nitroliteService.constructEmoteString(emote) + " - " + emote.getName() + " - " + emote.getID() + "\n";
+        }
+    	
+    	if (result.size() > 15) {
+    		searchResult += "\n**Send 'more' to see more results!**";
+    		canSendMoreEmotes = true;
+    	}
+    	
+    	sendFallbackMessage(message, searchResult);
+    	
+    	if (canSendMoreEmotes) {
+    		waiter.waitForEvent(MessageReceivedEvent.class,
+    				event -> ((MessageReceivedEvent) event).getAuthor().getId().equals(message.getAuthor().getId()),
+    				event -> {
+    					boolean moreRequested = event.getMessage().getContentRaw().toLowerCase().equals("more");
+    					if (moreRequested) {
+    						sendPages(message, listWithFirstFifteenRemoved(result));
+    					}
+    				}, 60, TimeUnit.SECONDS, 
+    				() -> message.getChannel().sendMessage("**Search ended**").queue());
+    	}
+    }
+
+	private void searchEmoteDatabase(Message message, List<String> args) {
+		String search = args.get(1);
+		
+		if (search.length() < 3)
+			message.getChannel().sendMessage("**Your search is too small! Please use at least 3 letters!**").queue();
+		else {
+			List<NitroliteEmote> result = emoteService.getEmotes(search, message.getJDA());
+	        
+	        String searchResult = "**Database searched for: **`" + search + "`\n";
+	        if (result.size() == 0) {
+	        	searchResult += "Nothing found :(";
+	        } else {
+	        	if (result.size() > 15) {
+	        		sendPages(message, result);
+	        	} else {
+	            	for (NitroliteEmote emote: result) {
+	                    searchResult += nitroliteService.constructEmoteString(emote) + " - " + emote.getName() + " - " + emote.getID() + "\n";
+	                }	
+	            	sendFallbackMessage(message, searchResult);
+	        	}
+	        }	
+		}
+	}
+
+	private void addEmoteAlias(Message message, List<String> args) {    
     	if (args.size() < 3) {
     		message.getChannel().sendMessage("**You need to supply more arguments!**\n\n" + this.getUsage()).queue();
     	} else {
@@ -150,13 +217,8 @@ public class NitroliteCommand extends AbstractCommand {
         		NitroliteEmote emote = emoteService.getEmoteById(alias.getEmoteID(), message.getJDA());
         		aliasMessage += nitroliteService.constructEmoteString(emote) + " - **Alias:** `" + alias.getAliasName() + "` **ID:** `" + alias.getEmoteID() + "`\n";
         	}	
+        	sendFallbackMessage(message, aliasMessage);
     	}
-    	
-        webhookManager.postMessageWithFallback(
-        		message, aliasMessage,
-        		message.getJDA().getSelfUser().getAvatarUrl(),
-        		message.getJDA().getSelfUser().getName(),
-        		"BGNitrolite");
     }
     
 	@Override
@@ -225,5 +287,10 @@ public class NitroliteCommand extends AbstractCommand {
 	public String[] getCommandAliases() {
 		String[] aliases = {"nitro", "nl", "emotes", "emote"};
 		return aliases;
+	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
 	}
 }

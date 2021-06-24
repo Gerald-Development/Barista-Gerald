@@ -127,5 +127,10 @@ public class BerryCommand extends AbstractCommand{
 		String[] aliases = {"bguess", "berryguess"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

@@ -229,4 +229,9 @@ public class CountCommand extends AbstractCommand {
 		String[] aliases = {"counting"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 }

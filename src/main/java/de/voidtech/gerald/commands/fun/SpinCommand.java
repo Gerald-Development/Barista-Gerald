@@ -114,5 +114,10 @@ public class SpinCommand extends AbstractCommand {
 		String[] aliases = {"spinner", "speen"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

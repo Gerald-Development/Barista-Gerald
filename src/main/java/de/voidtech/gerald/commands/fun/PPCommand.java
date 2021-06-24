@@ -94,5 +94,10 @@ public class PPCommand extends AbstractCommand{
 		String[] aliases = {"ppsize"};
 		return aliases;
 	}
+	
+	@Override
+	public boolean canBeDisabled() {
+		return true;
+	}
 
 }

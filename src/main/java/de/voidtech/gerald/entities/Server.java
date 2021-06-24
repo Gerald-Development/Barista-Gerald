@@ -36,6 +36,10 @@ public class Server
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Cascade(CascadeType.REMOVE)
 	private Set<String> commandBlacklist;
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Cascade(CascadeType.REMOVE)
+	private Set<String> routineBlacklist;
 	
 	@Column
 	private String prefix;
@@ -78,11 +82,27 @@ public class Server
 		else return Collections.unmodifiableSet(this.commandBlacklist);
 	}
 	
-	public void addToCommandBlacklist(String channelID) {
-		this.commandBlacklist.add(channelID);
+	public void addToCommandBlacklist(String commandName) {
+		this.commandBlacklist.add(commandName);
 	}
-	public void removeFromCommandBlacklist(String channelID) {
-		this.commandBlacklist.remove(channelID);
+	public void removeFromCommandBlacklist(String commandName) {
+		this.commandBlacklist.remove(commandName);
+	}
+	
+	public void clearCommandBlacklist() {
+		this.commandBlacklist.clear();
+	}
+
+	public Set<String> getRoutineBlacklist() {
+		if (this.routineBlacklist == null) return Collections.unmodifiableSet(new HashSet<String>());
+		else return Collections.unmodifiableSet(this.routineBlacklist);
+	}
+
+	public void addToRoutineBlacklist(String routineName) {
+		this.routineBlacklist.add(routineName);
+	}
+	public void removeFromRoutineBlacklist(String routineName) {
+		this.routineBlacklist.remove(routineName);
 	}
 
 	public String getPrefix() {
