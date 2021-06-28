@@ -38,7 +38,7 @@ public class TwitchCommand extends AbstractCommand{
 	private static final String TWITCH_URL_MATCHER = "https:\\/\\/(www\\.)?twitch.tv\\/.*";
 	
 	private boolean validTwitchUrl(String streamerUrl) {
-		return streamerUrl.matches(TWITCH_URL_MATCHER) && Arrays.asList(streamerUrl.split("/")).size() == 4;
+		return streamerUrl.matches(TWITCH_URL_MATCHER);
 	}
 	
 	private boolean validChannelId(String channelId, Message message) {
@@ -138,6 +138,9 @@ public class TwitchCommand extends AbstractCommand{
 	}
 
 	private void streamerSetupFinishSetup(Message message, String streamerName, String channelId, String notificationMessage) {
+		System.out.println(streamerName);
+		System.out.println(channelId);
+		System.out.println(notificationMessage);
 		message.getChannel().sendMessage("**Setup completed!**\n\nStreamer Url: " + TWITCH_BASE_URL + streamerName + "\nChannel: <#" + channelId + ">\nNotification Message: " + notificationMessage).queue();
 		twitchService.addSubscription(streamerName, channelId, notificationMessage, serverService.getServer(message.getGuild().getId()).getId());
 	}
