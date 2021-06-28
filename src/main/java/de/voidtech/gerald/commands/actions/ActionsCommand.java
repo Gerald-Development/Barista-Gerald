@@ -125,7 +125,7 @@ public abstract class ActionsCommand extends AbstractCommand {
                 }
                 actionEmbedBuilder.setFooter(getStatsString(message.getAuthor().getId(), message.getMentionedMembers().get(0).getId(), action, message));
                 MessageEmbed actionEmbed = actionEmbedBuilder.build();
-                message.getChannel().sendMessageEmbeds(actionEmbed).queue();
+                message.getChannel().sendMessage(actionEmbed).queue();
             }
         }
 	}
