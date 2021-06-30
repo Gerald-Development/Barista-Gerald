@@ -1,11 +1,11 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
+import java.util.List;
+
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import net.dv8tion.jda.api.entities.Message;
-
-import java.util.List;
 
 @Command
 public class LmgtfyCommand extends AbstractCommand {
