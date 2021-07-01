@@ -157,8 +157,8 @@ public class NitroliteCommand extends AbstractCommand {
 			List<NitroliteEmote> result = emoteService.getEmotes(search, message.getJDA());
 	        
 	        String searchResult = "**Database searched for: **`" + search + "`\n";
-	        if (result.size() == 0) {
-	        	searchResult += "Nothing found :(";
+	        if (result.isEmpty()) {
+	        	message.getChannel().sendMessage("**Nothing was found!**").queue();
 	        } else {
 	        	if (result.size() > 15) {
 	        		sendPages(message, result);

@@ -2,9 +2,12 @@ package main.java.de.voidtech.gerald.service;
 
 import java.util.EnumSet;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import main.java.de.voidtech.gerald.entities.NitroliteAlias;
 import main.java.de.voidtech.gerald.entities.NitroliteEmote;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
@@ -17,7 +20,47 @@ import net.dv8tion.jda.api.entities.Webhook;
 public class NitroliteService {
 
 	@Autowired
-	WebhookManager webhookManager;
+	private WebhookManager webhookManager;
+	
+	@Autowired
+	private SessionFactory sessionFactory;
+	
+	@Autowired
+	private EmoteService emoteService;
+	
+	public boolean aliasExists(String name, long serverID) {
+		try(Session session = sessionFactory.openSession())
+		{
+			NitroliteAlias alias = (NitroliteAlias) session.createQuery("FROM NitroliteAlias WHERE ServerID = :serverID AND aliasName = :aliasName")
+                    .setParameter("serverID", serverID)
+                    .setParameter("aliasName", name)
+                    .uniqueResult();
+			return alias != null;
+		}
+	}
+	
+    public NitroliteEmote getEmoteFromAlias(String name, long serverID, Message message) {
+    	try(Session session = sessionFactory.openSession())
+		{
+			NitroliteAlias alias = (NitroliteAlias) session.createQuery("FROM NitroliteAlias WHERE ServerID = :serverID AND aliasName = :aliasName")
+                    .setParameter("serverID", serverID)
+                    .setParameter("aliasName", name)
+                    .uniqueResult();
+			
+			return emoteService.getEmoteById(alias.getEmoteID(), message.getJDA());
+		}
+	}
+    
+    public void deleteAliasesUsingEmote(String emoteID) {
+    	try(Session session = sessionFactory.openSession())
+		{
+			session.getTransaction().begin();
+			session.createQuery("DELETE FROM NitroliteAlias WHERE emoteID = :emoteID")
+				.setParameter("emoteID", emoteID)
+				.executeUpdate();
+			session.getTransaction().commit();
+		}
+    }
 	
     public void sendMessage(Message originMessage, String content) {
     	
@@ -53,13 +96,12 @@ public class NitroliteService {
 	}
 
 	public String constructEmoteString(NitroliteEmote emote) {
-        return String.format("<%s%s:%s>", emote.isEmoteAnimated() ? "a:" : ":", emote.getName(), emote.getID());
+		if (emote == null) return "[Emote Deleted]";
+		else return String.format("<%s%s:%s>", emote.isEmoteAnimated() ? "a:" : ":", emote.getName(), emote.getID());
     }
 
     private void sendWebhookMessage(Message message, String content) {    	
-    	Webhook webhook = webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGNitrolite");
-    	webhookManager.postMessage(content, message.getAuthor().getAvatarUrl(), message.getMember().getEffectiveName(), webhook);
-    	
-        
+    	Webhook webhook = webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGNitrolite", message.getJDA().getSelfUser().getId());
+    	webhookManager.postMessage(content, message.getAuthor().getAvatarUrl(), message.getMember().getEffectiveName(), webhook); 
     }
 }

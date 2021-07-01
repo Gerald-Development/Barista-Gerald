@@ -1,7 +1,12 @@
 package main.java.de.voidtech.gerald.service;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.hibernate.Session;
@@ -19,13 +24,28 @@ public class EmoteService {
 	@Autowired
 	private SessionFactory sessionFactory;
 	
+	@Autowired
+	private NitroliteService nitroliteService;
+	
+	private static final String DISCORD_EMOJI_CDN_URL = "https://cdn.discordapp.com/emojis/";
+	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64; Trident/7.0; rv:11.0) like Gecko";
+	
+	private static final Logger LOGGER = Logger.getLogger(EmoteService.class.getName());
+	
 	private List<NitroliteEmote> getPersistentEmotes(String name) {
 		try(Session session = sessionFactory.openSession())
 		{
 			List<NitroliteEmote> emotes = (List<NitroliteEmote>) session.createQuery("FROM NitroliteEmote WHERE LOWER(name) LIKE :name", NitroliteEmote.class)
                     .setParameter("name", "%" + name.toLowerCase() + "%")
                     .list();
-			return emotes;
+			if (!emotes.isEmpty()) {
+				List<NitroliteEmote> checkedEmotesList = new ArrayList<NitroliteEmote>();
+				for (NitroliteEmote emote : emotes) {
+					if (emoteStillExists(emote)) checkedEmotesList.add(emote);
+					else deletePersistentEmoteById(emote.getID());
+				}
+				return checkedEmotesList;
+			} else return emotes;	
 		}
 	}
 	
@@ -37,6 +57,11 @@ public class EmoteService {
                     .setFirstResult(0)
                     .setMaxResults(1)
                     .uniqueResult();
+			
+			if (emote != null) {
+				if (!emoteStillExists(emote))
+					deletePersistentEmoteById(emote.getID());
+			}
 			return emote;
 		}
 	}
@@ -49,8 +74,25 @@ public class EmoteService {
                     .setFirstResult(0)
                     .setMaxResults(1)
                     .uniqueResult();
+			
+			if (emote != null) {
+				if (!emoteStillExists(emote))
+					deletePersistentEmoteById(emote.getID());
+			}
 			return emote;
 		}
+	}
+	
+	private void deletePersistentEmoteById(String emoteID) {
+		try(Session session = sessionFactory.openSession())
+		{
+			session.getTransaction().begin();
+			session.createQuery("DELETE FROM NitroliteEmote WHERE emoteID = :emoteID")
+				.setParameter("emoteID", emoteID)
+				.executeUpdate();
+			session.getTransaction().commit();
+		}
+		nitroliteService.deleteAliasesUsingEmote(emoteID);
 	}
 	
 	public NitroliteEmote getEmoteById(String id, JDA jda) {
@@ -109,8 +151,28 @@ public class EmoteService {
         		finalResult.add(emote);
         	});
         }
+        
+        List<NitroliteEmote> finalResultChecked = new ArrayList<NitroliteEmote>();
+        
+        for (NitroliteEmote emote : finalResult) {
+        	if (emoteStillExists(emote)) finalResultChecked.add(emote);
+        	else deletePersistentEmoteById(emote.getID());
+        }
 		
-        return finalResult;
+        return finalResultChecked;
 	}
 	
+	private boolean emoteStillExists(NitroliteEmote emote) {
+		try {
+			URL url = new URL(DISCORD_EMOJI_CDN_URL + emote.getID() + (emote.isEmoteAnimated() ? ".gif" : ".png"));
+			HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+			httpConnection.setRequestMethod("HEAD");
+			httpConnection.setRequestProperty("User-Agent", USER_AGENT);
+
+			return (httpConnection.getResponseCode() != HttpURLConnection.HTTP_NOT_FOUND);
+		} catch (IOException e) {
+			LOGGER.log(Level.SEVERE, "Error during ServiceExecution: " + e.getMessage());
+		}
+		return true;
+	}
 }
