@@ -22,6 +22,9 @@ public class RoutineCommand extends AbstractCommand {
     
 	@Autowired
 	private ServerService serverService;
+	
+	private static final String TRUE_EMOTE = "\u2705";
+	private static final String FALSE_EMOTE = "\u274C";
 
     @Override
     public void executeInternal(Message message, List<String> args) {
@@ -33,11 +36,12 @@ public class RoutineCommand extends AbstractCommand {
                 .setTitle("Barista Gerald - Routines")
                 .setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
                 .setFooter("Routine Count: "+ routineCount + " | Note: Some routines cannot be disabled. The commands they power require them to function. Try disabling the command instead!");
+        
         for (AbstractRoutine routine: routines) {
-            routineInformation.addField(routine.getName(), String.format("Description: %s\nCan be disabled: %s\nIs disabled Here: %s",
+            routineInformation.addField(routine.getName(), String.format("```Description: %s\nCan be disabled:  %s\nIs disabled Here: %s```",
             		routine.getDescription(),
-            		routine.canBeDisabled() ? ":white_check_mark:" : ":x:",
-            		server.getRoutineBlacklist().contains(routine.getName()) ? ":white_check_mark:" : ":x:"),
+            		routine.canBeDisabled() ? TRUE_EMOTE : FALSE_EMOTE,
+            		server.getRoutineBlacklist().contains(routine.getName()) ? TRUE_EMOTE : FALSE_EMOTE),
             		false);
         }
         message.getChannel().sendMessage(routineInformation.build()).queue();
