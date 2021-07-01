@@ -49,7 +49,7 @@ public class ImpersonateCommand extends AbstractCommand{
 		for (int i = 1; i < args.size(); i++) {
 			messageToBeSent += args.get(i) + " ";
 		}
-		Webhook impersonateHook = webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGImpersonate");
+		Webhook impersonateHook = webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGImpersonate", message.getJDA().getSelfUser().getId());
 		webhookManager.postMessage(messageToBeSent, memberToBeImpersonated.getUser().getAvatarUrl(), memberToBeImpersonated.getUser().getName(), impersonateHook);
 		message.delete().queue();
 	}

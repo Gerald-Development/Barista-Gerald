@@ -20,14 +20,14 @@ import net.dv8tion.jda.api.entities.Webhook;
 
 @Service
 public class WebhookManager {
-
+	
     private static final Logger LOGGER = Logger.getLogger(WebhookManager.class.getName());
 	
-	public Webhook getOrCreateWebhook(TextChannel targetChannel, String webhookName) {
+	public Webhook getOrCreateWebhook(TextChannel targetChannel, String webhookName, String selfID) {
 		
 		List<Webhook> webhooks = targetChannel.retrieveWebhooks().complete();
 		for (Webhook webhook : webhooks) {
-			if (webhook.getName().equals(webhookName)) {
+			if (webhook.getName().equals(webhookName) && webhook.getOwnerAsUser().getId().equals(selfID)) {
 				return webhook;
 			}
 		}
@@ -71,8 +71,14 @@ public class WebhookManager {
 		EnumSet<Permission> perms = message.getGuild().getSelfMember().getPermissions((GuildChannel) message.getChannel());
 		
         if (perms.contains(Permission.MANAGE_WEBHOOKS)) {
-        	postMessage(content, avatarUrl, username,
-            		getOrCreateWebhook((TextChannel) message.getChannel(), webhookName));
+        	postMessage(
+        			content,
+        			avatarUrl,
+        			username,
+        			getOrCreateWebhook((TextChannel) message.getChannel(),
+        					webhookName,
+        					message.getJDA().getSelfUser().getId())
+        	);
          } else {
              message.getChannel().sendMessage(content).queue();
          }

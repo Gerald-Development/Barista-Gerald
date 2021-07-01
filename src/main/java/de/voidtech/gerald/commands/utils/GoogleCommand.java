@@ -4,21 +4,16 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import com.microsoft.playwright.Browser;
-import com.microsoft.playwright.Browser.NewContextOptions;
-import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Playwright;
 
-//import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.service.PlaywrightService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
@@ -28,7 +23,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
-//Command
+@Command
 public class GoogleCommand extends AbstractCommand {
 	
 	private static final String BROWSER_LOGO_IMAGE = "https://e7.pngegg.com/pngimages/293/824/png-clipart-ecosia-computer-icons-web-browser-android-illegal-logging-globe-logo-thumbnail.png";
@@ -40,25 +35,12 @@ public class GoogleCommand extends AbstractCommand {
 	private static final String BROWSER_IMAGES_URL = "images?q=";
 	private static final String BROWSER_VIDEOS_URL = "videos?q=";
 	private static final String SAFE_SEARCH_SUFFIX = "&sfs=true";
-	
-	private static final Logger LOGGER = Logger.getLogger(GoogleCommand.class.getName());
-	
-	private BrowserContext browser = null;
 
 	@Autowired
 	private EventWaiter waiter;
 	
-	private NewContextOptions getContextOptions() {
-		return new Browser.NewContextOptions()
-				.setViewportSize(1000, 1000);
-	}
-	
-	GoogleCommand() {
-		LOGGER.log(Level.INFO, "Firefox is being initialised");
-		Browser browserInstance = Playwright.create().firefox().launch();
-		this.browser = browserInstance.newContext(getContextOptions());
-		LOGGER.log(Level.INFO, "Firefox is ready!");
-	}
+	@Autowired
+	private PlaywrightService playwrightService;
 
 	private String removeFirstListItem(List<String> originalList) {
 		if (originalList.size() == 1) {
@@ -158,7 +140,7 @@ public class GoogleCommand extends AbstractCommand {
 			message.getChannel().sendMessage("**You did not provide something to search for!**").queue();
 		else {
 			message.getChannel().sendTyping().queue();
-			Page searchPage = this.browser.newPage();
+			Page searchPage = playwrightService.getBrowser().newPage();
 			searchPage.navigate(url);
 			searchPage.setViewportSize(1000, 1000);
 			

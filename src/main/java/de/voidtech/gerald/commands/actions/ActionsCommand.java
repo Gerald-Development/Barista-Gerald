@@ -106,7 +106,7 @@ public abstract class ActionsCommand extends AbstractCommand {
 		return statsString;
 	}
 
-	public void sendAction(Message message, ActionType action) {
+	public void sendAction(Message message, ActionType action) {		
 		if(message.getMentionedMembers().isEmpty()) {
             message.getChannel().sendMessage("You need to mention someone to " + action.getType() + "!").queue();
         } else {

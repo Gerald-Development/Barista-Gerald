@@ -1,23 +1,23 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
 
-import main.java.de.voidtech.gerald.GlobalConstants;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import main.java.de.voidtech.gerald.GlobalConstants;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.ChatChannel;
 import main.java.de.voidtech.gerald.service.ChatbotService;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class ChatCommand extends AbstractCommand{

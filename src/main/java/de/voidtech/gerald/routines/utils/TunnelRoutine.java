@@ -79,7 +79,7 @@ public class TunnelRoutine extends AbstractRoutine {
 		
 		EnumSet<Permission> perms = channel.getGuild().getSelfMember().getPermissions(channel);
 		if (perms.contains(Permission.MANAGE_WEBHOOKS)) {
-			Webhook webhook = webhookManager.getOrCreateWebhook(channel, "BGTunnel");
+			Webhook webhook = webhookManager.getOrCreateWebhook(channel, "BGTunnel", message.getJDA().getSelfUser().getId());
 			sendWebhookMessage(webhook, messageContent, message);
 		} else {
 			channel.sendMessage("**" + message.getAuthor().getAsTag() + ":** " + messageContent).queue();
