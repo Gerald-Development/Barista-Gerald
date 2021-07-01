@@ -21,7 +21,10 @@ public class HelpCommand extends AbstractCommand{
 	private List<AbstractCommand> commands;
 	
 	@Autowired
-	MessageHandler msgHandler;
+	private MessageHandler msgHandler;
+ 
+	private static final String TRUE_EMOTE = "\u2705";
+	private static final String FALSE_EMOTE = "\u274C";
 	
 	private String capitaliseFirstLetter(String word) {
 		return word.substring(0, 1).toUpperCase() + word.substring(1);
@@ -53,9 +56,8 @@ public class HelpCommand extends AbstractCommand{
 	
 	private boolean isCommandCategory(String categoryName) {
 		for (CommandCategory commandCategory : CommandCategory.values()) {
-			if (commandCategory.getCategory().equals(categoryName)) {
+			if (commandCategory.getCategory().equals(categoryName))
 				return true;
-			}
 		}
 		return false;
 	};
@@ -63,9 +65,8 @@ public class HelpCommand extends AbstractCommand{
 	
 	private String getCategoryIconByName(String name) {
 		for (CommandCategory commandCategory : CommandCategory.values()) {
-			if (commandCategory.getCategory().equals(name)) {
+			if (commandCategory.getCategory().equals(name))
 				return commandCategory.getIcon();
-			}
 		}
 		return "";
 	}
@@ -75,10 +76,9 @@ public class HelpCommand extends AbstractCommand{
 		if (msgHandler.aliases.containsKey(commandToBeFound)) {
 			return true;
 		} else {
-			for (AbstractCommand command : commands) {
+			for (AbstractCommand command : commands)
 				if(command.getName().equals(commandToBeFound)) {
 					return true;
-				}
 			}	
 		}
 		return false;
@@ -87,9 +87,8 @@ public class HelpCommand extends AbstractCommand{
 	private void showCommandCategory(Message message, String categoryName) {
 		String commandList = "";
 		for (AbstractCommand command : commands) {
-			if(command.getCommandCategory().getCategory().equals(categoryName)) {
+			if(command.getCommandCategory().getCategory().equals(categoryName))
 				commandList = commandList + "`" + command.getName()  + "`, ";
-			}
 		}
 		commandList = commandList.substring(0, commandList.length() - 2);
 		
@@ -106,13 +105,11 @@ public class HelpCommand extends AbstractCommand{
 
 	private AbstractCommand getCommand(String name) {
 		String commandToBeFound = name;
-		if (msgHandler.aliases.containsKey(name)) {
+		if (msgHandler.aliases.containsKey(name))
 			commandToBeFound = msgHandler.aliases.get(name);
-		}
 		for (AbstractCommand command : commands) {
-			if(command.getName().equals(commandToBeFound)) {
+			if(command.getName().equals(commandToBeFound))
 				return command;
-			}
 		}
 		return null;
 	}
@@ -128,37 +125,30 @@ public class HelpCommand extends AbstractCommand{
 				.addField("Category", "```" + capitaliseFirstLetter(commandToBeDisplayed.getCommandCategory().getCategory()) + "```", true)
 				.addField("Description", "```" + commandToBeDisplayed.getDescription() + "```", false)
 				.addField("Usage", "```" + commandToBeDisplayed.getUsage() + "```", false)
-				.addField("Requires Arguments", "```" + commandToBeDisplayed.requiresArguments() + "```", true)
-				.addField("Is DM Capable", "```" + commandToBeDisplayed.isDMCapable() + "```", true)
+				.addField("Requires Arguments", "```" + showBooleanEmote(commandToBeDisplayed.requiresArguments()) + "```", true)
+				.addField("Is DM Capable", "```" + showBooleanEmote(commandToBeDisplayed.isDMCapable()) + "```", true)
 				.addField("Command Aliases", "```" + String.join(", ", commandToBeDisplayed.getCommandAliases()) + "```", false)
 				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, message.getJDA().getSelfUser().getAvatarUrl())
 				.build();
 		message.getChannel().sendMessage(commandHelpEmbed).queue();
 	}
 	
+	private String showBooleanEmote(boolean option) {
+		return option ? TRUE_EMOTE : FALSE_EMOTE;
+	}
+
 	@Override
 	public void executeInternal(Message message, List<String> args) {
+		if (!commands.contains(this)) commands.add(this);	
 		
-		//Don't ask...
-		if (!commands.contains(this)) {
-			commands.add(this);	
-		}
-		
-		if (args.size() == 0) {
+		if (args.size() == 0)
 			showCategoryList(message);
-		} else {
-			
+		else {
 			String itemToBeQueried = args.get(0).toLowerCase();
-			
-			if (isCommandCategory(itemToBeQueried)) {
-				showCommandCategory(message, itemToBeQueried);
-			} else if (isCommand(itemToBeQueried)) {
-				showCommand(message, itemToBeQueried);
-			} else {
-				message.getChannel().sendMessage("**That command/category could not be found!**").queue();
-			}
+			if (isCommandCategory(itemToBeQueried)) showCommandCategory(message, itemToBeQueried);
+			else if (isCommand(itemToBeQueried)) showCommand(message, itemToBeQueried);
+			else message.getChannel().sendMessage("**That command/category could not be found!**").queue();
 		}
-		
 	}
 
 	@Override
@@ -168,7 +158,9 @@ public class HelpCommand extends AbstractCommand{
 
 	@Override
 	public String getUsage() {
-		return "help OR help [name of command] OR help [name of category]";
+		return "help\n"
+				+ "help [name of command]\n"
+				+ "help [name of category]";
 	}
 
 	@Override
