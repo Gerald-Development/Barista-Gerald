@@ -4,6 +4,7 @@
 The Java Version of the [Gerald Discord Bot](https://github.com/Elementalmp4/GeraldCore)
 
 Welcome to Gerald! Gerald is just another bot for your lovely Discord server! To give you a rough overview here are some of the main features:
+- No Nitro? No problem! Nitrolite uses some magic code to allow you to use your favourite emotes anywhere with Gerald!
 - Chat with GeraldAI: We have implemented a ChatAI into our bot to allow users to chat with him in real time. Type \chat enable in a channel to enable it
 - Dig Tunnels: You can dig tunnels to channels of other servers (or your own), this allows you two connect two textchannels. The messages of one channel will be mirrored to the channel and vice versa!
 - Play with Gerald: The Bot includes implementations of various "mini-games" like "Would you rather", Deathmatches or Fruit Guessing
@@ -27,11 +28,12 @@ Optionally you can also send us an [email](mailto:gerald@voidtech.de).
 - [Spring Boot](https://spring.io/projects/spring-boot) - Dependency Injection and microservices
 - [PostgreSQL](https://www.postgresql.org/) - Database
 - [JDA](https://github.com/DV8FromTheWorld/JDA) -  Discord API wrapper for Java
+- [Twitch4J](https://github.com/twitch4j/twitch4j) - Twitch API wrapper for Java
 - [Gavin](https://github.com/Scot-Survivor/GavinFastAPI) - TensorFlow Chat AI built for the [Gavin Discord Bot](https://github.com/Scot-Survivor/GavinTraining)
 
 ## Setting up Gerald yourself
 You want to host Gerald yourself? No problem just follow the following steps and you are good to go:
-- Download the latest build from our [Jenkins](https://jenkins.voidtech.de/job/Barista%20Gerald/lastSuccessfulBuild/)    ([direct download](https://jenkins.voidtech.de/job/Barista%20Gerald/lastSuccessfulBuild/artifact/target/original-BaristaGerald-0.0.1-SNAPSHOT.jar))
+- Download the latest stable build from the [releases tab](https://github.com/Gerald-Development/Barista-Gerald/releases) or check out our developer builds on our [Jenkins](https://jenkins.voidtech.de/job/Barista%20Gerald/lastSuccessfulBuild/)    ([direct download](https://jenkins.voidtech.de/job/Barista%20Gerald/lastSuccessfulBuild/artifact/target/original-BaristaGerald-0.0.1-SNAPSHOT.jar))
 - Create a file with name "GeraldConfig.properties" with following content:
 ```
         defaultPrefix=COMMAND_PREFIX
@@ -64,4 +66,4 @@ Note: Docker Compose automatically consumes the `.env` file in its working direc
 ## Contributions 
 Do you want to contribute to the bot yourself? Great news: you can! Just join our Discord and coordinate with us. 
 
-We are currently not maintaining our GitHub issues due to the fact that we are a small team and mostly write all the code ourselves. If you want to contribute you can either look for some rare issues on the issue tab or join our discord server where we plan and delegate tasks.
+We prefer to plan our development work ahead of implementing them so if you want to contribute to the Gerald code base we would be delighted to see you on our discord server. Alternatively you can take a look at the issues tab where we try to plan and document upcoming features and bugfixes.
