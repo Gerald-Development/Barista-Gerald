@@ -114,11 +114,9 @@ public class GoogleCommand extends AbstractCommand {
 	}
 
 	private boolean deleteEventAuthorised(MessageReactionAddEvent event, Message message) {
-		return !event.getMember().getId().equals(event.getJDA().getSelfUser().getId()) && 
-				   (
+		return !event.getMember().getId().equals(event.getJDA().getSelfUser().getId()) && (
 						   event.getUser().getId().equals(message.getAuthor().getId()) ||
-						   event.getMember().hasPermission(Permission.MESSAGE_MANAGE)
-				   );
+						   event.getMember().hasPermission(Permission.MESSAGE_MANAGE));
 	}
 
 	private MessageEmbed constructResultEmbed(String url, boolean safeSearchMode) {

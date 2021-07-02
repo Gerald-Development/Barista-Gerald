@@ -3,9 +3,9 @@ package main.java.de.voidtech.gerald.util;
 import java.util.function.Predicate;
 
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
-public abstract class RAESameUserPredicate implements Predicate<GuildMessageReactionAddEvent> {
+public class RAESameUserPredicate implements Predicate<MessageReactionAddEvent> {
 
 	private User originalUser;
 	
@@ -14,7 +14,7 @@ public abstract class RAESameUserPredicate implements Predicate<GuildMessageReac
 	}
 	
 	@Override
-	public boolean test(GuildMessageReactionAddEvent t) {
+	public boolean test(MessageReactionAddEvent t) {
 		return t.getUser().getId().equals(originalUser.getId());
 	}
 }
