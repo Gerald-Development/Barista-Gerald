@@ -16,6 +16,7 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.TwitchNotificationChannel;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.TwitchNotificationService;
+import main.java.de.voidtech.gerald.util.MRESameUserPredicate;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -41,7 +42,7 @@ public class TwitchCommand extends AbstractCommand{
 	private void getAwaitedReply(Message message, String question, Consumer<String> result) {
         message.getChannel().sendMessage(question).queue();
         waiter.waitForEvent(MessageReceivedEvent.class,
-                event -> event.getAuthor().getId().equals(message.getAuthor().getId()),
+                new MRESameUserPredicate(message.getAuthor()),
                 event -> {
                     result.accept(event.getMessage().getContentRaw());
                 }, 30, TimeUnit.SECONDS, 
