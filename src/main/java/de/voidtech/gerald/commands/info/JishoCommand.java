@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.microsoft.playwright.Page;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
@@ -26,8 +24,8 @@ public class JishoCommand extends AbstractCommand {
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		message.getChannel().sendTyping().queue();
-		String search = JISHO_BASE_URL + String.join("+", args);
-		byte[] resultImage = getJishoScreenshot(search);
+		String search = JISHO_BASE_URL + String.join(" ", args);
+		byte[] resultImage = playwrightService.screenshotPage(search, 1200, 1500);
 		message.getChannel().sendMessageEmbeds(constructResultEmbed(search))
 		.addFile(resultImage, "screenshot.png").queue();
 	}
@@ -40,16 +38,6 @@ public class JishoCommand extends AbstractCommand {
 				.setFooter("Powered by Jisho")
 				.build();
 		return jishoEmbed;
-	}
-
-	private byte[] getJishoScreenshot(String search) {
-		Page jishoPage = playwrightService.getBrowser().newPage();
-		jishoPage.navigate(search);
-		jishoPage.setViewportSize(1200, 1500);
-		byte[] screenshotBytesBuffer = jishoPage.screenshot();
-		jishoPage.close();	
-		
-		return screenshotBytesBuffer;
 	}
 
 	@Override
