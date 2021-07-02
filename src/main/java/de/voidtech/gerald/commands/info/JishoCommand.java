@@ -54,12 +54,12 @@ public class JishoCommand extends AbstractCommand {
 
 	@Override
 	public String getDescription() {
-		return "Allows you to get some translations from jisho! Jisho translates English to Japanese";
+		return "Allows you to interact with Jisho! Jisho is a powerful Japanese-English dictionary. It lets you find words, kanji, example sentences and more quickly and easily. (https://jisho.org/)";
 	}
 
 	@Override
 	public String getUsage() {
-		return "jisho [english to be translated]";
+		return "jisho [something to search for]";
 	}
 
 	@Override
