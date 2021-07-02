@@ -100,7 +100,7 @@ public class CountCommand extends AbstractCommand {
 					.addField("Has reached 69?", reached69, true)
 					.addField("No. of times 69 has been reached", numberOf69, true)
 					.build();
-			channel.sendMessage(countStatsEmbed).queue();
+			channel.sendMessageEmbeds(countStatsEmbed).queue();
 		}	
 	}
 	
@@ -161,7 +161,7 @@ public class CountCommand extends AbstractCommand {
 				.setDescription(leaderboard)
 				.setTimestamp(Instant.now())
 				.build();
-		message.getChannel().sendMessage(leaderboardEmbed).queue();
+		message.getChannel().sendMessageEmbeds(leaderboardEmbed).queue();
 		
 	}
 	

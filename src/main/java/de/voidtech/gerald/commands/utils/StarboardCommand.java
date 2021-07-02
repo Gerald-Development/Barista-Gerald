@@ -92,7 +92,7 @@ public class StarboardCommand extends AbstractCommand {
 				for (String id : ignoredChannels)
 					ignoredChannelMessage = ignoredChannelMessage + "<#" + id + ">\n";
 			}
-		message.getChannel().sendMessage(constructIgnoredChannelEmbed(ignoredChannelMessage)).queue();		
+		message.getChannel().sendMessageEmbeds(constructIgnoredChannelEmbed(ignoredChannelMessage)).queue();		
 		} else message.getChannel().sendMessage("**A Starboard has not been set up here! Did you mean to use one of these?**\n\n" + this.getUsage()).queue();
 	}
 

@@ -20,7 +20,7 @@ public class InviteCommand extends AbstractCommand {
 				.setColor(Color.cyan)
 				.setDescription("**[Gerald Invite Link](" + GlobalConstants.INVITE_URL + ")**")
 				.build();
-		message.getChannel().sendMessage(inviteLinkEmbed).queue();
+		message.getChannel().sendMessageEmbeds(inviteLinkEmbed).queue();
 	}
 
 	@Override

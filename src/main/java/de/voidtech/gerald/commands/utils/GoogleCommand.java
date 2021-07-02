@@ -105,7 +105,7 @@ public class GoogleCommand extends AbstractCommand {
 	}
 	
 	private void sendFinalMessage(Message message, String url, byte[] screenshotBytesBuffer) {
-		message.getChannel().sendMessage(constructResultEmbed(url, getNsfwMode(message.getChannel())))
+		message.getChannel().sendMessageEmbeds(constructResultEmbed(url, getNsfwMode(message.getChannel())))
 		.addFile(screenshotBytesBuffer, "screenshot.png")
 		.queue(sentMessage -> {
 			if (!message.getChannelType().equals(ChannelType.PRIVATE)) {

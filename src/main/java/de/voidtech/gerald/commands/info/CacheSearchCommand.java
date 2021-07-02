@@ -78,7 +78,7 @@ public class CacheSearchCommand extends AbstractCommand{
 						.setThumbnail(imageURL)
 						.setDescription(resultMessage)
 						.build();
-				message.getChannel().sendMessage(cacheSearchEmbed).queue();	
+				message.getChannel().sendMessageEmbeds(cacheSearchEmbed).queue();	
 			} else {
 				message.getChannel().sendMessage("**Nothing was found in the cache!**").queue();
 			}

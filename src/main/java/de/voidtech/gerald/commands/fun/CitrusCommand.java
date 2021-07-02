@@ -39,7 +39,7 @@ public class CitrusCommand extends AbstractCommand {
 				.setImage(citrusMap.get(currentCitrus))
 				.build();
 		
-		message.getChannel().sendMessage(citrusQuestEmbed).queue();;
+		message.getChannel().sendMessageEmbeds(citrusQuestEmbed).queue();;
 		
 		waiter.waitForEvent(MessageReceivedEvent.class,
 				event -> ((MessageReceivedEvent) event).getAuthor().getId().equals(message.getAuthor().getId()),

@@ -28,7 +28,7 @@ public class JishoCommand extends AbstractCommand {
 		message.getChannel().sendTyping().queue();
 		String search = JISHO_BASE_URL + String.join("+", args);
 		byte[] resultImage = getJishoScreenshot(search);
-		message.getChannel().sendMessage(constructResultEmbed(search))
+		message.getChannel().sendMessageEmbeds(constructResultEmbed(search))
 		.addFile(resultImage, "screenshot.png").queue();
 	}
 	

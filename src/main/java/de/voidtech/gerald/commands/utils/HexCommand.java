@@ -42,7 +42,7 @@ public class HexCommand extends AbstractCommand {
 				.setTitle("#" + hexCode.toUpperCase(), colourHexaURL)
 				.setFooter(colourName)
 				.build();
-		message.getChannel().sendMessage(hexColourEmbed).queue();
+		message.getChannel().sendMessageEmbeds(hexColourEmbed).queue();
 	}
 	
 	private String getColourName(String colourHexaURL) {

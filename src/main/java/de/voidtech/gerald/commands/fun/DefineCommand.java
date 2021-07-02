@@ -47,7 +47,7 @@ public class DefineCommand extends AbstractCommand{
 					.setFooter("Definition by " + definition.getString("author"))
 					.build();
 			
-			message.getChannel().sendMessage(definitionEmbed).queue();			
+			message.getChannel().sendMessageEmbeds(definitionEmbed).queue();			
 		}
 	}
 	

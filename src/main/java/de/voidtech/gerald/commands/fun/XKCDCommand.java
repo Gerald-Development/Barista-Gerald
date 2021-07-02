@@ -82,7 +82,7 @@ public class XKCDCommand extends AbstractCommand {
 				.setImage(img)
 				.setFooter(day + "-" + month + "-" + year)
 				.build();
-		message.getChannel().sendMessage(xkcdEmbed).queue(sentMessage -> {
+		message.getChannel().sendMessageEmbeds(xkcdEmbed).queue(sentMessage -> {
 			sentMessage.addReaction(EMOTE_UNICODE).queue();
 			waiter.waitForEvent(MessageReactionAddEvent.class,
 					event -> ((MessageReactionAddEvent) event).getUser().getId().equals(message.getAuthor().getId()),
@@ -96,7 +96,7 @@ public class XKCDCommand extends AbstractCommand {
 								.setImage(img)
 								.setFooter(day + "-" + month + "-" + year)
 								.build();
-						sentMessage.editMessage(newXkcdEmbed).queue();
+						sentMessage.editMessageEmbeds(newXkcdEmbed).queue();
 					}
 				}, 30, TimeUnit.SECONDS, () -> {});
 		});

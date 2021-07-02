@@ -22,7 +22,7 @@ public class PingCommand extends AbstractCommand {
 				.setAuthor("Ping?")
 				.setColor(Color.RED)
 				.build();
-		message.getChannel().sendMessage(beforePingHasBeenProcessedEmbed).queue(response -> {
+		message.getChannel().sendMessageEmbeds(beforePingHasBeenProcessedEmbed).queue(response -> {
 			MessageEmbed pingEmbed = new EmbedBuilder()//
 					.setAuthor("Pong!")//
 					.setColor(Color.GREEN)//
@@ -30,7 +30,7 @@ public class PingCommand extends AbstractCommand {
 							(System.currentTimeMillis() - time), message.getJDA().getGatewayPing()))//
 					.build();
 
-			response.editMessage(pingEmbed).queue();
+			response.editMessageEmbeds(pingEmbed).queue();
 		});
 	}
 

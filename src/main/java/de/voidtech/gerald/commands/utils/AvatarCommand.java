@@ -23,7 +23,7 @@ public class AvatarCommand extends AbstractCommand{
 				.setTitle(member.getUser().getName() + "'s Avatar", avatarUrl)
 				.setImage(avatarUrl)
 				.build();
-		message.getChannel().sendMessage(avatarEmbed).queue();
+		message.getChannel().sendMessageEmbeds(avatarEmbed).queue();
 	}
 
 	@Override

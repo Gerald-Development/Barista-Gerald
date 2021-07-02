@@ -39,7 +39,7 @@ public class ShipCommand extends AbstractCommand{
 				.setDescription(String.format("Your love match percentage is %d%c %s", shipRating, '%', phrase))
 				.build();
 		
-		message.getChannel().sendMessage(shipEmbed).queue();
+		message.getChannel().sendMessageEmbeds(shipEmbed).queue();
 	}
 	
 	private Color getColor(int shipRating)

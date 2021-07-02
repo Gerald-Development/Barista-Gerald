@@ -40,7 +40,7 @@ public class PingResponseRoutine extends AbstractRoutine {
 				.setTitle("You called? :telephone:", linktree)
 				.setDescription("**This Guild's prefix is:** " + prefix + "\nTry " + prefix + "help to see some commands!")
 				.build();
-		message.getChannel().sendMessage(pingResponseEmbed).queue();
+		message.getChannel().sendMessageEmbeds(pingResponseEmbed).queue();
     }
     
 	@Override

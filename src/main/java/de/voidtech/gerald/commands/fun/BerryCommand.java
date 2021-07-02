@@ -38,7 +38,7 @@ public class BerryCommand extends AbstractCommand{
 				.setImage(berryMap.get(currentBerry))
 				.build();
 		
-		message.getChannel().sendMessage(berryQuestEmbed).queue();;
+		message.getChannel().sendMessageEmbeds(berryQuestEmbed).queue();;
 		
 		waiter.waitForEvent(MessageReceivedEvent.class,
 				event -> ((MessageReceivedEvent) event).getAuthor().getId().equals(message.getAuthor().getId()),

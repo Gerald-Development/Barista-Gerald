@@ -68,7 +68,7 @@ public class TwitchCommand extends AbstractCommand{
 				messageBody += "**Streamer** - " + formatTwitchUrlMarkdown(subscription.getStreamerName()) + "\n**Channel** - <#" + subscription.getChannelId() + ">\n**Message** - " + subscription.getNotificationMessage() + "\n\n";
 			}	
 		}
-		message.getChannel().sendMessage(buildTwitchSubscriptionEmbed(messageBody)).queue();
+		message.getChannel().sendMessageEmbeds(buildTwitchSubscriptionEmbed(messageBody)).queue();
 	}
 
 	private String formatTwitchUrlMarkdown(String name) {
