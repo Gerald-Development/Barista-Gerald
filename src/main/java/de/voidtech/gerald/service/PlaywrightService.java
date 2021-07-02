@@ -22,7 +22,7 @@ public class PlaywrightService {
 				.setViewportSize(1000, 1000);
 	}
 	
-	PlaywrightService() {
+	public PlaywrightService() {
 		LOGGER.log(Level.INFO, "Playwright is being initialised");
 		Browser browserInstance = Playwright.create().firefox().launch();
 		this.browser = browserInstance.newContext(getContextOptions());
