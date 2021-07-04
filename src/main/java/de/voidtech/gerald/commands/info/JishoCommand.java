@@ -25,7 +25,7 @@ public class JishoCommand extends AbstractCommand {
 	public void executeInternal(Message message, List<String> args) {
 		message.getChannel().sendTyping().queue();
 		String search = JISHO_BASE_URL + String.join("%20", args).replaceAll("#", "%23");
-		byte[] resultImage = playwrightService.screenshotPage(search, 1200, 1500);
+		byte[] resultImage = playwrightService.screenshotPage(search, 1500, 1500);
 		message.getChannel().sendMessageEmbeds(constructResultEmbed(search))
 		.addFile(resultImage, "screenshot.png").queue();
 	}
