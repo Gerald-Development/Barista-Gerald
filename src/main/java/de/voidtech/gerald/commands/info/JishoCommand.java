@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.microsoft.playwright.Page;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
@@ -26,9 +24,9 @@ public class JishoCommand extends AbstractCommand {
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		message.getChannel().sendTyping().queue();
-		String search = JISHO_BASE_URL + String.join("+", args);
-		byte[] resultImage = getJishoScreenshot(search);
-		message.getChannel().sendMessage(constructResultEmbed(search))
+		String search = JISHO_BASE_URL + String.join("%20", args).replaceAll("#", "%23");
+		byte[] resultImage = playwrightService.screenshotPage(search, 1500, 1500);
+		message.getChannel().sendMessageEmbeds(constructResultEmbed(search))
 		.addFile(resultImage, "screenshot.png").queue();
 	}
 	
@@ -42,24 +40,14 @@ public class JishoCommand extends AbstractCommand {
 		return jishoEmbed;
 	}
 
-	private byte[] getJishoScreenshot(String search) {
-		Page jishoPage = playwrightService.getBrowser().newPage();
-		jishoPage.navigate(search);
-		jishoPage.setViewportSize(1200, 1500);
-		byte[] screenshotBytesBuffer = jishoPage.screenshot();
-		jishoPage.close();	
-		
-		return screenshotBytesBuffer;
-	}
-
 	@Override
 	public String getDescription() {
-		return "Allows you to get some translations from jisho! Jisho translates English to Japanese";
+		return "Allows you to interact with Jisho! Jisho is a powerful Japanese-English dictionary. It lets you find words, kanji, example sentences and more quickly and easily. (https://jisho.org/)";
 	}
 
 	@Override
 	public String getUsage() {
-		return "jisho [english to be translated]";
+		return "jisho [something to search for]";
 	}
 
 	@Override

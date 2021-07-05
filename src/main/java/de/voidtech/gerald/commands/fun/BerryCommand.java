@@ -15,6 +15,7 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.util.MRESameUserPredicate;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -38,10 +39,10 @@ public class BerryCommand extends AbstractCommand{
 				.setImage(berryMap.get(currentBerry))
 				.build();
 		
-		message.getChannel().sendMessage(berryQuestEmbed).queue();;
+		message.getChannel().sendMessageEmbeds(berryQuestEmbed).queue();;
 		
 		waiter.waitForEvent(MessageReceivedEvent.class,
-				event -> ((MessageReceivedEvent) event).getAuthor().getId().equals(message.getAuthor().getId()),
+				new MRESameUserPredicate(message.getAuthor()),
 				event -> {
 					boolean correctberry = event.getMessage().getContentRaw().toLowerCase().equals(currentBerry);
 					message.getChannel().sendMessage(String.format("%s! The Berry was **%s**",

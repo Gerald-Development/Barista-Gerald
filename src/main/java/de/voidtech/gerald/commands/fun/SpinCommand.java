@@ -60,7 +60,7 @@ public class SpinCommand extends AbstractCommand {
 				.setColor(color)
 				.setTitle("Your spinner is spinning...")
 				.build();
-		message.getChannel().sendMessage(spinnerStartEmbed).queue(sentMessage -> {
+		message.getChannel().sendMessageEmbeds(spinnerStartEmbed).queue(sentMessage -> {
 			
 			try {
 				Thread.sleep(spinDelay);
@@ -69,7 +69,7 @@ public class SpinCommand extends AbstractCommand {
 						.setTitle("Your spinner has stopped!")
 						.setDescription("It lasted for **" + spinTime + "** seconds!")
 						.build();
-				sentMessage.editMessage(spinnerEndEmbed).queue();
+				sentMessage.editMessageEmbeds(spinnerEndEmbed).queue();
 			} catch (InterruptedException e) {
 				message.getChannel().sendMessage("Your spinner broke!").queue();
 			}

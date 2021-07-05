@@ -23,6 +23,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
+import main.java.de.voidtech.gerald.util.RAESameUserPredicate;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -82,10 +83,10 @@ public class XKCDCommand extends AbstractCommand {
 				.setImage(img)
 				.setFooter(day + "-" + month + "-" + year)
 				.build();
-		message.getChannel().sendMessage(xkcdEmbed).queue(sentMessage -> {
+		message.getChannel().sendMessageEmbeds(xkcdEmbed).queue(sentMessage -> {
 			sentMessage.addReaction(EMOTE_UNICODE).queue();
 			waiter.waitForEvent(MessageReactionAddEvent.class,
-					event -> ((MessageReactionAddEvent) event).getUser().getId().equals(message.getAuthor().getId()),
+					new RAESameUserPredicate(message.getAuthor()),
 					event -> {
 					boolean moreInfoButtonPressed = event.getReactionEmote().toString().equals("RE:" + EMOTE_UNICODE);
 					if (moreInfoButtonPressed) {
@@ -96,7 +97,7 @@ public class XKCDCommand extends AbstractCommand {
 								.setImage(img)
 								.setFooter(day + "-" + month + "-" + year)
 								.build();
-						sentMessage.editMessage(newXkcdEmbed).queue();
+						sentMessage.editMessageEmbeds(newXkcdEmbed).queue();
 					}
 				}, 30, TimeUnit.SECONDS, () -> {});
 		});

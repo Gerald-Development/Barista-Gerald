@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,6 +16,7 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.TwitchNotificationChannel;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.TwitchNotificationService;
+import main.java.de.voidtech.gerald.util.MRESameUserPredicate;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -36,6 +38,16 @@ public class TwitchCommand extends AbstractCommand{
 	
 	private static final String TWITCH_BASE_URL = "https://twitch.tv/";
 	private static final String TWITCH_URL_MATCHER = "https:\\/\\/(www\\.)?twitch.tv\\/.*";
+	
+	private void getAwaitedReply(Message message, String question, Consumer<String> result) {
+        message.getChannel().sendMessage(question).queue();
+        waiter.waitForEvent(MessageReceivedEvent.class,
+                new MRESameUserPredicate(message.getAuthor()),
+                event -> {
+                    result.accept(event.getMessage().getContentRaw());
+                }, 30, TimeUnit.SECONDS, 
+                () -> message.getChannel().sendMessage(String.format("Request timed out.")).queue());
+    }
 	
 	private boolean validTwitchUrl(String streamerUrl) {
 		return streamerUrl.matches(TWITCH_URL_MATCHER);
@@ -68,7 +80,7 @@ public class TwitchCommand extends AbstractCommand{
 				messageBody += "**Streamer** - " + formatTwitchUrlMarkdown(subscription.getStreamerName()) + "\n**Channel** - <#" + subscription.getChannelId() + ">\n**Message** - " + subscription.getNotificationMessage() + "\n\n";
 			}	
 		}
-		message.getChannel().sendMessage(buildTwitchSubscriptionEmbed(messageBody)).queue();
+		message.getChannel().sendMessageEmbeds(buildTwitchSubscriptionEmbed(messageBody)).queue();
 	}
 
 	private String formatTwitchUrlMarkdown(String name) {
@@ -91,56 +103,36 @@ public class TwitchCommand extends AbstractCommand{
 	}
 	
 	private void streamerSetupGetStreamer(Message message) {
-		message.getChannel().sendMessage("**Please enter the twitch URL of the streamer you wish to subscribe to:**").queue();
-		
-		waiter.waitForEvent(MessageReceivedEvent.class,
-				event -> ((MessageReceivedEvent) event).getAuthor().getId().equals(message.getAuthor().getId()),
-				event -> {
-					String streamerUrl = event.getMessage().getContentRaw().toLowerCase();
-					if (validTwitchUrl(streamerUrl)) {
-						String streamerName = Arrays.asList(streamerUrl.split("/")).get(3);
-						if (twitchService.subscriptionExists(streamerName, serverService.getServer(message.getGuild().getId()).getId()))
-							message.getChannel().sendMessage("**A subscription to that streamer already exists!**").queue();
-						else
-							streamerSetupGetChannel(message, streamerName);
-					} else
-						message.getChannel().sendMessage("**You did not enter a valid twitch.tv url! Please check your URL and start setup again**").queue();
-
-				}, 30, TimeUnit.SECONDS, 
-				() -> message.getChannel().sendMessage(String.format("Request timed out.")).queue());		
+		getAwaitedReply(message, "**Please enter the twitch URL of the streamer you wish to subscribe to:**", streamerUrl -> {
+			if (validTwitchUrl(streamerUrl)) {
+				String streamerName = Arrays.asList(streamerUrl.split("/")).get(3);
+				if (twitchService.subscriptionExists(streamerName, serverService.getServer(message.getGuild().getId()).getId()))
+					message.getChannel().sendMessage("**A subscription to that streamer already exists!**").queue();
+				else
+					streamerSetupGetChannel(message, streamerName);
+			} else
+				message.getChannel().sendMessage("**You did not enter a valid twitch.tv url! Please check your URL and start setup again**").queue();	
+		});
 	}
 
 	private void streamerSetupGetChannel(Message message, String streamerName) {
-		message.getChannel().sendMessage("**Please enter the channel you wish to get notifications sent to (use a channel mention or ID):**").queue();
-		waiter.waitForEvent(MessageReceivedEvent.class,
-				event -> ((MessageReceivedEvent) event).getAuthor().getId().equals(message.getAuthor().getId()),
-				event -> {
-					String channelId = ParsingUtils.filterSnowflake(event.getMessage().getContentRaw().toLowerCase());
-					if (validChannelId(channelId, message)) {
-						streamerSetupGetMessage(message, streamerName, channelId);
-					} else {
-						message.getChannel().sendMessage("**You did not enter a valid channel! Please check the mention was correct and the channel is in this server!**").queue();
-					}
-
-				}, 30, TimeUnit.SECONDS, 
-				() -> message.getChannel().sendMessage(String.format("Request timed out.")).queue());		
+		getAwaitedReply(message, "**Please enter the channel you wish to get notifications sent to (use a channel mention or ID):**", rawChannelInput -> {
+			String channelId = ParsingUtils.filterSnowflake(rawChannelInput);
+			if (validChannelId(channelId, message)) {
+				streamerSetupGetMessage(message, streamerName, channelId);
+			} else {
+				message.getChannel().sendMessage("**You did not enter a valid channel! Please check the mention was correct and the channel is in this server!**").queue();
+			}
+		});
 	}
 
 	private void streamerSetupGetMessage(Message message, String streamerName, String channelId) {
-		message.getChannel().sendMessage("**Please enter your custom notification message:**").queue();
-		waiter.waitForEvent(MessageReceivedEvent.class,
-				event -> ((MessageReceivedEvent) event).getAuthor().getId().equals(message.getAuthor().getId()),
-				event -> {
-					String notificationMessage = event.getMessage().getContentRaw();
-					streamerSetupFinishSetup(message, streamerName, channelId, notificationMessage);
-				}, 30, TimeUnit.SECONDS, 
-				() -> message.getChannel().sendMessage(String.format("Request timed out.")).queue());		
+		getAwaitedReply(message, "**Please enter your custom notification message:**", notificationMessage -> {
+			streamerSetupFinishSetup(message, streamerName, channelId, notificationMessage);	
+		});	
 	}
 
 	private void streamerSetupFinishSetup(Message message, String streamerName, String channelId, String notificationMessage) {
-		System.out.println(streamerName);
-		System.out.println(channelId);
-		System.out.println(notificationMessage);
 		message.getChannel().sendMessage("**Setup completed!**\n\nStreamer Url: " + TWITCH_BASE_URL + streamerName + "\nChannel: <#" + channelId + ">\nNotification Message: " + notificationMessage).queue();
 		twitchService.addSubscription(streamerName, channelId, notificationMessage, serverService.getServer(message.getGuild().getId()).getId());
 	}

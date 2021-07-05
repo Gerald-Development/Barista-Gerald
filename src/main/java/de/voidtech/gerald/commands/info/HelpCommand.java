@@ -51,7 +51,7 @@ public class HelpCommand extends AbstractCommand{
 		
 		MessageEmbed categoryListEmbed = categoryListEmbedBuilder.build();
 		
-		message.getChannel().sendMessage(categoryListEmbed).queue();
+		message.getChannel().sendMessageEmbeds(categoryListEmbed).queue();
 	}
 	
 	private boolean isCommandCategory(String categoryName) {
@@ -99,7 +99,7 @@ public class HelpCommand extends AbstractCommand{
 				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
 				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, message.getJDA().getSelfUser().getAvatarUrl())
 				.build();
-		message.getChannel().sendMessage(commandHelpEmbed).queue();
+		message.getChannel().sendMessageEmbeds(commandHelpEmbed).queue();
 		
 	};
 
@@ -130,7 +130,7 @@ public class HelpCommand extends AbstractCommand{
 				.addField("Command Aliases", "```" + String.join(", ", commandToBeDisplayed.getCommandAliases()) + "```", false)
 				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, message.getJDA().getSelfUser().getAvatarUrl())
 				.build();
-		message.getChannel().sendMessage(commandHelpEmbed).queue();
+		message.getChannel().sendMessageEmbeds(commandHelpEmbed).queue();
 	}
 	
 	private String showBooleanEmote(boolean option) {

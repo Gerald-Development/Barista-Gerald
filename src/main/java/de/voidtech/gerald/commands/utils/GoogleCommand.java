@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import com.microsoft.playwright.Page;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
@@ -104,9 +103,9 @@ public class GoogleCommand extends AbstractCommand {
 			}, 60, TimeUnit.SECONDS, () -> {});
 	}
 	
-	private void sendFinalMessage(Message message, String url, byte[] screenshotBytesBuffer) {
-		message.getChannel().sendMessage(constructResultEmbed(url, getNsfwMode(message.getChannel())))
-		.addFile(screenshotBytesBuffer, "screenshot.png")
+	private void sendFinalMessage(Message message, String url, byte[] screenshot) {
+		message.getChannel().sendMessageEmbeds(constructResultEmbed(url, getNsfwMode(message.getChannel())))
+		.addFile(screenshot, "screenshot.png")
 		.queue(sentMessage -> {
 			if (!message.getChannelType().equals(ChannelType.PRIVATE)) {
 				sendDeleteButtonWithListener(sentMessage, message);
@@ -115,11 +114,9 @@ public class GoogleCommand extends AbstractCommand {
 	}
 
 	private boolean deleteEventAuthorised(MessageReactionAddEvent event, Message message) {
-		return !event.getMember().getId().equals(event.getJDA().getSelfUser().getId()) && 
-				   (
+		return !event.getMember().getId().equals(event.getJDA().getSelfUser().getId()) && (
 						   event.getUser().getId().equals(message.getAuthor().getId()) ||
-						   event.getMember().hasPermission(Permission.MESSAGE_MANAGE)
-				   );
+						   event.getMember().hasPermission(Permission.MESSAGE_MANAGE));
 	}
 
 	private MessageEmbed constructResultEmbed(String url, boolean safeSearchMode) {
@@ -140,14 +137,9 @@ public class GoogleCommand extends AbstractCommand {
 			message.getChannel().sendMessage("**You did not provide something to search for!**").queue();
 		else {
 			message.getChannel().sendTyping().queue();
-			Page searchPage = playwrightService.getBrowser().newPage();
-			searchPage.navigate(url);
-			searchPage.setViewportSize(1000, 1000);
+			byte[] screenshot = playwrightService.screenshotPage(url, 1000, 1000);	
 			
-			byte[] screenshotBytesBuffer = searchPage.screenshot();
-			searchPage.close();	
-			
-			sendFinalMessage(message, url, screenshotBytesBuffer);
+			sendFinalMessage(message, url, screenshot);
 		}
 	}
 

@@ -99,7 +99,7 @@ public class CompileCommand extends AbstractCommand {
 				.addField("Permalink", "**[Wandbox URL](" + permLink + ")**", false)
 				.build();
 		
-		sentMessage.editMessage(compilationCompleteMessage).queue();
+		sentMessage.editMessageEmbeds(compilationCompleteMessage).queue();
 	}
 	
 	private void runCompilerSystem(Message message, List<String> args) {
@@ -125,7 +125,7 @@ public class CompileCommand extends AbstractCommand {
 					.addField("Compiler", compiler, true)//
 					.build();
 			
-			message.getChannel().sendMessage(compilationWaitingMessage).queue(sentMessage -> {
+			message.getChannel().sendMessageEmbeds(compilationWaitingMessage).queue(sentMessage -> {
 				sendResponse(finalCode, compiler, sentMessage);					
 
 			});

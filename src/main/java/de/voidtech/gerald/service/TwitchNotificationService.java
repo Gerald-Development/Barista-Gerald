@@ -27,24 +27,29 @@ public class TwitchNotificationService {
 	private SessionFactory sessionFactory;
 	
 	@Autowired
-	private GeraldConfig geraldConfig;
-	
-	@Autowired
 	private JDA jda;
 	
 	private TwitchClient twitchClient;
 	
-	public void subscribeToAllStreamers() {
+	@Autowired
+	public TwitchNotificationService(GeraldConfig geraldConfig) {
 		String twitchClientId = geraldConfig.getTwitchClientId();
 		String twitchClientSecret = geraldConfig.getTwitchSecret();
 		
-		if (twitchClientId != null && twitchClientSecret != null) {
+		LOGGER.log(Level.INFO, "Twitch Client creation with client: " + twitchClientId);
+		
+		this.twitchClient = TwitchClientBuilder.builder()
+				.withEnableHelix(true)
+				.withClientId(twitchClientId)
+				.withClientSecret(twitchClientSecret)
+				.build();
+		
+		LOGGER.log(Level.INFO, "Twitch Client has been initialised, hashcode: " + twitchClient.hashCode());
+	}
+	
+	public void subscribeToAllStreamers() {
+		if (twitchClient != null) {
 			LOGGER.log(Level.INFO, "Adding Twitch API subscriptions");
-			twitchClient = TwitchClientBuilder.builder()
-					.withEnableHelix(true)
-					.withClientId(twitchClientId)
-					.withClientSecret(twitchClientSecret)
-					.build();
 			
 			List<String> streamerNames = getAllStreamerNames();
 			if (streamerNames != null) {
@@ -55,6 +60,9 @@ public class TwitchNotificationService {
 			
 			LOGGER.log(Level.INFO, "Added Twitch API subscriptions!");
 			listenForTwitchEvents();
+		}
+		else {
+			LOGGER.log(Level.SEVERE, "No twitch client has been created, skipping Twitch subscriptions.");
 		}
 	}
 

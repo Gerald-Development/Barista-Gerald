@@ -15,6 +15,7 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.util.MRESameUserPredicate;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -39,10 +40,10 @@ public class CitrusCommand extends AbstractCommand {
 				.setImage(citrusMap.get(currentCitrus))
 				.build();
 		
-		message.getChannel().sendMessage(citrusQuestEmbed).queue();;
+		message.getChannel().sendMessageEmbeds(citrusQuestEmbed).queue();;
 		
 		waiter.waitForEvent(MessageReceivedEvent.class,
-				event -> ((MessageReceivedEvent) event).getAuthor().getId().equals(message.getAuthor().getId()),
+				new MRESameUserPredicate(message.getAuthor()),
 				event -> {
 					boolean correctCitrus = event.getMessage().getContentRaw().toLowerCase().equals(currentCitrus);
 					message.getChannel().sendMessage(String.format("%s! The Citrus was **%s**",

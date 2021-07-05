@@ -36,7 +36,7 @@ public class InspiroCommand extends AbstractCommand{
 					.setImage(inspiroImageURLOpt)//
 					.setFooter("Data from InspiroBot", INSPIRO_ICON)//
 					.build();
-			message.getChannel().sendMessage(inspiroEmbed).queue();
+			message.getChannel().sendMessageEmbeds(inspiroEmbed).queue();
 		}
 	}
 	

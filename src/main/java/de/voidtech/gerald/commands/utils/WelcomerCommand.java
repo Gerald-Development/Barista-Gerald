@@ -15,6 +15,7 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.JoinLeaveMessage;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
+import main.java.de.voidtech.gerald.util.MRESameUserPredicate;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
@@ -135,7 +136,7 @@ public class WelcomerCommand extends AbstractCommand{
 	private void continueToLeaveMessage(Message message, Server server, String channel, String welcomeMessage) {
 		message.getChannel().sendMessage("**Please enter your leave message:**").queue();
 		waiter.waitForEvent(MessageReceivedEvent.class,
-				leaveMessageInputEvent -> ((MessageReceivedEvent) leaveMessageInputEvent).getAuthor().getId().equals(message.getAuthor().getId()),
+				new MRESameUserPredicate(message.getAuthor()),
 				leaveMessageEvent -> {
 					String leaveMessage = leaveMessageEvent.getMessage().getContentRaw();
 					
@@ -153,7 +154,7 @@ public class WelcomerCommand extends AbstractCommand{
 	private void continueToWelcomeMessage(Message message, Server server, String channel) {
 		message.getChannel().sendMessage("**Please enter your welcome message:**").queue();
 		waiter.waitForEvent(MessageReceivedEvent.class,
-				welcomeMessageInputEvent -> ((MessageReceivedEvent) welcomeMessageInputEvent).getAuthor().getId().equals(message.getAuthor().getId()),
+				new MRESameUserPredicate(message.getAuthor()),
 				welcomeMessageInputEvent -> {
 					String welcomeMessage = welcomeMessageInputEvent.getMessage().getContentRaw();
 					continueToLeaveMessage(message, server, channel, welcomeMessage);
@@ -165,7 +166,7 @@ public class WelcomerCommand extends AbstractCommand{
 		message.getChannel().sendMessage("**Enter the ID or a mention of the channel you wish to use:**").queue();
 		
 		waiter.waitForEvent(MessageReceivedEvent.class,
-				channelEntryEvent -> ((MessageReceivedEvent) channelEntryEvent).getAuthor().getId().equals(message.getAuthor().getId()),
+				new MRESameUserPredicate(message.getAuthor()),
 				channelEntryEvent -> {
 					String channel = ParsingUtils.filterSnowflake(channelEntryEvent.getMessage().getContentRaw());
 					

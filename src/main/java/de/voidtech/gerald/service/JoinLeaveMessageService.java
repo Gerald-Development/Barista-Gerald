@@ -61,7 +61,7 @@ public class JoinLeaveMessageService {
 					.setTimestamp(Instant.now())
 					.build();
 			
-			((MessageChannel) channel).sendMessage(joinMessageEmbed).queue();
+			((MessageChannel) channel).sendMessageEmbeds(joinMessageEmbed).queue();
 		}
 	}
 	
@@ -79,7 +79,7 @@ public class JoinLeaveMessageService {
 					.setTimestamp(Instant.now())
 					.build();
 			
-			((MessageChannel) channel).sendMessage(leaveMessageEmbed).queue();
+			((MessageChannel) channel).sendMessageEmbeds(leaveMessageEmbed).queue();
 		}
 	}
 	

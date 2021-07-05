@@ -147,7 +147,7 @@ public class CountRoutine extends AbstractRoutine {
 				.setDescription("**You failed! The counter has been reset!**")
 				.build();
 		message.addReaction(INCORRECT).queue();
-		message.getChannel().sendMessage(failureEmbed).queue();
+		message.getChannel().sendMessageEmbeds(failureEmbed).queue();
 	}
 
 	private void sendWarning(Message message, String warning) {
@@ -157,7 +157,7 @@ public class CountRoutine extends AbstractRoutine {
 				.setDescription("**" + warning + "**")
 				.build();
 		message.addReaction(INCORRECT).queue();
-		message.getChannel().sendMessage(warningEmbed).queue();
+		message.getChannel().sendMessageEmbeds(warningEmbed).queue();
 	}
 	
 	@Override

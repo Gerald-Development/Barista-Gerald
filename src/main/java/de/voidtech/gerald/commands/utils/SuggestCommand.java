@@ -65,7 +65,7 @@ public class SuggestCommand extends AbstractCommand {
 					.setFooter("Suggested By " + message.getAuthor().getAsTag(), message.getAuthor().getAvatarUrl())
 					.build();					
 			
-			message.getGuild().getTextChannelById(channelID).sendMessage(newSuggestionEmbed).queue(sentMessage -> {
+			message.getGuild().getTextChannelById(channelID).sendMessageEmbeds(newSuggestionEmbed).queue(sentMessage -> {
 				sentMessage.addReaction(CHECK).queue();
 				sentMessage.addReaction(CROSS).queue();
 				message.getChannel().sendMessage("**Your suggestion has been posted!**").queue();

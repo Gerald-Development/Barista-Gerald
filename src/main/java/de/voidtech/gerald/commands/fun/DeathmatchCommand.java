@@ -46,7 +46,7 @@ public class DeathmatchCommand extends AbstractCommand {
 		MessageEmbed gameStartEmbed = new EmbedBuilder()
 				.setTitle(userList.get(0).getName() + " VS " + userList.get(1).getName())
 				.setColor(Color.RED).build();
-		message.getChannel().sendMessage(gameStartEmbed).queue(sentMessage -> playRounds(sentMessage, userList));
+		message.getChannel().sendMessageEmbeds(gameStartEmbed).queue(sentMessage -> playRounds(sentMessage, userList));
 	}
 
 	private void playRounds(Message message, ArrayList<User> userList) {
@@ -61,7 +61,7 @@ public class DeathmatchCommand extends AbstractCommand {
 				if (playerHealth[1-playerTurn.ordinal()] < 0)
 					playerHealth[1-playerTurn.ordinal()] = 0;
 
-				message.editMessage(craftEmbed(playerHealth[0], playerHealth[1], damage, playerTurn, userList)).queue();
+				message.editMessageEmbeds(craftEmbed(playerHealth[0], playerHealth[1], damage, playerTurn, userList)).queue();
 
 				playerTurn = Turn.values()[1-playerTurn.ordinal()];
 
@@ -104,7 +104,7 @@ public class DeathmatchCommand extends AbstractCommand {
 	}
 
 	private void sendWinnerMessage(Turn playerTurn, Message message, ArrayList<User> userList) {
-		message.editMessage(craftWinnerEmbed(playerTurn, userList)).queue();
+		message.editMessageEmbeds(craftWinnerEmbed(playerTurn, userList)).queue();
 	}
 
 	@Override

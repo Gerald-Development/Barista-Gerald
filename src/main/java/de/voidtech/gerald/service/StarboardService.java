@@ -156,7 +156,7 @@ public class StarboardService {
 		
 		if (starboardMessage == null) {
 			MessageEmbed starboardEmbed = constructEmbed(message);
-			message.getJDA().getTextChannelById(config.getChannelID()).sendMessage(starboardEmbed).queue(sentMessage -> {
+			message.getJDA().getTextChannelById(config.getChannelID()).sendMessageEmbeds(starboardEmbed).queue(sentMessage -> {
 				sentMessage.editMessage(":star: **" + starCountFromMessage + "**").queue();
 				persistMessage(message.getId(), sentMessage.getId(), serverID);
 			});

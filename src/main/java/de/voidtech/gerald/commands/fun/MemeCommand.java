@@ -168,7 +168,7 @@ public class MemeCommand extends AbstractCommand {
 					.setImage(apiResponse)
 					.setFooter("Requested By " + message.getAuthor().getAsTag(), message.getAuthor().getAvatarUrl())
 					.build();
-			message.getChannel().sendMessage(memeImageEmbed).queue();
+			message.getChannel().sendMessageEmbeds(memeImageEmbed).queue();
 		}	
 	}
 	

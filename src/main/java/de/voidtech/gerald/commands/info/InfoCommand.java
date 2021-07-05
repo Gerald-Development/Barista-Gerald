@@ -81,7 +81,7 @@ public class InfoCommand extends AbstractCommand {
 				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
 				.setFooter("Command Count: " + commands.size() + "\nRoutine Count: " + routines.size(), message.getJDA().getSelfUser().getAvatarUrl())
 				.build();
-		message.getChannel().sendMessage(informationEmbed).queue();
+		message.getChannel().sendMessageEmbeds(informationEmbed).queue();
 	}
 
 	@Override

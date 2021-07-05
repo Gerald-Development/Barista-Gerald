@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.Browser.NewContextOptions;
 import com.microsoft.playwright.BrowserContext;
+import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 
 @Service
@@ -21,14 +22,24 @@ public class PlaywrightService {
 				.setViewportSize(1000, 1000);
 	}
 	
-	PlaywrightService() {
-		LOGGER.log(Level.INFO, "Firefox is being initialised");
+	public PlaywrightService() {
+		LOGGER.log(Level.INFO, "Playwright is being initialised");
 		Browser browserInstance = Playwright.create().firefox().launch();
 		this.browser = browserInstance.newContext(getContextOptions());
-		LOGGER.log(Level.INFO, "Firefox is ready!");
+		LOGGER.log(Level.INFO, "Playwright is ready!");
 	}
 	
 	public BrowserContext getBrowser() {
 		return this.browser;
+	}
+	
+	public byte[] screenshotPage(String url, int width, int height) {
+		Page screenshotPage = getBrowser().newPage();
+		screenshotPage.navigate(url);
+		screenshotPage.setViewportSize(width, height);
+		byte[] screenshotBytesBuffer = screenshotPage.screenshot();
+		screenshotPage.close();	
+		
+		return screenshotBytesBuffer;
 	}
 }

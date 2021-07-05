@@ -102,7 +102,7 @@ public class ChatCommand extends AbstractCommand{
 					.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
 					.setFooter("Paper for reference to what these mean: https://arxiv.org/pdf/1706.03762.pdf");
 			MessageEmbed reply = eb.build();
-			message.getChannel().sendMessage(reply).queue();
+			message.getChannel().sendMessageEmbeds(reply).queue();
 		}
 	}
 			

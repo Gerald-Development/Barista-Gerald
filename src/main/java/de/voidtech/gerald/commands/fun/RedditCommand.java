@@ -99,7 +99,7 @@ public class RedditCommand extends AbstractCommand {
 						.setImage(imageURL)
 						.setFooter("Upvotes: " + upvotes)
 						.build();
-				message.getChannel().sendMessage(redditEmbed).queue();	
+				message.getChannel().sendMessageEmbeds(redditEmbed).queue();	
 			}	
 		}
 	}
