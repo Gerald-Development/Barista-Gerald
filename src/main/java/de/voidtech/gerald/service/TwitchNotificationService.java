@@ -8,7 +8,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import com.github.twitch4j.TwitchClient;
@@ -28,30 +27,28 @@ public class TwitchNotificationService {
 	private SessionFactory sessionFactory;
 	
 	@Autowired
-	private GeraldConfig geraldConfig;
-	
-	@Autowired
 	private JDA jda;
 	
-	@Autowired	
 	private TwitchClient twitchClient;
 	
-	@Bean
-	public TwitchClient getTwitchClient() {
+	@Autowired
+	public TwitchNotificationService(GeraldConfig geraldConfig) {
 		String twitchClientId = geraldConfig.getTwitchClientId();
 		String twitchClientSecret = geraldConfig.getTwitchSecret();
-		return TwitchClientBuilder.builder()
+		
+		LOGGER.log(Level.INFO, "Twitch Client creation with client: " + twitchClientId);
+		
+		this.twitchClient = TwitchClientBuilder.builder()
 				.withEnableHelix(true)
 				.withClientId(twitchClientId)
 				.withClientSecret(twitchClientSecret)
 				.build();
+		
+		LOGGER.log(Level.INFO, "Twitch Client has been initialised, hashcode: " + twitchClient.hashCode());
 	}
 	
 	public void subscribeToAllStreamers() {
-		String twitchClientId = geraldConfig.getTwitchClientId();
-		String twitchClientSecret = geraldConfig.getTwitchSecret();
-		
-		if (twitchClientId != null && twitchClientSecret != null) {
+		if (twitchClient != null) {
 			LOGGER.log(Level.INFO, "Adding Twitch API subscriptions");
 			
 			List<String> streamerNames = getAllStreamerNames();
@@ -63,6 +60,9 @@ public class TwitchNotificationService {
 			
 			LOGGER.log(Level.INFO, "Added Twitch API subscriptions!");
 			listenForTwitchEvents();
+		}
+		else {
+			LOGGER.log(Level.SEVERE, "No twitch client has been created, skipping Twitch subscriptions.");
 		}
 	}
 

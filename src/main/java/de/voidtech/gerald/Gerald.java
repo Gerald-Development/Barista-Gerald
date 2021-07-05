@@ -30,6 +30,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.annotation.Order;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 
@@ -54,7 +55,8 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 public class Gerald {
 	
 	@Bean
-	@DependsOn(value = "sessionFactory")
+	@DependsOn(value = {"sessionFactory"})
+	@Order(3)
 	@Autowired
 	public JDA getJDA(MessageListener msgListener, GuildGoneListener guildGoneListener,
 			ChannelDeleteListener channelDeleteListener, GeraldConfig configService,
@@ -90,7 +92,7 @@ public class Gerald {
     {
 		return new EventWaiter();
     }
-
+	
 	public static void main(String[] args) {
 		SpringApplication springApp = new SpringApplication(Gerald.class);
 		
