@@ -8,6 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import com.github.twitch4j.TwitchClient;
@@ -32,7 +33,19 @@ public class TwitchNotificationService {
 	@Autowired
 	private JDA jda;
 	
+	@Autowired	
 	private TwitchClient twitchClient;
+	
+	@Bean
+	public TwitchClient getTwitchClient() {
+		String twitchClientId = geraldConfig.getTwitchClientId();
+		String twitchClientSecret = geraldConfig.getTwitchSecret();
+		return TwitchClientBuilder.builder()
+				.withEnableHelix(true)
+				.withClientId(twitchClientId)
+				.withClientSecret(twitchClientSecret)
+				.build();
+	}
 	
 	public void subscribeToAllStreamers() {
 		String twitchClientId = geraldConfig.getTwitchClientId();
@@ -40,11 +53,6 @@ public class TwitchNotificationService {
 		
 		if (twitchClientId != null && twitchClientSecret != null) {
 			LOGGER.log(Level.INFO, "Adding Twitch API subscriptions");
-			twitchClient = TwitchClientBuilder.builder()
-					.withEnableHelix(true)
-					.withClientId(twitchClientId)
-					.withClientSecret(twitchClientSecret)
-					.build();
 			
 			List<String> streamerNames = getAllStreamerNames();
 			if (streamerNames != null) {
