@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.dv8tion.jda.api.Permission;
@@ -20,6 +21,9 @@ import net.dv8tion.jda.api.entities.Webhook;
 
 @Service
 public class WebhookManager {
+	
+	@Autowired
+	private ThreadManager threadManager;
 	
     private static final Logger LOGGER = Logger.getLogger(WebhookManager.class.getName());
 	
@@ -35,8 +39,8 @@ public class WebhookManager {
 		return newWebhook;		
 	}
 	
-	public void postMessage(String content, String avatarUrl, String username, Webhook webhook) {
-		String messageToBeSent = content.replaceAll("@", "`@`");
+	private void executeWebhookPost(String content, String avatarUrl, String username, Webhook webhook) {
+		String messageToBeSent = content.replaceAll("@everyone", "``@``everyone").replaceAll("@here", "``@``here");
 		
 		JSONObject webhookPayload = new JSONObject();
         webhookPayload.put("content", messageToBeSent);
@@ -65,6 +69,15 @@ public class WebhookManager {
             LOGGER.log(Level.SEVERE, "Error during ServiceExecution: " + ex.getMessage());
             ex.printStackTrace();
         }
+	}
+	
+	public void postMessage(String content, String avatarUrl, String username, Webhook webhook) {
+        Runnable webhookThreadRunnable = new Runnable() {
+			public void run() {
+				executeWebhookPost(content, avatarUrl, username, webhook);
+			}
+		};
+		threadManager.getThreadByName("T-Webhook").execute(webhookThreadRunnable);   
 	}
 	
 	public void postMessageWithFallback(Message message, String content, String avatarUrl, String username, String webhookName) {
