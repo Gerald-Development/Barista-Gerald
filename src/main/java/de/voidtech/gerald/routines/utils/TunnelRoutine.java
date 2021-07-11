@@ -66,6 +66,14 @@ public class TunnelRoutine extends AbstractRoutine {
 				content = content + "\n" + attachment.getUrl();
 			}	
 		}
+		
+		if (message.getReferencedMessage() != null) {
+			content = "> " + (message.getReferencedMessage().getContentDisplay().length() > 100 ? 
+					message.getReferencedMessage().getContentDisplay().substring(0, 100) + "..." :
+					message.getReferencedMessage().getContentDisplay())
+					+ "\n" + content;
+		}
+	
 		webhookManager.postMessage(content, message.getAuthor().getAvatarUrl(),  message.getAuthor().getName(), webhook);
 	}
 	
