@@ -38,9 +38,7 @@ public class TunnelRoutine extends AbstractRoutine {
 	}
 	
 	private boolean targetChannelExists(Tunnel tunnel, Message message) {
-		
 		String sourceChannelId = message.getChannel().getId();
-		
 		String targetChannelId = tunnel.getSourceChannel().equals(sourceChannelId)
 				? tunnel.getDestChannel() 
 				: tunnel.getSourceChannel();
@@ -49,7 +47,6 @@ public class TunnelRoutine extends AbstractRoutine {
 	}
 	
 	private Tunnel getTunnel(String senderChannelID) {
-		
 		try(Session session = sessionFactory.openSession())
 		{
 			Tunnel tunnel = (Tunnel) session.createQuery("FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
@@ -60,7 +57,6 @@ public class TunnelRoutine extends AbstractRoutine {
 	}
 	
 	private void sendWebhookMessage(Webhook webhook, String content, Message message) {
-		
 		if (message.getAttachments().size() != 0) {
 			for (Attachment attachment: message.getAttachments()) {
 				content = content + "\n" + attachment.getUrl();
@@ -78,9 +74,7 @@ public class TunnelRoutine extends AbstractRoutine {
 	}
 	
 	private void sendTunnelMessage(Tunnel tunnel, Message message) {
-			
 		String messageContent = message.getContentRaw().replaceAll("@", "`@`");
-		
 		TextChannel channel = tunnel.getSourceChannel().equals(message.getChannel().getId())
 				? message.getJDA().getTextChannelById(tunnel.getDestChannel()) 
 				: message.getJDA().getTextChannelById(tunnel.getSourceChannel());
@@ -97,8 +91,7 @@ public class TunnelRoutine extends AbstractRoutine {
 	private void deleteTunnel(String channelId) {
 		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
-			session.createQuery(
-					"DELETE FROM Tunnel WHERE sourceChannelID = :channelID OR destChannelID = :channelID")
+			session.createQuery("DELETE FROM Tunnel WHERE sourceChannelID = :channelID OR destChannelID = :channelID")
 					.setParameter("channelID", channelId).executeUpdate();
 			session.getTransaction().commit();
 		}		
@@ -111,17 +104,13 @@ public class TunnelRoutine extends AbstractRoutine {
 
 	@Override
 	public void executeInternal(Message message) {
-		
 		if (message.getAuthor().getId().equals(message.getJDA().getSelfUser().getId())) return;
-		
 		if (tunnelExists(message.getChannel().getId())) {
 			Tunnel tunnel = getTunnel(message.getChannel().getId());
-			
-			if (targetChannelExists(tunnel, message)) {
+			if (targetChannelExists(tunnel, message))
 				sendTunnelMessage(getTunnel(message.getChannel().getId()), message);				
-			} else {
+			else
 				deleteTunnelAndSendError(message);
-			}
 		}
 	}
 
