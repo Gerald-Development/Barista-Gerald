@@ -16,6 +16,7 @@ import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.Tunnel;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -44,10 +45,10 @@ public class TunnelCommand extends AbstractCommand {
 
 				if (sourceChannel.equals(message.getChannel().getId())) {
 					message.getJDA().getTextChannelById(destinationChannel)
-							.sendMessage("**This tunnel has been filled.**").queue();
+					.sendMessage("**This tunnel has been filled.**").queue();
 				} else {
-					message.getJDA().getTextChannelById(sourceChannel).sendMessage("**This tunnel has been filled.**")
-							.queue();
+					message.getJDA().getTextChannelById(sourceChannel)
+					.sendMessage("**This tunnel has been filled.**").queue();
 				}
 				deleteTunnel(message.getChannel().getId());
 				sentMessage.editMessage("**This tunnel has been filled.**").queue();
@@ -210,18 +211,36 @@ public class TunnelCommand extends AbstractCommand {
 		}
 	}
 	
+	private void showTunnelInfo(Message message) {
+		Tunnel tunnel = getTunnel(message.getChannel().getId());
+		if (tunnel == null)
+			message.getChannel().sendMessage("**Did you mean to use one of these?:**\n" + this.getUsage()).queue();
+		else {
+			JDA jda = message.getJDA();
+			String sourceChannel = "**" + jda.getTextChannelById(tunnel.getSourceChannel()).getGuild().getName() + " -> " + jda.getTextChannelById(tunnel.getSourceChannel()).getName() + "**\n";
+			String destChannel = "**" + jda.getTextChannelById(tunnel.getDestChannel()).getGuild().getName() + " -> " + jda.getTextChannelById(tunnel.getDestChannel()).getName() + "**";
+			message.getChannel().sendMessage("**This tunnel is between:**\n" + sourceChannel + destChannel).queue();
+		}
+	}
+	
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		if (!message.getMember().hasPermission(Permission.MANAGE_CHANNEL))
 			return;
-
-		if (args.get(0).equals("fill")) {
-			fillTunnel(message);
-
-		} else if (args.get(0).equals("dig")) {
-			doTheDigging(args, message);
-		} else {
-			message.getChannel().sendMessage("**" + this.getUsage() + "**").queue();
+		if (args.isEmpty())
+			showTunnelInfo(message);
+		else {
+			switch (args.get(0)) {
+			case "fill":
+				fillTunnel(message);
+				break;
+			case "dig":
+				doTheDigging(args, message);
+				break;
+			default:
+				message.getChannel().sendMessage("**Did you mean to use one of these?:**\n" + this.getUsage()).queue();
+				break;			
+			}	
 		}
 	}
 
@@ -233,7 +252,8 @@ public class TunnelCommand extends AbstractCommand {
 	@Override
 	public String getUsage() {
 		return "tunnel dig [channel ID/channel mention]\n"
-				+ "tunnel fill";
+				+ "tunnel fill\n"
+				+ "tunnel (use this in a tunnel to see tunnel information)";
 	}
 
 	@Override
@@ -253,12 +273,12 @@ public class TunnelCommand extends AbstractCommand {
 
 	@Override
 	public boolean requiresArguments() {
-		return true;
+		return false;
 	}
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"spaceport", "connection"};
+		String[] aliases = {"spaceport", "t"};
 		return aliases;
 	}
 	
