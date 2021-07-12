@@ -17,13 +17,18 @@ public class AvatarCommand extends AbstractCommand{
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		Member member = ParsingUtils.getMember(message, args);	
-		String avatarUrl = member.getUser().getAvatarUrl() + "?size=2048";
-		MessageEmbed avatarEmbed = new EmbedBuilder()
-				.setColor(member.getColor())
-				.setTitle(member.getUser().getName() + "'s Avatar", avatarUrl)
-				.setImage(avatarUrl)
-				.build();
-		message.getChannel().sendMessageEmbeds(avatarEmbed).queue();
+		String avatarUrl = member.getUser().getAvatarUrl();
+		if (avatarUrl == null)
+			message.getChannel().sendMessage("**That user does not have an avatar!**").queue();
+		else {
+			avatarUrl = avatarUrl + "?size=2048";
+			MessageEmbed avatarEmbed = new EmbedBuilder()
+					.setColor(member.getColor())
+					.setTitle(member.getUser().getName() + "'s Avatar", avatarUrl)
+					.setImage(avatarUrl)
+					.build();
+			message.getChannel().sendMessageEmbeds(avatarEmbed).queue();
+		}
 	}
 
 	@Override
