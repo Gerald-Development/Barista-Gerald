@@ -84,4 +84,15 @@ public class AutoroleService {
 			}
 		}
 	}
+
+	public void removeAllGuildConfigs(long serverID) {
+		try(Session session = sessionFactory.openSession())
+		{
+			session.getTransaction().begin();
+			session.createQuery("DELETE FROM AutoroleConfig WHERE serverID = :serverID")
+				.setParameter("serverID", serverID)
+				.executeUpdate();
+			session.getTransaction().commit();
+		}
+	}
 }

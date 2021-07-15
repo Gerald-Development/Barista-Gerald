@@ -92,13 +92,18 @@ public class AutoroleCommand extends AbstractCommand {
 	}
 	
 	private void removeAutorole(Message message, List<String> args) {
-		String roleID = ParsingUtils.filterSnowflake(args.get(1));
-		if (message.getGuild().getRoleById(roleID) == null)
-			message.getChannel().sendMessage("**You did not specify a valid role ID!**").queue();
-		else if (autoroleService.getAutoroleConfigByRoleID(roleID) == null)
-			message.getChannel().sendMessage("**This role is not set up for automation!**").queue();
-		else
-			removeAutoroleConfig(roleID, message);
+		if (args.get(1).equals("all")) {
+			autoroleService.removeAllGuildConfigs(serverService.getServer(message.getGuild().getId()).getId());
+			message.getChannel().sendMessage("**Cleared all Autorole configs!**").queue();
+		} else {
+			String roleID = ParsingUtils.filterSnowflake(args.get(1));
+			if (message.getGuild().getRoleById(roleID) == null)
+				message.getChannel().sendMessage("**You did not specify a valid role ID!**").queue();
+			else if (autoroleService.getAutoroleConfigByRoleID(roleID) == null)
+				message.getChannel().sendMessage("**This role is not set up for automation!**").queue();
+			else
+				removeAutoroleConfig(roleID, message);	
+		}
 	}
 
 	private void removeAutoroleConfig(String roleID, Message message) {
