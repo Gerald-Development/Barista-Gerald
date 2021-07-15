@@ -57,7 +57,7 @@ public class JoinLeaveMessageService {
 			
 			MessageEmbed joinMessageEmbed = new EmbedBuilder()
 					.setColor(Color.green)
-					.setDescription(member.getAsMention() + " **(" + member.getUser().getAsTag() + ")" + message + "**")
+					.setDescription(member.getAsMention() + " **(" + member.getUser().getAsTag() + ") " + message + "**")
 					.setTimestamp(Instant.now())
 					.build();
 			
@@ -75,7 +75,7 @@ public class JoinLeaveMessageService {
 			
 			MessageEmbed leaveMessageEmbed = new EmbedBuilder()
 					.setColor(Color.red)
-					.setDescription(member.getAsMention() + " **(" + member.getUser().getAsTag() + ")" + message + "**")
+					.setDescription(member.getAsMention() + " **(" + member.getUser().getAsTag() + ") " + message + "**")
 					.setTimestamp(Instant.now())
 					.build();
 			
