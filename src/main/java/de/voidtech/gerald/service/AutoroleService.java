@@ -1,5 +1,7 @@
 package main.java.de.voidtech.gerald.service;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -8,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import main.java.de.voidtech.gerald.entities.AutoroleConfig;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 
 @Service
 public class AutoroleService {
@@ -54,6 +59,29 @@ public class AutoroleService {
 			session.getTransaction().begin();	
 			session.saveOrUpdate(config);
 			session.getTransaction().commit();
+		}
+	}
+
+	public void addRolesToMember(GuildMemberJoinEvent event, List<AutoroleConfig> configs) {
+		EnumSet<Permission> perms = event.getGuild().getSelfMember().getPermissions();
+		List<AutoroleConfig> discardedConfigs = new ArrayList<AutoroleConfig>();
+		
+		if (perms.contains(Permission.MANAGE_ROLES)) {
+			for (AutoroleConfig config : configs) {
+				Role role = event.getJDA().getRoleById(config.getRoleID());
+				
+				if (role != null) {
+					if (config.isAvailableForBots() && event.getUser().isBot())
+						event.getGuild().addRoleToMember(event.getMember(), role).queue();
+					if (config.isAvailableForHumans() && !event.getUser().isBot())
+						event.getGuild().addRoleToMember(event.getMember(), role).queue();	
+				} else discardedConfigs.add(config);
+			}
+			if (!discardedConfigs.isEmpty()) {
+				for (AutoroleConfig config : discardedConfigs) {
+					deleteAutoroleConfig(config.getRoleID());
+				}
+			}
 		}
 	}
 }

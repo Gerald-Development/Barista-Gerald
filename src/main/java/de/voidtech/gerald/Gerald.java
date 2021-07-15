@@ -35,6 +35,7 @@ import org.springframework.core.annotation.Order;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 
 import main.java.de.voidtech.gerald.entities.GlobalConfig;
+import main.java.de.voidtech.gerald.listeners.AutoroleListener;
 import main.java.de.voidtech.gerald.listeners.ChannelDeleteListener;
 import main.java.de.voidtech.gerald.listeners.GuildGoneListener;
 import main.java.de.voidtech.gerald.listeners.MemberListener;
@@ -62,7 +63,7 @@ public class Gerald {
 			ChannelDeleteListener channelDeleteListener, GeraldConfig configService,
 			GlobalConfigService globalConfService,	EventWaiter eventWaiter,
 			MemberListener memberListener,	ReadyListener readyListener,
-			StarboardListener starboardListener) throws LoginException, InterruptedException
+			StarboardListener starboardListener, AutoroleListener autoroleListener) throws LoginException, InterruptedException
 	{
 		GlobalConfig globalConf = globalConfService.getGlobalConfig();
 
@@ -72,7 +73,7 @@ public class Gerald {
 				.setBulkDeleteSplittingEnabled(false)
 				.setStatus(OnlineStatus.ONLINE)
 				.setCompression(Compression.NONE)
-				.addEventListeners(eventWaiter,	msgListener, readyListener,	guildGoneListener, channelDeleteListener, memberListener, starboardListener)
+				.addEventListeners(eventWaiter,	msgListener, readyListener,	guildGoneListener, channelDeleteListener, memberListener, starboardListener, autoroleListener)
 				.setActivity(EntityBuilder.createActivity(globalConf.getStatus(),
 							 GlobalConstants.STREAM_URL,
 						     globalConf.getActivity()))

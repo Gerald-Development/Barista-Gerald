@@ -2,6 +2,7 @@ package main.java.de.voidtech.gerald.commands.utils;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -197,6 +198,10 @@ public class AutoroleCommand extends AbstractCommand {
 				message.getChannel().sendMessage("**Did you mean one of these?**\n" + this.getUsage()).queue();
 				break;
 			}	
+			EnumSet<Permission> perms = message.getGuild().getSelfMember().getPermissions();		
+			if (!perms.contains(Permission.MANAGE_ROLES)) {
+				message.getChannel().sendMessage("**NOTE: I do not have the** `Manage Roles` **permisison. I need this to add roles to people!**").queue();
+			}
 		}
 	}
 
