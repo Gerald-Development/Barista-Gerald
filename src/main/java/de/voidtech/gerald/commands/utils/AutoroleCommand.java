@@ -150,6 +150,9 @@ public class AutoroleCommand extends AbstractCommand {
 	}
 	
 	private void finishAddingAutorole(Message message, String roleID, boolean applyToHumans, boolean applyToBots) {
+		if (!applyToHumans && !applyToBots) {
+			message.getChannel().sendMessage("**Autoroles must be added to at least either bots or humans!**").queue();
+		}
 		long serverID = serverService.getServer(message.getGuild().getId()).getId();
 		AutoroleConfig config = new AutoroleConfig(serverID, roleID, applyToBots, applyToHumans);
 		message.getChannel().sendMessage("**Autorole saved!**").queue();
