@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -21,7 +22,10 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.Component;
 
 @Command
 public class AutoroleCommand extends AbstractCommand {
@@ -44,6 +48,16 @@ public class AutoroleCommand extends AbstractCommand {
                 new MRESameUserPredicate(message.getAuthor()),
                 event -> {
                     result.accept(event.getMessage().getContentRaw());
+                }, 30, TimeUnit.SECONDS, 
+                () -> message.getChannel().sendMessage(String.format("Request timed out.")).queue());
+    }
+	
+	private void getAwaitedButton(Message message, String question, List<Component> actions, Consumer<ButtonClickEvent> result) {
+        message.getChannel().sendMessage(question).setActionRow(actions).queue();
+        waiter.waitForEvent(ButtonClickEvent.class,
+                event -> true, //This will be changed
+                event -> {
+                    result.accept(event);
                 }, 30, TimeUnit.SECONDS, 
                 () -> message.getChannel().sendMessage(String.format("Request timed out.")).queue());
     }
@@ -76,10 +90,10 @@ public class AutoroleCommand extends AbstractCommand {
 	}
 	
 	private void removeAutorole(Message message, List<String> args) {
-		String roleID = ParsingUtils.filterSnowflake(args.get(0));
+		String roleID = ParsingUtils.filterSnowflake(args.get(1));
 		if (message.getGuild().getRoleById(roleID) == null)
 			message.getChannel().sendMessage("**You did not specify a valid role ID!**").queue();
-		else if (autoroleService.getAutoroleConfigByRoleID(roleID) != null)
+		else if (autoroleService.getAutoroleConfigByRoleID(roleID) == null)
 			message.getChannel().sendMessage("**This role is not set up for automation!**").queue();
 		else
 			removeAutoroleConfig(roleID, message);
@@ -106,45 +120,40 @@ public class AutoroleCommand extends AbstractCommand {
 	}
 
 	private void promptForHumanAvailability(Message message, String roleID) {
-		getAwaitedReply(message, "**Should this role be applied to humans? (Yes/No)**", userInput -> {
-			String input = userInput.toLowerCase();
-			switch (input) {
-			case "yes":
+		getAwaitedButton(message, "**Should this role be applied to humans?**", createTrueFalseButtons(), event -> {
+			event.deferEdit().queue();
+			switch (event.getComponentId()) {
+			case "YES":
 				promptForBotAvailability(message, roleID, true);
 				break;
-			case "y":
-				promptForBotAvailability(message, roleID, true);
-				break;
-			case "no":
-				promptForBotAvailability(message, roleID, false);
-				break;
-			case "n":
+			case "NO":
 				promptForBotAvailability(message, roleID, false);
 				break;
 			default:
-				message.getChannel().sendMessage("**You did not provide valid input!**").queue();
+				message.getChannel().sendMessage("**An error occurred. Our apologies.**").queue();
 			}
 		});
 	}
 	
+	private List<Component> createTrueFalseButtons() {
+		List<Component> components = new ArrayList<Component>();
+		components.add(Button.secondary("YES", TRUE_EMOTE));
+		components.add(Button.secondary("NO", FALSE_EMOTE));
+		return components;
+	}
+
 	private void promptForBotAvailability(Message message, String roleID, boolean applyToHumans) {
-		getAwaitedReply(message, "**Should this role be applied to bots? (Yes/No)**", userInput -> {
-			String input = userInput.toLowerCase();
-			switch (input) {
-			case "yes":
+		getAwaitedButton(message, "**Should this role be applied to humans?**", createTrueFalseButtons(), event -> {
+			event.deferEdit().queue();
+			switch (event.getComponentId()) {
+			case "YES":
 				finishAddingAutorole(message, roleID, applyToHumans, true);
 				break;
-			case "y":
-				finishAddingAutorole(message, roleID, applyToHumans, true);
-				break;
-			case "no":
-				finishAddingAutorole(message, roleID, applyToHumans, false);
-				break;
-			case "n":
+			case "NO":
 				finishAddingAutorole(message, roleID, applyToHumans, false);
 				break;
 			default:
-				message.getChannel().sendMessage("**You did not provide valid input!**").queue();
+				message.getChannel().sendMessage("**An error occurred. Our apologies.**").queue();
 			}
 		});
 	}
