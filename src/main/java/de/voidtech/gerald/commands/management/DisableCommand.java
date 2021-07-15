@@ -147,8 +147,7 @@ public class DisableCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"lock"};
-		return aliases;
+		return null;
 	}
 
 	@Override

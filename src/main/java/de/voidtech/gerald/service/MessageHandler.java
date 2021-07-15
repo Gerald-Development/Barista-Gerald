@@ -1,5 +1,6 @@
 package main.java.de.voidtech.gerald.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +37,9 @@ public class MessageHandler {
     
     public void loadAliases() {
     	for (AbstractCommand command: commands) {
-    		List<String> commandAliases = Arrays.asList(command.getCommandAliases());
+    		List<String> commandAliases = new ArrayList<String>();
+    		if (command.getCommandAliases() != null) 
+    			commandAliases = Arrays.asList(command.getCommandAliases());
     		for (String alias: commandAliases) {
     			aliases.put(alias, command.getName());
     		}
