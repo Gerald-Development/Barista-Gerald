@@ -60,14 +60,17 @@ public class AutoroleCommand extends AbstractCommand {
 		EmbedBuilder autoroleEmbedBuilder = new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle("Autoroles for " + message.getGuild().getName());
+		String messageBody = "";
 		for (AutoroleConfig config : configs) {
-			autoroleEmbedBuilder.addField("<@&" + config.getRoleID() + ">", addAutoroleField(config), false);
+			messageBody += addAutoroleField(config);
 		}
+		autoroleEmbedBuilder.setDescription(messageBody);
 		return autoroleEmbedBuilder.build();
 	}
 
 	private String addAutoroleField(AutoroleConfig config) {
-		return String.format("```Applies to Bots: %s\nApplies to Humans: %s",
+		return String.format("**<@&%s>**\n```Applies to Bots:   %s\nApplies to Humans: %s```",
+				config.getRoleID(),
 				config.isAvailableForBots() ? TRUE_EMOTE : FALSE_EMOTE,
 				config.isAvailableForHumans() ? TRUE_EMOTE : FALSE_EMOTE);
 	}
