@@ -16,6 +16,7 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.AutoroleConfig;
 import main.java.de.voidtech.gerald.service.AutoroleService;
 import main.java.de.voidtech.gerald.service.ServerService;
+import main.java.de.voidtech.gerald.util.BCESameUserPredicate;
 import main.java.de.voidtech.gerald.util.MRESameUserPredicate;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -55,7 +56,7 @@ public class AutoroleCommand extends AbstractCommand {
 	private void getAwaitedButton(Message message, String question, List<Component> actions, Consumer<ButtonClickEvent> result) {
         message.getChannel().sendMessage(question).setActionRow(actions).queue();
         waiter.waitForEvent(ButtonClickEvent.class,
-                event -> true, //This will be changed
+                new BCESameUserPredicate(message.getMember()),
                 event -> {
                     result.accept(event);
                 }, 30, TimeUnit.SECONDS, 
@@ -143,7 +144,7 @@ public class AutoroleCommand extends AbstractCommand {
 	}
 
 	private void promptForBotAvailability(Message message, String roleID, boolean applyToHumans) {
-		getAwaitedButton(message, "**Should this role be applied to humans?**", createTrueFalseButtons(), event -> {
+		getAwaitedButton(message, "**Should this role be applied to bots?**", createTrueFalseButtons(), event -> {
 			event.deferEdit().queue();
 			switch (event.getComponentId()) {
 			case "YES":
@@ -164,9 +165,17 @@ public class AutoroleCommand extends AbstractCommand {
 		else {
 			long serverID = serverService.getServer(message.getGuild().getId()).getId();
 			AutoroleConfig config = new AutoroleConfig(serverID, roleID, applyToBots, applyToHumans);
-			message.getChannel().sendMessage("**Autorole saved!**").queue();
+			message.getChannel().sendMessageEmbeds(createAutoroleSavedEmbed(config)).queue();
 			autoroleService.saveAutoroleConfig(config);	
 		}
+	}
+
+	private MessageEmbed createAutoroleSavedEmbed(AutoroleConfig config) {
+		EmbedBuilder autoroleSavedEmbedBuilder = new EmbedBuilder()
+				.setColor(Color.ORANGE)
+				.setTitle("Autorole Saved!")
+				.setDescription(addAutoroleField(config));
+		return autoroleSavedEmbedBuilder.build();
 	}
 
 	@Override
