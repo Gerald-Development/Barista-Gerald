@@ -72,13 +72,20 @@ public class StarboardService {
 			session.saveOrUpdate(config);
 			session.getTransaction().commit();
 			
-			message.getChannel().sendMessage("**Starboard setup complete!**\n"
-					+ "Channel: <#" + channelID + ">\n"
-					+ "Stars required: " + starCount + "\n"
-					+ "Users must use the :star: emote!").queue();
+			message.getChannel().sendMessageEmbeds(createSetupEmbed(config)).queue();
 		}
 	}
 	
+	private MessageEmbed createSetupEmbed(StarboardConfig config) {
+		EmbedBuilder setupEmbedBuilder = new EmbedBuilder()
+				.setColor(Color.ORANGE)
+				.setTitle("Setup complete!")
+				.setDescription("**Channel: <#" + config.getChannelID() + ">**\n"
+					+ "**Stars required:** " + config.getRequiredStarCount() + "\n"
+					+ "Users must react with the :star: emote to star a message!");
+		return setupEmbedBuilder.build();
+	}
+
 	//This method may look like something else, but it is used to check if the channel a star is added to is a starboard channel or not
 	public boolean reactionIsInStarboardChannel(String channelID, long serverID) {
 		try(Session session = sessionFactory.openSession())
