@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,8 @@ public class MessageHandler {
 
     private static final Logger LOGGER = Logger.getLogger(MessageHandler.class.getName());
     
+    private static final int LEVENSHTEIN_THRESHOLD = 1;
+    
     @Autowired
     private GeraldConfig config;
     
@@ -32,6 +35,9 @@ public class MessageHandler {
     
     @Autowired
     private List<AbstractRoutine> routines;
+    
+    @Autowired
+    private LevenshteinService levenshteinService;
     
     public HashMap<String, String> aliases = new HashMap<String, String>();
     
@@ -80,6 +86,16 @@ public class MessageHandler {
         return commandToBeFound;
     }
     
+    private void tryLevenshteinOptions(Message message, String commandName) {
+    	List<String> possibleOptions = new ArrayList<String>();
+    	possibleOptions = commands.stream()
+				.filter(command -> levenshteinService.calculate(commandName, command.getName()) <= LEVENSHTEIN_THRESHOLD)
+				.map(command -> command.getName())
+				.collect(Collectors.toList());
+    	if (!possibleOptions.isEmpty()) 
+    		message.getChannel().sendMessageEmbeds(levenshteinService.createLevenshteinEmbed(possibleOptions)).queue();
+	}
+    
     private void handleCommandOnDemand(Message message) {
     	String prefix = getPrefix(message);
     	
@@ -94,6 +110,7 @@ public class MessageHandler {
 
         if (commandOpt == null) {
             LOGGER.log(Level.INFO, "Command not found: " + messageArray.get(0));
+            tryLevenshteinOptions(message, messageArray.get(0));
             return;
         }
         
@@ -106,8 +123,8 @@ public class MessageHandler {
 
         LOGGER.log(Level.INFO, "Command executed: " + messageArray.get(0) + " - From " + message.getAuthor().getAsTag() + "- ID: " + message.getAuthor().getId());
     }
-    
-    private boolean shouldHandleAsCommand(String prefix, Message message)
+
+	private boolean shouldHandleAsCommand(String prefix, Message message)
     {
     	boolean result = true;
     	String messageRaw = message.getContentRaw();
