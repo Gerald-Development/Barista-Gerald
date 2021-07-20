@@ -1,6 +1,8 @@
 package main.java.de.voidtech.gerald.service;
 
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -27,6 +29,9 @@ public class NitroliteService {
 	
 	@Autowired
 	private EmoteService emoteService;
+	
+	@Autowired
+	private ServerService serverService;
 	
 	public boolean aliasExists(String name, long serverID) {
 		try(Session session = sessionFactory.openSession())
@@ -104,4 +109,29 @@ public class NitroliteService {
     	Webhook webhook = webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGNitrolite", message.getJDA().getSelfUser().getId());
     	webhookManager.postMessage(content, message.getAuthor().getAvatarUrl(), message.getMember().getEffectiveName(), webhook); 
     }
+
+	public List<String> processNitroliteMessage(Message message) {
+		 List<String> messageTokens = Arrays.asList(message.getContentRaw().split(" "));
+	        
+	     long serverID = serverService.getServer(message.getGuild().getId()).getId();
+	     boolean foundOne = false;
+
+	     for (int i = 0; i < messageTokens.size(); i++) {
+	         String token = messageTokens.get(i);
+	         NitroliteEmote emoteOpt = null;
+	            
+	         if (token.matches("\\[:[^:]*:]")) {
+	             String searchWord = token.substring(2, token.length() - 2);
+	         	
+	             if (aliasExists(searchWord, serverID)) emoteOpt = getEmoteFromAlias(searchWord, serverID, message);
+	             else emoteOpt = emoteService.getEmoteByName(searchWord, message.getJDA());
+
+	             if (emoteOpt != null) {
+	                 foundOne = true;
+	                 messageTokens.set(i, constructEmoteString(emoteOpt));
+	             }
+	         }
+	     }
+	       return foundOne ? messageTokens : null; 
+	}
 }

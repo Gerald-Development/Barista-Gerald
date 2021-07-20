@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.routines.utils;
 
 import java.util.EnumSet;
+import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -10,6 +11,7 @@ import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.entities.Tunnel;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
+import main.java.de.voidtech.gerald.service.NitroliteService;
 import main.java.de.voidtech.gerald.service.WebhookManager;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -25,6 +27,9 @@ public class TunnelRoutine extends AbstractRoutine {
 	
 	@Autowired
 	private WebhookManager webhookManager;
+	
+	@Autowired
+	private NitroliteService nitroliteService;
 	
 	private boolean tunnelExists(String senderChannelID) {
 		
@@ -79,13 +84,14 @@ public class TunnelRoutine extends AbstractRoutine {
 				? message.getJDA().getTextChannelById(tunnel.getDestChannel()) 
 				: message.getJDA().getTextChannelById(tunnel.getSourceChannel());
 		
+		List<String> processedNitroliteMessage = nitroliteService.processNitroliteMessage(message);
+		if (processedNitroliteMessage != null) messageContent = String.join(" ", processedNitroliteMessage);
+		
 		EnumSet<Permission> perms = channel.getGuild().getSelfMember().getPermissions(channel);
 		if (perms.contains(Permission.MANAGE_WEBHOOKS)) {
 			Webhook webhook = webhookManager.getOrCreateWebhook(channel, "BGTunnel", message.getJDA().getSelfUser().getId());
 			sendWebhookMessage(webhook, messageContent, message);
-		} else {
-			channel.sendMessage("**" + message.getAuthor().getAsTag() + ":** " + messageContent).queue();
-		}
+		} else channel.sendMessage("**" + message.getAuthor().getAsTag() + ":** " + messageContent).queue();
 	}
 	
 	private void deleteTunnel(String channelId) {
