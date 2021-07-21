@@ -29,7 +29,7 @@ public class SuggestCommand extends AbstractCommand {
 	private SessionFactory sessionFactory;
 	
 	private final static String CHECK = "U+2705";
-	private final static String CROSS = "U+274E";
+	private final static String CROSS = "U+274C";
 	
 	private boolean suggestionChannelExists(long serverID) {
 		try(Session session = sessionFactory.openSession())

@@ -137,8 +137,7 @@ public class EnableCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"unlock"};
-		return aliases;
+		return null;
 	}
 	
 	@Override

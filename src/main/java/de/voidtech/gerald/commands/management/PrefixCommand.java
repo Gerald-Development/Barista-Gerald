@@ -77,8 +77,7 @@ public class PrefixCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"setprefix"};
-		return aliases;
+		return null;
 	}
 	
 	@Override

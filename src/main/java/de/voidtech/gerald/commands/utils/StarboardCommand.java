@@ -2,8 +2,12 @@ package main.java.de.voidtech.gerald.commands.utils;
 
 import java.awt.Color;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
@@ -12,11 +16,13 @@ import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.entities.StarboardConfig;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.StarboardService;
+import main.java.de.voidtech.gerald.util.MRESameUserPredicate;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 @Command
 public class StarboardCommand extends AbstractCommand {
@@ -27,26 +33,44 @@ public class StarboardCommand extends AbstractCommand {
 	@Autowired
 	private StarboardService starboardService;
 	
+	@Autowired
+	EventWaiter waiter;
+	
+	private void getAwaitedReply(Message message, String question, Consumer<String> result) {
+        message.getChannel().sendMessage(question).queue();
+        waiter.waitForEvent(MessageReceivedEvent.class,
+                new MRESameUserPredicate(message.getAuthor()),
+                event -> {
+                    result.accept(event.getMessage().getContentRaw());
+                }, 30, TimeUnit.SECONDS, 
+                () -> message.getChannel().sendMessage(String.format("Request timed out.")).queue());
+    }
+	
 	private void setupStarboard(Message message, List<String> args, Server server) {
 		if (starboardService.getStarboardConfig(server.getId()) != null)
 			message.getChannel().sendMessage("**A Starboard has already been set up here! Did you mean to use one of these?**\n\n" + this.getUsage()).queue();
-		else if (args.size() < 3)
-				message.getChannel().sendMessage("**You need more arguments than that!**\n\n" + this.getUsage()).queue();
 		else {
-			String channelID = ParsingUtils.filterSnowflake(args.get(1));
-			if (!ParsingUtils.isSnowflake(channelID))
-				message.getChannel().sendMessage("**The channel you provided is not valid!**").queue();
-			else if (!message.getGuild().getChannels().contains(message.getJDA().getGuildChannelById(channelID)))
-					message.getChannel().sendMessage("**The channel you provided is not in this server!**").queue();
-			else if (!ParsingUtils.isInteger(args.get(2)))
-				message.getChannel().sendMessage("**You need to specify a number for the star count!**").queue();
-			else if (Integer.parseInt(args.get(2)) < 1) 
-				message.getChannel().sendMessage("**Your star count must be at least 1! We recommend 5**").queue();
-			else
-				starboardService.completeStarboardSetup(message, channelID, args.get(2), server);
+			getAwaitedReply(message, "**Please enter a channel ID or mention to be used for the starboard:**", response -> {
+				String channelID = ParsingUtils.filterSnowflake(response);
+				if (!ParsingUtils.isSnowflake(channelID))
+					message.getChannel().sendMessage("**The channel you provided is not valid!**").queue();
+				else if (!message.getGuild().getChannels().contains(message.getJDA().getGuildChannelById(channelID)))
+						message.getChannel().sendMessage("**The channel you provided is not in this server!**").queue();
+				else promptForStarCount(message, channelID, server);
+			});
 		}
 	}
 	
+	private void promptForStarCount(Message message, String channelID, Server server) {
+		getAwaitedReply(message, "**Please enter the star count:**", response -> {
+			if (!ParsingUtils.isInteger(response))
+				message.getChannel().sendMessage("**You need to specify a number for the star count!**").queue();
+			else if (Integer.parseInt(response) < 1) 
+				message.getChannel().sendMessage("**Your star count must be at least 1! We recommend 5**").queue();
+			else starboardService.completeStarboardSetup(message, channelID, response, server);
+		});
+	}
+
 	private void disableStarboard(Message message, Server server) {
 		if (starboardService.getStarboardConfig(server.getId()) != null)
 			starboardService.deleteStarboardConfig(message, server);

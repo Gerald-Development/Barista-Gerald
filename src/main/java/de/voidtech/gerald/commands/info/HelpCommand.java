@@ -122,17 +122,25 @@ public class HelpCommand extends AbstractCommand{
 				.setTitle("How it works: " + capitaliseFirstLetter(commandToBeDisplayed.getName()) + " Command", GlobalConstants.LINKTREE_URL)
 				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
 				.addField("Command Name", "```" + capitaliseFirstLetter(commandToBeDisplayed.getName()) + "```", true)
-				.addField("Category", "```" + capitaliseFirstLetter(commandToBeDisplayed.getCommandCategory().getCategory()) + "```", true)
+				.addField("Category", "```" + showCommandCategory(commandToBeDisplayed.getCommandCategory()) + "```", true)
 				.addField("Description", "```" + commandToBeDisplayed.getDescription() + "```", false)
 				.addField("Usage", "```" + commandToBeDisplayed.getUsage() + "```", false)
 				.addField("Requires Arguments", "```" + showBooleanEmote(commandToBeDisplayed.requiresArguments()) + "```", true)
 				.addField("Is DM Capable", "```" + showBooleanEmote(commandToBeDisplayed.isDMCapable()) + "```", true)
-				.addField("Command Aliases", "```" + String.join(", ", commandToBeDisplayed.getCommandAliases()) + "```", false)
+				.addField("Command Aliases", "```" + showCommandAliases(commandToBeDisplayed.getCommandAliases()) + "```", false)
 				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, message.getJDA().getSelfUser().getAvatarUrl())
 				.build();
 		message.getChannel().sendMessageEmbeds(commandHelpEmbed).queue();
 	}
 	
+	private String showCommandCategory(CommandCategory category) {
+		return category == null ? "No Category" : capitaliseFirstLetter(category.getCategory());
+	}
+
+	private String showCommandAliases(String[] aliases) {
+		return aliases == null ? "No aliases" : String.join(", ", aliases);
+	}
+
 	private String showBooleanEmote(boolean option) {
 		return option ? TRUE_EMOTE : FALSE_EMOTE;
 	}
