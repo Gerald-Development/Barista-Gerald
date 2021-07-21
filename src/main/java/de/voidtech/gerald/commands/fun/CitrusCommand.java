@@ -47,7 +47,7 @@ public class CitrusCommand extends AbstractCommand {
 				event -> {
 					boolean correctCitrus = event.getMessage().getContentRaw().toLowerCase().equals(currentCitrus);
 					message.getChannel().sendMessage(String.format("%s! The Citrus was **%s**",
-							correctCitrus ? "Correct" : "Incorrect", currentCitrus)).queue();;
+							correctCitrus ? "Correct" : "Incorrect", currentCitrus)).queue();
 				}, 15, TimeUnit.SECONDS, 
 				() -> message.getChannel().sendMessage(String.format("Time is up! The Citrus was **%s**", currentCitrus)).queue());
 	}
