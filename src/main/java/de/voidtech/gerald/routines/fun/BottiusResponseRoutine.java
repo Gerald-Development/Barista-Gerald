@@ -23,6 +23,8 @@ public class BottiusResponseRoutine extends AbstractRoutine{
 		responses.add("Howdy there Bottius");
 		responses.add("Well if it isn't my main man Bottius <:fatmorning:766947919239708672>");
 		responses.add("<:intensecat:804291788147130428>");
+		responses.add("Hi bottius");
+		responses.add("Bottius :smirk:")
 		
 		return responses;
 	}
