@@ -83,8 +83,8 @@ public class GeraldConfig {
 	}
 
 	public String getGavinURL() {
-		String url = config.getProperty("gavinUrl"); 
-		return url != null ? url : "http://localhost:8000/chat_bot/";
+		String url = config.getProperty("api.gavin_url"); 
+		return url != null ? url : "http://localhost:6970/chat_bot/";
 	}
 
 	public String getTwitchClientId() {
@@ -93,5 +93,10 @@ public class GeraldConfig {
 	
 	public String getTwitchSecret() {
 		return config.getProperty("twitch.secret"); 
+	}
+	
+	public String getMemeApiURL() {
+		String url = config.getProperty("api.meme_url"); 
+		return url != null ? url : "http://localhost:6971/";
 	}
 }

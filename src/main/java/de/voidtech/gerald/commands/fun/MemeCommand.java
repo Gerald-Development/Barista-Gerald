@@ -23,6 +23,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.MemeBlocklist;
+import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -33,7 +34,6 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 @Command
 public class MemeCommand extends AbstractCommand {
 	
-	private static final String API_URL = "https://fyouron-api.herokuapp.com/";
 	private static final Logger LOGGER = Logger.getLogger(MemeCommand.class.getName());	
 	
 	@Autowired
@@ -41,6 +41,9 @@ public class MemeCommand extends AbstractCommand {
 	
 	@Autowired
 	private ServerService serverService;
+	
+	@Autowired
+	private GeraldConfig config;
 	
 	private MemeBlocklist getBlocklist(long serverID) {
 		try(Session session = sessionFactory.openSession())
@@ -113,7 +116,7 @@ public class MemeCommand extends AbstractCommand {
 		String payload = JSONPayload.toString();
 		
 		try {
-			URL memeCommandURL = new URL(API_URL);
+			URL memeCommandURL = new URL(config.getMemeApiURL());
 			HttpURLConnection con = (HttpURLConnection) memeCommandURL.openConnection();
 			con.setRequestMethod("POST");
 			con.setRequestProperty("Content-Type", "application/json; utf-8");
