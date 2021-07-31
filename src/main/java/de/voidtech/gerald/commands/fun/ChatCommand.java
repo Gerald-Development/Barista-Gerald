@@ -84,7 +84,11 @@ public class ChatCommand extends AbstractCommand{
 	}
 	private void sendHparams(Message message) {
 		JSONObject hparams = chatBot.getHparams();
-		if (hparams.toMap().containsKey("Error")) {String reply = hparams.getString("Error"); message.getChannel().sendMessage(reply).queue();}
+		if (hparams.toMap().containsKey("Error")) 
+		{
+			String reply = hparams.getString("Error"); 
+			message.getChannel().sendMessage(reply).queue();
+		}
 		else {
 			String title = String.format("Hyper-Parameters for %s", chatBot.getModelName().getString("ModelName"));
 			EmbedBuilder eb = new EmbedBuilder()

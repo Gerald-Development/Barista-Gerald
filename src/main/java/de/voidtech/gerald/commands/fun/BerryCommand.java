@@ -39,14 +39,14 @@ public class BerryCommand extends AbstractCommand{
 				.setImage(berryMap.get(currentBerry))
 				.build();
 		
-		message.getChannel().sendMessageEmbeds(berryQuestEmbed).queue();;
+		message.getChannel().sendMessageEmbeds(berryQuestEmbed).queue();
 		
 		waiter.waitForEvent(MessageReceivedEvent.class,
 				new MRESameUserPredicate(message.getAuthor()),
 				event -> {
 					boolean correctberry = event.getMessage().getContentRaw().toLowerCase().equals(currentBerry);
 					message.getChannel().sendMessage(String.format("%s! The Berry was **%s**",
-							correctberry ? "Correct" : "Incorrect", currentBerry)).queue();;
+							correctberry ? "Correct" : "Incorrect", currentBerry)).queue();
 				}, 15, TimeUnit.SECONDS, 
 				() -> message.getChannel().sendMessage(String.format("Time is up! The Berry was **%s**", currentBerry)).queue());
 	}

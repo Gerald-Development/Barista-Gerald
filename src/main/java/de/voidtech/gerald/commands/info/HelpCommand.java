@@ -102,7 +102,13 @@ public class HelpCommand extends AbstractCommand{
 		message.getChannel().sendMessageEmbeds(commandHelpEmbed).queue();
 		
 	};
-
+	
+	//TODO: Those two showCommandCategory methods dont have the same purpose at all but they are named the same way. 
+	//TODO: Also this should be a method in the CommandCategory enum.
+	private String showCommandCategory(CommandCategory category) {
+		return category == null ? "No Category" : capitaliseFirstLetter(category.getCategory());
+	}
+	
 	private AbstractCommand getCommand(String name) {
 		String commandToBeFound = name;
 		if (msgHandler.aliases.containsKey(name))
@@ -133,9 +139,6 @@ public class HelpCommand extends AbstractCommand{
 		message.getChannel().sendMessageEmbeds(commandHelpEmbed).queue();
 	}
 	
-	private String showCommandCategory(CommandCategory category) {
-		return category == null ? "No Category" : capitaliseFirstLetter(category.getCategory());
-	}
 
 	private String showCommandAliases(String[] aliases) {
 		return aliases == null ? "No aliases" : String.join(", ", aliases);

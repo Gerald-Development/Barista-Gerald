@@ -174,7 +174,7 @@ public class StarboardService {
 		long count = message.getReactions()
 				 .stream()
 				 .filter(reaction -> reaction.getReactionEmote().toString().equals("RE:" + STAR_UNICODE))
-				 .count();;
+				 .count();
 		for (MessageReaction reaction: message.getReactions()) {
 			if (reaction.getReactionEmote().toString().equals("RE:" + STAR_UNICODE)) {
 				count = reaction.getCount();

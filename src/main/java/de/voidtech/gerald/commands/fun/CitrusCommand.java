@@ -40,14 +40,14 @@ public class CitrusCommand extends AbstractCommand {
 				.setImage(citrusMap.get(currentCitrus))
 				.build();
 		
-		message.getChannel().sendMessageEmbeds(citrusQuestEmbed).queue();;
+		message.getChannel().sendMessageEmbeds(citrusQuestEmbed).queue();
 		
 		waiter.waitForEvent(MessageReceivedEvent.class,
 				new MRESameUserPredicate(message.getAuthor()),
 				event -> {
 					boolean correctCitrus = event.getMessage().getContentRaw().toLowerCase().equals(currentCitrus);
 					message.getChannel().sendMessage(String.format("%s! The Citrus was **%s**",
-							correctCitrus ? "Correct" : "Incorrect", currentCitrus)).queue();;
+							correctCitrus ? "Correct" : "Incorrect", currentCitrus)).queue();
 				}, 15, TimeUnit.SECONDS, 
 				() -> message.getChannel().sendMessage(String.format("Time is up! The Citrus was **%s**", currentCitrus)).queue());
 	}
