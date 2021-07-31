@@ -96,7 +96,6 @@ public class GeraldConfig {
 	}
 	
 	public String getMemeApiURL() {
-		String url = config.getProperty("api.meme_url"); 
-		return url != null ? url : "http://localhost:6971/";
+		return config.getProperty("api.meme_url");
 	}
 }
