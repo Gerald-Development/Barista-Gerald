@@ -10,6 +10,7 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
 
 @Command
 public class ShipCommand extends AbstractCommand{
@@ -19,27 +20,22 @@ public class ShipCommand extends AbstractCommand{
 	@Override
 	public void executeInternal(Message message, List<String> args) {
 		
-		if(args.size() != 2) message.getChannel().sendMessage("You must supply two names!").queue();
-		
-		String name1 = message.getMentionedMembers().size() > 1 
-				? message.getMentionedMembers().get(0).getUser().getAsTag()
-				: args.get(0);
-		
-		String name2 = message.getMentionedMembers().size() >= 2 
-				? message.getMentionedMembers().get(1).getUser().getAsTag()
-				: args.get(1);
-		
-		int shipRating = new Random().nextInt(101);
-		String phrase = getPhrase(shipRating);
-		Color color = getColor(shipRating);
-		
-		MessageEmbed shipEmbed = new EmbedBuilder()//
-				.setTitle(name1 + HEART + name2)
-				.setColor(color)
-				.setDescription(String.format("Your love match percentage is %d%c %s", shipRating, '%', phrase))
-				.build();
-		
-		message.getChannel().sendMessageEmbeds(shipEmbed).queue();
+		if (message.getMentionedMembers().size() < 2) message.getChannel().sendMessage("**You must mention 2 people to ship!**").queue();
+		else {
+			User user1 = message.getMentionedMembers().get(0).getUser();
+			User user2 = message.getMentionedMembers().get(1).getUser();
+			int shipRating = new Random(user1.getIdLong() - user2.getIdLong()).nextInt(101);
+			String phrase = getPhrase(shipRating);
+			Color color = getColor(shipRating);
+			
+			MessageEmbed shipEmbed = new EmbedBuilder()//
+					.setTitle(user1.getAsTag() + HEART + user2.getAsTag())
+					.setColor(color)
+					.setDescription(String.format("Your love match percentage is %d%c %s", shipRating, '%', phrase))
+					.build();
+			
+			message.getChannel().sendMessageEmbeds(shipEmbed).queue();
+		}
 	}
 	
 	private Color getColor(int shipRating)
@@ -67,7 +63,7 @@ public class ShipCommand extends AbstractCommand{
 
 	@Override
 	public String getUsage() {
-		return "ship ";
+		return "ship @member @member";
 	}
 
 	@Override
