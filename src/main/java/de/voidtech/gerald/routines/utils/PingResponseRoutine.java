@@ -50,8 +50,6 @@ public class PingResponseRoutine extends AbstractRoutine {
 	@Override
 	public void executeInternal(Message message) {
 		if (message.getChannelType().equals(ChannelType.TEXT) && message.getMentionedUsers().contains(message.getJDA().getSelfUser())) {
-			System.out.println(message.getContentRaw());
-			System.out.println(ParsingUtils.filterSnowflake(message.getContentRaw()));
 			List<String> messageBlocks = new ArrayList<String>(Arrays.asList(message.getContentRaw().split(" ")));
 			if (messageBlocks.size() == 1 && ParsingUtils.filterSnowflake(message.getContentRaw()).equals(message.getJDA().getSelfUser().getId()))
 				sendPingInfoMessage(message);
