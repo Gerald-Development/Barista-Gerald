@@ -84,7 +84,7 @@ public class HelpCommand extends AbstractCommand{
 		return false;
 	};
 	
-	private void showCommandCategory(Message message, String categoryName) {
+	private void showCommandsFromCategory(Message message, String categoryName) {
 		String commandList = "";
 		for (AbstractCommand command : commands) {
 			if(command.getCommandCategory().getCategory().equals(categoryName))
@@ -103,9 +103,7 @@ public class HelpCommand extends AbstractCommand{
 		
 	};
 	
-	//TODO: Those two showCommandCategory methods dont have the same purpose at all but they are named the same way. 
-	//TODO: Also this should be a method in the CommandCategory enum.
-	private String showCommandCategory(CommandCategory category) {
+	private String displayCommandCategoryOrNull(CommandCategory category) {
 		return category == null ? "No Category" : capitaliseFirstLetter(category.getCategory());
 	}
 	
@@ -128,11 +126,11 @@ public class HelpCommand extends AbstractCommand{
 				.setTitle("How it works: " + capitaliseFirstLetter(commandToBeDisplayed.getName()) + " Command", GlobalConstants.LINKTREE_URL)
 				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
 				.addField("Command Name", "```" + capitaliseFirstLetter(commandToBeDisplayed.getName()) + "```", true)
-				.addField("Category", "```" + showCommandCategory(commandToBeDisplayed.getCommandCategory()) + "```", true)
+				.addField("Category", "```" + displayCommandCategoryOrNull(commandToBeDisplayed.getCommandCategory()) + "```", true)
 				.addField("Description", "```" + commandToBeDisplayed.getDescription() + "```", false)
 				.addField("Usage", "```" + commandToBeDisplayed.getUsage() + "```", false)
-				.addField("Requires Arguments", "```" + showBooleanEmote(commandToBeDisplayed.requiresArguments()) + "```", true)
-				.addField("Is DM Capable", "```" + showBooleanEmote(commandToBeDisplayed.isDMCapable()) + "```", true)
+				.addField("Requires Arguments", "```" + booleanToEmote(commandToBeDisplayed.requiresArguments()) + "```", true)
+				.addField("Is DM Capable", "```" + booleanToEmote(commandToBeDisplayed.isDMCapable()) + "```", true)
 				.addField("Command Aliases", "```" + showCommandAliases(commandToBeDisplayed.getCommandAliases()) + "```", false)
 				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, message.getJDA().getSelfUser().getAvatarUrl())
 				.build();
@@ -144,7 +142,7 @@ public class HelpCommand extends AbstractCommand{
 		return aliases == null ? "No aliases" : String.join(", ", aliases);
 	}
 
-	private String showBooleanEmote(boolean option) {
+	private String booleanToEmote(boolean option) {
 		return option ? TRUE_EMOTE : FALSE_EMOTE;
 	}
 
@@ -152,11 +150,10 @@ public class HelpCommand extends AbstractCommand{
 	public void executeInternal(Message message, List<String> args) {
 		if (!commands.contains(this)) commands.add(this);	
 		
-		if (args.size() == 0)
-			showCategoryList(message);
+		if (args.size() == 0) showCategoryList(message);
 		else {
 			String itemToBeQueried = args.get(0).toLowerCase();
-			if (isCommandCategory(itemToBeQueried)) showCommandCategory(message, itemToBeQueried);
+			if (isCommandCategory(itemToBeQueried)) showCommandsFromCategory(message, itemToBeQueried);
 			else if (isCommand(itemToBeQueried)) showCommand(message, itemToBeQueried);
 			else message.getChannel().sendMessage("**That command/category could not be found!**").queue();
 		}
