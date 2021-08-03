@@ -19,6 +19,8 @@ public class PlaywrightService {
 	
 	private NewContextOptions getContextOptions() {
 		return new Browser.NewContextOptions()
+				.setLocale("en-GB")
+				.setGeolocation(38.8977, 77.0365)
 				.setViewportSize(1000, 1000);
 	}
 	
