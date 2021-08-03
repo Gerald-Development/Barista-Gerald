@@ -169,9 +169,9 @@
 			<version>1.9</version>
 		</dependency>
 		<dependency>
-			<groupId>com.microsoft.playwright</groupId>
-			<artifactId>playwright</artifactId>
-			<version>1.12.1</version>
+    		<groupId>com.microsoft.playwright</groupId>
+    		<artifactId>playwright</artifactId>
+    		<version>1.13.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.twitch4j</groupId>
