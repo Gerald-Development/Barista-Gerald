@@ -25,14 +25,15 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 @Command
 public class GoogleCommand extends AbstractCommand {
 	
-	private static final String BROWSER_LOGO_IMAGE = "https://e1.pngegg.com/pngimages/209/923/png-clipart-logo-google-g-suite-google-pay-google-doodle-texte-cercle-ligne-zone-thumbnail.png";
+	private static final String BROWSER_LOGO_IMAGE = "https://e7.pngegg.com/pngimages/293/824/png-clipart-ecosia-computer-icons-web-browser-android-illegal-logging-globe-logo-thumbnail.png";
 	private static final String RED_CROSS_UNICODE = "U+274c";
 	
-	private static final String BROWSER_BASE_URL = "https://www.google.com/search?q=";
-	private static final String NEWS_MODE = "&tbm=nws";
-	private static final String IMAGE_MODE = "&tbm=isch";
-	private static final String VIDEO_MODE = "&tbm=vid";
-	private static final String SAFE_SEARCH_SUFFIX = "&safe=active";
+	private static final String BROWSER_BASE_URL = "https://www.ecosia.org/";
+	private static final String BROWSER_SEARCH_URL = "search?q=";
+	private static final String BROWSER_NEWS_URL = "news?q=";
+	private static final String BROWSER_IMAGES_URL = "images?q=";
+	private static final String BROWSER_VIDEOS_URL = "videos?q=";
+	private static final String SAFE_SEARCH_SUFFIX = "&sfs=true";
 
 	@Autowired
 	private EventWaiter waiter;
@@ -41,8 +42,9 @@ public class GoogleCommand extends AbstractCommand {
 	private PlaywrightService playwrightService;
 
 	private String removeFirstListItem(List<String> originalList) {
-		if (originalList.size() == 1) return "";
-		else {
+		if (originalList.size() == 1) {
+			return "";
+		} else {
 			List<String> modifiedList = new ArrayList<String>();
 			for (int i = 1; i < originalList.size(); i++) {
 				modifiedList.add(originalList.get(i));
@@ -57,24 +59,35 @@ public class GoogleCommand extends AbstractCommand {
 		
 		if (args.get(0).startsWith("-")) {
 			String flag = args.get(0).substring(1);
-			String mode = "";
 			queryString = String.join("+", removeFirstListItem(args));
 			switch (flag) {
 				case "i":
-					mode = IMAGE_MODE;
+					urlBuffer += BROWSER_IMAGES_URL;
 					break;
 				case "n":
-					mode = NEWS_MODE;
+					urlBuffer += BROWSER_NEWS_URL;
 					break;
 				case "v":
-					mode = VIDEO_MODE;
+					urlBuffer += BROWSER_VIDEOS_URL;
+					break;
+				default:
+					urlBuffer += BROWSER_SEARCH_URL;
 					break;
 			}
-			return (queryString == "") ? null : urlBuffer + queryString  + mode + (nsfwAllowed ? "" : SAFE_SEARCH_SUFFIX);
-		} else return urlBuffer + queryString + (nsfwAllowed ? "" : SAFE_SEARCH_SUFFIX);
+		} else 
+			urlBuffer += BROWSER_SEARCH_URL;
+		if (queryString == "")
+			return null;
+		else {
+			urlBuffer += queryString;
+			if (!nsfwAllowed)
+				urlBuffer += SAFE_SEARCH_SUFFIX; 
+			return urlBuffer;	
+		}
 	}
 
-	private boolean getNsfwMode(MessageChannel messageChannel) {
+	private boolean getNsfwMode(MessageChannel messageChannel) 
+	{
 		return messageChannel.getType().equals(ChannelType.PRIVATE) ? true : ((TextChannel)messageChannel).isNSFW();
 	}
 	
@@ -111,7 +124,7 @@ public class GoogleCommand extends AbstractCommand {
 				.setColor(Color.ORANGE)
 				.setTitle("**Your Search Result:**", url)
 				.setImage("attachment://screenshot.png")
-				.setFooter("Powered By Google | Safe mode " + (safeSearchMode ? "disabled" : "enabled"), BROWSER_LOGO_IMAGE)
+				.setFooter("Powered By Ecosia | Safe mode " + (safeSearchMode ? "disabled" : "enabled"), BROWSER_LOGO_IMAGE)
 				.build();
 		return googleEmbed;
 	}
@@ -124,7 +137,7 @@ public class GoogleCommand extends AbstractCommand {
 			message.getChannel().sendMessage("**You did not provide something to search for!**").queue();
 		else {
 			message.getChannel().sendTyping().queue();
-			byte[] screenshot = playwrightService.screenshotPage(url, 1500, 1200);	
+			byte[] screenshot = playwrightService.screenshotPage(url, 1000, 1000);	
 			
 			sendFinalMessage(message, url, screenshot);
 		}
@@ -166,7 +179,7 @@ public class GoogleCommand extends AbstractCommand {
 
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"search"};
+		String[] aliases = {"search", "ecosia"};
 		return aliases;
 	}
 	
