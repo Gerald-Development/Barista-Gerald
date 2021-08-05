@@ -21,7 +21,8 @@ public class PlaywrightService {
 	
 	private NewContextOptions getContextOptions() {
 		return new Browser.NewContextOptions()
-				.setViewportSize(1000, 1000);
+				.setViewportSize(1000, 1000)
+				.setLocale("en-GB");
 	}
 	
 	public PlaywrightService() {
