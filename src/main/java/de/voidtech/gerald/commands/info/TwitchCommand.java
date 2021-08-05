@@ -61,10 +61,11 @@ public class TwitchCommand extends AbstractCommand{
 		if (args.size() == 1)
 			message.getChannel().sendMessage("**You need to specify a streamer to unsubscribe from!**").queue();
 		else {
-			if (!twitchService.subscriptionExists(args.get(1), serverService.getServer(message.getGuild().getId()).getId()))
+			String streamer = args.get(1).toLowerCase();
+			if (!twitchService.subscriptionExists(streamer, serverService.getServer(message.getGuild().getId()).getId()))
 				message.getChannel().sendMessage("**A subscription to that streamer does not exist!**").queue();
 			else {
-				twitchService.removeChannelSubscription(args.get(1), serverService.getServer(message.getGuild().getId()).getId());
+				twitchService.removeChannelSubscription(streamer, serverService.getServer(message.getGuild().getId()).getId());
 				message.getChannel().sendMessage("**Subscription has been removed**").queue();
 			}
 		}
@@ -105,7 +106,7 @@ public class TwitchCommand extends AbstractCommand{
 	private void streamerSetupGetStreamer(Message message) {
 		getAwaitedReply(message, "**Please enter the twitch URL of the streamer you wish to subscribe to:**", streamerUrl -> {
 			if (validTwitchUrl(streamerUrl)) {
-				String streamerName = Arrays.asList(streamerUrl.split("/")).get(3);
+				String streamerName = Arrays.asList(streamerUrl.split("/")).get(3).toLowerCase();
 				if (twitchService.subscriptionExists(streamerName, serverService.getServer(message.getGuild().getId()).getId()))
 					message.getChannel().sendMessage("**A subscription to that streamer already exists!**").queue();
 				else
