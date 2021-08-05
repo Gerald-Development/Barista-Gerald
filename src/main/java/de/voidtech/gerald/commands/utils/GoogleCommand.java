@@ -25,15 +25,15 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 @Command
 public class GoogleCommand extends AbstractCommand {
 	
-	private static final String BROWSER_LOGO_IMAGE = "https://e7.pngegg.com/pngimages/293/824/png-clipart-ecosia-computer-icons-web-browser-android-illegal-logging-globe-logo-thumbnail.png";
+	private static final String BROWSER_LOGO_IMAGE = "https://e1.pngegg.com/pngimages/209/923/png-clipart-logo-google-g-suite-google-pay-google-doodle-texte-cercle-ligne-zone-thumbnail.png";
 	private static final String RED_CROSS_UNICODE = "U+274c";
 	
-	private static final String BROWSER_BASE_URL = "https://www.ecosia.org/";
+	private static final String BROWSER_BASE_URL = "https://www.google.com/";
 	private static final String BROWSER_SEARCH_URL = "search?q=";
 	private static final String BROWSER_NEWS_URL = "news?q=";
 	private static final String BROWSER_IMAGES_URL = "images?q=";
 	private static final String BROWSER_VIDEOS_URL = "videos?q=";
-	private static final String SAFE_SEARCH_SUFFIX = "&sfs=true";
+	private static final String SAFE_SEARCH_SUFFIX = "&safe=active";
 
 	@Autowired
 	private EventWaiter waiter;
@@ -124,7 +124,7 @@ public class GoogleCommand extends AbstractCommand {
 				.setColor(Color.ORANGE)
 				.setTitle("**Your Search Result:**", url)
 				.setImage("attachment://screenshot.png")
-				.setFooter("Powered By Ecosia | Safe mode " + (safeSearchMode ? "disabled" : "enabled"), BROWSER_LOGO_IMAGE)
+				.setFooter("Powered By Google | Safe mode " + (safeSearchMode ? "disabled" : "enabled"), BROWSER_LOGO_IMAGE)
 				.build();
 		return googleEmbed;
 	}
@@ -137,7 +137,7 @@ public class GoogleCommand extends AbstractCommand {
 			message.getChannel().sendMessage("**You did not provide something to search for!**").queue();
 		else {
 			message.getChannel().sendTyping().queue();
-			byte[] screenshot = playwrightService.screenshotPage(url, 1000, 1000);	
+			byte[] screenshot = playwrightService.screenshotPage(url, 1500, 1200);	
 			
 			sendFinalMessage(message, url, screenshot);
 		}
@@ -179,7 +179,7 @@ public class GoogleCommand extends AbstractCommand {
 
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"search", "ecosia"};
+		String[] aliases = {"search"};
 		return aliases;
 	}
 	
