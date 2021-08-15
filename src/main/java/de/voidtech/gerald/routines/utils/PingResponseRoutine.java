@@ -72,7 +72,7 @@ public class PingResponseRoutine extends AbstractRoutine {
 
 	@Override
 	public boolean canBeDisabled() {
-		return false;
+		return true;
 	}
 
 	@Override
