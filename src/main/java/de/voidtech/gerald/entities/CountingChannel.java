@@ -30,22 +30,34 @@ public class CountingChannel {
 	@Column
 	private boolean hasReached69;
 	
+	@Column
+	private boolean talkingAllowed;
+	
 	@Column 
 	private int numberOfTimesItHasBeenNice;
+	
+	@Column
+	private String lastCountMessageId;
+	
+	@Column
+	private int lives;
 	
 	@Deprecated
 	//ONLY FOR HIBERNATE, DO NOT USE
 	CountingChannel() {
 	}
 	
-	public CountingChannel(String channelID, String serverID, int count, String lastUser, boolean hasReached69, int numberOfTimesItHasBeenNice)
+	public CountingChannel(String channelID, String serverID)
 	{
 	  this.channelID = channelID;
 	  this.serverID = serverID;
-	  this.countPosition = count;
-	  this.lastUser = lastUser;
-	  this.hasReached69 = hasReached69;
-	  this.numberOfTimesItHasBeenNice = numberOfTimesItHasBeenNice;
+	  this.countPosition = 0;
+	  this.lastUser = "";
+	  this.hasReached69 = false;
+	  this.numberOfTimesItHasBeenNice = 0;
+	  this.talkingAllowed = true;
+	  this.lastCountMessageId = "";
+	  this.lives = 3;
 	}
 	
 	public String getCountingChannel() {
@@ -94,5 +106,33 @@ public class CountingChannel {
 	
 	public void setNumberOfTimes69HasBeenReached(int newCount) {
 		this.numberOfTimesItHasBeenNice = newCount;
+	}
+	
+	public boolean talkingIsAllowed() {
+		return this.talkingAllowed;
+	}
+	
+	public void setIsTalkingAllowed(boolean isAllowed) {
+		this.talkingAllowed = isAllowed;
+	}
+	
+	public String getLastCountMessageId() {
+		return this.lastCountMessageId;
+	}
+	
+	public void setLastCountMessageId(String messageId) {
+		this.lastCountMessageId = messageId;
+	}
+	
+	public int getLives() {
+		return this.lives;
+	}
+	
+	public void removeLife() {
+		this.lives = this.lives - 1;
+	}
+	
+	public void resetLives() {
+		this.lives = 3;
 	}
 }

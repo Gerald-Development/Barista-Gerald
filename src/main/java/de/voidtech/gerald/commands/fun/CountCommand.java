@@ -12,6 +12,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.entities.CountingChannel;
+import main.java.de.voidtech.gerald.service.CountingService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -20,76 +21,28 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class CountCommand extends AbstractCommand {
-	
+
 	@Autowired
 	private SessionFactory sessionFactory;
 	
-	private boolean countingChannelExists (String channelID) {
-		CountingChannel dbChannel = null;
-		try(Session session = sessionFactory.openSession())
-		{
-			dbChannel = (CountingChannel) session.createQuery("FROM CountingChannel WHERE ChannelID = :channelID")
-                    .setParameter("channelID", channelID)
-                    .uniqueResult();
-			return dbChannel != null;
-		}
-	}
-	
-	private List<CountingChannel> getTopFive() {
-		try(Session session = sessionFactory.openSession())
-		{
-			@SuppressWarnings("unchecked")
-			List<CountingChannel> channels = (List<CountingChannel>) session.createQuery("FROM CountingChannel"
-					+ " ORDER BY CountPosition ASC")
-					.setMaxResults(5).list();
-			return channels;
-		}	
-	}
-	
-	private void startCount(Message message) {
-		String channelID = message.getChannel().getId();
-		
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			
-			CountingChannel newCountChannel = new CountingChannel(channelID, message.getGuild().getId(), 0, message.getJDA().getSelfUser().getId(), false, 0);			
-			session.saveOrUpdate(newCountChannel);
-			session.getTransaction().commit();
-		}
-		message.getChannel().sendMessage("**The count has started! Send 1 to begin the game!**").queue();
-	}
-	
-	private void stopCount(MessageChannel channel) {
-		String channelID = channel.getId();
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			session.createQuery("DELETE FROM CountingChannel WHERE ChannelID = :channelID")
-				.setParameter("channelID", channelID)
-				.executeUpdate();
-			session.getTransaction().commit();
-		}
-		channel.sendMessage("**This count has been ended. If you wish to start again, you will have to start from 0!**").queue();
-	}
+	@Autowired
+	private CountingService countService;
 	
 	private String formatAsMarkdown(String input) {
 		return "```\n" + input + "\n```";
 	}
 	
 	private void sendCountStatistics(MessageChannel channel) {
-		String channelID = channel.getId();
 		try(Session session = sessionFactory.openSession())
 		{
-			CountingChannel dbChannel = (CountingChannel) session.createQuery("FROM CountingChannel WHERE ChannelID = :channelID")
-                    .setParameter("channelID", channelID)
-                    .uniqueResult();
+			CountingChannel dbChannel = countService.getCountingChannel(channel.getId());
 						
 			String current = formatAsMarkdown(String.valueOf(dbChannel.getChannelCount()));
-			String lastUser = formatAsMarkdown(channel.getJDA().getUserById(dbChannel.getLastUser()).getAsTag());
+			String lastUser = formatAsMarkdown(dbChannel.getLastUser().equals("") ? "Nobody" : channel.getJDA().getUserById(dbChannel.getLastUser()).getAsTag());
 			String next = formatAsMarkdown(String.valueOf(dbChannel.getChannelCount() - 1) + " or " + String.valueOf(dbChannel.getChannelCount() + 1));
 			String reached69 = formatAsMarkdown(String.valueOf(dbChannel.hasReached69()));
 			String numberOf69 = formatAsMarkdown(String.valueOf(dbChannel.get69ReachedCount()));
+			String livesRemaining = formatAsMarkdown(String.valueOf(dbChannel.getLives()));
 			
 			MessageEmbed countStatsEmbed = new EmbedBuilder()
 					.setColor(Color.ORANGE)
@@ -99,6 +52,7 @@ public class CountCommand extends AbstractCommand {
 					.addField("Last User", lastUser, false)
 					.addField("Has reached 69?", reached69, true)
 					.addField("No. of times 69 has been reached", numberOf69, true)
+					.addField("Lives Remaining", livesRemaining, true)
 					.build();
 			channel.sendMessageEmbeds(countStatsEmbed).queue();
 		}	
@@ -106,38 +60,31 @@ public class CountCommand extends AbstractCommand {
 	
 	private void startCountMethod(Message message) {
 		if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-			if (countingChannelExists(message.getChannel().getId())) {
+			if (countService.getCountingChannel(message.getChannel().getId()) != null) 
 				message.getChannel().sendMessage("**There is already a count set up here!**").queue();
-			} else {
-				startCount(message);	
+			else {
+				CountingChannel newCountChannel = new CountingChannel(message.getChannel().getId(),	message.getGuild().getId());
+				countService.saveCountConfig(newCountChannel);	
+				message.getChannel().sendMessage("**The count has started! Send 1 to begin the game!**").queue();
 			}
-		} else {
-			message.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();
-		}	
+		} else message.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();	
 	}
 	
 	private void stopCountMethod(Message message) {
 		if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-			if (countingChannelExists(message.getChannel().getId())) {
-				stopCount(message.getChannel());
-			} else {
-				message.getChannel().sendMessage("**There is not a count set up here!**").queue();
-			}
-		} else {
-			message.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();
-		}
+			if (countService.getCountingChannel(message.getChannel().getId()) != null) countService.stopCount(message.getChannel());
+			else message.getChannel().sendMessage("**There is not a count set up here!**").queue();
+		} else message.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();
 	}
 	
 	private void countStatsMethod(Message message) {
-		if (countingChannelExists(message.getChannel().getId())) {
+		if (countService.getCountingChannel(message.getChannel().getId()) != null) {
 			sendCountStatistics(message.getChannel());
-		} else {
-			message.getChannel().sendMessage("**You need to use this command in a counting channel!**").queue();
-		}
+		} else message.getChannel().sendMessage("**You need to use this command in a counting channel!**").queue();
 	}
 	
 	private void countLeaderboardMethod(Message message) {
-		List<CountingChannel> topFiveChannels = getTopFive();
+		List<CountingChannel> topFiveChannels = countService.getTopFive();
 		
 		String leaderboard = "```js\n";
 		
@@ -150,8 +97,7 @@ public class CountCommand extends AbstractCommand {
 			
 			leaderboard = "\n" + pos + ") Channel: " + message.getJDA().getGuildById(serverID).getName() + " > "
 			+ message.getJDA().getGuildChannelById(channelID).getName() + "\n"
-					+ "Count: " + count + "\n" + leaderboard;
-			
+					+ "Count: " + count + "\n" + leaderboard;	
 		}
 		leaderboard += "```";
 		
@@ -163,6 +109,32 @@ public class CountCommand extends AbstractCommand {
 				.build();
 		message.getChannel().sendMessageEmbeds(leaderboardEmbed).queue();
 		
+	}
+	
+	private void disableChat(Message message) {
+		if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+			if (countService.getCountingChannel(message.getChannel().getId()) == null) 
+				message.getChannel().sendMessage("**There is no count set up here!**").queue();
+			else {
+				CountingChannel channel = countService.getCountingChannel(message.getChannel().getId());
+				channel.setIsTalkingAllowed(false);
+				countService.saveCountConfig(channel);
+				message.getChannel().sendMessage("**Non-counting messages sent in this channel will now be deleted!**").queue();
+			}
+		} else message.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();	
+	}
+	
+	private void enableChat(Message message) {
+		if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+			if (countService.getCountingChannel(message.getChannel().getId()) == null) 
+				message.getChannel().sendMessage("**There is no count set up here!**").queue();
+			else {
+				CountingChannel channel = countService.getCountingChannel(message.getChannel().getId());
+				channel.setIsTalkingAllowed(true);
+				countService.saveCountConfig(channel);
+				message.getChannel().sendMessage("**Non-counting messages sent in this channel will no longer be deleted!**").queue();
+			}
+		} else message.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();	
 	}
 	
 	@Override
@@ -181,6 +153,14 @@ public class CountCommand extends AbstractCommand {
 			countStatsMethod(message);
 			break;
 		
+		case "enablechat":
+			enableChat(message);
+			break;
+			
+		case "disablechat":
+			disableChat(message);
+			break;
+		
 		case "leaderboard":
 			countLeaderboardMethod(message);
 			break;
@@ -194,14 +174,20 @@ public class CountCommand extends AbstractCommand {
 
 	@Override
 	public String getDescription() {
-		return "Allows you to create a designated Counting channel in your server! Each user must in turn count up starting from 0, if someone gets the count wrong, the counter resets from 0! Additionally, users may battle between eachother trying to either raise the count as high as possible, or get it as far below zero as possible by counting down.";
+		return "Allows you to create a designated Counting channel in your server!"
+				+ " Each user must in turn count up starting from 0, if someone gets"
+				+ " the count wrong, the counter resets from 0! Additionally, users"
+				+ " may battle between eachother trying to either raise the count as"
+				+ " high as possible, or get it as far below zero as possible by counting down.";
 	}
 
 	@Override
 	public String getUsage() {
 		return "count start\n"
 				+ "count stop\n"
-				+ "count stats\n";
+				+ "count stats\n"
+				+ "count disablechat\n"
+				+ "count enablechat";
 	}
 
 	@Override
