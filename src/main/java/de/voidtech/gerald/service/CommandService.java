@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Service
 public class CommandService
 {
-    private static final Logger LOGGER = Logger.getLogger(MessageHandler.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(CommandService.class.getName());
 
     private static final int LEVENSHTEIN_THRESHOLD = 1;
 
