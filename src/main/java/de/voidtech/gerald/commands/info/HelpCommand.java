@@ -3,13 +3,13 @@ package main.java.de.voidtech.gerald.commands.info;
 import java.awt.Color;
 import java.util.List;
 
+import main.java.de.voidtech.gerald.service.CommandService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.GlobalConstants;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.service.MessageHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -21,7 +21,7 @@ public class HelpCommand extends AbstractCommand{
 	private List<AbstractCommand> commands;
 	
 	@Autowired
-	private MessageHandler msgHandler;
+	private CommandService commandService;
  
 	private static final String TRUE_EMOTE = "\u2705";
 	private static final String FALSE_EMOTE = "\u274C";
@@ -60,7 +60,7 @@ public class HelpCommand extends AbstractCommand{
 				return true;
 		}
 		return false;
-	};
+	}
 	
 	
 	private String getCategoryIconByName(String name) {
@@ -72,17 +72,16 @@ public class HelpCommand extends AbstractCommand{
 	}
 	
 	private boolean isCommand(String commandName) {
-		String commandToBeFound = commandName;
-		if (msgHandler.aliases.containsKey(commandToBeFound)) {
+		if (commandService.aliases.containsKey(commandName)) {
 			return true;
 		} else {
 			for (AbstractCommand command : commands)
-				if(command.getName().equals(commandToBeFound)) {
+				if(command.getName().equals(commandName)) {
 					return true;
 			}	
 		}
 		return false;
-	};
+	}
 	
 	private void showCommandsFromCategory(Message message, String categoryName) {
 		String commandList = "";
@@ -101,16 +100,16 @@ public class HelpCommand extends AbstractCommand{
 				.build();
 		message.getChannel().sendMessageEmbeds(commandHelpEmbed).queue();
 		
-	};
-	
+	}
+
 	private String displayCommandCategoryOrNull(CommandCategory category) {
 		return category == null ? "No Category" : capitaliseFirstLetter(category.getCategory());
 	}
 	
 	private AbstractCommand getCommand(String name) {
 		String commandToBeFound = name;
-		if (msgHandler.aliases.containsKey(name))
-			commandToBeFound = msgHandler.aliases.get(name);
+		if (commandService.aliases.containsKey(name))
+			commandToBeFound = commandService.aliases.get(name);
 		for (AbstractCommand command : commands) {
 			if(command.getName().equals(commandToBeFound))
 				return command;
@@ -193,8 +192,7 @@ public class HelpCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"commands", "h"};
-		return aliases;
+		return new String[]{"commands", "h"};
 	}
 	
 	@Override
