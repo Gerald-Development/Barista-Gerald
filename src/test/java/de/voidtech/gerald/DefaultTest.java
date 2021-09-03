@@ -7,7 +7,7 @@ import org.junit.Test;
 public class DefaultTest {
 	
 	@Test
-	public void testDefault() throws Exception {
-		assertEquals(1, 1);
+	public void testDefault() {
+		assertEquals(0, 0);
 	}
 }
