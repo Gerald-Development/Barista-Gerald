@@ -84,7 +84,7 @@ public class Gerald {
 	}
 	
 	private List<GatewayIntent> getNonPrivilegedIntents() {
-		List<GatewayIntent> gatewayIntents = new ArrayList<GatewayIntent>(Arrays.asList(GatewayIntent.values()));
+		List<GatewayIntent> gatewayIntents = new ArrayList<>(Arrays.asList(GatewayIntent.values()));
 		gatewayIntents.remove(GatewayIntent.GUILD_PRESENCES);
 		
 		return gatewayIntents;
@@ -105,7 +105,6 @@ public class Gerald {
 		properties.put("spring.datasource.url", configService.getConnectionURL());
 		properties.put("spring.datasource.username", configService.getDBUser());
 		properties.put("spring.datasource.password", configService.getDBPassword());
-		properties.put("spring.datasource.url", configService.getConnectionURL());
 		properties.put("spring.jpa.properties.hibernate.dialect", configService.getHibernateDialect());
 		properties.put("jdbc.driver", configService.getDriver());
 		properties.put("spring.jpa.hibernate.ddl-auto", "update");
