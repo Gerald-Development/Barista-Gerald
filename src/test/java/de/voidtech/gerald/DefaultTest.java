@@ -8,6 +8,6 @@ public class DefaultTest {
 	
 	@Test
 	public void testDefault() {
-		assertEquals(0, 0);
+		assertEquals(1, 1);
 	}
 }
