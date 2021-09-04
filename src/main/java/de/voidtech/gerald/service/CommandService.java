@@ -1,5 +1,6 @@
 package main.java.de.voidtech.gerald.service;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,11 +12,15 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import main.java.de.voidtech.gerald.GlobalConstants;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.util.CustomCollectors;
+import main.java.de.voidtech.gerald.util.LevenshteinCalculator;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Service
 public class CommandService
@@ -32,9 +37,6 @@ public class CommandService
 
     @Autowired
     private List<AbstractCommand> commands;
-
-    @Autowired
-    private LevenshteinService levenshteinService;
 
     public final HashMap<String, String> aliases = new HashMap<>();
 
@@ -89,15 +91,23 @@ public class CommandService
         }
         return commandToBeFound;
     }
+    
+	private MessageEmbed createLevenshteinEmbed(List<String> possibleOptions) {
+		EmbedBuilder levenshteinResultEmbed = new EmbedBuilder()
+				.setColor(Color.RED)
+				.setTitle("That's not a command!", GlobalConstants.LINKTREE_URL)
+				.addField("Is this what you meant?", "`" + String.join("`, `", possibleOptions) + "`", false);
+		return levenshteinResultEmbed.build();
+	}
 
     private void tryLevenshteinOptions(Message message, String commandName) {
         List<String> possibleOptions = new ArrayList<>();
         possibleOptions = commands.stream()
                 .map(AbstractCommand::getName)
-                .filter(name -> levenshteinService.calculate(commandName, name) <= LEVENSHTEIN_THRESHOLD)
+                .filter(name -> LevenshteinCalculator.calculate(commandName, name) <= LEVENSHTEIN_THRESHOLD)
                 .collect(Collectors.toList());
         if (!possibleOptions.isEmpty())
-            message.getChannel().sendMessageEmbeds(levenshteinService.createLevenshteinEmbed(possibleOptions)).queue();
+            message.getChannel().sendMessageEmbeds(createLevenshteinEmbed(possibleOptions)).queue();
     }
 
     private boolean shouldHandleAsChatCommand(String prefix, Message message)

@@ -15,8 +15,6 @@ public class MessageHandler {
 
     private static final Logger LOGGER = Logger.getLogger(MessageHandler.class.getName());
     
-    private static final int LEVENSHTEIN_THRESHOLD = 1;
-    
     @Autowired
     private List<AbstractRoutine> routines;
     

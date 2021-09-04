@@ -1,28 +1,18 @@
-package main.java.de.voidtech.gerald.service;
+package main.java.de.voidtech.gerald.util;
 
-import java.awt.Color;
 import java.util.Arrays;
-import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import main.java.de.voidtech.gerald.GlobalConstants;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-
-//Heavily inspired by https://www.baeldung.com/java-levenshtein-distance
-@Service
-public class LevenshteinService {
+public class LevenshteinCalculator {
 	
-    public int costOfSubstitution(char first, char second) {
+	public static int costOfSubstitution(char first, char second) {
         return first == second ? 0 : 1;
     }
 
-    public int min(int... numbers) {
+    public static int min(int... numbers) {
         return Arrays.stream(numbers).min().orElse(Integer.MAX_VALUE);
     }
     
-    public int calculate(String primaryString, String secondaryString) {
+    public static int calculate(String primaryString, String secondaryString) {
         int[][] valueTable = new int[primaryString.length() + 1][secondaryString.length() + 1];
 
         for (int primaryChars = 0; primaryChars <= primaryString.length(); primaryChars++) {
@@ -38,12 +28,4 @@ public class LevenshteinService {
         }
         return valueTable[primaryString.length()][secondaryString.length()];
     }
-
-	public MessageEmbed createLevenshteinEmbed(List<String> possibleOptions) {
-		EmbedBuilder levenshteinResultEmbed = new EmbedBuilder()
-				.setColor(Color.RED)
-				.setTitle("That's not a command!", GlobalConstants.LINKTREE_URL)
-				.addField("Is this what you meant?", "`" + String.join("`, `", possibleOptions) + "`", false);
-		return levenshteinResultEmbed.build();
-	}
 }
