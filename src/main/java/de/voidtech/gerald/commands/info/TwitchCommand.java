@@ -35,7 +35,7 @@ public class TwitchCommand extends AbstractCommand{
 	private ServerService serverService;
 	
 	private static final String TWITCH_BASE_URL = "https://twitch.tv/";
-	private static final String TWITCH_URL_MATCHER = "https:\\/\\/(www\\.)?twitch.tv\\/.*";
+	private static final String TWITCH_URL_MATCHER = "https://(www\\.)?twitch.tv/.*";
 	
 	private void getAwaitedReply(CommandContext context, String question, Consumer<String> result) {
         context.getChannel().sendMessage(question).queue();
