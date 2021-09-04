@@ -1,3 +1,17 @@
+pipeline {
+     agent any
+     environment {
+        DISCORD_WEBHOOK = credentials('barista-webhook-url')
+     }
+}
+stages {
+    stage('Build') { 
+        steps {
+            sh 'mvn -B clean package --debug' 
+        }
+    }
+}
+
 def getCommitList() {
     checkout scm
     def lastSuccessfulCommit = getLastSuccessfulCommit()
@@ -26,19 +40,6 @@ def commitHashForBuild( build ) {
   return scmAction?.revision?.hash
 }
 
-pipeline {
-     agent any
-     environment {
-        DISCORD_WEBHOOK = credentials('barista-webhook-url')
-     }
-}
-stages {
-    stage('Build') { 
-        steps {
-            sh 'mvn -B clean package --debug' 
-        }
-    }
-}
 post {
     always {
         archiveArtifacts artifacts: 'target/*original-BaristaGerald*.jar', fingerprint: true
