@@ -3,9 +3,9 @@ pipeline {
      environment {
         DISCORD_WEBHOOK = credentials('barista-webhook-url')
      }
-}
-stages {
-    stage('Build') { 
+     
+     stages {
+     stage('Build') { 
         steps {
             sh 'mvn -B clean package --debug' 
         }
