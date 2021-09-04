@@ -100,9 +100,7 @@ public class EmoteService {
         }
         
         if (persistentResult.size() > 0) {
-        	persistentResult.forEach(emote -> {
-        		finalResult.add(emote);
-        	});
+			finalResult.addAll(persistentResult);
         }
 		
         return finalResult;
