@@ -22,7 +22,7 @@ public class EmoteService {
 	private List<NitroliteEmote> getPersistentEmotes(String name) {
 		try(Session session = sessionFactory.openSession())
 		{
-			return (List<NitroliteEmote>) session.createQuery("FROM NitroliteEmote WHERE LOWER(name) LIKE :name", NitroliteEmote.class)
+			return session.createQuery("FROM NitroliteEmote WHERE LOWER(name) LIKE :name", NitroliteEmote.class)
                     .setParameter("name", "%" + name.toLowerCase() + "%")
                     .list();
 		}
