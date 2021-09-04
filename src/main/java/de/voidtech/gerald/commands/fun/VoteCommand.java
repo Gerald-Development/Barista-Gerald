@@ -16,6 +16,7 @@ public class VoteCommand extends AbstractCommand{
 	private final static String CROSS = "U+274C";
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
+		if (context.isSlash()) context.reply("Vote created!");
 		context.getChannel().sendMessageEmbeds(constructVoteEmbed(context, String.join(" ", args))).queue(selfMessage -> {
 			selfMessage.addReaction(CHECK).queue();
 			selfMessage.addReaction(CROSS).queue();
