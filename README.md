@@ -14,7 +14,7 @@ Welcome to Gerald! Gerald is just another bot for your lovely Discord server! To
 
 **Gerald's Prefix: \\**
 
-To invite Gerald you can just [click here](https://discord.com/api/oauth2/authorize?client_id=555816892141404163&permissions=805694544&scope=bot)
+To invite Gerald you can just [click here](https://discord.com/api/oauth2/authorize?client_id=555816892141404163&permissions=805694544&scope=bot%20applications.commands)
 ## About us
 Are you having troubles or questions about Gerald or want to talk to the developers? You can join our development Discord server and get the support you need there:
 
