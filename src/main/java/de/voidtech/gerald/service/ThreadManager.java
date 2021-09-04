@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ThreadManager {
 	
-	private HashMap<String, ExecutorService> threadMap = new HashMap<String, ExecutorService>();
+	private final HashMap<String, ExecutorService> threadMap = new HashMap<String, ExecutorService>();
 
 	private ExecutorService findOrSpawnThread(String threadID) {
 		

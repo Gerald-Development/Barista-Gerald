@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class MRESameUserPredicate implements Predicate<MessageReceivedEvent> {
 
-	private User originalUser;
+	private final User originalUser;
 	
 	public MRESameUserPredicate(User user) {
 		originalUser = user;

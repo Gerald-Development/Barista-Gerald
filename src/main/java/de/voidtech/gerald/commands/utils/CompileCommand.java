@@ -27,7 +27,7 @@ public class CompileCommand extends AbstractCommand {
 	private static final String WANDBOX_COMPILE_URL = "https://wandbox.org/api/compile.json";
 	private static final String EMBED_THUMBNAIL_URL = "https://cdn.discordapp.com/attachments/727233195380310016/823533201279418399/808411850555261028.gif";
 	private static final char ESCAPE_CHAR = ((char)8204);
-	private Map<String, String> langMap = getSupportedLangs();
+	private final Map<String, String> langMap = getSupportedLangs();
 	
 	private String getWandboxResponse(String payload) {
 		try {

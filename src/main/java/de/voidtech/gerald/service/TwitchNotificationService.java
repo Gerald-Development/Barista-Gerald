@@ -29,7 +29,7 @@ public class TwitchNotificationService {
 	@Autowired
 	private JDA jda;
 	
-	private TwitchClient twitchClient;
+	private final TwitchClient twitchClient;
 	
 	@Autowired
 	public TwitchNotificationService(GeraldConfig geraldConfig) {
