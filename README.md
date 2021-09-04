@@ -6,7 +6,7 @@ The Java Version of the [Gerald Discord Bot](https://github.com/Elementalmp4/Ger
 Welcome to Gerald! Gerald is just another bot for your lovely Discord server! To give you a rough overview here are some of the main features:
 - No Nitro? No problem! Nitrolite uses some magic code to allow you to use your favourite emotes anywhere with Gerald!
 - Chat with GeraldAI: We have implemented a ChatAI into our bot to allow users to chat with him in real time. Type \chat enable in a channel to enable it
-- Dig Tunnels: You can dig tunnels to channels of other servers (or your own), this allows you two connect two textchannels. The messages of one channel will be mirrored to the channel and vice versa!
+- Dig Tunnels: You can dig tunnels to channels of other servers (or your own), this allows you to connect two textchannels. The messages of one channel will be mirrored to the channel and vice versa!
 - Play with Gerald: The Bot includes implementations of various "mini-games" like "Would you rather", Deathmatches or Fruit Guessing
 - Compile Code: You can use Gerald to let an online compiler run some code for you
 - Hugs, Headpats, all your favourite actions accompanied by animated gifs!
