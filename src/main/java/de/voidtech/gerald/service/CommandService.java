@@ -39,7 +39,7 @@ public class CommandService
     @Autowired
     private LevenshteinService levenshteinService;
 
-    public HashMap<String, String> aliases = new HashMap<>();
+    public final HashMap<String, String> aliases = new HashMap<>();
 
     public void handleChatCommandOnDemand(Message message) {
         String prefix = getPrefix(message);
