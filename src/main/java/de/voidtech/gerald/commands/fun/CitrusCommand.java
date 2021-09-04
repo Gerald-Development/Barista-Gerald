@@ -14,6 +14,7 @@ import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -29,7 +30,7 @@ public class CitrusCommand extends AbstractCommand {
 	public void executeInternal(CommandContext context, List<String> args)
 	{
 		BidiMap<String, String> citrusMap = getCitrusMap();
-		List<String> keyList = citrusMap.keySet().stream().collect(Collectors.toList());
+		List<String> keyList = new ArrayList<>(citrusMap.keySet());
 		String currentCitrus = keyList.get(new Random().nextInt(keyList.size()));
 		
 		MessageEmbed citrusQuestEmbed = new EmbedBuilder()//

@@ -96,8 +96,8 @@ public class CommandService
     private void tryLevenshteinOptions(Message message, String commandName) {
         List<String> possibleOptions = new ArrayList<>();
         possibleOptions = commands.stream()
-                .filter(command -> levenshteinService.calculate(commandName, command.getName()) <= LEVENSHTEIN_THRESHOLD)
                 .map(AbstractCommand::getName)
+                .filter(name -> levenshteinService.calculate(commandName, name) <= LEVENSHTEIN_THRESHOLD)
                 .collect(Collectors.toList());
         if (!possibleOptions.isEmpty())
             message.getChannel().sendMessageEmbeds(levenshteinService.createLevenshteinEmbed(possibleOptions)).queue();
