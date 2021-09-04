@@ -1,20 +1,22 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.util.List;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.entities.Message;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+
+import java.util.List;
 
 @Command
 public class VoteCommand extends AbstractCommand{
 	private final static String CHECK = "U+2705";
 	private final static String CROSS = "U+274E";
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		message.addReaction(CHECK).queue();
-		message.addReaction(CROSS).queue();
+	public void executeInternal(CommandContext context, List<String> args) {
+		//TODO (from: Franziska): Should this be available via SlashCommands? Alternative could be to just send a message with the thing.
+		//context.addReaction(CHECK).queue();
+		//context.addReaction(CROSS).queue();
+		context.getChannel().sendMessage("Not implemented due to implementation of SlashCommands. Please ask the developers to reimplement this.").queue();
 	}
 
 	@Override

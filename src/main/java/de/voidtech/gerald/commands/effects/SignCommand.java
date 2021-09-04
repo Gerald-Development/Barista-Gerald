@@ -1,14 +1,13 @@
 package main.java.de.voidtech.gerald.commands.effects;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.entities.Message;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Command
 public class SignCommand extends AbstractCommand {
@@ -16,18 +15,18 @@ public class SignCommand extends AbstractCommand {
 	private static final String BUNNY = "(\\__/) ││\n(•ㅅ•) ││\n/ 　 づ";
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		String rawText = StringUtils.join(args, " ");
 		List<String> signMessage = groupWords(args);
 		
-		int signLength = signMessage.stream().mapToInt(line -> line.length()).max().getAsInt();
-		if(rawText.length() > 60) message.getChannel().sendMessage("Your message is too long for a protest sign, keep it short.").queue();
-		else if(signLength > 14) message.getChannel().sendMessage("One of the words is too long for a protest sign, keep it short.").queue();
+		int signLength = signMessage.stream().mapToInt(String::length).max().getAsInt();
+		if(rawText.length() > 60) context.getChannel().sendMessage("Your message is too long for a protest sign, keep it short.").queue();
+		else if(signLength > 14) context.getChannel().sendMessage("One of the words is too long for a protest sign, keep it short.").queue();
 		else {
 			String signBunny = generateSign(signMessage, signLength);
 			signBunny += BUNNY;
-			
-			message.getChannel().sendMessage("```" + signBunny +"```").queue();
+
+			context.getChannel().sendMessage("```" + signBunny +"```").queue();
 		}
 	}
 	
@@ -47,7 +46,7 @@ public class SignCommand extends AbstractCommand {
 	
 	private List<String> groupWords(final List<String> args)
 	{
-		List<String> words = new ArrayList<String>(args);
+		List<String> words = new ArrayList<>(args);
 		List<String> result = new ArrayList<>();
 		
 		while(words.size() > 0)
@@ -99,8 +98,7 @@ public class SignCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"bunnysign", "protest"};
-		return aliases;
+		return new String[]{"bunnysign", "protest"};
 	}
 
 	@Override

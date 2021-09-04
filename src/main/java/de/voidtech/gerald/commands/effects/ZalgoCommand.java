@@ -1,35 +1,24 @@
 package main.java.de.voidtech.gerald.commands.effects;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.text.StringEscapeUtils;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.entities.Message;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import org.apache.commons.text.StringEscapeUtils;
+
+import java.util.*;
 
 @Command
 public class ZalgoCommand extends AbstractCommand {
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		Map<String, String> zalgoMap = getZalgoText();
 		List<String> characters = Arrays.asList(String.join(" ", args).toLowerCase().split(""));
-		List<String> newCharacters = new ArrayList<String>();
-		characters.forEach(character -> {
-			if (zalgoMap.containsKey(character)) {
-				newCharacters.add(zalgoMap.get(character));
-			} else {
-				newCharacters.add(character);
-			}
-		});
+		List<String> newCharacters = new ArrayList<>();
+		characters.forEach(character -> newCharacters.add(zalgoMap.getOrDefault(character, character)));
 		String finalMessage = String.join("", newCharacters);
-		message.getChannel().sendMessage(finalMessage).queue();
+		context.getChannel().sendMessage(finalMessage).queue();
 	}
 
 	@Override
@@ -48,7 +37,7 @@ public class ZalgoCommand extends AbstractCommand {
 	}
 
 	private Map<String, String> getZalgoText() {
-		Map<String, String> zalgoText = new HashMap<String, String>();
+		Map<String, String> zalgoText = new HashMap<>();
 			zalgoText.put("a", StringEscapeUtils.unescapeHtml4("a&#862;&#782;&#836;&#780;&#773;&#842;&#787;&#838;&#782;&#841;&#808;&#815;&#793;&#866;&#846;&#853;&#803;&#837;&#846;&#824;"));
 			zalgoText.put("b", StringEscapeUtils.unescapeHtml4("b&#781;&#794;&#772;&#788;&#769;&#774;&#831;&#830;&#832;&#860;&#845;&#845;&#803;&#803;&#825;&#808;&#853;&#824;"));
 			zalgoText.put("c", StringEscapeUtils.unescapeHtml4("c&#774;&#831;&#842;&#768;&#772;&#836;&#856;&#777;&#853;&#845;&#811;&#852;&#804;&#837;&#821;"));
@@ -96,8 +85,7 @@ public class ZalgoCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"zalgoify", "fucktext"};
-		return aliases;
+		return new String[]{"zalgoify", "fucktext"};
 	}
 	
 	@Override

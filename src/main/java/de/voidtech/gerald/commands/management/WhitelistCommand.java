@@ -1,19 +1,20 @@
 package main.java.de.voidtech.gerald.commands.management;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Command
 public class WhitelistCommand extends AbstractCommand 
@@ -22,33 +23,33 @@ public class WhitelistCommand extends AbstractCommand
 	private ServerService serverService;
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		
-		if(!message.getMember().hasPermission(Permission.MANAGE_SERVER)) return;
+		if(!context.getMember().hasPermission(Permission.MANAGE_SERVER)) return;
 		
 		String argString = args.size() > 0 ? args.get(0) : "list";
-		TextChannel mentionedChannel = message.getMentionedChannels().size() > 0 
-				? message.getMentionedChannels().get(0) 
+		TextChannel mentionedChannel = context.getMentionedChannels().size() > 0
+				? context.getMentionedChannels().get(0)
 				: null;
 		
-		Server server = serverService.getServer(message.getGuild().getId());
+		Server server = serverService.getServer(context.getGuild().getId());
 
 		switch (argString) {
 		case "add":
-			handleAddToWhitelist(message, mentionedChannel, server);
+			handleAddToWhitelist(context, mentionedChannel, server);
 			break;
 		case "remove":
-			handleRemoveFromWhitelist(message, mentionedChannel, server);
+			handleRemoveFromWhitelist(context, mentionedChannel, server);
 			break;
 		case "clear":
 			server.clearChannelWhitelist();
-			message.getChannel().sendMessage("Whitelist has been cleared.").queue();
+			context.getChannel().sendMessage("Whitelist has been cleared.").queue();
 			break;
 		case "list":
-			handleListWhitelist(message, server);
+			handleListWhitelist(context, server);
 			break;
 		default:
-			message.getChannel().sendMessage(String.format("Please specify the command.\n```%s```", getUsage()))
+			context.getChannel().sendMessage(String.format("Please specify the command.\n```%s```", getUsage()))
 					.queue();
 		}
 
@@ -56,46 +57,46 @@ public class WhitelistCommand extends AbstractCommand
 	}
 
 
-	private void handleAddToWhitelist(Message message, TextChannel mentionedChannel, Server server) 
+	private void handleAddToWhitelist(CommandContext context, TextChannel mentionedChannel, Server server)
 	{
-		if (mentionedChannel != null && mentionedChannel.getGuild().getIdLong() == message.getGuild().getIdLong()) {
+		if (mentionedChannel != null && mentionedChannel.getGuild().getIdLong() == context.getGuild().getIdLong()) {
 			if (server.getChannelWhitelist().contains(mentionedChannel.getId()))
-				message.getChannel().sendMessage("This channel has already been added to the whitelist").queue();
+				context.getChannel().sendMessage("This channel has already been added to the whitelist").queue();
 			else {
 				server.addToChannelWhitelist(mentionedChannel.getId());
-				message.getChannel()
+				context.getChannel()
 						.sendMessage("Channel has been added to the whitelist: " + mentionedChannel.getAsMention())
 						.queue();
 			}
-		} else message.getChannel().sendMessage("Please provide a valid channel.").queue();
+		} else context.getChannel().sendMessage("Please provide a valid channel.").queue();
 	}
 	
-	private void handleRemoveFromWhitelist(Message message, TextChannel mentionedChannel, Server server) 
+	private void handleRemoveFromWhitelist(CommandContext context, TextChannel mentionedChannel, Server server)
 	{
 		if (mentionedChannel != null) {
 			if (!server.getChannelWhitelist().contains(mentionedChannel.getId()))
-				message.getChannel().sendMessage("This channel is not on the whitelist.").queue();
+				context.getChannel().sendMessage("This channel is not on the whitelist.").queue();
 			else {
 				server.removeFromChannelWhitelist(mentionedChannel.getId());
-				message.getChannel()
+				context.getChannel()
 				.sendMessage(
 						"Channel has been removed from the whitelist: " + mentionedChannel.getAsMention())
 				.queue();
 			}
-		} else message.getChannel().sendMessage("Please provide a valid channel.").queue();
+		} else context.getChannel().sendMessage("Please provide a valid channel.").queue();
 	}
 	
-	private void handleListWhitelist(Message message, Server server) {
-		List<String> channelList = message.getGuild()
+	private void handleListWhitelist(CommandContext context, Server server) {
+		List<String> channelList = context.getGuild()
 				.getTextChannels()
 				.stream()
 				.filter(channel -> server.getChannelWhitelist().contains(channel.getId()))
-				.map(channel -> channel.getAsMention())
+				.map(IMentionable::getAsMention)
 				.collect(Collectors.toList());
 		
-		String usableChannels = StringUtils.join(channelList, "\n") == "" ? "All Channels" : StringUtils.join(channelList, "\n");
+		String usableChannels = Objects.equals(StringUtils.join(channelList, "\n"), "") ? "All Channels" : StringUtils.join(channelList, "\n");
 		
-		message.getChannel().sendMessage(String.format("Gerald can be used in the following channels:\n%s",
+		context.getChannel().sendMessage(String.format("Gerald can be used in the following channels:\n%s",
 				usableChannels)).queue();
 	}
 	

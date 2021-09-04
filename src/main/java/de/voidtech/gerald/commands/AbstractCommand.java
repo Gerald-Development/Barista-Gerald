@@ -1,16 +1,14 @@
 package main.java.de.voidtech.gerald.commands;
 
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.ThreadManager;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Message;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+import java.util.Set;
 
 public abstract class AbstractCommand{
 	
@@ -20,40 +18,36 @@ public abstract class AbstractCommand{
 	@Autowired
 	ThreadManager threadManager;
 	
-	private void runCommandInThread(Message message, List<String> args) {
-        if (message.getChannel().getType() == ChannelType.PRIVATE && !this.isDMCapable()) {
-        	message.getChannel().sendMessage("**You can only use this command in guilds!**").queue();
+	private void runCommandInThread(CommandContext context, List<String> args) {
+        if (context.getChannel().getType() == ChannelType.PRIVATE && !this.isDMCapable()) {
+			context.getChannel().sendMessage("**You can only use this command in guilds!**").queue();
         } else if (this.requiresArguments() && args.size() < 1) {
-        	message.getChannel().sendMessage("**This command needs arguments to work! See the help command for more details!**\n" + this.getUsage()).queue();
+			context.getChannel().sendMessage("**This command needs arguments to work! See the help command for more details!**\n" + this.getUsage()).queue();
 	    } else {
-			Runnable commandThreadRunnable = new Runnable() {
-				public void run() {
-					executeInternal(message, args);
-				}
-			};
+			Runnable commandThreadRunnable = () -> executeInternal(context, args);
 			threadManager.getThreadByName("T-Command").execute(commandThreadRunnable);   
 	    }
 	}
 
-	public void run(Message message, List<String> args) {
-		if (message.getChannel().getType() == ChannelType.PRIVATE) {
-			runCommandInThread(message, args);
+	public void run(CommandContext context, List<String> args) {
+		if (context.getChannel().getType() == ChannelType.PRIVATE) {
+			runCommandInThread(context, args);
 		} else {
-			Server server = serverService.getServer(message.getGuild().getId());
+			Server server = serverService.getServer(context.getGuild().getId());
 			Set<String> channelWhitelist = server.getChannelWhitelist();
 			Set<String> commandBlacklist = server.getCommandBlacklist();
 			
-			boolean channelWhitelisted = channelWhitelist.isEmpty() || (channelWhitelist.contains(message.getChannel().getId()));
+			boolean channelWhitelisted = channelWhitelist.isEmpty() || (channelWhitelist.contains(context.getChannel().getId()));
 			boolean commandOnBlacklist = commandBlacklist.contains(getName());
 			
-			if((channelWhitelisted && !commandOnBlacklist) || message.getMember().hasPermission(Permission.ADMINISTRATOR))
+			if((channelWhitelisted && !commandOnBlacklist) || context.getMember().hasPermission(Permission.ADMINISTRATOR))
 			{
-				runCommandInThread(message, args);
+				runCommandInThread(context, args);
 		    }	
 		}
 	}
 	
-	public abstract void executeInternal(Message message, List<String> args);
+	public abstract void executeInternal(CommandContext context, List<String> args);
 
 	public abstract String getDescription();
 

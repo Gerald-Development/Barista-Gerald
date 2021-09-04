@@ -1,20 +1,20 @@
 package main.java.de.voidtech.gerald.commands.info;
 
-import java.awt.Color;
-import java.util.List;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+
+import java.awt.*;
+import java.util.List;
 
 @Command
 public class PingCommand extends AbstractCommand {
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 
 		long time = System.currentTimeMillis();
 		
@@ -22,12 +22,12 @@ public class PingCommand extends AbstractCommand {
 				.setAuthor("Ping?")
 				.setColor(Color.RED)
 				.build();
-		message.getChannel().sendMessageEmbeds(beforePingHasBeenProcessedEmbed).queue(response -> {
+		context.getChannel().sendMessageEmbeds(beforePingHasBeenProcessedEmbed).queue(response -> {
 			MessageEmbed pingEmbed = new EmbedBuilder()//
 					.setAuthor("Pong!")//
 					.setColor(Color.GREEN)//
 					.setDescription(String.format("Latency: %sms\nGateway Latency: %sms",
-							(System.currentTimeMillis() - time), message.getJDA().getGatewayPing()))//
+							(System.currentTimeMillis() - time), context.getJDA().getGatewayPing()))//
 					.build();
 
 			response.editMessageEmbeds(pingEmbed).queue();

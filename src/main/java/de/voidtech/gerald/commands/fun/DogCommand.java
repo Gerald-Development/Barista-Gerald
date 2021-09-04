@@ -1,6 +1,15 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,16 +19,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class DogCommand extends AbstractCommand{
@@ -46,7 +45,7 @@ public class DogCommand extends AbstractCommand{
     }
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		String dogApiResponse = getDog();
 		JSONArray dogApiObject = new JSONArray(dogApiResponse);
 		JSONObject dog = (JSONObject) dogApiObject.get(0);
@@ -56,7 +55,7 @@ public class DogCommand extends AbstractCommand{
 				.setTitle("Here, have a dog", dog.getString("url"))
 				.setImage(dog.getString("url"))
 				.build();
-		message.getChannel().sendMessageEmbeds(dogEmbed).queue();
+		context.getChannel().sendMessageEmbeds(dogEmbed).queue();
 	}
 
 	@Override
@@ -91,8 +90,7 @@ public class DogCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"doge", "doggo"};
-		return aliases;
+		return new String[]{"doge", "doggo"};
 	}
 	
 	@Override

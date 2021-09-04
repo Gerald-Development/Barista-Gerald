@@ -1,16 +1,7 @@
 package main.java.de.voidtech.gerald.service;
 
-import java.awt.Color;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import main.java.de.voidtech.gerald.GlobalConstants;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.entities.StarboardConfig;
 import main.java.de.voidtech.gerald.entities.StarboardMessage;
@@ -20,6 +11,15 @@ import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.awt.*;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class StarboardService {
@@ -32,14 +32,13 @@ public class StarboardService {
 	public StarboardConfig getStarboardConfig(long serverID) {
 		try(Session session = sessionFactory.openSession())
 		{
-			StarboardConfig config = (StarboardConfig) session.createQuery("FROM StarboardConfig WHERE ServerID = :serverID")
+			return (StarboardConfig) session.createQuery("FROM StarboardConfig WHERE ServerID = :serverID")
                     .setParameter("serverID", serverID)
                     .uniqueResult();
-			return config;
 		}	
 	}
  
-	public void deleteStarboardConfig(Message message, Server server) {
+	public void deleteStarboardConfig(CommandContext context, Server server) {
 		try(Session session = sessionFactory.openSession())
 		{
 			session.getTransaction().begin();
@@ -47,7 +46,7 @@ public class StarboardService {
 				.setParameter("serverID", server.getId())
 				.executeUpdate();
 			session.getTransaction().commit();
-			message.getChannel().sendMessage("**The Starboard has been disabled. You will need to run setup again if you wish to undo this! Your starred messages will not be lost.**").queue();
+			context.getChannel().sendMessage("**The Starboard has been disabled. You will need to run setup again if you wish to undo this! Your starred messages will not be lost.**").queue();
 		}
 	}
 
@@ -60,7 +59,7 @@ public class StarboardService {
 		}		
 	}
  
-	public void completeStarboardSetup(Message message, String channelID, String starCount, Server server) {
+	public void completeStarboardSetup(CommandContext context, String channelID, String starCount, Server server) {
 		int requiredStarCount = Integer.parseInt(starCount);
 		
 		try(Session session = sessionFactory.openSession())
@@ -72,7 +71,7 @@ public class StarboardService {
 			session.saveOrUpdate(config);
 			session.getTransaction().commit();
 			
-			message.getChannel().sendMessageEmbeds(createSetupEmbed(config)).queue();
+			context.getChannel().sendMessageEmbeds(createSetupEmbed(config)).queue();
 		}
 	}
 	
@@ -101,11 +100,10 @@ public class StarboardService {
 	private StarboardMessage getStarboardMessage(long serverID, String messageID) {
 		try(Session session = sessionFactory.openSession())
 		{
-			StarboardMessage message = (StarboardMessage) session.createQuery("FROM StarboardMessage WHERE serverID = :serverID AND originMessageID = :messageID")
+			return (StarboardMessage) session.createQuery("FROM StarboardMessage WHERE serverID = :serverID AND originMessageID = :messageID")
                     .setParameter("serverID", serverID)
                     .setParameter("messageID", messageID)
                     .uniqueResult();
-			return message;
 		}
 	}
 	
@@ -203,12 +201,11 @@ public class StarboardService {
 		List<String> ignoredChannels = getIgnoredChannels(serverID);
 		List<String> newIgnoredChannelList;
 		if (ignoredChannels == null) {
-			newIgnoredChannelList = new ArrayList<String>();
-			newIgnoredChannelList.add(channelID);
+			newIgnoredChannelList = new ArrayList<>();
 		} else {
-			newIgnoredChannelList = new ArrayList<String>(ignoredChannels);
-			newIgnoredChannelList.add(channelID);
+			newIgnoredChannelList = new ArrayList<>(ignoredChannels);
 		}
+		newIgnoredChannelList.add(channelID);
 		StarboardConfig config = getStarboardConfig(serverID);
 		config.setIgnoredChannels(newIgnoredChannelList);
 		updateConfig(config);
@@ -216,7 +213,7 @@ public class StarboardService {
 
 	public void removeFromIgnorelist(long serverID, String channelID) {
 		List<String> ignoredChannels = getIgnoredChannels(serverID);
-		List<String> newIgnoredChannelList = new ArrayList<String>(ignoredChannels);
+		List<String> newIgnoredChannelList = new ArrayList<>(ignoredChannels);
 		newIgnoredChannelList.remove(channelID);
 		if (newIgnoredChannelList.size() == 0)
 			newIgnoredChannelList = null;

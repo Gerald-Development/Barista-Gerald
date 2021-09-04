@@ -1,26 +1,21 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.service.PlaywrightService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Command
 public class GoogleCommand extends AbstractCommand {
@@ -45,7 +40,7 @@ public class GoogleCommand extends AbstractCommand {
 		if (originalList.size() == 1) {
 			return "";
 		} else {
-			List<String> modifiedList = new ArrayList<String>();
+			List<String> modifiedList = new ArrayList<>();
 			for (int i = 1; i < originalList.size(); i++) {
 				modifiedList.add(originalList.get(i));
 			}
@@ -76,7 +71,7 @@ public class GoogleCommand extends AbstractCommand {
 			}
 		} else 
 			urlBuffer += BROWSER_SEARCH_URL;
-		if (queryString == "")
+		if (queryString.equals(""))
 			return null;
 		else {
 			urlBuffer += queryString;
@@ -88,13 +83,13 @@ public class GoogleCommand extends AbstractCommand {
 
 	private boolean getNsfwMode(MessageChannel messageChannel) 
 	{
-		return messageChannel.getType().equals(ChannelType.PRIVATE) ? true : ((TextChannel)messageChannel).isNSFW();
+		return messageChannel.getType().equals(ChannelType.PRIVATE) || ((TextChannel) messageChannel).isNSFW();
 	}
 	
 	private void sendDeleteButtonWithListener(Message sentMessage, Message originMessage) {
 		sentMessage.addReaction(RED_CROSS_UNICODE).queue();
 		waiter.waitForEvent(MessageReactionAddEvent.class,
-				event -> deleteEventAuthorised(((MessageReactionAddEvent) event), originMessage),
+				event -> deleteEventAuthorised(event, originMessage),
 				event -> {
 				boolean deleteButtonPressed = event.getReactionEmote().toString().equals("RE:" + RED_CROSS_UNICODE);
 				if (deleteButtonPressed) {
@@ -120,27 +115,28 @@ public class GoogleCommand extends AbstractCommand {
 	}
 
 	private MessageEmbed constructResultEmbed(String url, boolean safeSearchMode) {
-		MessageEmbed googleEmbed = new EmbedBuilder()
+		return new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle("**Your Search Result:**", url)
 				.setImage("attachment://screenshot.png")
 				.setFooter("Powered By Ecosia | Safe mode " + (safeSearchMode ? "disabled" : "enabled"), BROWSER_LOGO_IMAGE)
 				.build();
-		return googleEmbed;
 	}
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		String url = constructSearchURL(args, getNsfwMode(message.getChannel()));
+	public void executeInternal(CommandContext context, List<String> args) {
+		String url = constructSearchURL(args, getNsfwMode(context.getChannel()));
 		
 		if (url == null)
-			message.getChannel().sendMessage("**You did not provide something to search for!**").queue();
+			context.getChannel().sendMessage("**You did not provide something to search for!**").queue();
 		else {
-			message.getChannel().sendTyping().queue();
+			context.getChannel().sendTyping().queue();
 			byte[] screenshot = playwrightService.screenshotPage(url, 1000, 1000);	
-			
-			sendFinalMessage(message, url, screenshot);
+
+			//TODO (from: Franziska): I don't understand this code, you need to fix it with the CommandContext yourself
+			//sendFinalMessage(context, url, screenshot);
 		}
+		context.getChannel().sendMessage("This command is not available due to the SlashCommand rework. Contact a developer.").queue();
 	}
 
 	@Override
@@ -179,8 +175,7 @@ public class GoogleCommand extends AbstractCommand {
 
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"search", "ecosia"};
-		return aliases;
+		return new String[]{"search", "ecosia"};
 	}
 	
 	@Override

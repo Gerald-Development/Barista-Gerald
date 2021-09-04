@@ -1,11 +1,11 @@
 package main.java.de.voidtech.gerald.util;
 
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import net.dv8tion.jda.api.entities.Member;
+
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 
 public class ParsingUtils {
 	
@@ -36,25 +36,23 @@ public class ParsingUtils {
 	}
 	
 	public static String filterSnowflake(String inputString) {
-		String outputString = inputString.replaceAll("([^0-9])", "");
-		return outputString;
+		return inputString.replaceAll("([^0-9])", "");
 	}
 	
-	public static Member getMember(Message message, List<String> args) {
+	public static Member getMember(CommandContext context, List<String> args) {
 		
 		if (args.size() > 0) {
 			String memberID = ParsingUtils.filterSnowflake(args.get(0));
-			Member member = message.getGuild().retrieveMemberById(memberID).complete();
+			Member member = context.getGuild().retrieveMemberById(memberID).complete();
 			if (member != null) {
 				return member;
 			}
 		} else {
-			 Member member = message.getMentionedMembers().size() >= 1// 
-						? message.getMentionedMembers().get(0)//
-						: message.getMember();
-			 return member;	
+			return context.getMentionedMembers().size() >= 1//
+					   ? context.getMentionedMembers().get(0)//
+					   : context.getMember();
 		}
-		return message.getMember();
+		return context.getMember();
 	}
 	
 	public static boolean isSnowflake(String input) {

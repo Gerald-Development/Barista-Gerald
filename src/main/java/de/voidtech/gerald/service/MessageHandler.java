@@ -1,15 +1,14 @@
 package main.java.de.voidtech.gerald.service;
 
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class MessageHandler {
@@ -30,7 +29,7 @@ public class MessageHandler {
         runMessageRoutines(message);
     	
     	if(message.getAuthor().isBot()) return;
-        cmdService.handleCommandOnDemand(message);
+        cmdService.handleMessageBasedCommandOnDemand(message);
     }
     
     private void runMessageRoutines(Message message) {

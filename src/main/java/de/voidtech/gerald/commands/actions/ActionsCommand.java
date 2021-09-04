@@ -1,6 +1,18 @@
 package main.java.de.voidtech.gerald.commands.actions;
 
-import java.awt.Color;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.entities.ActionStats;
+import main.java.de.voidtech.gerald.service.ServerService;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,19 +21,6 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.entities.ActionStats;
-import main.java.de.voidtech.gerald.service.ServerService;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public abstract class ActionsCommand extends AbstractCommand {
 	
@@ -37,12 +36,11 @@ public abstract class ActionsCommand extends AbstractCommand {
 	private ActionStats getStatsProfile(String id, ActionType action, long serverID) {
 		try(Session session = sessionFactory.openSession())
 		{
-			ActionStats stats = (ActionStats) session.createQuery("FROM ActionStats WHERE memberID = :member AND type = :type AND serverID = :serverID")
+			return (ActionStats) session.createQuery("FROM ActionStats WHERE memberID = :member AND type = :type AND serverID = :serverID")
                     .setParameter("member", id)
                     .setParameter("type", action.getType())
                     .setParameter("serverID", serverID)
                     .uniqueResult();
-			return stats;
 		}
 	}
 	
@@ -75,9 +73,9 @@ public abstract class ActionsCommand extends AbstractCommand {
 		}
 	}
 	
-	private void updateActionStats(String giver, String receiver, ActionType action, Message message) {
+	private void updateActionStats(String giver, String receiver, ActionType action, CommandContext context) {
 		
-		long serverID = serverService.getServer(message.getGuild().getId()).getId();
+		long serverID = serverService.getServer(context.getGuild().getId()).getId();
 		
 		if (!giver.equals(receiver)) {
 			ActionStats giverStats = getOrCreateProfile(giver, action, serverID);
@@ -91,31 +89,29 @@ public abstract class ActionsCommand extends AbstractCommand {
 		}
 	}
 	
-	private String getStatsString(String giver, String receiver, ActionType action, Message message) {
-		long serverID = serverService.getServer(message.getGuild().getId()).getId();
+	private String getStatsString(String giver, String receiver, ActionType action, CommandContext context) {
+		long serverID = serverService.getServer(context.getGuild().getId()).getId();
 		
 		ActionStats giverStats = getOrCreateProfile(giver, action, serverID);
 		ActionStats receiverStats = getOrCreateProfile(receiver, action, serverID);
 		
-		String giverTag = message.getJDA().retrieveUserById(giver).complete().getAsTag();
-		String receiverTag = message.getJDA().retrieveUserById(receiver).complete().getAsTag();
-		
-		String statsString = giverTag + " has " + conjugateAction(action.getType()) + " people " + giverStats.getGivenCount() + " times\n"
+		String giverTag = context.getMember().getJDA().retrieveUserById(giver).complete().getAsTag();
+		String receiverTag = context.getMember().getJDA().retrieveUserById(receiver).complete().getAsTag();
+
+		return giverTag + " has " + conjugateAction(action.getType()) + " people " + giverStats.getGivenCount() + " times\n"
 				+ receiverTag + " has been " + conjugateAction(action.getType()) + " by people " + receiverStats.getReceivedCount() + " times";
-		
-		return statsString;
 	}
 
-	public void sendAction(Message message, ActionType action) {		
-		if(message.getMentionedMembers().isEmpty()) {
-            message.getChannel().sendMessage("You need to mention someone to " + action.getType() + "!").queue();
+	public void sendAction(CommandContext context, ActionType action) {
+		if(context.getMentionedMembers().isEmpty()) {
+			context.getChannel().sendMessage("You need to mention someone to " + action.getType() + "!").queue();
         } else {
             String gifURL = getActionGif(action.getType());
             if (gifURL != null)
             {
-            	updateActionStats(message.getAuthor().getId(), message.getMentionedMembers().get(0).getId(), action, message);
-            	String phrase = String.format("%s %s %s", message.getMember().getEffectiveName(), conjugateAction(action.getType()), 
-            			message.getMentionedMembers().get(0).getId().equals(message.getAuthor().getId()) ? "themself" : message.getMentionedMembers().get(0).getEffectiveName());
+            	updateActionStats(context.getAuthor().getId(), context.getMentionedMembers().get(0).getId(), action, context);
+            	String phrase = String.format("%s %s %s", context.getMember().getEffectiveName(), conjugateAction(action.getType()),
+						context.getMentionedMembers().get(0).getId().equals(context.getAuthor().getId()) ? "themself" : context.getMentionedMembers().get(0).getEffectiveName());
             	
                 EmbedBuilder actionEmbedBuilder = new EmbedBuilder();
                 actionEmbedBuilder.setTitle(phrase);
@@ -123,9 +119,9 @@ public abstract class ActionsCommand extends AbstractCommand {
                 if (!gifURL.equals("")) {
                 	actionEmbedBuilder.setImage(gifURL);	
                 }
-                actionEmbedBuilder.setFooter(getStatsString(message.getAuthor().getId(), message.getMentionedMembers().get(0).getId(), action, message));
+                actionEmbedBuilder.setFooter(getStatsString(context.getAuthor().getId(), context.getMentionedMembers().get(0).getId(), action, context));
                 MessageEmbed actionEmbed = actionEmbedBuilder.build();
-                message.getChannel().sendMessageEmbeds(actionEmbed).queue();
+				context.getChannel().sendMessageEmbeds(actionEmbed).queue();
             }
         }
 	}

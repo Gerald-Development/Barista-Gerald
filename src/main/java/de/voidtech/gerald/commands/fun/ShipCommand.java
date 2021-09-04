@@ -1,16 +1,16 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
-import java.util.List;
-import java.util.Random;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
+
+import java.awt.*;
+import java.util.List;
+import java.util.Random;
 
 @Command
 public class ShipCommand extends AbstractCommand{
@@ -18,12 +18,12 @@ public class ShipCommand extends AbstractCommand{
 	private final static String HEART = " :heart: ";
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		
-		if (message.getMentionedMembers().size() < 2) message.getChannel().sendMessage("**You must mention 2 people to ship!**").queue();
+		if (context.getMentionedMembers().size() < 2) context.getChannel().sendMessage("**You must mention 2 people to ship!**").queue();
 		else {
-			User user1 = message.getMentionedMembers().get(0).getUser();
-			User user2 = message.getMentionedMembers().get(1).getUser();
+			User user1 = context.getMentionedMembers().get(0).getUser();
+			User user2 = context.getMentionedMembers().get(1).getUser();
 			int shipRating = new Random(user1.getIdLong() - user2.getIdLong()).nextInt(101);
 			String phrase = getPhrase(shipRating);
 			Color color = getColor(shipRating);
@@ -34,7 +34,7 @@ public class ShipCommand extends AbstractCommand{
 					.setDescription(String.format("Your love match percentage is %d%c %s", shipRating, '%', phrase))
 					.build();
 			
-			message.getChannel().sendMessageEmbeds(shipEmbed).queue();
+			context.getChannel().sendMessageEmbeds(shipEmbed).queue();
 		}
 	}
 	
@@ -50,7 +50,7 @@ public class ShipCommand extends AbstractCommand{
 	private String getPhrase(int shipRating)
 	{
 		return shipRating > 70 
-				? "You're made for eachother :D" 
+				? "You're made for each other :D"
 				: shipRating > 50 
 				? "This could work out :)" 
 				: "Maybe it's not meant to be :(";
@@ -88,8 +88,7 @@ public class ShipCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"stan"};
-		return aliases;
+		return new String[]{"stan"};
 	}
 	
 	@Override

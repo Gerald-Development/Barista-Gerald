@@ -1,6 +1,16 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,17 +21,6 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
 
 @Command
 public class RedditCommand extends AbstractCommand {
@@ -60,7 +59,7 @@ public class RedditCommand extends AbstractCommand {
 	}
 
 	private String getImage(JSONObject post) {
-		String url = "";
+		String url;
 		if (post.getJSONObject("data").has("url_overridden_by_dest")) {
 			url = post.getJSONObject("data").getString("url_overridden_by_dest");
 		} else {
@@ -73,16 +72,16 @@ public class RedditCommand extends AbstractCommand {
 		return post.getJSONObject("data").getBoolean("over_18");
 	}
 	
-	private boolean channelIsNsfw(Message message) {
-		return ((TextChannel)message.getChannel()).isNSFW();
+	private boolean channelIsNsfw(CommandContext context) {
+		return ((TextChannel)context.getChannel()).isNSFW();
 	}
 	
-	private void sendRedditMessage(Message message, JSONObject redditData) {
+	private void sendRedditMessage(CommandContext context, JSONObject redditData) {
 		
 		JSONArray posts = redditData.getJSONObject("data").getJSONArray("children");
 		
 		if (posts.length() == 0) {
-			message.getChannel().sendMessage("**That is not a valid subreddit!**").queue();
+			context.getChannel().sendMessage("**That is not a valid subreddit!**").queue();
 		} else {
 			JSONObject chosenPost = posts.getJSONObject(new Random().nextInt(posts.length()));
 			
@@ -90,8 +89,8 @@ public class RedditCommand extends AbstractCommand {
 			String title = getTitle(chosenPost);
 			int upvotes = getUpvotes(chosenPost);
 			
-			if (isNsfw(chosenPost) && !channelIsNsfw(message)) {
-				message.getChannel().sendMessage("**This post cannot be displayed as it contains 18+ content**").queue();
+			if (isNsfw(chosenPost) && !channelIsNsfw(context)) {
+				context.getChannel().sendMessage("**This post cannot be displayed as it contains 18+ content**").queue();
 			} else {
 				MessageEmbed redditEmbed = new EmbedBuilder()
 						.setColor(Color.ORANGE)
@@ -99,22 +98,22 @@ public class RedditCommand extends AbstractCommand {
 						.setImage(imageURL)
 						.setFooter("Upvotes: " + upvotes)
 						.build();
-				message.getChannel().sendMessageEmbeds(redditEmbed).queue();	
+				context.getChannel().sendMessageEmbeds(redditEmbed).queue();
 			}	
 		}
 	}
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		String subreddit = args.get(0);
 		String fullUrl = BASE_URL + subreddit + SUFFIX;
 		
 		JSONObject redditData = getRedditData(fullUrl);
 		
 		if (redditData == null) {
-			message.getChannel().sendMessage("**Something  wrong!**").queue();
+			context.getChannel().sendMessage("**Something  wrong!**").queue();
 		} else {
-			sendRedditMessage(message, redditData);
+			sendRedditMessage(context, redditData);
 		}
 	}
 
@@ -150,8 +149,7 @@ public class RedditCommand extends AbstractCommand {
 
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"subreddit","sub"};
-		return aliases;
+		return new String[]{"subreddit","sub"};
 	}
 	
 	@Override

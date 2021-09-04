@@ -1,22 +1,17 @@
 package main.java.de.voidtech.gerald.commands.effects;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.entities.Message;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+
+import java.util.*;
 
 @Command
 public class AccentCommand extends AbstractCommand {
 
 	private Map<String, String[]> getAccents() {
-		Map<String, String[]> accents = new HashMap<String, String[]>();
+		Map<String, String[]> accents = new HashMap<>();
 		
 		accents.put("a", "æãåāàáâä".split(""));
 		accents.put("c", "ç".split(""));
@@ -30,10 +25,10 @@ public class AccentCommand extends AbstractCommand {
 	}
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		Map<String, String[]> accents = getAccents();
 		List<String> characters = Arrays.asList(String.join(" ", args).toLowerCase().split(""));
-		List<String> newCharacters = new ArrayList<String>();
+		List<String> newCharacters = new ArrayList<>();
 		
 		characters.forEach(character -> {
 			if (accents.containsKey(character)) {
@@ -43,7 +38,7 @@ public class AccentCommand extends AbstractCommand {
 			}
 		});
 		String finalMessage = String.join("", newCharacters);
-		message.getChannel().sendMessage(finalMessage).queue();		
+		context.getChannel().sendMessage(finalMessage).queue();
 	}
 
 	@Override
@@ -78,8 +73,7 @@ public class AccentCommand extends AbstractCommand {
 
 	@Override
 	public String[] getCommandAliases() {
-		String[] commandAliases = {"a"};
-		return commandAliases;
+		return new String[]{"a"};
 	}
 	
 	@Override

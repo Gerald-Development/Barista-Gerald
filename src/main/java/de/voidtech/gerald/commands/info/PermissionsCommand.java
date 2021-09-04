@@ -1,40 +1,40 @@
 package main.java.de.voidtech.gerald.commands.info;
 
-import java.awt.Color;
-import java.util.EnumSet;
-import java.util.List;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+
+import java.awt.*;
+import java.util.EnumSet;
+import java.util.List;
 
 @Command
 public class PermissionsCommand extends AbstractCommand{
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		EnumSet<Permission> perms;
 		String member = "";
 		if (args.size() > 0) {
 			if (args.get(0).equals("everyone")) {
-				perms = message.getGuild().getPublicRole().getPermissions();
+				perms = context.getGuild().getPublicRole().getPermissions();
 				member = "Everyone";
 			} else {
-				perms = ParsingUtils.getMember(message, args).getPermissions((GuildChannel) message.getChannel());
-				member = ParsingUtils.getMember(message, args).getUser().getAsTag();
+				perms = ParsingUtils.getMember(context, args).getPermissions((GuildChannel) context.getChannel());
+				member = ParsingUtils.getMember(context, args).getUser().getAsTag();
 			}	
 		} else {
-			perms = ParsingUtils.getMember(message, args).getPermissions((GuildChannel) message.getChannel());
-			member = ParsingUtils.getMember(message, args).getUser().getAsTag();
+			perms = ParsingUtils.getMember(context, args).getPermissions((GuildChannel) context.getChannel());
+			member = ParsingUtils.getMember(context, args).getUser().getAsTag();
 		}
 		
-		message.getChannel().sendMessageEmbeds(buildPermsEmbed(perms, member)).queue();
+		context.getChannel().sendMessageEmbeds(buildPermsEmbed(perms, member)).queue();
 	}
 
 	private MessageEmbed buildPermsEmbed(EnumSet<Permission> perms, String member) {
@@ -82,8 +82,7 @@ public class PermissionsCommand extends AbstractCommand{
 
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"perms", "permsin"};
-		return aliases;
+		return new String[]{"perms", "permsin"};
 	}
 	
 	@Override

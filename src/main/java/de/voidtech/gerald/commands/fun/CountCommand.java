@@ -1,23 +1,22 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
-import java.time.Instant;
-import java.util.List;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.entities.CountingChannel;
 import main.java.de.voidtech.gerald.service.CountingService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
+import java.time.Instant;
+import java.util.List;
 
 @Command
 public class CountCommand extends AbstractCommand {
@@ -58,32 +57,32 @@ public class CountCommand extends AbstractCommand {
 		}	
 	}
 	
-	private void startCountMethod(Message message) {
-		if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-			if (countService.getCountingChannel(message.getChannel().getId()) != null) 
-				message.getChannel().sendMessage("**There is already a count set up here!**").queue();
+	private void startCountMethod(CommandContext context) {
+		if (context.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+			if (countService.getCountingChannel(context.getChannel().getId()) != null)
+				context.getChannel().sendMessage("**There is already a count set up here!**").queue();
 			else {
-				CountingChannel newCountChannel = new CountingChannel(message.getChannel().getId(),	message.getGuild().getId());
+				CountingChannel newCountChannel = new CountingChannel(context.getChannel().getId(),	context.getGuild().getId());
 				countService.saveCountConfig(newCountChannel);	
-				message.getChannel().sendMessage("**The count has started! Send 1 to begin the game!**").queue();
+				context.getChannel().sendMessage("**The count has started! Send 1 to begin the game!**").queue();
 			}
-		} else message.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();	
+		} else context.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();
 	}
 	
-	private void stopCountMethod(Message message) {
-		if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-			if (countService.getCountingChannel(message.getChannel().getId()) != null) countService.stopCount(message.getChannel());
-			else message.getChannel().sendMessage("**There is not a count set up here!**").queue();
-		} else message.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();
+	private void stopCountMethod(CommandContext context) {
+		if (context.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+			if (countService.getCountingChannel(context.getChannel().getId()) != null) countService.stopCount(context.getChannel());
+			else context.getChannel().sendMessage("**There is not a count set up here!**").queue();
+		} else context.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();
 	}
 	
-	private void countStatsMethod(Message message) {
-		if (countService.getCountingChannel(message.getChannel().getId()) != null) {
-			sendCountStatistics(message.getChannel());
-		} else message.getChannel().sendMessage("**You need to use this command in a counting channel!**").queue();
+	private void countStatsMethod(CommandContext context) {
+		if (countService.getCountingChannel(context.getChannel().getId()) != null) {
+			sendCountStatistics(context.getChannel());
+		} else context.getChannel().sendMessage("**You need to use this command in a counting channel!**").queue();
 	}
 	
-	private void countLeaderboardMethod(Message message) {
+	private void countLeaderboardMethod(CommandContext context) {
 		List<CountingChannel> topFiveChannels = countService.getTopFive();
 		
 		String leaderboard = "```js\n";
@@ -95,8 +94,8 @@ public class CountCommand extends AbstractCommand {
 			String serverID = ((CountingChannel) channel).getServerID();
 			int count = ((CountingChannel) channel).getChannelCount();
 			
-			leaderboard = "\n" + pos + ") Channel: " + message.getJDA().getGuildById(serverID).getName() + " > "
-			+ message.getJDA().getGuildChannelById(channelID).getName() + "\n"
+			leaderboard = "\n" + pos + ") Channel: " + context.getJDA().getGuildById(serverID).getName() + " > "
+			+ context.getJDA().getGuildChannelById(channelID).getName() + "\n"
 					+ "Count: " + count + "\n" + leaderboard;	
 		}
 		leaderboard += "```";
@@ -107,66 +106,66 @@ public class CountCommand extends AbstractCommand {
 				.setDescription(leaderboard)
 				.setTimestamp(Instant.now())
 				.build();
-		message.getChannel().sendMessageEmbeds(leaderboardEmbed).queue();
+		context.getChannel().sendMessageEmbeds(leaderboardEmbed).queue();
 		
 	}
 	
-	private void disableChat(Message message) {
-		if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-			if (countService.getCountingChannel(message.getChannel().getId()) == null) 
-				message.getChannel().sendMessage("**There is no count set up here!**").queue();
+	private void disableChat(CommandContext context) {
+		if (context.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+			if (countService.getCountingChannel(context.getChannel().getId()) == null)
+				context.getChannel().sendMessage("**There is no count set up here!**").queue();
 			else {
-				CountingChannel channel = countService.getCountingChannel(message.getChannel().getId());
+				CountingChannel channel = countService.getCountingChannel(context.getChannel().getId());
 				channel.setIsTalkingAllowed(false);
 				countService.saveCountConfig(channel);
-				message.getChannel().sendMessage("**Non-counting messages sent in this channel will now be deleted!**").queue();
+				context.getChannel().sendMessage("**Non-counting messages sent in this channel will now be deleted!**").queue();
 			}
-		} else message.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();	
+		} else context.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();
 	}
 	
-	private void enableChat(Message message) {
-		if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-			if (countService.getCountingChannel(message.getChannel().getId()) == null) 
-				message.getChannel().sendMessage("**There is no count set up here!**").queue();
+	private void enableChat(CommandContext context) {
+		if (context.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+			if (countService.getCountingChannel(context.getChannel().getId()) == null)
+				context.getChannel().sendMessage("**There is no count set up here!**").queue();
 			else {
-				CountingChannel channel = countService.getCountingChannel(message.getChannel().getId());
+				CountingChannel channel = countService.getCountingChannel(context.getChannel().getId());
 				channel.setIsTalkingAllowed(true);
 				countService.saveCountConfig(channel);
-				message.getChannel().sendMessage("**Non-counting messages sent in this channel will no longer be deleted!**").queue();
+				context.getChannel().sendMessage("**Non-counting messages sent in this channel will no longer be deleted!**").queue();
 			}
-		} else message.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();	
+		} else context.getChannel().sendMessage("**You need Manage Channels permissions to do that!**").queue();
 	}
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		
 		switch(args.get(0)) {
 		case "start":
-			startCountMethod(message);
+			startCountMethod(context);
 			break;
 			
 		case "stop":
-			stopCountMethod(message);
+			stopCountMethod(context);
 			break;
 		
 		case "stats":
-			countStatsMethod(message);
+			countStatsMethod(context);
 			break;
 		
 		case "enablechat":
-			enableChat(message);
+			enableChat(context);
 			break;
 			
 		case "disablechat":
-			disableChat(message);
+			disableChat(context);
 			break;
 		
 		case "leaderboard":
-			countLeaderboardMethod(message);
+			countLeaderboardMethod(context);
 			break;
 			
 		default:
-			message.getChannel().sendMessage("**You need to use a valid subcommand!**\n" + this.getUsage()).queue();
+			context.getChannel().sendMessage("**You need to use a valid subcommand!**\n" + this.getUsage()).queue();
 			break;
 				
 		}

@@ -1,19 +1,10 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.entities.AutoroleConfig;
 import main.java.de.voidtech.gerald.service.AutoroleService;
 import main.java.de.voidtech.gerald.service.ServerService;
@@ -22,12 +13,19 @@ import main.java.de.voidtech.gerald.util.MRESameUserPredicate;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 @Command
 public class AutoroleCommand extends AbstractCommand {
@@ -44,38 +42,34 @@ public class AutoroleCommand extends AbstractCommand {
 	@Autowired
 	private EventWaiter waiter;
 	
-	private void getAwaitedReply(Message message, String question, Consumer<String> result) {
-        message.getChannel().sendMessage(question).queue();
+	private void getAwaitedReply(CommandContext context, String question, Consumer<String> result) {
+        context.getChannel().sendMessage(question).queue();
         waiter.waitForEvent(MessageReceivedEvent.class,
-                new MRESameUserPredicate(message.getAuthor()),
-                event -> {
-                    result.accept(event.getMessage().getContentRaw());
-                }, 30, TimeUnit.SECONDS, 
-                () -> message.getChannel().sendMessage(String.format("Request timed out.")).queue());
+                new MRESameUserPredicate(context.getAuthor()),
+                event -> result.accept(event.getMessage().getContentRaw()), 30, TimeUnit.SECONDS,
+                () -> context.getChannel().sendMessage("Request timed out.").queue());
     }
 	
-	private void getAwaitedButton(Message message, String question, List<Component> actions, Consumer<ButtonClickEvent> result) {
-        message.getChannel().sendMessage(question).setActionRow(actions).queue();
+	private void getAwaitedButton(CommandContext context, String question, List<Component> actions, Consumer<ButtonClickEvent> result) {
+        context.getChannel().sendMessage(question).setActionRow(actions).queue();
         waiter.waitForEvent(ButtonClickEvent.class,
-                new BCESameUserPredicate(message.getMember()),
-                event -> {
-                    result.accept(event);
-                }, 30, TimeUnit.SECONDS, 
-                () -> message.getChannel().sendMessage(String.format("Request timed out.")).queue());
+                new BCESameUserPredicate(context.getMember()),
+				result, 30, TimeUnit.SECONDS,
+                () -> context.getChannel().sendMessage("Request timed out.").queue());
     }
 	
-	private void showAutoroles(Message message) {
-		List<AutoroleConfig> configs = autoroleService.getAutoroleConfigs(serverService.getServer(message.getGuild().getId()).getId());
-		if (configs.isEmpty()) message.getChannel().sendMessage("**No autoroles to show!**").queue();
+	private void showAutoroles(CommandContext context) {
+		List<AutoroleConfig> configs = autoroleService.getAutoroleConfigs(serverService.getServer(context.getGuild().getId()).getId());
+		if (configs.isEmpty()) context.getChannel().sendMessage("**No autoroles to show!**").queue();
 		else {
-			message.getChannel().sendMessageEmbeds(craftAutoroleEmbed(configs, message)).queue();			
+			context.getChannel().sendMessageEmbeds(craftAutoroleEmbed(configs, context)).queue();
 		}
 	}
 
-	private MessageEmbed craftAutoroleEmbed(List<AutoroleConfig> configs, Message message) {
+	private MessageEmbed craftAutoroleEmbed(List<AutoroleConfig> configs, CommandContext context) {
 		EmbedBuilder autoroleEmbedBuilder = new EmbedBuilder()
 				.setColor(Color.ORANGE)
-				.setTitle("Autoroles for " + message.getGuild().getName());
+				.setTitle("Autoroles for " + context.getGuild().getName());
 		String messageBody = "";
 		for (AutoroleConfig config : configs) {
 			messageBody += addAutoroleField(config);
@@ -91,87 +85,87 @@ public class AutoroleCommand extends AbstractCommand {
 				config.isAvailableForHumans() ? TRUE_EMOTE : FALSE_EMOTE);
 	}
 	
-	private void removeAutorole(Message message, List<String> args) {
+	private void removeAutorole(CommandContext context, List<String> args) {
 		if (args.get(1).equals("all")) {
-			autoroleService.removeAllGuildConfigs(serverService.getServer(message.getGuild().getId()).getId());
-			message.getChannel().sendMessage("**Cleared all Autorole configs!**").queue();
+			autoroleService.removeAllGuildConfigs(serverService.getServer(context.getGuild().getId()).getId());
+			context.getChannel().sendMessage("**Cleared all Autorole configs!**").queue();
 		} else {
 			String roleID = ParsingUtils.filterSnowflake(args.get(1));
-			if (message.getGuild().getRoleById(roleID) == null)
-				message.getChannel().sendMessage("**You did not specify a valid role ID!**").queue();
+			if (context.getGuild().getRoleById(roleID) == null)
+				context.getChannel().sendMessage("**You did not specify a valid role ID!**").queue();
 			else if (autoroleService.getAutoroleConfigByRoleID(roleID) == null)
-				message.getChannel().sendMessage("**This role is not set up for automation!**").queue();
+				context.getChannel().sendMessage("**This role is not set up for automation!**").queue();
 			else
-				removeAutoroleConfig(roleID, message);	
+				removeAutoroleConfig(roleID, context);
 		}
 	}
 
-	private void removeAutoroleConfig(String roleID, Message message) {
+	private void removeAutoroleConfig(String roleID, CommandContext context) {
 		autoroleService.deleteAutoroleConfig(roleID);
-		message.getChannel().sendMessage("**Autorole config deleted!**").queue();
+		context.getChannel().sendMessage("**Autorole config deleted!**").queue();
 	}
 
-	private void addNewRole(Message message, List<String> args) {
-		List<AutoroleConfig> configs = autoroleService.getAutoroleConfigs(serverService.getServer(message.getGuild().getId()).getId());
+	private void addNewRole(CommandContext context) {
+		List<AutoroleConfig> configs = autoroleService.getAutoroleConfigs(serverService.getServer(context.getGuild().getId()).getId());
 		if (configs.size() == 10)
-			message.getChannel().sendMessage("**You have 10 roles set up already! You cannot add more!**").queue();
-		else promptForRole(message);	
+			context.getChannel().sendMessage("**You have 10 roles set up already! You cannot add more!**").queue();
+		else promptForRole(context);
 	}
 
-	private void promptForRole(Message message) {
-		getAwaitedReply(message, "**Please supply a role mention or ID:**", roleInput -> {
+	private void promptForRole(CommandContext context) {
+		getAwaitedReply(context, "**Please supply a role mention or ID:**", roleInput -> {
 			String roleID = ParsingUtils.filterSnowflake(roleInput);
-			if (message.getGuild().getRoleById(roleID) != null) promptForHumanAvailability(message, roleID);
-			else message.getChannel().sendMessage("**You did not provide a valid role!**").queue();
+			if (context.getGuild().getRoleById(roleID) != null) promptForHumanAvailability(context, roleID);
+			else context.getChannel().sendMessage("**You did not provide a valid role!**").queue();
 		});
 	}
 
-	private void promptForHumanAvailability(Message message, String roleID) {
-		getAwaitedButton(message, "**Should this role be applied to humans?**", createTrueFalseButtons(), event -> {
+	private void promptForHumanAvailability(CommandContext context, String roleID) {
+		getAwaitedButton(context, "**Should this role be applied to humans?**", createTrueFalseButtons(), event -> {
 			event.deferEdit().queue();
 			switch (event.getComponentId()) {
 			case "YES":
-				promptForBotAvailability(message, roleID, true);
+				promptForBotAvailability(context, roleID, true);
 				break;
 			case "NO":
-				promptForBotAvailability(message, roleID, false);
+				promptForBotAvailability(context, roleID, false);
 				break;
 			default:
-				message.getChannel().sendMessage("**An error occurred. Our apologies.**").queue();
+				context.getChannel().sendMessage("**An error occurred. Our apologies.**").queue();
 			}
 		});
 	}
 	
 	private List<Component> createTrueFalseButtons() {
-		List<Component> components = new ArrayList<Component>();
+		List<Component> components = new ArrayList<>();
 		components.add(Button.secondary("YES", TRUE_EMOTE));
 		components.add(Button.secondary("NO", FALSE_EMOTE));
 		return components;
 	}
 
-	private void promptForBotAvailability(Message message, String roleID, boolean applyToHumans) {
-		getAwaitedButton(message, "**Should this role be applied to bots?**", createTrueFalseButtons(), event -> {
+	private void promptForBotAvailability(CommandContext context, String roleID, boolean applyToHumans) {
+		getAwaitedButton(context, "**Should this role be applied to bots?**", createTrueFalseButtons(), event -> {
 			event.deferEdit().queue();
 			switch (event.getComponentId()) {
 			case "YES":
-				finishAddingAutorole(message, roleID, applyToHumans, true);
+				finishAddingAutorole(context, roleID, applyToHumans, true);
 				break;
 			case "NO":
-				finishAddingAutorole(message, roleID, applyToHumans, false);
+				finishAddingAutorole(context, roleID, applyToHumans, false);
 				break;
 			default:
-				message.getChannel().sendMessage("**An error occurred. Our apologies.**").queue();
+				context.getChannel().sendMessage("**An error occurred. Our apologies.**").queue();
 			}
 		});
 	}
 	
-	private void finishAddingAutorole(Message message, String roleID, boolean applyToHumans, boolean applyToBots) {
+	private void finishAddingAutorole(CommandContext context, String roleID, boolean applyToHumans, boolean applyToBots) {
 		if (!applyToHumans && !applyToBots)
-			message.getChannel().sendMessage("**Autoroles must be added to at least either bots or humans!**").queue();
+			context.getChannel().sendMessage("**Autoroles must be added to at least either bots or humans!**").queue();
 		else {
-			long serverID = serverService.getServer(message.getGuild().getId()).getId();
+			long serverID = serverService.getServer(context.getGuild().getId()).getId();
 			AutoroleConfig config = new AutoroleConfig(serverID, roleID, applyToBots, applyToHumans);
-			message.getChannel().sendMessageEmbeds(createAutoroleSavedEmbed(config)).queue();
+			context.getChannel().sendMessageEmbeds(createAutoroleSavedEmbed(config)).queue();
 			autoroleService.saveAutoroleConfig(config);	
 		}
 	}
@@ -185,27 +179,27 @@ public class AutoroleCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		if (!message.getMember().hasPermission(Permission.MANAGE_ROLES))
-			message.getChannel().sendMessage("**You need to have the** `Manage Roles` **permission to use this command!**").queue();			
+	public void executeInternal(CommandContext context, List<String> args) {
+		if (!context.getMember().hasPermission(Permission.MANAGE_ROLES))
+			context.getChannel().sendMessage("**You need to have the** `Manage Roles` **permission to use this command!**").queue();
 		else {
 			switch (args.get(0)) {
 			case "add":
-				addNewRole(message, args);
+				addNewRole(context);
 				break;
 			case "remove":
-				removeAutorole(message, args);
+				removeAutorole(context, args);
 				break;
 			case "list":
-				showAutoroles(message);
+				showAutoroles(context);
 				break;
 			default:
-				message.getChannel().sendMessage("**Did you mean one of these?**\n" + this.getUsage()).queue();
+				context.getChannel().sendMessage("**Did you mean one of these?**\n" + this.getUsage()).queue();
 				break;
 			}	
-			EnumSet<Permission> perms = message.getGuild().getSelfMember().getPermissions();		
+			EnumSet<Permission> perms = context.getGuild().getSelfMember().getPermissions();
 			if (!perms.contains(Permission.MANAGE_ROLES)) {
-				message.getChannel().sendMessage("**NOTE: I do not have the** `Manage Roles` **permisison. I need this to add roles to people!**").queue();
+				context.getChannel().sendMessage("**NOTE: I do not have the** `Manage Roles` **permission. I need this to add roles to people!**").queue();
 			}
 		}
 	}
@@ -244,8 +238,7 @@ public class AutoroleCommand extends AbstractCommand {
 
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"ar"};
-		return aliases;
+		return new String[]{"ar"};
 	}
 
 	@Override

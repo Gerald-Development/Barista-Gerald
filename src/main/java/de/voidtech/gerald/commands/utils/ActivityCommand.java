@@ -1,22 +1,21 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import java.util.List;
-
+import main.java.de.voidtech.gerald.GlobalConstants;
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.entities.GlobalConfig;
+import main.java.de.voidtech.gerald.service.GeraldConfig;
+import main.java.de.voidtech.gerald.service.GlobalConfigService;
+import net.dv8tion.jda.api.entities.Activity.ActivityType;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import main.java.de.voidtech.gerald.GlobalConstants;
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.entities.GlobalConfig;
-import main.java.de.voidtech.gerald.service.GeraldConfig;
-import main.java.de.voidtech.gerald.service.GlobalConfigService;
-import net.dv8tion.jda.api.entities.Activity.ActivityType;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.internal.entities.EntityBuilder;
+import java.util.List;
 
 @Command
 public class ActivityCommand extends AbstractCommand {
@@ -31,24 +30,24 @@ public class ActivityCommand extends AbstractCommand {
 	private GeraldConfig config;
 
 	@Override
-	public void executeInternal(Message message, List<String> args) 
+	public void executeInternal(CommandContext context, List<String> args)
 	{
-		if(!config.getMasters().contains(message.getMember().getId())) return;
+		if(!config.getMasters().contains(context.getMember().getId())) return;
 		
-		if (StringUtils.join(args.toArray(), " ").length() > 128) message.getChannel().sendMessage("Too many characters! The activity can only be 128 letters").queue();
+		if (StringUtils.join(args.toArray(), " ").length() > 128) context.getChannel().sendMessage("Too many characters! The activity can only be 128 letters").queue();
 		else {
 			ActivityWrapper activityWrapperOpt = ActivityWrapper
 					.getActivityWrapperOpt(StringUtils.join(args.toArray(), " "));
 
 			if (activityWrapperOpt != null) {
 				String statusMessage = StringUtils.join(args.toArray(), " ").substring(activityWrapperOpt.toString().length());
-				message.getJDA().getPresence().setActivity(EntityBuilder.createActivity(statusMessage,GlobalConstants.STREAM_URL, activityWrapperOpt.getActivityType()));
+				context.getJDA().getPresence().setActivity(EntityBuilder.createActivity(statusMessage,GlobalConstants.STREAM_URL, activityWrapperOpt.getActivityType()));
 				
 				updatePersistentActivity(activityWrapperOpt.getActivityType(), statusMessage);
-				message.getChannel().sendMessage("**Set status to:** " + activityWrapperOpt.humanReadable + statusMessage).queue();
+				context.getChannel().sendMessage("**Set status to:** " + activityWrapperOpt.humanReadable + statusMessage).queue();
 
 			} else {
-				message.getChannel().sendMessage("Please provide a valid activity: `playing, watching, listening to, streaming`").queue();
+				context.getChannel().sendMessage("Please provide a valid activity: `playing, watching, listening to, streaming`").queue();
 			}
 		}
 	}
@@ -90,7 +89,7 @@ public class ActivityCommand extends AbstractCommand {
 		LISTENING("listening to"),
 		WATCHING("watching");
 		
-		private String humanReadable;
+		private final String humanReadable;
 		
 		ActivityWrapper(String humanReadable)
 		{
@@ -140,8 +139,7 @@ public class ActivityCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"setactivity", "status", "setstatus"};
-		return aliases;
+		return new String[]{"setactivity", "status", "setstatus"};
 	}
 	
 	@Override

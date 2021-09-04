@@ -1,17 +1,17 @@
 package main.java.de.voidtech.gerald.commands.actions;
 
-import java.util.List;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.entities.Message;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+
+import java.util.List;
 
 @Command
 public class HugCommand extends ActionsCommand {
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		super.sendAction(message, ActionType.HUG);
+	public void executeInternal(CommandContext context, List<String> args) {
+		super.sendAction(context, ActionType.HUG);
 	}
 
 	@Override
@@ -46,8 +46,7 @@ public class HugCommand extends ActionsCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"hold"};
-		return aliases;
+		return new String[]{"hold"};
 	}
 	
 	@Override

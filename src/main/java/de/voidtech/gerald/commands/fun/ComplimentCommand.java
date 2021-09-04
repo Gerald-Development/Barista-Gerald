@@ -1,21 +1,21 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.entities.Message;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 @Command
 public class ComplimentCommand extends AbstractCommand{
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		List<String> compliments = getCompliments();
-		message.getChannel().sendMessage(compliments.get(new Random().nextInt(compliments.size()))).queue();
+		context.getChannel().sendMessage(compliments.get(new Random().nextInt(compliments.size()))).queue();
 	}
 	
 	private List<String> getCompliments()
@@ -67,8 +67,7 @@ public class ComplimentCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"respect"};
-		return aliases;
+		return new String[]{"respect"};
 	}
 	
 	@Override

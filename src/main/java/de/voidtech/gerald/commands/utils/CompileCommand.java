@@ -1,6 +1,15 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import java.awt.Color;
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import org.json.JSONObject;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,16 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
-
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class CompileCommand extends AbstractCommand {
@@ -134,18 +133,18 @@ public class CompileCommand extends AbstractCommand {
 			message.getChannel().sendMessage("That language could not be found!").queue();
 		}
 	}
-	
+	//TODO (from: Franziska): This should probably not be available in SlashCommands?
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 
-		if (args.size() >= 0 && args.get(0).equals("languages")) {
-			String supportedLangsString = StringUtils.join(langMap.keySet(), "\n");
-			message.getChannel().sendMessage("**Supported Languages:**\n" + supportedLangsString).queue();
+		//if (args.size() >= 0 && args.get(0).equals("languages")) {
+			//String supportedLangsString = StringUtils.join(langMap.keySet(), "\n");
+			//context.getChannel().sendMessage("**Supported Languages:**\n" + supportedLangsString).queue();
 		
-		} else {
-			runCompilerSystem(message, args);
-		}
-
+		//} else {
+		//	runCompilerSystem(context, args);
+		//}
+		context.getChannel().sendMessage("This command is not available due to SlashCommand the rework. Please contact a developer").queue();
 	}
 
 	private Map<String, String> getSupportedLangs() {

@@ -1,18 +1,17 @@
 package main.java.de.voidtech.gerald.commands.info;
 
-import java.awt.Color;
-import java.util.List;
-
-import main.java.de.voidtech.gerald.service.CommandService;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.GlobalConstants;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.service.CommandService;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
+import java.util.List;
 
 @Command
 public class HelpCommand extends AbstractCommand{	
@@ -30,15 +29,15 @@ public class HelpCommand extends AbstractCommand{
 		return word.substring(0, 1).toUpperCase() + word.substring(1);
 	}
 	
-	private void showCategoryList(Message message) {
+	private void showCategoryList(CommandContext command) {
 		
 		boolean inlineFieldState = true;
 		
 		EmbedBuilder categoryListEmbedBuilder = new EmbedBuilder();
 		categoryListEmbedBuilder.setColor(Color.ORANGE);
 		categoryListEmbedBuilder.setTitle("Barista Gerald Help", GlobalConstants.LINKTREE_URL);
-		categoryListEmbedBuilder.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl());
-		categoryListEmbedBuilder.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, message.getJDA().getSelfUser().getAvatarUrl());
+		categoryListEmbedBuilder.setThumbnail(command.getJDA().getSelfUser().getAvatarUrl());
+		categoryListEmbedBuilder.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, command.getJDA().getSelfUser().getAvatarUrl());
 		
 		for (CommandCategory commandCategory : CommandCategory.values()) {
 			String title = capitaliseFirstLetter(commandCategory.getCategory()) + " " + commandCategory.getIcon();
@@ -51,7 +50,7 @@ public class HelpCommand extends AbstractCommand{
 		
 		MessageEmbed categoryListEmbed = categoryListEmbedBuilder.build();
 		
-		message.getChannel().sendMessageEmbeds(categoryListEmbed).queue();
+		command.getChannel().sendMessageEmbeds(categoryListEmbed).queue();
 	}
 	
 	private boolean isCommandCategory(String categoryName) {
@@ -83,7 +82,7 @@ public class HelpCommand extends AbstractCommand{
 		return false;
 	}
 	
-	private void showCommandsFromCategory(Message message, String categoryName) {
+	private void showCommandsFromCategory(CommandContext context, String categoryName) {
 		String commandList = "";
 		for (AbstractCommand command : commands) {
 			if(command.getCommandCategory().getCategory().equals(categoryName))
@@ -95,10 +94,10 @@ public class HelpCommand extends AbstractCommand{
 				.setColor(Color.ORANGE)
 				.setTitle(capitaliseFirstLetter(categoryName) + " Commands Help", GlobalConstants.LINKTREE_URL)
 				.addField(capitaliseFirstLetter(categoryName) + " Commands " + getCategoryIconByName(categoryName), commandList, false)
-				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
-				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, message.getJDA().getSelfUser().getAvatarUrl())
+				.setThumbnail(context.getJDA().getSelfUser().getAvatarUrl())
+				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, context.getJDA().getSelfUser().getAvatarUrl())
 				.build();
-		message.getChannel().sendMessageEmbeds(commandHelpEmbed).queue();
+		context.getChannel().sendMessageEmbeds(commandHelpEmbed).queue();
 		
 	}
 
@@ -117,13 +116,13 @@ public class HelpCommand extends AbstractCommand{
 		return null;
 	}
 	
-	private void showCommand(Message message, String commandName) {
+	private void showCommand(CommandContext context, String commandName) {
 		AbstractCommand commandToBeDisplayed = getCommand(commandName);	
 
 		MessageEmbed commandHelpEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle("How it works: " + capitaliseFirstLetter(commandToBeDisplayed.getName()) + " Command", GlobalConstants.LINKTREE_URL)
-				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
+				.setThumbnail(context.getJDA().getSelfUser().getAvatarUrl())
 				.addField("Command Name", "```" + capitaliseFirstLetter(commandToBeDisplayed.getName()) + "```", true)
 				.addField("Category", "```" + displayCommandCategoryOrNull(commandToBeDisplayed.getCommandCategory()) + "```", true)
 				.addField("Description", "```" + commandToBeDisplayed.getDescription() + "```", false)
@@ -131,9 +130,9 @@ public class HelpCommand extends AbstractCommand{
 				.addField("Requires Arguments", "```" + booleanToEmote(commandToBeDisplayed.requiresArguments()) + "```", true)
 				.addField("Is DM Capable", "```" + booleanToEmote(commandToBeDisplayed.isDMCapable()) + "```", true)
 				.addField("Command Aliases", "```" + showCommandAliases(commandToBeDisplayed.getCommandAliases()) + "```", false)
-				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, message.getJDA().getSelfUser().getAvatarUrl())
+				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, context.getJDA().getSelfUser().getAvatarUrl())
 				.build();
-		message.getChannel().sendMessageEmbeds(commandHelpEmbed).queue();
+		context.getChannel().sendMessageEmbeds(commandHelpEmbed).queue();
 	}
 	
 
@@ -146,15 +145,15 @@ public class HelpCommand extends AbstractCommand{
 	}
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		if (!commands.contains(this)) commands.add(this);	
 		
-		if (args.size() == 0) showCategoryList(message);
+		if (args.size() == 0) showCategoryList(context);
 		else {
 			String itemToBeQueried = args.get(0).toLowerCase();
-			if (isCommandCategory(itemToBeQueried)) showCommandsFromCategory(message, itemToBeQueried);
-			else if (isCommand(itemToBeQueried)) showCommand(message, itemToBeQueried);
-			else message.getChannel().sendMessage("**That command/category could not be found!**").queue();
+			if (isCommandCategory(itemToBeQueried)) showCommandsFromCategory(context, itemToBeQueried);
+			else if (isCommand(itemToBeQueried)) showCommand(context, itemToBeQueried);
+			else context.getChannel().sendMessage("**That command/category could not be found!**").queue();
 		}
 	}
 

@@ -1,5 +1,11 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+
+import javax.management.RuntimeErrorException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -10,33 +16,26 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
-import javax.management.RuntimeErrorException;
-
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.entities.Message;
-
 @Command
 public class MathCommand extends AbstractCommand {
 	
     private static final long MILLIS_TIME_OUT = 5000;
-    private static final String EXPRESSION_REGEX = "[0-9+\\-*\\/^()\\s\\.]+";
+    private static final String EXPRESSION_REGEX = "[0-9+\\-*/^()\\s.]+";
     private static final Logger LOGGER = Logger.getLogger(MathCommand.class.getName());
     
-    private enum TokenType {VALUE,OPERATOR,EXPRESSION, TIMEOUT};
+    private enum TokenType {VALUE,OPERATOR,EXPRESSION, TIMEOUT}
 
     private static class ArithmeticToken {
 
-        private TokenType type;
+        private final TokenType type;
         private double valueMaybe;
         private String expressionMaybe;
         private char operatorMaybe;
     	
         private static class ArithmeticOperator {
         	
-            private char operator;
-            private BinaryOperator<Double> operation;
+            private final char operator;
+            private final BinaryOperator<Double> operation;
             
             public ArithmeticOperator(char operator, BinaryOperator<Double> operation) {
                 this.operator = operator;
@@ -118,7 +117,7 @@ public class MathCommand extends AbstractCommand {
             else {
                 LOGGER.log(Level.SEVERE, String.format("Error during CommandExecution: '%s' turned into '%s' rather than resolving to a single value",
                 		this.expressionMaybe, Arrays.deepToString(tokens.toArray())));
-                throw new RuntimeErrorException(new Error("Unknown tokenisation error"));
+                throw new RuntimeErrorException(new Error("Unknown tokenization error"));
             }
         }
         public static List<ArithmeticToken> tokenize(String expression, long creation) throws TimeoutException, ArithmeticException {
@@ -203,11 +202,11 @@ public class MathCommand extends AbstractCommand {
                 }
             }
 
-            ArithmeticOperator exponentOperator = new ArithmeticOperator('^', (n1, n2) -> Math.pow(n1, n2));
+            ArithmeticOperator exponentOperator = new ArithmeticOperator('^', Math::pow);
             ArithmeticOperator multiplicationOperator = new ArithmeticOperator('*', (n1, n2) -> n1 * n2);
             ArithmeticOperator divisionOperator = new ArithmeticOperator('/', (n1, n2) -> n1 / n2);
             ArithmeticOperator minusOperator = new ArithmeticOperator('-', (n1, n2) -> n1 - n2);
-            ArithmeticOperator additionOperator = new ArithmeticOperator('+', (n1, n2) -> n1 + n2);
+            ArithmeticOperator additionOperator = new ArithmeticOperator('+', Double::sum);
 
             tokens = exponentOperator.apply(tokens);
             tokens = multiplicationOperator.apply(tokens);
@@ -261,14 +260,14 @@ public class MathCommand extends AbstractCommand {
     }
     
     @Override
-    public void executeInternal(Message message, List<String> args) {
+    public void executeInternal(CommandContext context, List<String> args) {
         String expression = String.join(" ",args);
         long creation = System.currentTimeMillis();
         try {
             double result = evalExpression(expression, creation);
-            message.getChannel().sendMessage(String.format("The result of your expression `%s` is `%f`", expression, result)).queue();
+            context.getChannel().sendMessage(String.format("The result of your expression `%s` is `%f`", expression, result)).queue();
         } catch (ArithmeticException e){
-            message.getChannel().sendMessage(String.format("Arithmatic error: %s", e.getMessage())).queue();
+            context.getChannel().sendMessage(String.format("Arithmetic error: %s", e.getMessage())).queue();
         }
 
     }
@@ -305,8 +304,7 @@ public class MathCommand extends AbstractCommand {
 
     @Override
     public String[] getCommandAliases() {
-        String[] aliases = {"m", "π", "eval", "calc"};
-        return aliases;
+        return new String[]{"m", "π", "eval", "calc"};
     }
 
     @Override

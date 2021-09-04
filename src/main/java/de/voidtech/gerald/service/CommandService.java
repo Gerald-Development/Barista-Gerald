@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.service;
 
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.util.CustomCollectors;
 import net.dv8tion.jda.api.entities.ChannelType;
@@ -38,13 +39,16 @@ public class CommandService
     @Autowired
     private LevenshteinService levenshteinService;
 
-    public void handleCommandOnDemand(Message message) {
+    public void handleMessageBasedCommandOnDemand(Message message) {
         String prefix = getPrefix(message);
 
         if (!shouldHandleAsCommand(prefix, message)) return;
 
         String messageContent = message.getContentRaw().substring(prefix.length());
         List<String> messageArray = Arrays.asList(messageContent.trim().split("\\s+"));
+
+        // TODO (from: Fraziska): Also pass mentioned members, channel, etc. don't know what else we need. Maybe also beautify code.
+        CommandContext cmdContext = new CommandContext(message.getChannel(), message.getMember(), messageArray.subList(1, messageArray.size()), message.getMentionedMembers(), message.getMentionedChannels());
 
         AbstractCommand commandOpt = commands.stream()
                 .filter(command -> command.getName().equals(findCommand(messageArray.get(0))))
@@ -55,15 +59,20 @@ public class CommandService
             tryLevenshteinOptions(message, messageArray.get(0));
             return;
         }
+            handleCommand(commandOpt, cmdContext);
+        }
 
-        if (message.getChannel().getType() == ChannelType.PRIVATE && !commandOpt.isDMCapable()) {
-            message.getChannel().sendMessage("**You can only use this command in guilds!**").queue();
+    public void handleCommand(AbstractCommand command, CommandContext context)
+    {
+        if (context.getChannel().getType() == ChannelType.PRIVATE && !command.isDMCapable()) {
+            context.getChannel().sendMessage("**You can only use this command in guilds!**").queue();
             return;
         }
 
-        commandOpt.run(message, messageArray.subList(1, messageArray.size()));
+        command.run(context, context.getArgs());
 
-        LOGGER.log(Level.INFO, "Command executed: " + messageArray.get(0) + " - From " + message.getAuthor().getAsTag() + "- ID: " + message.getAuthor().getId());
+        LOGGER.log(Level.INFO, "Command executed: " + command.getName() + " - From " + context.getMember().getUser().getAsTag() + "- ID: " + context.getAuthor().getId());
+
     }
 
     private String findCommand(String prompt) {
@@ -77,10 +86,10 @@ public class CommandService
     }
 
     private void tryLevenshteinOptions(Message message, String commandName) {
-        List<String> possibleOptions = new ArrayList<String>();
+        List<String> possibleOptions = new ArrayList<>();
         possibleOptions = commands.stream()
                 .filter(command -> levenshteinService.calculate(commandName, command.getName()) <= LEVENSHTEIN_THRESHOLD)
-                .map(command -> command.getName())
+                .map(AbstractCommand::getName)
                 .collect(Collectors.toList());
         if (!possibleOptions.isEmpty())
             message.getChannel().sendMessageEmbeds(levenshteinService.createLevenshteinEmbed(possibleOptions)).queue();
@@ -88,13 +97,8 @@ public class CommandService
 
     private boolean shouldHandleAsCommand(String prefix, Message message)
     {
-        boolean result = true;
         String messageRaw = message.getContentRaw();
-
-        result &= messageRaw.startsWith(prefix);
-        result &= messageRaw.length() > prefix.length();
-
-        return result;
+        return messageRaw.startsWith(prefix) && messageRaw.length() > prefix.length();
     }
 
     private String getPrefix(Message message) {
@@ -107,11 +111,11 @@ public class CommandService
         else return customPrefix;
     }
 
-    public HashMap<String, String> aliases = new HashMap<String, String>();
+    public HashMap<String, String> aliases = new HashMap<>();
 
     public void loadAliases() {
         for (AbstractCommand command: commands) {
-            List<String> commandAliases = new ArrayList<String>();
+            List<String> commandAliases = new ArrayList<>();
             if (command.getCommandAliases() != null)
                 commandAliases = Arrays.asList(command.getCommandAliases());
             for (String alias: commandAliases) {

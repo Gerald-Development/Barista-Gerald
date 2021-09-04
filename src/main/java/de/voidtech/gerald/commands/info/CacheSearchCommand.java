@@ -1,23 +1,18 @@
 package main.java.de.voidtech.gerald.commands.info;
 
-import java.awt.Color;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
+import java.util.List;
 
 @Command
 public class CacheSearchCommand extends AbstractCommand{
@@ -29,9 +24,9 @@ public class CacheSearchCommand extends AbstractCommand{
 	private ServerService serverService;
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		if (config.getMasters().contains(message.getAuthor().getId())) {
-			JDA client = message.getJDA();
+	public void executeInternal(CommandContext context, List<String> args) {
+		if (config.getMasters().contains(context.getAuthor().getId())) {
+			JDA client = context.getJDA();
 			String resultMessage = "";
 			String imageURL = "";
 			boolean foundItem = true;
@@ -78,9 +73,9 @@ public class CacheSearchCommand extends AbstractCommand{
 						.setThumbnail(imageURL)
 						.setDescription(resultMessage)
 						.build();
-				message.getChannel().sendMessageEmbeds(cacheSearchEmbed).queue();	
+				context.getChannel().sendMessageEmbeds(cacheSearchEmbed).queue();
 			} else {
-				message.getChannel().sendMessage("**Nothing was found in the cache!**").queue();
+				context.getChannel().sendMessage("**Nothing was found in the cache!**").queue();
 			}
 		}
 	}

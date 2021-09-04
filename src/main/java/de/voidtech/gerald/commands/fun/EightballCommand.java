@@ -1,19 +1,19 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.util.List;
-import java.util.Random;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.entities.Message;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+
+import java.util.List;
+import java.util.Random;
 
 @Command
 public class EightballCommand extends AbstractCommand{
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		message.getChannel().sendMessage(new Random().nextBoolean() ? "Yes" : "No").queue();		
+	public void executeInternal(CommandContext context, List<String> args) {
+		context.getChannel().sendMessage(new Random().nextBoolean() ? "Yes" : "No").queue();
 	}
 
 	@Override

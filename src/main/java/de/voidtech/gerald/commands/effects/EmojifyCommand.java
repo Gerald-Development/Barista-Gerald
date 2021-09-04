@@ -1,33 +1,23 @@
 package main.java.de.voidtech.gerald.commands.effects;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.entities.Message;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+
+import java.util.*;
 
 @Command
 public class EmojifyCommand extends AbstractCommand {
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		Map<String, String> emojiMap = getemojiText();
 		List<String> characters = Arrays.asList(String.join(" ", args).split(""));
-		List<String> newCharacters = new ArrayList<String>();
-		characters.forEach(character -> {
-			if (emojiMap.containsKey(character.toLowerCase())) {
-				newCharacters.add(emojiMap.get(character.toLowerCase()));
-			} else {
-				newCharacters.add(character);
-			}
-		});
+		List<String> newCharacters = new ArrayList<>();
+		characters.forEach(character -> newCharacters.add(emojiMap.getOrDefault(character.toLowerCase(), character)));
 		String finalMessage = String.join("", newCharacters);
-		message.getChannel().sendMessage(finalMessage).queue();
+		context.getChannel().sendMessage(finalMessage).queue();
 	}
 
 	@Override
@@ -41,7 +31,7 @@ public class EmojifyCommand extends AbstractCommand {
 	}
 	
 	private Map<String, String> getemojiText() {
-		Map<String, String> emojiText = new HashMap<String, String>();
+		Map<String, String> emojiText = new HashMap<>();
 			emojiText.put("a",":regional_indicator_a:");
 			emojiText.put("b",":regional_indicator_b:");
 			emojiText.put("c",":regional_indicator_c:");
@@ -94,8 +84,7 @@ public class EmojifyCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"big"};
-		return aliases;
+		return new String[]{"big"};
 	}
 	
 	@Override

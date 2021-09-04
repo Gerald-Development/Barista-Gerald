@@ -1,25 +1,23 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.entities.JoinLeaveMessage;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.util.MRESameUserPredicate;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Command
 public class WelcomerCommand extends AbstractCommand{
@@ -54,9 +52,9 @@ public class WelcomerCommand extends AbstractCommand{
 		}
 	}
 	
-	private boolean channelExists (String channel, Message message) {
+	private boolean channelExists (String channel, CommandContext context) {
 		if (ParsingUtils.isInteger(channel)) {
-			GuildChannel guildChannel = message.getJDA().getGuildChannelById(Long.parseLong(channel));
+			GuildChannel guildChannel = context.getJDA().getGuildChannelById(Long.parseLong(channel));
 			return guildChannel != null;	
 		} else {
 			return false;
@@ -78,14 +76,13 @@ public class WelcomerCommand extends AbstractCommand{
 	private JoinLeaveMessage getJoinLeaveMessageEntity(long guildID) {
 		try(Session session = sessionFactory.openSession())
 		{
-			JoinLeaveMessage joinLeaveMessage = (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
+			return (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
                     .setParameter("serverID", guildID)
                     .uniqueResult();
-			return joinLeaveMessage;
 		}
 	}
 	
-	private void updateChannel(long serverID, String channel, Message message) {
+	private void updateChannel(long serverID, String channel) {
 		JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(serverID);
 		
 		try (Session session = sessionFactory.openSession()) {
@@ -98,7 +95,7 @@ public class WelcomerCommand extends AbstractCommand{
 		}
 	}
 	
-	private void updateJoinMessage(long serverID, String joinMessage, Message message) {
+	private void updateJoinMessage(long serverID, String joinMessage) {
 		JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(serverID);
 		
 		try (Session session = sessionFactory.openSession()) {
@@ -111,7 +108,7 @@ public class WelcomerCommand extends AbstractCommand{
 		}
 	}
 	
-	private void updateLeaveMessage(long serverID, String leaveMessage, Message message) {
+	private void updateLeaveMessage(long serverID, String leaveMessage) {
 		JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(serverID);
 		
 		try (Session session = sessionFactory.openSession()) {
@@ -124,86 +121,86 @@ public class WelcomerCommand extends AbstractCommand{
 		}
 	}
 	
-	private void clearWelcomer(Server server, Message message) {
+	private void clearWelcomer(Server server, CommandContext context) {
 		if (customMessageEnabled(server.getId())) {
 			deleteCustomMessage(server.getId());
-			message.getChannel().sendMessage("**The Welcomer has been disabled.**").queue();
+			context.getChannel().sendMessage("**The Welcomer has been disabled.**").queue();
 		} else {
-			message.getChannel().sendMessage("**The Welcomer has not been set up yet!**").queue();
+			context.getChannel().sendMessage("**The Welcomer has not been set up yet!**").queue();
 		}
 	}
 	
-	private void continueToLeaveMessage(Message message, Server server, String channel, String welcomeMessage) {
-		message.getChannel().sendMessage("**Please enter your leave message:**").queue();
+	private void continueToLeaveMessage(CommandContext context, Server server, String channel, String welcomeMessage) {
+		context.getChannel().sendMessage("**Please enter your leave message:**").queue();
 		waiter.waitForEvent(MessageReceivedEvent.class,
-				new MRESameUserPredicate(message.getAuthor()),
+				new MRESameUserPredicate(context.getAuthor()),
 				leaveMessageEvent -> {
 					String leaveMessage = leaveMessageEvent.getMessage().getContentRaw();
 					
 					addJoinLeaveMessage(server.getId(), channel, welcomeMessage, leaveMessage);
-					message.getChannel().sendMessage("**The Welcomer has been set up!**\n\n"
+					context.getChannel().sendMessage("**The Welcomer has been set up!**\n\n"
 							+ "Channel: <#" + channel + ">\n"
 							+ "Join message: " + welcomeMessage + "\n"
 							+ "Leave message: " + leaveMessage).queue();
 					
 				}, 60, TimeUnit.SECONDS, 
-				() -> message.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());	
+				() -> context.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());
 	}
 	
 	
-	private void continueToWelcomeMessage(Message message, Server server, String channel) {
-		message.getChannel().sendMessage("**Please enter your welcome message:**").queue();
+	private void continueToWelcomeMessage(CommandContext context, Server server, String channel) {
+		context.getChannel().sendMessage("**Please enter your welcome message:**").queue();
 		waiter.waitForEvent(MessageReceivedEvent.class,
-				new MRESameUserPredicate(message.getAuthor()),
+				new MRESameUserPredicate(context.getAuthor()),
 				welcomeMessageInputEvent -> {
 					String welcomeMessage = welcomeMessageInputEvent.getMessage().getContentRaw();
-					continueToLeaveMessage(message, server, channel, welcomeMessage);
+					continueToLeaveMessage(context, server, channel, welcomeMessage);
 				}, 60, TimeUnit.SECONDS, 
-				() -> message.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());	
+				() -> context.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());
 	}
 	
-	private void beginSetup(Message message, Server server) {
-		message.getChannel().sendMessage("**Enter the ID or a mention of the channel you wish to use:**").queue();
+	private void beginSetup(CommandContext context, Server server) {
+		context.getChannel().sendMessage("**Enter the ID or a mention of the channel you wish to use:**").queue();
 		
 		waiter.waitForEvent(MessageReceivedEvent.class,
-				new MRESameUserPredicate(message.getAuthor()),
+				new MRESameUserPredicate(context.getAuthor()),
 				channelEntryEvent -> {
 					String channel = ParsingUtils.filterSnowflake(channelEntryEvent.getMessage().getContentRaw());
 					
-					if (channelExists(channel, message)) {
-						continueToWelcomeMessage(message, server, channel);
+					if (channelExists(channel, context)) {
+						continueToWelcomeMessage(context, server, channel);
 					} else {
-						message.getChannel().sendMessage("**You need to mention a channel or use its ID!**").queue();
+						context.getChannel().sendMessage("**You need to mention a channel or use its ID!**").queue();
 					}
 					
 				}, 60, TimeUnit.SECONDS, 
-				() -> message.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());	
+				() -> context.getChannel().sendMessage("**No input has been supplied, cancelling.**").queue());
 	}
 	
-	private void setupWelcomer(Server server, Message message) {
+	private void setupWelcomer(Server server, CommandContext context) {
 		if (customMessageEnabled(server.getId())) {
-			message.getChannel().sendMessage("**The Welcomer is already set up!**").queue();
+			context.getChannel().sendMessage("**The Welcomer is already set up!**").queue();
 		} else {
-			beginSetup(message, server);
+			beginSetup(context, server);
 		}	
 	}
 	
-	private void changeChannel(Server server, Message message, List<String> args) {
+	private void changeChannel(Server server, CommandContext context, List<String> args) {
 		if (customMessageEnabled(server.getId())) {
 			String channel = ParsingUtils.filterSnowflake(args.get(1));
 			
-			if (channelExists(channel, message)) {
-				updateChannel(server.getId(), channel, message);
-				message.getChannel().sendMessage("**The channel has been changed to** <#" + channel + ">").queue();
+			if (channelExists(channel, context)) {
+				updateChannel(server.getId(), channel);
+				context.getChannel().sendMessage("**The channel has been changed to** <#" + channel + ">").queue();
 			} else {
-				message.getChannel().sendMessage("**You need to mention a channel or use its ID!**").queue();
+				context.getChannel().sendMessage("**You need to mention a channel or use its ID!**").queue();
 			}
 		} else {
-			message.getChannel().sendMessage("**The Welcomer has not been set up yet! See below:\n\n**" + this.getUsage()).queue();
+			context.getChannel().sendMessage("**The Welcomer has not been set up yet! See below:\n\n**" + this.getUsage()).queue();
 		}
 	}
 	
-	private void changeWelcomeMessage(Server server, Message message, List<String> args) {
+	private void changeWelcomeMessage(Server server, CommandContext context, List<String> args) {
 		if (customMessageEnabled(server.getId())) {
 			
 			String joinMessage = "";
@@ -212,15 +209,15 @@ public class WelcomerCommand extends AbstractCommand{
 				joinMessage = joinMessage + args.get(i);
 			}
 		
-			updateJoinMessage(server.getId(), joinMessage, message);
-			message.getChannel().sendMessage("**The join message has been changed to** " + joinMessage).queue();
+			updateJoinMessage(server.getId(), joinMessage);
+			context.getChannel().sendMessage("**The join message has been changed to** " + joinMessage).queue();
 
 		} else {
-			message.getChannel().sendMessage("**The Welcomer has not been set up yet! See below:\n\n**" + this.getUsage()).queue();
+			context.getChannel().sendMessage("**The Welcomer has not been set up yet! See below:\n\n**" + this.getUsage()).queue();
 		}
 	}
 	
-	private void changeLeaveMessage(Server server, Message message, List<String> args) {
+	private void changeLeaveMessage(Server server, CommandContext context, List<String> args) {
 		if (customMessageEnabled(server.getId())) {
 			
 			String leaveMessage = "";
@@ -229,37 +226,37 @@ public class WelcomerCommand extends AbstractCommand{
 				leaveMessage = leaveMessage + args.get(i);
 			}
 			
-			updateLeaveMessage(server.getId(), leaveMessage, message);
-			message.getChannel().sendMessage("**The leave message has been changed to** " + leaveMessage).queue();
+			updateLeaveMessage(server.getId(), leaveMessage);
+			context.getChannel().sendMessage("**The leave message has been changed to** " + leaveMessage).queue();
 
 		} else {
-			message.getChannel().sendMessage("**The Welcomer has not been set up yet! See below:\n\n**" + this.getUsage()).queue();
+			context.getChannel().sendMessage("**The Welcomer has not been set up yet! See below:\n\n**" + this.getUsage()).queue();
 		}
 	}
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		
-		Server server = serverService.getServer(message.getGuild().getId());
+		Server server = serverService.getServer(context.getGuild().getId());
 		switch(args.get(0)) {
 		case "clear":
-			clearWelcomer(server, message);
+			clearWelcomer(server, context);
 			break;
 		
 		case "setup":
-			setupWelcomer(server, message);
+			setupWelcomer(server, context);
 			break;
 		
 		case "channel":
-			changeChannel(server, message, args);
+			changeChannel(server, context, args);
 			break;
 		
 		case "joinmsg":
-			changeWelcomeMessage(server, message, args);
+			changeWelcomeMessage(server, context, args);
 			break;
 		
 		case "leavemsg":
-			changeLeaveMessage(server, message, args);
+			changeLeaveMessage(server, context, args);
 			break;
 		}
 		
@@ -301,8 +298,7 @@ public class WelcomerCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"jm", "joinmessage"};
-		return aliases;
+		return new String[]{"jm", "joinmessage"};
 	}
 	
 	@Override

@@ -1,6 +1,20 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
+import main.java.de.voidtech.gerald.util.RAESameUserPredicate;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,22 +26,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.util.ParsingUtils;
-import main.java.de.voidtech.gerald.util.RAESameUserPredicate;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 @Command
 public class XKCDCommand extends AbstractCommand {
@@ -68,7 +66,7 @@ public class XKCDCommand extends AbstractCommand {
 		return makeRequest(XKCD_URL + id + "/" + SUFFIX);
 	}
 	
-	private void sendXKCD(JSONObject xkcd, Message message) {
+	private void sendXKCD(JSONObject xkcd, CommandContext context) {
 		String day = xkcd.get("day").toString();
 		String month = xkcd.get("month").toString();
 		String year = xkcd.get("year").toString();
@@ -83,10 +81,10 @@ public class XKCDCommand extends AbstractCommand {
 				.setImage(img)
 				.setFooter(day + "-" + month + "-" + year)
 				.build();
-		message.getChannel().sendMessageEmbeds(xkcdEmbed).queue(sentMessage -> {
+		context.getChannel().sendMessageEmbeds(xkcdEmbed).queue(sentMessage -> {
 			sentMessage.addReaction(EMOTE_UNICODE).queue();
 			waiter.waitForEvent(MessageReactionAddEvent.class,
-					new RAESameUserPredicate(message.getAuthor()),
+					new RAESameUserPredicate(context.getAuthor()),
 					event -> {
 					boolean moreInfoButtonPressed = event.getReactionEmote().toString().equals("RE:" + EMOTE_UNICODE);
 					if (moreInfoButtonPressed) {
@@ -105,29 +103,29 @@ public class XKCDCommand extends AbstractCommand {
 	}
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		if (args.size() == 0) {
 			String response = getCurrentXKCD();
 			String current = new JSONObject(response).get("num").toString();
 			String randomResponse = getXKCDById(new Random().nextInt(Integer.parseInt(current)));
-			sendXKCD(new JSONObject(randomResponse), message);
+			sendXKCD(new JSONObject(randomResponse), context);
 			
 		} else if (args.get(0).equals("latest")) {
 			String currentResponse = getCurrentXKCD();
-			sendXKCD(new JSONObject(currentResponse), message);
+			sendXKCD(new JSONObject(currentResponse), context);
 			
 		} else if (args.get(0).equals("id")) {
 			if (ParsingUtils.isInteger(args.get(1))) {
 				String byIdResponse = getXKCDById(Integer.parseInt(args.get(1)));
 				if (byIdResponse.equals("")) {
-					message.getChannel().sendMessage("**That ID could not be found!**").queue();
+					context.getChannel().sendMessage("**That ID could not be found!**").queue();
 				
 				} else {
-					sendXKCD(new JSONObject(byIdResponse), message);
+					sendXKCD(new JSONObject(byIdResponse), context);
 				}
 				
 			} else {
-				message.getChannel().sendMessage("**That ID is not valid!**").queue();
+				context.getChannel().sendMessage("**That ID is not valid!**").queue();
 			}
 		}
 	}
@@ -166,8 +164,7 @@ public class XKCDCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"getxkcd"};
-		return aliases;
+		return new String[]{"getxkcd"};
 	}
 
 	@Override
