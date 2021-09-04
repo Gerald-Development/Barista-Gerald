@@ -36,7 +36,7 @@ public class CountCommand extends AbstractCommand {
 			CountingChannel dbChannel = countService.getCountingChannel(context.getChannel().getId());
 						
 			String current = formatAsMarkdown(String.valueOf(dbChannel.getChannelCount()));
-			String lastUser = formatAsMarkdown(dbChannel.getLastUser().equals("") ? "Nobody" : channel.getJDA().getUserById(dbChannel.getLastUser()).getAsTag());
+			String lastUser = formatAsMarkdown(dbChannel.getLastUser().equals("") ? "Nobody" : context.getJDA().getUserById(dbChannel.getLastUser()).getAsTag());
 			String next = formatAsMarkdown(dbChannel.getChannelCount() - 1 + " or " + (dbChannel.getChannelCount() + 1));
 			String reached69 = formatAsMarkdown(String.valueOf(dbChannel.hasReached69()));
 			String numberOf69 = formatAsMarkdown(String.valueOf(dbChannel.get69ReachedCount()));
