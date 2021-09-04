@@ -34,7 +34,7 @@ public class ActivityCommand extends AbstractCommand {
 	{
 		if(!config.getMasters().contains(context.getMember().getId())) return;
 		
-		if (StringUtils.join(args.toArray(), " ").length() > 128) context.getChannel().sendMessage("Too many characters! The activity can only be 128 letters").queue();
+		if (StringUtils.join(args.toArray(), " ").length() > 128) context.reply("Too many characters! The activity can only be 128 letters");
 		else {
 			ActivityWrapper activityWrapperOpt = ActivityWrapper
 					.getActivityWrapperOpt(StringUtils.join(args.toArray(), " "));
@@ -44,10 +44,10 @@ public class ActivityCommand extends AbstractCommand {
 				context.getJDA().getPresence().setActivity(EntityBuilder.createActivity(statusMessage,GlobalConstants.STREAM_URL, activityWrapperOpt.getActivityType()));
 				
 				updatePersistentActivity(activityWrapperOpt.getActivityType(), statusMessage);
-				context.getChannel().sendMessage("**Set status to:** " + activityWrapperOpt.humanReadable + statusMessage).queue();
+				context.reply("**Set status to:** " + activityWrapperOpt.humanReadable + statusMessage);
 
 			} else {
-				context.getChannel().sendMessage("Please provide a valid activity: `playing, watching, listening to, streaming`").queue();
+				context.reply("Please provide a valid activity: `playing, watching, listening to, streaming`");
 			}
 		}
 	}

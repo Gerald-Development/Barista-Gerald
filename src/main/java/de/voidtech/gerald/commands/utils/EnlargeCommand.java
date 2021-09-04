@@ -49,11 +49,11 @@ public class EnlargeCommand extends AbstractCommand {
 
 		for (String extension : FILE_EXTENSIONS) {
 			if (checkForImage(emoteID, extension)) {
-				context.getChannel().sendMessage(CDN_URL + emoteID + "." + extension).queue();
+				context.reply(CDN_URL + emoteID + "." + extension);
 				return;
 			}
 		}
-		context.getChannel().sendMessage("Couldn't find that emote").queue();
+		context.reply("Couldn't find that emote");
 	}
 
 	@Override

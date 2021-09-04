@@ -31,14 +31,14 @@ public class DeathmatchCommand extends AbstractCommand {
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
 		if (context.getMentionedMembers().size() == 0) {
-			context.getChannel().sendMessage("**You need to mention an opponent!**").queue();
+			context.reply("**You need to mention an opponent!**");
 		} else {
 			ArrayList<User> userList = new ArrayList<>(2);
 			userList.add(context.getMember().getUser());
 			userList.add(context.getMentionedMembers().get(0).getUser());
 
 			if (userList.get(0).equals(userList.get(1)))
-				context.getChannel().sendMessage("**You cannot fight yourself!**").queue();
+				context.reply("**You cannot fight yourself!**");
 			else startGame(context, userList);
 		}
 	}
@@ -47,6 +47,7 @@ public class DeathmatchCommand extends AbstractCommand {
 		MessageEmbed gameStartEmbed = new EmbedBuilder()
 				.setTitle(userList.get(0).getName() + " VS " + userList.get(1).getName())
 				.setColor(Color.RED).build();
+		//TODO (from: Franziska): relies on .queue() cannot use context.reply() I need to think about this. Maybe implement it with a consumer to specify what should happen after the reply has been queued
 		context.getChannel().sendMessageEmbeds(gameStartEmbed).queue(sentMessage -> playRounds(sentMessage, userList));
 	}
 

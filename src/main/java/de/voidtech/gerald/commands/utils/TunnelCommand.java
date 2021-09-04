@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 @Command
 public class TunnelCommand extends AbstractCommand {
-
+	//TODO (from: Franziska): Needs some thinking and rewriting for SlashCommands. I will just not implement the context.reply just yet as it will confuse the refactoring later.
 	@Autowired
 	private EventWaiter waiter;
 	

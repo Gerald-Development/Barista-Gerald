@@ -41,7 +41,7 @@ public class ApodCommand extends AbstractCommand {
             nasaEmbed.setImage(response.getString("url"));
         }
 
-        context.getChannel().sendMessageEmbeds(nasaEmbed.build()).queue();
+        context.reply(nasaEmbed.build());
     }
 
     private JSONObject getNasaDataOpt() {

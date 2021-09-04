@@ -19,7 +19,7 @@ public class AvatarCommand extends AbstractCommand{
 		Member member = ParsingUtils.getMember(context, args);
 		String avatarUrl = member.getUser().getAvatarUrl();
 		if (avatarUrl == null)
-			context.getChannel().sendMessage("**That user does not have an avatar!**").queue();
+			context.reply("**That user does not have an avatar!**");
 		else {
 			avatarUrl = avatarUrl + "?size=2048";
 			MessageEmbed avatarEmbed = new EmbedBuilder()
@@ -27,7 +27,7 @@ public class AvatarCommand extends AbstractCommand{
 					.setTitle(member.getUser().getName() + "'s Avatar", avatarUrl)
 					.setImage(avatarUrl)
 					.build();
-			context.getChannel().sendMessageEmbeds(avatarEmbed).queue();
+			context.reply(avatarEmbed);
 		}
 	}
 

@@ -19,7 +19,7 @@ public class AskCommand extends AbstractCommand{
 		{
 			Random random = new Random();
 			List<String> answers = getAnswers();
-			context.getChannel().sendMessage(answers.get(random.nextInt(answers.size()))).queue();
+			context.reply(answers.get(random.nextInt(answers.size())));
 		}
 	}
 	

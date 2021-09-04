@@ -13,7 +13,7 @@ public class ClapCommand extends AbstractCommand {
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
 		String finalMessage = ":clap: " + String.join(" :clap: ", args) + " :clap:";
-		context.getChannel().sendMessage(finalMessage).queue();
+		context.reply(finalMessage);
 	}
 
 	@Override

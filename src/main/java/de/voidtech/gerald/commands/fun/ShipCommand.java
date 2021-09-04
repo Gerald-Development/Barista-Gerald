@@ -20,7 +20,7 @@ public class ShipCommand extends AbstractCommand{
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
 		
-		if (context.getMentionedMembers().size() < 2) context.getChannel().sendMessage("**You must mention 2 people to ship!**").queue();
+		if (context.getMentionedMembers().size() < 2) context.reply("**You must mention 2 people to ship!**");
 		else {
 			User user1 = context.getMentionedMembers().get(0).getUser();
 			User user2 = context.getMentionedMembers().get(1).getUser();
@@ -34,7 +34,7 @@ public class ShipCommand extends AbstractCommand{
 					.setDescription(String.format("Your love match percentage is %d%c %s", shipRating, '%', phrase))
 					.build();
 			
-			context.getChannel().sendMessageEmbeds(shipEmbed).queue();
+			context.reply(shipEmbed);
 		}
 	}
 	

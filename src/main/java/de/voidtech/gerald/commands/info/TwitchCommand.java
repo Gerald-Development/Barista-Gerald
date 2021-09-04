@@ -55,14 +55,14 @@ public class TwitchCommand extends AbstractCommand{
 	
 	private void removeStreamer(CommandContext context, List<String> args) {
 		if (args.size() == 1)
-			context.getChannel().sendMessage("**You need to specify a streamer to unsubscribe from!**").queue();
+			context.reply("**You need to specify a streamer to unsubscribe from!**");
 		else {
 			String streamer = args.get(1).toLowerCase();
 			if (!twitchService.subscriptionExists(streamer, serverService.getServer(context.getGuild().getId()).getId()))
-				context.getChannel().sendMessage("**A subscription to that streamer does not exist!**").queue();
+				context.reply("**A subscription to that streamer does not exist!**");
 			else {
 				twitchService.removeChannelSubscription(streamer, serverService.getServer(context.getGuild().getId()).getId());
-				context.getChannel().sendMessage("**Subscription has been removed**").queue();
+				context.reply("**Subscription has been removed**");
 			}
 		}
 	}
@@ -77,7 +77,7 @@ public class TwitchCommand extends AbstractCommand{
 				messageBody += "**Streamer** - " + formatTwitchUrlMarkdown(subscription.getStreamerName()) + "\n**Channel** - <#" + subscription.getChannelId() + ">\n**Message** - " + subscription.getNotificationMessage() + "\n\n";
 			}	
 		}
-		context.getChannel().sendMessageEmbeds(buildTwitchSubscriptionEmbed(messageBody)).queue();
+		context.reply(buildTwitchSubscriptionEmbed(messageBody));
 	}
 
 	private String formatTwitchUrlMarkdown(String name) {
@@ -107,7 +107,7 @@ public class TwitchCommand extends AbstractCommand{
 				else
 					streamerSetupGetChannel(context, streamerName);
 			} else
-				context.getChannel().sendMessage("**You did not enter a valid twitch.tv url! Please check your URL and start setup again**").queue();
+				context.reply("**You did not enter a valid twitch.tv url! Please check your URL and start setup again**");
 		});
 	}
 

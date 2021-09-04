@@ -43,7 +43,7 @@ public class RoutineCommand extends AbstractCommand {
             		server.getRoutineBlacklist().contains(routine.getName()) ? TRUE_EMOTE : FALSE_EMOTE),
             		false);
         }
-        context.getChannel().sendMessageEmbeds(routineInformation.build()).queue();
+        context.reply(routineInformation.build());
     }
 
     @Override

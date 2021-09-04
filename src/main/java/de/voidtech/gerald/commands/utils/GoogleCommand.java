@@ -128,7 +128,7 @@ public class GoogleCommand extends AbstractCommand {
 		String url = constructSearchURL(args, getNsfwMode(context.getChannel()));
 		
 		if (url == null)
-			context.getChannel().sendMessage("**You did not provide something to search for!**").queue();
+			context.reply("**You did not provide something to search for!**");
 		else {
 			context.getChannel().sendTyping().queue();
 			byte[] screenshot = playwrightService.screenshotPage(url, 1000, 1000);	
@@ -136,7 +136,7 @@ public class GoogleCommand extends AbstractCommand {
 			//TODO (from: Franziska): I don't understand this code, you need to fix it with the CommandContext yourself
 			//sendFinalMessage(context, url, screenshot);
 		}
-		context.getChannel().sendMessage("This command is not available due to the SlashCommand rework. Contact a developer.").queue();
+		context.reply("This command is not available due to the SlashCommand rework. Contact a developer.");
 	}
 
 	@Override

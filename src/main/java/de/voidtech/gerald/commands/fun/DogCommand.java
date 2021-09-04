@@ -55,7 +55,7 @@ public class DogCommand extends AbstractCommand{
 				.setTitle("Here, have a dog", dog.getString("url"))
 				.setImage(dog.getString("url"))
 				.build();
-		context.getChannel().sendMessageEmbeds(dogEmbed).queue();
+		context.reply(dogEmbed);
 	}
 
 	@Override

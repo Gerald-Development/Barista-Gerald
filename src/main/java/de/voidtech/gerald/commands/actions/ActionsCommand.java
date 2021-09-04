@@ -104,7 +104,7 @@ public abstract class ActionsCommand extends AbstractCommand {
 
 	public void sendAction(CommandContext context, ActionType action) {
 		if(context.getMentionedMembers().isEmpty()) {
-			context.getChannel().sendMessage("You need to mention someone to " + action.getType() + "!").queue();
+			context.reply("You need to mention someone to " + action.getType() + "!");
         } else {
             String gifURL = getActionGif(action.getType());
             if (gifURL != null)
@@ -121,7 +121,7 @@ public abstract class ActionsCommand extends AbstractCommand {
                 }
                 actionEmbedBuilder.setFooter(getStatsString(context.getAuthor().getId(), context.getMentionedMembers().get(0).getId(), action, context));
                 MessageEmbed actionEmbed = actionEmbedBuilder.build();
-				context.getChannel().sendMessageEmbeds(actionEmbed).queue();
+				context.reply(actionEmbed);
             }
         }
 	}

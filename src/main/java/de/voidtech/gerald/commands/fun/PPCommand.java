@@ -38,7 +38,7 @@ public class PPCommand extends AbstractCommand{
 				.setDescription("Your PP is **" + ppSize + (ppSizeNumber == 1 ? " inch.** " : " inches.** ") + phrase)
 				.build();
 		
-		context.getChannel().sendMessageEmbeds(ppSizeEmbed).queue();
+		context.reply(ppSizeEmbed);
 	}
 	
 	private Color getColor(int ppSize)

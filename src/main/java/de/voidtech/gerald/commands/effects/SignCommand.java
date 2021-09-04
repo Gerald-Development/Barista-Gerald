@@ -20,13 +20,13 @@ public class SignCommand extends AbstractCommand {
 		List<String> signMessage = groupWords(args);
 		
 		int signLength = signMessage.stream().mapToInt(String::length).max().getAsInt();
-		if(rawText.length() > 60) context.getChannel().sendMessage("Your message is too long for a protest sign, keep it short.").queue();
-		else if(signLength > 14) context.getChannel().sendMessage("One of the words is too long for a protest sign, keep it short.").queue();
+		if(rawText.length() > 60) context.reply("Your message is too long for a protest sign, keep it short.");
+		else if(signLength > 14) context.reply("One of the words is too long for a protest sign, keep it short.");
 		else {
 			String signBunny = generateSign(signMessage, signLength);
 			signBunny += BUNNY;
 
-			context.getChannel().sendMessage("```" + signBunny +"```").queue();
+			context.reply("```" + signBunny +"```");
 		}
 	}
 	

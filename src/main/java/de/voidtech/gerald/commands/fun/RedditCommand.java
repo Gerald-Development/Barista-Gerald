@@ -81,7 +81,7 @@ public class RedditCommand extends AbstractCommand {
 		JSONArray posts = redditData.getJSONObject("data").getJSONArray("children");
 		
 		if (posts.length() == 0) {
-			context.getChannel().sendMessage("**That is not a valid subreddit!**").queue();
+			context.reply("**That is not a valid subreddit!**");
 		} else {
 			JSONObject chosenPost = posts.getJSONObject(new Random().nextInt(posts.length()));
 			
@@ -90,7 +90,7 @@ public class RedditCommand extends AbstractCommand {
 			int upvotes = getUpvotes(chosenPost);
 			
 			if (isNsfw(chosenPost) && !channelIsNsfw(context)) {
-				context.getChannel().sendMessage("**This post cannot be displayed as it contains 18+ content**").queue();
+				context.reply("**This post cannot be displayed as it contains 18+ content**");
 			} else {
 				MessageEmbed redditEmbed = new EmbedBuilder()
 						.setColor(Color.ORANGE)
@@ -98,7 +98,7 @@ public class RedditCommand extends AbstractCommand {
 						.setImage(imageURL)
 						.setFooter("Upvotes: " + upvotes)
 						.build();
-				context.getChannel().sendMessageEmbeds(redditEmbed).queue();
+				context.reply(redditEmbed);
 			}	
 		}
 	}
@@ -111,7 +111,7 @@ public class RedditCommand extends AbstractCommand {
 		JSONObject redditData = getRedditData(fullUrl);
 		
 		if (redditData == null) {
-			context.getChannel().sendMessage("**Something  wrong!**").queue();
+			context.reply("**Something  wrong!**");
 		} else {
 			sendRedditMessage(context, redditData);
 		}

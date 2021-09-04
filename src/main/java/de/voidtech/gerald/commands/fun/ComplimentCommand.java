@@ -15,7 +15,7 @@ public class ComplimentCommand extends AbstractCommand{
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
 		List<String> compliments = getCompliments();
-		context.getChannel().sendMessage(compliments.get(new Random().nextInt(compliments.size()))).queue();
+		context.reply(compliments.get(new Random().nextInt(compliments.size())));
 	}
 	
 	private List<String> getCompliments()

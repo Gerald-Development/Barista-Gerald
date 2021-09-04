@@ -55,7 +55,7 @@ public class CatCommand extends AbstractCommand{
 				.setTitle("Here, have a cat", cat.getString("url"))
 				.setImage(cat.getString("url"))
 				.build();
-		context.getChannel().sendMessageEmbeds(catEmbed).queue();
+		context.reply(catEmbed);
 	}
 
 	@Override

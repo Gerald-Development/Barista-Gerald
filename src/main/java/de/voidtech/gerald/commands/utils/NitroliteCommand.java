@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 @Command
 public class NitroliteCommand extends AbstractCommand {
-    
+    //TODO (from: Franziska): Needs some thinking and rewriting for SlashCommands. I will just not implement the context.reply just yet as it will confuse the refactoring later.
 	@Autowired
 	private NitroliteService nitroliteService;
 	
@@ -72,7 +72,7 @@ public class NitroliteCommand extends AbstractCommand {
 			session.saveOrUpdate(alias);
 			session.getTransaction().commit();
 		}
-		context.getChannel().sendMessage("**Alias created with the name **`" + aliasName + "`**!**").queue();
+		context.reply("**Alias created with the name **`" + aliasName + "`**!**");
 	}
 	
 	private void removeAlias(String aliasName, long serverID, CommandContext context) {
@@ -85,7 +85,7 @@ public class NitroliteCommand extends AbstractCommand {
 				.executeUpdate();
 			session.getTransaction().commit();
 		}
-		context.getChannel().sendMessage("**Alias with name **`" + aliasName + "`** has been deleted!**").queue();
+		context.reply("**Alias with name **`" + aliasName + "`** has been deleted!**");
 	}
 	
 	private void sendFallbackMessage(CommandContext context, String content) {

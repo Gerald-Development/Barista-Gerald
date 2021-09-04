@@ -18,7 +18,7 @@ public class ZalgoCommand extends AbstractCommand {
 		List<String> newCharacters = new ArrayList<>();
 		characters.forEach(character -> newCharacters.add(zalgoMap.getOrDefault(character, character)));
 		String finalMessage = String.join("", newCharacters);
-		context.getChannel().sendMessage(finalMessage).queue();
+		context.reply(finalMessage);
 	}
 
 	@Override

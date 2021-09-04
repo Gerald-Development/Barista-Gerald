@@ -36,8 +36,8 @@ public class BerryCommand extends AbstractCommand{
 				.setColor(Color.YELLOW)
 				.setImage(berryMap.get(currentBerry))
 				.build();
-		
-		context.getChannel().sendMessageEmbeds(berryQuestEmbed).queue();
+		//TODO (from: Franziska): This command relies heavily on the Message Object or rather on the EventWaiter. It will not work with SlashCommands.
+		context.reply(berryQuestEmbed);
 		
 		waiter.waitForEvent(MessageReceivedEvent.class,
 				new MRESameUserPredicate(context.getAuthor()),

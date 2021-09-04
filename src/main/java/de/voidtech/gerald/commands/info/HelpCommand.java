@@ -97,7 +97,7 @@ public class HelpCommand extends AbstractCommand{
 				.setThumbnail(context.getJDA().getSelfUser().getAvatarUrl())
 				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, context.getJDA().getSelfUser().getAvatarUrl())
 				.build();
-		context.getChannel().sendMessageEmbeds(commandHelpEmbed).queue();
+		context.reply(commandHelpEmbed);
 		
 	}
 
@@ -132,7 +132,7 @@ public class HelpCommand extends AbstractCommand{
 				.addField("Command Aliases", "```" + showCommandAliases(commandToBeDisplayed.getCommandAliases()) + "```", false)
 				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, context.getJDA().getSelfUser().getAvatarUrl())
 				.build();
-		context.getChannel().sendMessageEmbeds(commandHelpEmbed).queue();
+		context.reply(commandHelpEmbed);
 	}
 	
 

@@ -60,9 +60,9 @@ public class AutoroleCommand extends AbstractCommand {
 	
 	private void showAutoroles(CommandContext context) {
 		List<AutoroleConfig> configs = autoroleService.getAutoroleConfigs(serverService.getServer(context.getGuild().getId()).getId());
-		if (configs.isEmpty()) context.getChannel().sendMessage("**No autoroles to show!**").queue();
+		if (configs.isEmpty()) context.reply("**No autoroles to show!**");
 		else {
-			context.getChannel().sendMessageEmbeds(craftAutoroleEmbed(configs, context)).queue();
+			context.reply(craftAutoroleEmbed(configs, context));
 		}
 	}
 
@@ -88,13 +88,13 @@ public class AutoroleCommand extends AbstractCommand {
 	private void removeAutorole(CommandContext context, List<String> args) {
 		if (args.get(1).equals("all")) {
 			autoroleService.removeAllGuildConfigs(serverService.getServer(context.getGuild().getId()).getId());
-			context.getChannel().sendMessage("**Cleared all Autorole configs!**").queue();
+			context.reply("**Cleared all Autorole configs!**");
 		} else {
 			String roleID = ParsingUtils.filterSnowflake(args.get(1));
 			if (context.getGuild().getRoleById(roleID) == null)
-				context.getChannel().sendMessage("**You did not specify a valid role ID!**").queue();
+				context.reply("**You did not specify a valid role ID!**");
 			else if (autoroleService.getAutoroleConfigByRoleID(roleID) == null)
-				context.getChannel().sendMessage("**This role is not set up for automation!**").queue();
+				context.reply("**This role is not set up for automation!**");
 			else
 				removeAutoroleConfig(roleID, context);
 		}
@@ -102,13 +102,13 @@ public class AutoroleCommand extends AbstractCommand {
 
 	private void removeAutoroleConfig(String roleID, CommandContext context) {
 		autoroleService.deleteAutoroleConfig(roleID);
-		context.getChannel().sendMessage("**Autorole config deleted!**").queue();
+		context.reply("**Autorole config deleted!**");
 	}
 
 	private void addNewRole(CommandContext context) {
 		List<AutoroleConfig> configs = autoroleService.getAutoroleConfigs(serverService.getServer(context.getGuild().getId()).getId());
 		if (configs.size() == 10)
-			context.getChannel().sendMessage("**You have 10 roles set up already! You cannot add more!**").queue();
+			context.reply("**You have 10 roles set up already! You cannot add more!**");
 		else promptForRole(context);
 	}
 
@@ -194,12 +194,12 @@ public class AutoroleCommand extends AbstractCommand {
 				showAutoroles(context);
 				break;
 			default:
-				context.getChannel().sendMessage("**Did you mean one of these?**\n" + this.getUsage()).queue();
+				context.reply("**Did you mean one of these?**\n" + this.getUsage());
 				break;
 			}	
 			EnumSet<Permission> perms = context.getGuild().getSelfMember().getPermissions();
 			if (!perms.contains(Permission.MANAGE_ROLES)) {
-				context.getChannel().sendMessage("**NOTE: I do not have the** `Manage Roles` **permission. I need this to add roles to people!**").queue();
+				context.reply("**NOTE: I do not have the** `Manage Roles` **permission. I need this to add roles to people!**");
 			}
 		}
 	}

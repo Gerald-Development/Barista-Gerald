@@ -16,7 +16,7 @@ public class VoteCommand extends AbstractCommand{
 		//TODO (from: Franziska): Should this be available via SlashCommands? Alternative could be to just send a message with the thing.
 		//context.addReaction(CHECK).queue();
 		//context.addReaction(CROSS).queue();
-		context.getChannel().sendMessage("Not implemented due to implementation of SlashCommands. Please ask the developers to reimplement this.").queue();
+		context.reply("Not implemented due to implementation of SlashCommands. Please ask the developers to reimplement this.");
 	}
 
 	@Override

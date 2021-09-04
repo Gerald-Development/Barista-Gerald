@@ -162,7 +162,7 @@ public class MemeCommand extends AbstractCommand {
 	private void deliverMeme(CommandContext context, JSONObject payload) {
 		String apiResponse = postPayload(payload);
 		if (apiResponse.equals("template not found")) {
-			context.getChannel().sendMessage("Couldn't find that template :(").queue();
+			context.reply("Couldn't find that template :(");
 		} else {
 			MessageEmbed memeImageEmbed = new EmbedBuilder()
 					.setColor(Color.ORANGE)
@@ -170,7 +170,7 @@ public class MemeCommand extends AbstractCommand {
 					.setImage(apiResponse)
 					.setFooter("Requested By " + context.getAuthor().getAsTag(), context.getAuthor().getAvatarUrl())
 					.build();
-			context.getChannel().sendMessageEmbeds(memeImageEmbed).queue();
+			context.reply(memeImageEmbed);
 		}	
 	}
 	
@@ -187,7 +187,7 @@ public class MemeCommand extends AbstractCommand {
 			if (payloadIsUnblocked(payload, serverService.getServer(context.getGuild().getId()).getId(), context)) {
 				deliverMeme(context, payload);
 			} else {
-				context.getChannel().sendMessage("**This template has been blocked**").queue();
+				context.reply("**This template has been blocked**");
 			}	
 		} else {
 			deliverMeme(context, payload);
@@ -199,9 +199,9 @@ public class MemeCommand extends AbstractCommand {
 			MemeBlocklist blocklistEntity = getBlocklist(serverService.getServer(context.getGuild().getId()).getId());
 			String blocklistString = blocklistEntity.getBlocklist().replaceAll(",", "\n");
 			
-			context.getChannel().sendMessage("**Blocked Meme Templates:**\n" + blocklistString).queue();
+			context.reply("**Blocked Meme Templates:**\n" + blocklistString);
 		} else {
-			context.getChannel().sendMessage("**There is no blocklist yet!**").queue();
+			context.reply("**There is no blocklist yet!**");
 		}
 	}
 
@@ -216,19 +216,19 @@ public class MemeCommand extends AbstractCommand {
 				String templateToRemove = String.join(" ", modifiableArgs);
 				
 				if (templateToRemove.equals("")) {
-					context.getChannel().sendMessage("**You need to specify a template!**").queue();
+					context.reply("**You need to specify a template!**");
 				} else {
 					if (blocklist.contains(templateToRemove)) {
 						blocklist.remove(templateToRemove);
 						blocklistString = String.join(",", blocklist);
 						updateBlocklist(blocklistString, blocklistEntity);
-						context.getChannel().sendMessage("'" + templateToRemove + "' **has been removed from the blocklist**").queue();
+						context.reply("'" + templateToRemove + "' **has been removed from the blocklist**");
 					} else {
-						context.getChannel().sendMessage("**This template is not blocked!**").queue();
+						context.reply("**This template is not blocked!**");
 					}	
 				}
 			} else {
-				context.getChannel().sendMessage("**There is no blocklist yet!**").queue();
+				context.reply("**There is no blocklist yet!**");
 			}
 		}
 	}
@@ -243,15 +243,15 @@ public class MemeCommand extends AbstractCommand {
 			String templateToAdd = String.join(" ", modifiableArgs);
 			
 			if (templateToAdd.equals("")) {
-				context.getChannel().sendMessage("**You need to specify a template!**").queue();
+				context.reply("**You need to specify a template!**");
 			} else {
 				if (blocklist.contains(templateToAdd)) {
-					context.getChannel().sendMessage("**This template is already blocked!**").queue();
+					context.reply("**This template is already blocked!**");
 				} else {
 					blocklist.add(templateToAdd);
 					blocklistString = String.join(",", blocklist);
 					updateBlocklist(blocklistString, blocklistEntity);
-					context.getChannel().sendMessage("'" + templateToAdd + "' **has been added to the blocklist**").queue();
+					context.reply("'" + templateToAdd + "' **has been added to the blocklist**");
 				}		
 			}
 		}		

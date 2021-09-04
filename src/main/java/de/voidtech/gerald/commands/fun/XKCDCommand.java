@@ -81,6 +81,7 @@ public class XKCDCommand extends AbstractCommand {
 				.setImage(img)
 				.setFooter(day + "-" + month + "-" + year)
 				.build();
+		//TODO (from: Franziska): Queue and Waiter. Need to Inspect later.
 		context.getChannel().sendMessageEmbeds(xkcdEmbed).queue(sentMessage -> {
 			sentMessage.addReaction(EMOTE_UNICODE).queue();
 			waiter.waitForEvent(MessageReactionAddEvent.class,

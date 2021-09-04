@@ -63,10 +63,10 @@ public class ChatCommand extends AbstractCommand{
 	private void enableChannelCheckpoint(CommandContext context) {
 		if (context.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
 			if (chatChannelEnabled(context.getChannel().getId())) {
-				context.getChannel().sendMessage("**GeraldAI is already enabled here!**").queue();
+				context.reply("**GeraldAI is already enabled here!**");
 			} else {
 				enableChatChannel(context.getChannel().getId());
-				context.getChannel().sendMessage("**GeraldAI has been enabled! He will now automatically reply to your messages.**").queue();
+				context.reply("**GeraldAI has been enabled! He will now automatically reply to your messages.**");
 			}	
 		}
 	}
@@ -75,9 +75,9 @@ public class ChatCommand extends AbstractCommand{
 		if (context.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
 			if (chatChannelEnabled(context.getChannel().getId())) {
 				disableChatChannel(context.getChannel().getId());
-				context.getChannel().sendMessage("**GeraldAI has been disabled! He will no longer automatically reply to your messages.**").queue();
+				context.reply("**GeraldAI has been disabled! He will no longer automatically reply to your messages.**");
 			} else {
-				context.getChannel().sendMessage("**GeraldAI is already disabled!**").queue();
+				context.reply("**GeraldAI is already disabled!**");
 			}
 		}
 	}
@@ -86,7 +86,7 @@ public class ChatCommand extends AbstractCommand{
 		if (hparams.toMap().containsKey("Error")) 
 		{
 			String reply = hparams.getString("Error");
-			context.getChannel().sendMessage(reply).queue();
+			context.reply(reply);
 		}
 		else {
 			String title = String.format("Hyper-Parameters for %s", chatBot.getModelName().getString("ModelName"));
@@ -105,7 +105,7 @@ public class ChatCommand extends AbstractCommand{
 					.setThumbnail(context.getJDA().getSelfUser().getAvatarUrl())
 					.setFooter("Paper for reference to what these mean: https://arxiv.org/pdf/1706.03762.pdf");
 			MessageEmbed reply = eb.build();
-			context.getChannel().sendMessageEmbeds(reply).queue();
+			context.reply(reply);
 		}
 	}
 			
@@ -125,7 +125,7 @@ public class ChatCommand extends AbstractCommand{
 			default:
 				context.getChannel().sendTyping().queue();
 				String reply = chatBot.getReply(String.join(" ", args), context.getGuild().getId());
-				context.getChannel().sendMessage(reply).queue();
+				context.reply(reply);
 				break;
 		}
 		

@@ -25,6 +25,7 @@ public class JishoCommand extends AbstractCommand {
 		context.getChannel().sendTyping().queue();
 		String search = JISHO_BASE_URL + String.join("%20", args).replaceAll("#", "%23");
 		byte[] resultImage = playwrightService.screenshotPage(search, 1500, 1500);
+		//TODO (from: Franziska): Same as with queue. I probably need to proxy those things through?
 		context.getChannel().sendMessageEmbeds(constructResultEmbed(search))
 		.addFile(resultImage, "screenshot.png").queue();
 	}

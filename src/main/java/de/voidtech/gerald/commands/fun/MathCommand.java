@@ -265,9 +265,9 @@ public class MathCommand extends AbstractCommand {
         long creation = System.currentTimeMillis();
         try {
             double result = evalExpression(expression, creation);
-            context.getChannel().sendMessage(String.format("The result of your expression `%s` is `%f`", expression, result)).queue();
+            context.reply(String.format("The result of your expression `%s` is `%f`", expression, result));
         } catch (ArithmeticException e){
-            context.getChannel().sendMessage(String.format("Arithmetic error: %s", e.getMessage())).queue();
+            context.reply(String.format("Arithmetic error: %s", e.getMessage()));
         }
 
     }

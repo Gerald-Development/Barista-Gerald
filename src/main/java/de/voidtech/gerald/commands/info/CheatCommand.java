@@ -67,6 +67,7 @@ public class CheatCommand extends AbstractCommand {
 	
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
+		//TODO (from: Franziska): Commenting those queue lines is a bit tiring.
 		context.getChannel().sendMessage("**Searching...**").queue(botMessage -> {
 			String topic = String.join(" ", args);
 			String cheatSheet = getCheatSheet(topic);

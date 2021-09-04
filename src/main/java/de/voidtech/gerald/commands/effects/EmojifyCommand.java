@@ -17,7 +17,7 @@ public class EmojifyCommand extends AbstractCommand {
 		List<String> newCharacters = new ArrayList<>();
 		characters.forEach(character -> newCharacters.add(emojiMap.getOrDefault(character.toLowerCase(), character)));
 		String finalMessage = String.join("", newCharacters);
-		context.getChannel().sendMessage(finalMessage).queue();
+		context.reply(finalMessage);
 	}
 
 	@Override
