@@ -29,7 +29,7 @@ public class MessageHandler {
         runMessageRoutines(message);
     	
     	if(message.getAuthor().isBot()) return;
-        cmdService.handleMessageBasedCommandOnDemand(message);
+        cmdService.handleChatCommandOnDemand(message);
     }
     
     private void runMessageRoutines(Message message) {

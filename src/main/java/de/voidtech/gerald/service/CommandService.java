@@ -39,16 +39,25 @@ public class CommandService
     @Autowired
     private LevenshteinService levenshteinService;
 
-    public void handleMessageBasedCommandOnDemand(Message message) {
+    public HashMap<String, String> aliases = new HashMap<>();
+
+    public void handleChatCommandOnDemand(Message message) {
         String prefix = getPrefix(message);
 
-        if (!shouldHandleAsCommand(prefix, message)) return;
+        if (!shouldHandleAsChatCommand(prefix, message)) return;
 
         String messageContent = message.getContentRaw().substring(prefix.length());
         List<String> messageArray = Arrays.asList(messageContent.trim().split("\\s+"));
 
-        // TODO (from: Fraziska): Also pass mentioned members, channel, etc. don't know what else we need. Maybe also beautify code.
-        CommandContext cmdContext = new CommandContext(message.getChannel(), message.getMember(), messageArray.subList(1, messageArray.size()), message.getMentionedMembers(), message.getMentionedChannels());
+        CommandContext cmdContext = new CommandContext.CommandContextBuilder(false)
+                .channel(message.getChannel())
+                .mentionedRoles(message.getMentionedRoles())
+                .mentionedChannels(message.getMentionedChannels())
+                .mentionedMembers(message.getMentionedMembers())
+                .args(messageArray.subList(1, messageArray.size()))
+                .member(message.getMember())
+                .message(message)
+                .build();
 
         AbstractCommand commandOpt = commands.stream()
                 .filter(command -> command.getName().equals(findCommand(messageArray.get(0))))
@@ -71,8 +80,7 @@ public class CommandService
 
         command.run(context, context.getArgs());
 
-        LOGGER.log(Level.INFO, "Command executed: " + command.getName() + " - From " + context.getMember().getUser().getAsTag() + "- ID: " + context.getAuthor().getId());
-
+        LOGGER.log(Level.INFO, "Command executed: " + command.getName() + " - From " + context.getAuthor().getAsTag() + "- ID: " + context.getAuthor().getId());
     }
 
     private String findCommand(String prompt) {
@@ -95,7 +103,7 @@ public class CommandService
             message.getChannel().sendMessageEmbeds(levenshteinService.createLevenshteinEmbed(possibleOptions)).queue();
     }
 
-    private boolean shouldHandleAsCommand(String prefix, Message message)
+    private boolean shouldHandleAsChatCommand(String prefix, Message message)
     {
         String messageRaw = message.getContentRaw();
         return messageRaw.startsWith(prefix) && messageRaw.length() > prefix.length();
@@ -110,8 +118,6 @@ public class CommandService
         if(customPrefix == null) return config.getDefaultPrefix();
         else return customPrefix;
     }
-
-    public HashMap<String, String> aliases = new HashMap<>();
 
     public void loadAliases() {
         for (AbstractCommand command: commands) {
