@@ -72,9 +72,9 @@ public class StarboardConfig {
 	}
 	
 	public void setIgnoredChannels(List<String> newList) {
-		String newListCompiled = "";
+		StringBuilder newListCompiled = new StringBuilder();
 		for (String item : newList) 
-			newListCompiled = newListCompiled + item + ",";
-		this.ignoredChannels = newListCompiled;
+			newListCompiled.append(item).append(",");
+		this.ignoredChannels = newListCompiled.toString();
 	}
 }

@@ -202,13 +202,13 @@ public class WelcomerCommand extends AbstractCommand{
 	
 	private void changeWelcomeMessage(Server server, CommandContext context, List<String> args) {
 		if (customMessageEnabled(server.getId())) {
-			
-			String joinMessage = "";
-			
+
+			StringBuilder joinMessageBuilder = new StringBuilder();
 			for (int i = 1; i < args.size(); i++) {
-				joinMessage = joinMessage + args.get(i);
+				joinMessageBuilder.append(args.get(i));
 			}
-		
+			String joinMessage = joinMessageBuilder.toString();
+
 			updateJoinMessage(server.getId(), joinMessage);
 			context.getChannel().sendMessage("**The join message has been changed to** " + joinMessage).queue();
 
@@ -219,13 +219,13 @@ public class WelcomerCommand extends AbstractCommand{
 	
 	private void changeLeaveMessage(Server server, CommandContext context, List<String> args) {
 		if (customMessageEnabled(server.getId())) {
-			
-			String leaveMessage = "";
-			
+
+			StringBuilder leaveMessageBuilder = new StringBuilder();
 			for (int i = 1; i < args.size(); i++) {
-				leaveMessage = leaveMessage + args.get(i);
+				leaveMessageBuilder.append(args.get(i));
 			}
-			
+			String leaveMessage = leaveMessageBuilder.toString();
+
 			updateLeaveMessage(server.getId(), leaveMessage);
 			context.getChannel().sendMessage("**The leave message has been changed to** " + leaveMessage).queue();
 

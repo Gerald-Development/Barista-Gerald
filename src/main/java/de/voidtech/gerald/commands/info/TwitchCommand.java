@@ -69,13 +69,15 @@ public class TwitchCommand extends AbstractCommand{
 
 	private void listStreamers(CommandContext context) {
 		List<TwitchNotificationChannel> subscriptions = twitchService.getAllSubscriptionsForServer(serverService.getServer(context.getGuild().getId()).getId());
-		String messageBody = "";
+		String messageBody;
 		if (subscriptions.size() == 0)
 			messageBody = "None to show!";
 		else {
+			StringBuilder messageBodyBuilder = new StringBuilder();
 			for (TwitchNotificationChannel subscription : subscriptions) {
-				messageBody += "**Streamer** - " + formatTwitchUrlMarkdown(subscription.getStreamerName()) + "\n**Channel** - <#" + subscription.getChannelId() + ">\n**Message** - " + subscription.getNotificationMessage() + "\n\n";
-			}	
+				messageBodyBuilder.append("**Streamer** - ").append(formatTwitchUrlMarkdown(subscription.getStreamerName())).append("\n**Channel** - <#").append(subscription.getChannelId()).append(">\n**Message** - ").append(subscription.getNotificationMessage()).append("\n\n");
+			}
+			messageBody = messageBodyBuilder.toString();
 		}
 		context.getChannel().sendMessageEmbeds(buildTwitchSubscriptionEmbed(messageBody)).queue();
 	}

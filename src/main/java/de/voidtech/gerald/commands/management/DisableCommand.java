@@ -106,10 +106,10 @@ public class DisableCommand extends AbstractCommand {
 	}
 
 	private String createEnabledCommandString(List<AbstractCommand> enabledCommands) {
-		String message = "";
+		StringBuilder message = new StringBuilder();
 		for (AbstractCommand command : enabledCommands)
-			message += command.getName() + "\n";
-		return message;
+			message.append(command.getName()).append("\n");
+		return message.toString();
 	}
 
 	@Override

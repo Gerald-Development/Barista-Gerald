@@ -83,12 +83,13 @@ public class HelpCommand extends AbstractCommand{
 	}
 	
 	private void showCommandsFromCategory(CommandContext context, String categoryName) {
-		String commandList = "";
-		for (AbstractCommand command : commands) {
+        StringBuilder commandListBuilder = new StringBuilder();
+        for (AbstractCommand command : commands) {
 			if(command.getCommandCategory().getCategory().equals(categoryName))
-				commandList = commandList + "`" + command.getName()  + "`, ";
+				commandListBuilder.append("`").append(command.getName()).append("`, ");
 		}
-		commandList = commandList.substring(0, commandList.length() - 2);
+        String commandList = commandListBuilder.toString();
+        commandList = commandList.substring(0, commandList.length() - 2);
 		
 		MessageEmbed commandHelpEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)

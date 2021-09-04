@@ -118,14 +118,16 @@ public class NitroliteCommand extends AbstractCommand {
 	
     private void sendPages(CommandContext context, List<NitroliteEmote> result) {
 		List<NitroliteEmote> firstFifteenResults = getFirstFifteen(result);
-		String searchResult = "";
+		String searchResult;
 		boolean canSendMoreEmotes = false;
-		
-    	for (NitroliteEmote emote: firstFifteenResults) {
-            searchResult += nitroliteService.constructEmoteString(emote) + " - " + emote.getName() + " - " + emote.getID() + "\n";
+
+        StringBuilder searchResultBuilder = new StringBuilder();
+        for (NitroliteEmote emote: firstFifteenResults) {
+            searchResultBuilder.append(nitroliteService.constructEmoteString(emote)).append(" - ").append(emote.getName()).append(" - ").append(emote.getID()).append("\n");
         }
-    	
-    	if (result.size() > 15) {
+        searchResult = searchResultBuilder.toString();
+
+        if (result.size() > 15) {
     		searchResult += "\n**Send 'more' to see more results!**";
     		canSendMoreEmotes = true;
     	}
@@ -153,7 +155,7 @@ public class NitroliteCommand extends AbstractCommand {
 		else {
 			List<NitroliteEmote> result = emoteService.getEmotes(search, context.getJDA());
 	        
-	        String searchResult = "**Database searched for: **`" + search + "`\n";
+	        StringBuilder searchResult = new StringBuilder("**Database searched for: **`" + search + "`\n");
 	        if (result.isEmpty()) {
 	        	context.getChannel().sendMessage("**Nothing was found!**").queue();
 	        } else {
@@ -161,9 +163,9 @@ public class NitroliteCommand extends AbstractCommand {
 	        		sendPages(context, result);
 	        	} else {
 	            	for (NitroliteEmote emote: result) {
-	                    searchResult += nitroliteService.constructEmoteString(emote) + " - " + emote.getName() + " - " + emote.getID() + "\n";
+	                    searchResult.append(nitroliteService.constructEmoteString(emote)).append(" - ").append(emote.getName()).append(" - ").append(emote.getID()).append("\n");
 	                }	
-	            	sendFallbackMessage(context, searchResult);
+	            	sendFallbackMessage(context, searchResult.toString());
 	        	}
 	        }	
 		}
@@ -210,11 +212,13 @@ public class NitroliteCommand extends AbstractCommand {
     	if (aliasesList.size() == 0) {
     		aliasMessage += "Nothing here... Create some aliases!";
     	} else {
-        	for (NitroliteAlias alias : aliasesList) {
+            StringBuilder aliasMessageBuilder = new StringBuilder("**Aliases for this server:**\n");
+            for (NitroliteAlias alias : aliasesList) {
         		NitroliteEmote emote = emoteService.getEmoteById(alias.getEmoteID(), context.getJDA());
-        		aliasMessage += nitroliteService.constructEmoteString(emote) + " - **Alias:** `" + alias.getAliasName() + "` **ID:** `" + alias.getEmoteID() + "`\n";
-        	}	
-        	sendFallbackMessage(context, aliasMessage);
+        		aliasMessageBuilder.append(nitroliteService.constructEmoteString(emote)).append(" - **Alias:** `").append(alias.getAliasName()).append("` **ID:** `").append(alias.getEmoteID()).append("`\n");
+        	}
+            aliasMessage = aliasMessageBuilder.toString();
+            sendFallbackMessage(context, aliasMessage);
     	}
     }
     

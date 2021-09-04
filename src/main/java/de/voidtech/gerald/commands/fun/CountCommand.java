@@ -85,19 +85,21 @@ public class CountCommand extends AbstractCommand {
 	private void countLeaderboardMethod(CommandContext context) {
 		List<CountingChannel> topFiveChannels = countService.getTopFive();
 		
-		String leaderboard = "```js\n";
+		String leaderboard;
 		
 		int pos = 0;
+		StringBuilder leaderboardBuilder = new StringBuilder("```js\n");
 		for (Object channel : topFiveChannels) {
 			pos++;
 			String channelID = ((CountingChannel) channel).getCountingChannel();
 			String serverID = ((CountingChannel) channel).getServerID();
 			int count = ((CountingChannel) channel).getChannelCount();
 			
-			leaderboard = "\n" + pos + ") Channel: " + context.getJDA().getGuildById(serverID).getName() + " > "
-			+ context.getJDA().getGuildChannelById(channelID).getName() + "\n"
-					+ "Count: " + count + "\n" + leaderboard;	
+			leaderboardBuilder.insert(0, "\n" + pos + ") Channel: " + context.getJDA().getGuildById(serverID).getName() + " > "
+					+ context.getJDA().getGuildChannelById(channelID).getName() + "\n"
+					+ "Count: " + count + "\n");
 		}
+		leaderboard = leaderboardBuilder.toString();
 		leaderboard += "```";
 		
 		MessageEmbed leaderboardEmbed = new EmbedBuilder()
