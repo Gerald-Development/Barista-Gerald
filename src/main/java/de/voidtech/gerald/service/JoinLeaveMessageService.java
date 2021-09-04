@@ -40,10 +40,9 @@ public class JoinLeaveMessageService {
 	private JoinLeaveMessage getJoinLeaveMessageEntity(long guildID) {
 		try(Session session = sessionFactory.openSession())
 		{
-			JoinLeaveMessage joinLeaveMessage = (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
-                    .setParameter("serverID", guildID)
-                    .uniqueResult();
-			return joinLeaveMessage;
+            return (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
+.setParameter("serverID", guildID)
+.uniqueResult();
 		}
 	}
 	

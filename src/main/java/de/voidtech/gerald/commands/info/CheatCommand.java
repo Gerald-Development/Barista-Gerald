@@ -42,8 +42,7 @@ public class CheatCommand extends AbstractCommand {
 	
 	private String[] generatePages(String cheatSheet) {
 		if (cheatSheet.startsWith("Unknown topic.")) {
-			String[] response = {"```\n" + cheatSheet + "```"};
-			return response;
+            return new String[]{"```\n" + cheatSheet + "```"};
 			
 		} else {
 			List<String> iterator = new ArrayList<String>(Arrays.asList(cheatSheet.split("\n")));		
@@ -122,8 +121,7 @@ public class CheatCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"cheatsheet", "cs"};
-		return aliases;
+        return new String[]{"cheatsheet", "cs"};
 	}
 	
 	@Override

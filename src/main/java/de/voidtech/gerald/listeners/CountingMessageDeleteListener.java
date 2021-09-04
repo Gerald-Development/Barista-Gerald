@@ -33,11 +33,10 @@ public class CountingMessageDeleteListener implements EventListener {
 	}
 
 	private MessageEmbed createDeletedMessageEmbed() {
-		MessageEmbed countDeleteWarningEmbed = new EmbedBuilder()
-				.setColor(Color.BLUE)
-				.setTitle("Wait a minute! :warning:")
-				.setDescription("**The last count was deleted**")
-				.build();
-		return countDeleteWarningEmbed;
+        return new EmbedBuilder()
+                .setColor(Color.BLUE)
+                .setTitle("Wait a minute! :warning:")
+                .setDescription("**The last count was deleted**")
+                .build();
 	}
 }

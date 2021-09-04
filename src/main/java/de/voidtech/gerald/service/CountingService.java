@@ -82,17 +82,16 @@ public class CountingService {
 		int newCount = 0;
 		if (mode == "increment") newCount = currentCount + 1;
 		else if (mode == "decrement") newCount = currentCount - 1;
-		CountingChannel dbChannel = channel;
-		
-		try(Session session = sessionFactory.openSession())
+
+        try(Session session = sessionFactory.openSession())
 		{
 			session.beginTransaction();
 			
-			dbChannel.setChannelCount(newCount);
-			dbChannel.setLastUser(lastUserID);
-			dbChannel.setLastCountMessageId(lastMessageId);
+			channel.setChannelCount(newCount);
+			channel.setLastUser(lastUserID);
+			channel.setLastCountMessageId(lastMessageId);
 			
-			session.saveOrUpdate(dbChannel);
+			session.saveOrUpdate(channel);
 			session.getTransaction().commit();			
 		}	
 	}

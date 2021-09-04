@@ -47,10 +47,9 @@ public class MemeCommand extends AbstractCommand {
 	private MemeBlocklist getBlocklist(long serverID) {
 		try(Session session = sessionFactory.openSession())
 		{
-			MemeBlocklist blocklist = (MemeBlocklist) session.createQuery("FROM MemeBlocklist WHERE ServerID = :serverID")
+			return (MemeBlocklist) session.createQuery("FROM MemeBlocklist WHERE ServerID = :serverID")
                     .setParameter("serverID", serverID)
                     .uniqueResult();
-			return blocklist;
 		}
 	}
 	
@@ -309,8 +308,7 @@ public class MemeCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"mememaker", "makememe"};
-		return aliases;
+		return new String[]{"mememaker", "makememe"};
 	}
 	
 	@Override

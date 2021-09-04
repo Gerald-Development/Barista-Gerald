@@ -22,44 +22,40 @@ public class EmoteService {
 	private List<NitroliteEmote> getPersistentEmotes(String name) {
 		try(Session session = sessionFactory.openSession())
 		{
-			List<NitroliteEmote> emotes = (List<NitroliteEmote>) session.createQuery("FROM NitroliteEmote WHERE LOWER(name) LIKE :name", NitroliteEmote.class)
+			return (List<NitroliteEmote>) session.createQuery("FROM NitroliteEmote WHERE LOWER(name) LIKE :name", NitroliteEmote.class)
                     .setParameter("name", "%" + name.toLowerCase() + "%")
                     .list();
-			return emotes;	
 		}
 	}
 	
 	private NitroliteEmote getPersistentEmoteById(String id) {
 		try(Session session = sessionFactory.openSession())
 		{
-			NitroliteEmote emote = (NitroliteEmote) session.createQuery("FROM NitroliteEmote WHERE emoteID = :id")
+			return (NitroliteEmote) session.createQuery("FROM NitroliteEmote WHERE emoteID = :id")
                     .setParameter("id", id)
                     .setFirstResult(0)
                     .setMaxResults(1)
                     .uniqueResult();
-			return emote;
 		}
 	}
 	
 	private NitroliteEmote getPersistentEmoteByName(String name) {
 		try(Session session = sessionFactory.openSession())
 		{
-			NitroliteEmote emote = (NitroliteEmote) session.createQuery("FROM NitroliteEmote WHERE LOWER(name) = :name")
+			return (NitroliteEmote) session.createQuery("FROM NitroliteEmote WHERE LOWER(name) = :name")
                     .setParameter("name", name.toLowerCase())
                     .setFirstResult(0)
                     .setMaxResults(1)
                     .uniqueResult();
-			return emote;
 		}
 	}
 	
 	public NitroliteEmote getEmoteById(String id, JDA jda) {
 		if (jda.getEmoteById(id) != null) {
-			NitroliteEmote returnedEmote = new NitroliteEmote(
+			return new NitroliteEmote(
 					jda.getEmoteById(id).getName(),
 					jda.getEmoteById(id).getId(),
 					jda.getEmoteById(id).isAnimated());
-			return returnedEmote;
 		} else {
 			return getPersistentEmoteById(id);
 		}
@@ -75,11 +71,10 @@ public class EmoteService {
                 .filter(emote -> emote.getName().toLowerCase().equals(searchWord.toLowerCase()))
                 .findFirst().orElse(null);
         if (emoteOpt != null) {
-			NitroliteEmote returnedEmote = new NitroliteEmote(
+			return new NitroliteEmote(
 					emoteOpt.getName(),
 					emoteOpt.getId(),
 					emoteOpt.isAnimated());
-			return returnedEmote;
         } else {
         	return getPersistentEmoteByName(searchWord);
         }

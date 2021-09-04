@@ -101,8 +101,7 @@ public class DefineCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"ud", "urbandictionary"};
-		return aliases;
+		return new String[]{"ud", "urbandictionary"};
 	}
 	
 	@Override

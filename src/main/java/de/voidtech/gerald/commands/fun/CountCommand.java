@@ -211,8 +211,7 @@ public class CountCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"counting"};
-		return aliases;
+		return new String[]{"counting"};
 	}
 	
 	@Override
