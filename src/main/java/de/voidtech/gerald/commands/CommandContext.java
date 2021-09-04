@@ -69,6 +69,20 @@ public class CommandContext {
     public JDA getJDA() {
         return member.getJDA();
     }
+    
+    public void replyWithFile(byte[] attachment, String attachmentName, MessageEmbed... embeds) {
+        if (this.isSlash)
+            slashCommandEvent.replyEmbeds(Arrays.asList(embeds)).setEphemeral(true).addFile(attachment, attachmentName).queue();
+        else
+            message.replyEmbeds(Arrays.asList(embeds)).mentionRepliedUser(false).addFile(attachment, attachmentName).queue();
+    }
+
+    public void replyWithFile(byte[] attachment, String attachmentName, String text) {
+        if (this.isSlash)
+            slashCommandEvent.reply(text).setEphemeral(true).addFile(attachment, attachmentName).queue();
+        else
+            message.reply(text).mentionRepliedUser(false).addFile(attachment, attachmentName).queue();
+    }
 
     public void reply(MessageEmbed... embeds) {
         if (this.isSlash)

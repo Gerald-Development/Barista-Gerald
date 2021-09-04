@@ -1,27 +1,26 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.service.PlaywrightService;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 @Command
 public class GoogleCommand extends AbstractCommand {
 	
 	private static final String BROWSER_LOGO_IMAGE = "https://e7.pngegg.com/pngimages/293/824/png-clipart-ecosia-computer-icons-web-browser-android-illegal-logging-globe-logo-thumbnail.png";
-	private static final String RED_CROSS_UNICODE = "U+274c";
 	
 	private static final String BROWSER_BASE_URL = "https://www.ecosia.org/";
 	private static final String BROWSER_SEARCH_URL = "search?q=";
@@ -29,9 +28,6 @@ public class GoogleCommand extends AbstractCommand {
 	private static final String BROWSER_IMAGES_URL = "images?q=";
 	private static final String BROWSER_VIDEOS_URL = "videos?q=";
 	private static final String SAFE_SEARCH_SUFFIX = "&sfs=true";
-
-	@Autowired
-	private EventWaiter waiter;
 	
 	@Autowired
 	private PlaywrightService playwrightService;
@@ -86,32 +82,8 @@ public class GoogleCommand extends AbstractCommand {
 		return messageChannel.getType().equals(ChannelType.PRIVATE) || ((TextChannel) messageChannel).isNSFW();
 	}
 	
-	private void sendDeleteButtonWithListener(Message sentMessage, Message originMessage) {
-		sentMessage.addReaction(RED_CROSS_UNICODE).queue();
-		waiter.waitForEvent(MessageReactionAddEvent.class,
-				event -> deleteEventAuthorised(event, originMessage),
-				event -> {
-				boolean deleteButtonPressed = event.getReactionEmote().toString().equals("RE:" + RED_CROSS_UNICODE);
-				if (deleteButtonPressed) {
-					sentMessage.delete().queue();
-				}
-			}, 60, TimeUnit.SECONDS, () -> {});
-	}
-	
-	private void sendFinalMessage(Message message, String url, byte[] screenshot) {
-		message.getChannel().sendMessageEmbeds(constructResultEmbed(url, getNsfwMode(message.getChannel())))
-		.addFile(screenshot, "screenshot.png")
-		.queue(sentMessage -> {
-			if (!message.getChannelType().equals(ChannelType.PRIVATE)) {
-				sendDeleteButtonWithListener(sentMessage, message);
-			}
-		});
-	}
-
-	private boolean deleteEventAuthorised(MessageReactionAddEvent event, Message message) {
-		return !event.getMember().getId().equals(event.getJDA().getSelfUser().getId()) && (
-						   event.getUser().getId().equals(message.getAuthor().getId()) ||
-						   event.getMember().hasPermission(Permission.MESSAGE_MANAGE));
+	private void sendFinalMessage(CommandContext context, String url, byte[] screenshot) {
+		context.replyWithFile(screenshot, "screenshot.png", constructResultEmbed(url, getNsfwMode(context.getChannel())));
 	}
 
 	private MessageEmbed constructResultEmbed(String url, boolean safeSearchMode) {
@@ -131,12 +103,9 @@ public class GoogleCommand extends AbstractCommand {
 			context.reply("**You did not provide something to search for!**");
 		else {
 			context.getChannel().sendTyping().queue();
-			byte[] screenshot = playwrightService.screenshotPage(url, 1000, 1000);	
-
-			//TODO (from: Franziska): I don't understand this code, you need to fix it with the CommandContext yourself
-			//sendFinalMessage(context, url, screenshot);
+			byte[] screenshot = playwrightService.screenshotPage(url, 1000, 1000);
+			sendFinalMessage(context, url, screenshot);
 		}
-		context.reply("This command is not available due to the SlashCommand rework. Contact a developer.");
 	}
 
 	@Override
