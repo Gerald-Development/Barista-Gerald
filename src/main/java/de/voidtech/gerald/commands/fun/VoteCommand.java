@@ -4,19 +4,31 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
+import java.awt.Color;
 import java.util.List;
 
 @Command
 public class VoteCommand extends AbstractCommand{
 	private final static String CHECK = "U+2705";
-	private final static String CROSS = "U+274E";
+	private final static String CROSS = "U+274C";
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
-		//TODO (from: Franziska): Should this be available via SlashCommands? Alternative could be to just send a message with the thing.
-		//context.addReaction(CHECK).queue();
-		//context.addReaction(CROSS).queue();
-		context.reply("Not implemented due to implementation of SlashCommands. Please ask the developers to reimplement this.");
+		context.getChannel().sendMessageEmbeds(constructVoteEmbed(context, String.join(" ", args))).queue(selfMessage -> {
+			selfMessage.addReaction(CHECK).queue();
+			selfMessage.addReaction(CROSS).queue();
+		});
+	}
+	
+	private MessageEmbed constructVoteEmbed(CommandContext context, String voteTopic) {
+		return new EmbedBuilder()
+				.setColor(Color.ORANGE)
+				.setTitle("Vote!")
+				.setDescription(voteTopic)
+				.setFooter("Requested By " + context.getAuthor().getAsTag(), context.getAuthor().getAvatarUrl())
+				.build();
 	}
 
 	@Override
