@@ -5,11 +5,12 @@ pipeline {
      }
      
      stages {
-     stage('Build') { 
-        steps {
-            sh 'mvn -B clean package --debug' 
-        }
-    }
+          stage('Build') { 
+               steps {
+                 sh 'mvn -B clean package --debug' 
+               }
+          }
+     }
 }
 
 def getCommitList() {
