@@ -12,7 +12,7 @@ Welcome to Gerald! Gerald is just another bot for your lovely Discord server! To
 - Hugs, Headpats, all your favourite actions accompanied by animated gifs!
 - Various other commands: Because we have lots of random commands like 8ball, inspiro, random facts, emojify and much, much more!
 
-**Gerald's Prefix: \\**
+**Gerald's Prefix: \\** 
 
 To invite Gerald you can just [click here](https://discord.com/api/oauth2/authorize?client_id=555816892141404163&permissions=805694544&scope=bot)
 ## About us
