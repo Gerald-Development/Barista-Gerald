@@ -88,8 +88,7 @@ public class EnlargeCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"jumbo"};
-		return aliases;
+        return new String[]{"jumbo"};
 	}
 	
 	@Override

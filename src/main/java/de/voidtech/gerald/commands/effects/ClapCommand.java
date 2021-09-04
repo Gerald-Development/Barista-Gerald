@@ -48,8 +48,7 @@ public class ClapCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"clapback"};
-		return aliases;
+		return new String[]{"clapback"};
 	}
 	
 	@Override

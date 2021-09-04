@@ -24,21 +24,19 @@ public class AutoroleService {
 	public List<AutoroleConfig> getAutoroleConfigs(long serverID) {
     	try(Session session = sessionFactory.openSession())
 		{
-    		List<AutoroleConfig> configs = (List<AutoroleConfig>) session.createQuery("FROM AutoroleConfig WHERE serverID = :serverID")
-                    .setParameter("serverID", serverID)
-                    .list();
-			
-			return configs;
+
+            return (List<AutoroleConfig>) session.createQuery("FROM AutoroleConfig WHERE serverID = :serverID")
+.setParameter("serverID", serverID)
+.list();
 		}
 	}
     
     public AutoroleConfig getAutoroleConfigByRoleID(String roleID) {
     	try(Session session = sessionFactory.openSession())
 		{
-    		AutoroleConfig config = (AutoroleConfig) session.createQuery("FROM AutoroleConfig WHERE roleID = :roleID")
-                    .setParameter("roleID", roleID)
-                    .uniqueResult();
-			return config;
+            return (AutoroleConfig) session.createQuery("FROM AutoroleConfig WHERE roleID = :roleID")
+.setParameter("roleID", roleID)
+.uniqueResult();
 		}
     }
     

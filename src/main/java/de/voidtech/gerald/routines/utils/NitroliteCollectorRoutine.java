@@ -47,9 +47,7 @@ public class NitroliteCollectorRoutine extends AbstractRoutine {
 	
 	private boolean emoteIsAlreadyStored(String name, String id, JDA jda) {	
 		if (jda.getEmoteById(id) == null) {
-			if (emoteNotInDatabase(name, id)) {
-				return false;
-			}
+			return !emoteNotInDatabase(name, id);
 		}
 		return true;
 	}

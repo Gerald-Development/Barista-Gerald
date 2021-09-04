@@ -29,7 +29,7 @@ public class TwitchNotificationService {
 	@Autowired
 	private JDA jda;
 	
-	private TwitchClient twitchClient;
+	private final TwitchClient twitchClient;
 	
 	@Autowired
 	public TwitchNotificationService(GeraldConfig geraldConfig) {
@@ -92,9 +92,8 @@ public class TwitchNotificationService {
 	private List<String> getAllStreamerNames() {
 		try(Session session = sessionFactory.openSession())
 		{
-			List<String> names = (List<String>) session.createQuery("SELECT DISTINCT streamerName FROM TwitchNotificationChannel")
+			return (List<String>) session.createQuery("SELECT DISTINCT streamerName FROM TwitchNotificationChannel")
                     .list();
-			return names;
 		}	
 	}
 	
@@ -102,10 +101,9 @@ public class TwitchNotificationService {
 	private List<TwitchNotificationChannel> getNotificationChannelsByStreamerName(String streamerName) {
 		try(Session session = sessionFactory.openSession())
 		{
-			List<TwitchNotificationChannel> channels = (List<TwitchNotificationChannel>) session.createQuery("FROM TwitchNotificationChannel WHERE streamerName = :streamerName")
+			return (List<TwitchNotificationChannel>) session.createQuery("FROM TwitchNotificationChannel WHERE streamerName = :streamerName")
 					.setParameter("streamerName", streamerName)
                     .list();
-			return channels;
 		}	
 	}
 
@@ -181,10 +179,9 @@ public class TwitchNotificationService {
 	public List<TwitchNotificationChannel> getAllSubscriptionsForServer(long serverID) {
 		try(Session session = sessionFactory.openSession())
 		{
-			List<TwitchNotificationChannel> channels = (List<TwitchNotificationChannel>) session.createQuery("FROM TwitchNotificationChannel WHERE serverID = :serverID")
+			return (List<TwitchNotificationChannel>) session.createQuery("FROM TwitchNotificationChannel WHERE serverID = :serverID")
 					.setParameter("serverID", serverID)
                     .list();
-			return channels;
 		}	
 	}
 }

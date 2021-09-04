@@ -55,8 +55,7 @@ public class InviteCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"inv", "link"};
-		return aliases;
+        return new String[]{"inv", "link"};
 	}
 	
 	@Override

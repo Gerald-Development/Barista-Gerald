@@ -77,9 +77,8 @@ public class GeraldConfig {
 	public List<String> getMasters()
 	{
 		if(config.getProperty("masters") == null) return Arrays.asList("275355515003863040", "497341083949465600", "217567653210882049");
-		
-		List<String> masters = Arrays.asList(StringUtils.split(config.getProperty("masters"), ','));
-		return masters;
+
+        return Arrays.asList(StringUtils.split(config.getProperty("masters"), ','));
 	}
 
 	public String getGavinURL() {

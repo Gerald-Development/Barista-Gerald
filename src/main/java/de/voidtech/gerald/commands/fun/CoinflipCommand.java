@@ -48,8 +48,7 @@ public class CoinflipCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"coin", "flip"};
-		return aliases;
+        return new String[]{"coin", "flip"};
 	}
 	
 	@Override

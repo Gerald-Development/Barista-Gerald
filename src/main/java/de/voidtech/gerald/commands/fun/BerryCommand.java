@@ -14,6 +14,7 @@ import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +29,7 @@ public class BerryCommand extends AbstractCommand{
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
 		BidiMap<String, String> berryMap = getBerryMap();
-		List<String> keyList = berryMap.keySet().stream().collect(Collectors.toList());
+		List<String> keyList = new ArrayList<>(berryMap.keySet());
 		String currentBerry = keyList.get(new Random().nextInt(keyList.size()));
 		
 		MessageEmbed berryQuestEmbed = new EmbedBuilder()//
@@ -123,8 +124,7 @@ public class BerryCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"bguess", "berryguess"};
-		return aliases;
+        return new String[]{"bguess", "berryguess"};
 	}
 	
 	@Override

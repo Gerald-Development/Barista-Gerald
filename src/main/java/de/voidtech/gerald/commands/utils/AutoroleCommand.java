@@ -70,11 +70,11 @@ public class AutoroleCommand extends AbstractCommand {
 		EmbedBuilder autoroleEmbedBuilder = new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle("Autoroles for " + context.getGuild().getName());
-		String messageBody = "";
+		StringBuilder messageBody = new StringBuilder();
 		for (AutoroleConfig config : configs) {
-			messageBody += addAutoroleField(config);
+			messageBody.append(addAutoroleField(config));
 		}
-		autoroleEmbedBuilder.setDescription(messageBody);
+		autoroleEmbedBuilder.setDescription(messageBody.toString());
 		return autoroleEmbedBuilder.build();
 	}
 

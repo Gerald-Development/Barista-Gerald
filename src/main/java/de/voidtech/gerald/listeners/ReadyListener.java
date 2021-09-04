@@ -27,7 +27,7 @@ public class ReadyListener implements EventListener {
 	@Override
 	public void onEvent(GenericEvent event) {
 		if (event instanceof ReadyEvent) {
-			String clientName = ((ReadyEvent) event).getJDA().getSelfUser().getAsTag();
+			String clientName = event.getJDA().getSelfUser().getAsTag();
 			LOGGER.log(Level.INFO, "Coffee Machine is ready! Serving lattes as " + clientName);	
 			
 			cmdService.loadAliases();

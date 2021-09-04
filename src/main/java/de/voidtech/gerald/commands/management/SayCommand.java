@@ -55,8 +55,7 @@ public class SayCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"speak", "blessuswiththevoiceofgerald"};
-		return aliases;
+        return new String[]{"speak", "blessuswiththevoiceofgerald"};
 	}
 	
 	@Override

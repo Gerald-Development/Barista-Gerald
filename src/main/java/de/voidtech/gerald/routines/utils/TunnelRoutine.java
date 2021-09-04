@@ -54,18 +54,19 @@ public class TunnelRoutine extends AbstractRoutine {
 	private Tunnel getTunnel(String senderChannelID) {
 		try(Session session = sessionFactory.openSession())
 		{
-			Tunnel tunnel = (Tunnel) session.createQuery("FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
-                    .setParameter("senderChannelID", senderChannelID)
-                    .uniqueResult();
-			return tunnel;
+            return (Tunnel) session.createQuery("FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
+.setParameter("senderChannelID", senderChannelID)
+.uniqueResult();
 		}
 	}
 	
 	private void sendWebhookMessage(Webhook webhook, String content, Message message) {
 		if (message.getAttachments().size() != 0) {
+			StringBuilder contentBuilder = new StringBuilder(content);
 			for (Attachment attachment: message.getAttachments()) {
-				content = content + "\n" + attachment.getUrl();
-			}	
+				contentBuilder.append("\n").append(attachment.getUrl());
+			}
+			content = contentBuilder.toString();
 		}
 		
 		if (message.getReferencedMessage() != null) {

@@ -36,8 +36,8 @@ public class CountCommand extends AbstractCommand {
 			CountingChannel dbChannel = countService.getCountingChannel(context.getChannel().getId());
 						
 			String current = formatAsMarkdown(String.valueOf(dbChannel.getChannelCount()));
-			String lastUser = formatAsMarkdown(dbChannel.getLastUser().equals("") ? "Nobody" : context.getJDA().getUserById(dbChannel.getLastUser()).getAsTag());
-			String next = formatAsMarkdown(String.valueOf(dbChannel.getChannelCount() - 1) + " or " + String.valueOf(dbChannel.getChannelCount() + 1));
+			String lastUser = formatAsMarkdown(dbChannel.getLastUser().equals("") ? "Nobody" : channel.getJDA().getUserById(dbChannel.getLastUser()).getAsTag());
+			String next = formatAsMarkdown(dbChannel.getChannelCount() - 1 + " or " + (dbChannel.getChannelCount() + 1));
 			String reached69 = formatAsMarkdown(String.valueOf(dbChannel.hasReached69()));
 			String numberOf69 = formatAsMarkdown(String.valueOf(dbChannel.get69ReachedCount()));
 			String livesRemaining = formatAsMarkdown(String.valueOf(dbChannel.getLives()));
@@ -84,19 +84,21 @@ public class CountCommand extends AbstractCommand {
 	private void countLeaderboardMethod(CommandContext context) {
 		List<CountingChannel> topFiveChannels = countService.getTopFive();
 		
-		String leaderboard = "```js\n";
+		String leaderboard;
 		
 		int pos = 0;
+		StringBuilder leaderboardBuilder = new StringBuilder("```js\n");
 		for (Object channel : topFiveChannels) {
 			pos++;
 			String channelID = ((CountingChannel) channel).getCountingChannel();
 			String serverID = ((CountingChannel) channel).getServerID();
 			int count = ((CountingChannel) channel).getChannelCount();
 			
-			leaderboard = "\n" + pos + ") Channel: " + context.getJDA().getGuildById(serverID).getName() + " > "
-			+ context.getJDA().getGuildChannelById(channelID).getName() + "\n"
-					+ "Count: " + count + "\n" + leaderboard;	
+			leaderboardBuilder.insert(0, "\n" + pos + ") Channel: " + context.getJDA().getGuildById(serverID).getName() + " > "
+					+ context.getJDA().getGuildChannelById(channelID).getName() + "\n"
+					+ "Count: " + count + "\n");
 		}
+		leaderboard = leaderboardBuilder.toString();
 		leaderboard += "```";
 		
 		MessageEmbed leaderboardEmbed = new EmbedBuilder()

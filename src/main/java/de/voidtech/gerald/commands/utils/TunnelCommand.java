@@ -32,7 +32,7 @@ public class TunnelCommand extends AbstractCommand {
 	@Autowired
 	private SessionFactory sessionFactory;
 
-	private BidiMap<String, String> pendingRequests = new DualHashBidiMap<>();
+	private final BidiMap<String, String> pendingRequests = new DualHashBidiMap<>();
 
 	private void fillTunnel(CommandContext context) {
 		if (tunnelExists(context.getChannel().getId(), "")) {

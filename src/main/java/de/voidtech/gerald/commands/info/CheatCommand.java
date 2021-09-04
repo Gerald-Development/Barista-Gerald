@@ -42,20 +42,19 @@ public class CheatCommand extends AbstractCommand {
 	
 	private String[] generatePages(String cheatSheet) {
 		if (cheatSheet.startsWith("Unknown topic.")) {
-			String[] response = {"```\n" + cheatSheet + "```"};
-			return response;
+            return new String[]{"```\n" + cheatSheet + "```"};
 			
 		} else {
 			List<String> iterator = new ArrayList<String>(Arrays.asList(cheatSheet.split("\n")));		
-			String responseString = "```py\n";
+			StringBuilder responseString = new StringBuilder("```py\n");
 			List<String> response = new ArrayList<String>();
 			
 			for (int i = 0; i < iterator.size(); i++) {
 				if (responseString.length() + iterator.get(i).length() + 3 < 2000) {
-					responseString += iterator.get(i) + "\n";
+					responseString.append(iterator.get(i)).append("\n");
 				} else {
 					response.add(responseString + "```");
-					responseString = "```py\n";
+					responseString = new StringBuilder("```py\n");
 				}
 			}
 			if (response.size() == 0) {
@@ -123,8 +122,7 @@ public class CheatCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"cheatsheet", "cs"};
-		return aliases;
+        return new String[]{"cheatsheet", "cs"};
 	}
 	
 	@Override

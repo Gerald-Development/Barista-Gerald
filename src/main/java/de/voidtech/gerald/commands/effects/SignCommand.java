@@ -32,13 +32,14 @@ public class SignCommand extends AbstractCommand {
 	
 	private String generateSign(List<String> signMessage, int maxLength)
 	{
-		String padding = StringUtils.repeat(" ", (int) Math.floor((14-maxLength)/2));	
-		String result = String.format("%s┌%s┐\n", padding, StringUtils.repeat("─", maxLength));
-		
+		String padding = StringUtils.repeat(" ", (int) Math.floor((14-maxLength)/2));
+
+		StringBuilder resultBuilder = new StringBuilder(String.format("%s┌%s┐\n", padding, StringUtils.repeat("─", maxLength)));
 		for(String message : signMessage) {
-			 result += String.format("%s│%s%s│\n", padding, message, StringUtils.repeat(" ", maxLength-message.length()));
+			 resultBuilder.append(String.format("%s│%s%s│\n", padding, message, StringUtils.repeat(" ", maxLength - message.length())));
 		}
-		
+		String result = resultBuilder.toString();
+
 		result += String.format("%s└%s┘\n", padding, StringUtils.repeat("─", maxLength));
 		
 		return result;
@@ -51,15 +52,15 @@ public class SignCommand extends AbstractCommand {
 		
 		while(words.size() > 0)
 		{
-			String line = words.get(0);
+			StringBuilder line = new StringBuilder(words.get(0));
 			words.remove(0);
 			while(words.size() > 1 && (line + words.get(0)).length() < 10)
 			{
-				line += words.get(0);
+				line.append(words.get(0));
 				words.remove(0);
 			}
 			
-			result.add(line);
+			result.add(line.toString());
 		}
 		
 		return result;

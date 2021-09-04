@@ -35,7 +35,7 @@ public class TwitchCommand extends AbstractCommand{
 	private ServerService serverService;
 	
 	private static final String TWITCH_BASE_URL = "https://twitch.tv/";
-	private static final String TWITCH_URL_MATCHER = "https:\\/\\/(www\\.)?twitch.tv\\/.*";
+	private static final String TWITCH_URL_MATCHER = "https://(www\\.)?twitch.tv/.*";
 	
 	private void getAwaitedReply(CommandContext context, String question, Consumer<String> result) {
         context.getChannel().sendMessage(question).queue();
@@ -69,13 +69,15 @@ public class TwitchCommand extends AbstractCommand{
 
 	private void listStreamers(CommandContext context) {
 		List<TwitchNotificationChannel> subscriptions = twitchService.getAllSubscriptionsForServer(serverService.getServer(context.getGuild().getId()).getId());
-		String messageBody = "";
+		String messageBody;
 		if (subscriptions.size() == 0)
 			messageBody = "None to show!";
 		else {
+			StringBuilder messageBodyBuilder = new StringBuilder();
 			for (TwitchNotificationChannel subscription : subscriptions) {
-				messageBody += "**Streamer** - " + formatTwitchUrlMarkdown(subscription.getStreamerName()) + "\n**Channel** - <#" + subscription.getChannelId() + ">\n**Message** - " + subscription.getNotificationMessage() + "\n\n";
-			}	
+				messageBodyBuilder.append("**Streamer** - ").append(formatTwitchUrlMarkdown(subscription.getStreamerName())).append("\n**Channel** - <#").append(subscription.getChannelId()).append(">\n**Message** - ").append(subscription.getNotificationMessage()).append("\n\n");
+			}
+			messageBody = messageBodyBuilder.toString();
 		}
 		context.reply(buildTwitchSubscriptionEmbed(messageBody));
 	}

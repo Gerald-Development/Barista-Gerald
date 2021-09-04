@@ -48,8 +48,7 @@ public class EightballCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"eightball", "8b"};
-		return aliases;
+        return new String[]{"eightball", "8b"};
 	}
 
 	@Override

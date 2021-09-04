@@ -105,13 +105,15 @@ public class StarboardCommand extends AbstractCommand {
 	private void showIgnoredChannels(CommandContext context, Server server) {
 		if (starboardService.getStarboardConfig(server.getId()) != null) {
 			List<String> ignoredChannels = starboardService.getIgnoredChannels(server.getId());
-			String ignoredChannelMessage = "";
+			String ignoredChannelMessage;
 			if (ignoredChannels == null) {
 				ignoredChannelMessage = "None ignored!";
 			} else {
-				for (String id : ignoredChannels)
-					ignoredChannelMessage = ignoredChannelMessage + "<#" + id + ">\n";
-			}
+                StringBuilder ignoredChannelMessageBuilder = new StringBuilder();
+                for (String id : ignoredChannels)
+					ignoredChannelMessageBuilder.append("<#").append(id).append(">\n");
+                ignoredChannelMessage = ignoredChannelMessageBuilder.toString();
+            }
 		context.getChannel().sendMessageEmbeds(constructIgnoredChannelEmbed(ignoredChannelMessage)).queue();
 		} else context.getChannel().sendMessage("**A Starboard has not been set up here! Did you mean to use one of these?**\n\n" + this.getUsage()).queue();
 	}

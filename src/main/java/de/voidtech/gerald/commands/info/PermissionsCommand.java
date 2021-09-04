@@ -38,9 +38,9 @@ public class PermissionsCommand extends AbstractCommand{
 	}
 
 	private MessageEmbed buildPermsEmbed(EnumSet<Permission> perms, String member) {
-		String permsList = "";
+		StringBuilder permsList = new StringBuilder();
 		for (Permission perm : perms) {
-			permsList += perm.getName() + "\n";
+			permsList.append(perm.getName()).append("\n");
 		}
 		return new EmbedBuilder()
 				.setColor(Color.ORANGE)

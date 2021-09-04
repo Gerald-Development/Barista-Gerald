@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Command
 public class DefineCommand extends AbstractCommand{
-	private final static String API_URL = "http://api.urbandictionary.com/v0/define?term=";
+	private final static String API_URL = "https://api.urbandictionary.com/v0/define?term=";
 	private final static String REGEX = "[^a-zA-Z0-9()\"'?!;:., \\n]";
 	private static final Logger LOGGER = Logger.getLogger(DefineCommand.class.getName());
 	
@@ -58,7 +58,7 @@ public class DefineCommand extends AbstractCommand{
 			if (con.getResponseCode() == 200) {
 				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
 					String content = in.lines().collect(Collectors.joining());
-					JSONObject json = new JSONObject(content.toString());
+					JSONObject json = new JSONObject(content);
 					return json.getJSONArray("list");
 				}
 			}
@@ -101,8 +101,7 @@ public class DefineCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"ud", "urbandictionary"};
-		return aliases;
+		return new String[]{"ud", "urbandictionary"};
 	}
 	
 	@Override

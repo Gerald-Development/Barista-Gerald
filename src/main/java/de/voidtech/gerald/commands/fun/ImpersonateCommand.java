@@ -44,12 +44,12 @@ public class ImpersonateCommand extends AbstractCommand{
 	}
 
 	private void sendWebhookMessage(CommandContext context, List<String> args, Member memberToBeImpersonated) {
-		String messageToBeSent = "";
+		StringBuilder messageToBeSent = new StringBuilder();
 		for (int i = 1; i < args.size(); i++) {
-			messageToBeSent += args.get(i) + " ";
+			messageToBeSent.append(args.get(i)).append(" ");
 		}
 		Webhook impersonateHook = webhookManager.getOrCreateWebhook((TextChannel) context.getChannel(), "BGImpersonate", context.getJDA().getSelfUser().getId());
-		webhookManager.postMessage(messageToBeSent, memberToBeImpersonated.getUser().getAvatarUrl(), memberToBeImpersonated.getUser().getName(), impersonateHook);
+		webhookManager.postMessage(messageToBeSent.toString(), memberToBeImpersonated.getUser().getAvatarUrl(), memberToBeImpersonated.getUser().getName(), impersonateHook);
 
 		//TODO (from: Franziska): Message needs to be deleted, message context does not have a message object. Should we add one? Do we do this somehow else? Should this command be available through slashes at all!?
 		//context.delete().queue();
@@ -87,8 +87,7 @@ public class ImpersonateCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"become", "pretend"};
-		return aliases;
+        return new String[]{"become", "pretend"};
 	}
 	
 	@Override
