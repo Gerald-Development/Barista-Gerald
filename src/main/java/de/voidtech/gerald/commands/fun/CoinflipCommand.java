@@ -13,7 +13,7 @@ public class CoinflipCommand extends AbstractCommand{
 
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
-		context.getChannel().sendMessage(new Random().nextBoolean() ? "Heads wins!" : "Tails wins!").queue();
+		context.reply(new Random().nextBoolean() ? "Heads wins!" : "Tails wins!");
 	}
 
 	@Override

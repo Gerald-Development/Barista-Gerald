@@ -35,7 +35,7 @@ public class DefineCommand extends AbstractCommand{
 		JSONArray definitions = getDefinition(query);
 		
 		if (definitions.length() == 0) {
-			context.getChannel().sendMessage("That could not be defined!").queue();
+			context.reply("That could not be defined!");
 		} else {
 			JSONObject definition = definitions.getJSONObject(0);
 			MessageEmbed definitionEmbed = new EmbedBuilder()
@@ -46,7 +46,7 @@ public class DefineCommand extends AbstractCommand{
 					.setFooter("Definition by " + definition.getString("author"))
 					.build();
 			
-			context.getChannel().sendMessageEmbeds(definitionEmbed).queue();
+			context.reply(definitionEmbed);
 		}
 	}
 	

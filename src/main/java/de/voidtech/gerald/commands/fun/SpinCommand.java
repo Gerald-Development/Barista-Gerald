@@ -29,9 +29,9 @@ public class SpinCommand extends AbstractCommand {
 				doTheSpinning(color, spinTime, context);
 			} else if (args.get(0).equals("colors")) {
 				String supportedColorsString = StringUtils.join(colorMap.keySet(), "\n");
-				context.getChannel().sendMessage("**Spinner colors:**\n" + supportedColorsString).queue();
+				context.reply("**Spinner colors:**\n" + supportedColorsString);
 			} else {
-				context.getChannel().sendMessage("That is not a valid color!").queue();
+				context.reply("That is not a valid color!");
 			}	
 		} else {
 			int spinTime = new Random().nextInt(30);
@@ -59,6 +59,7 @@ public class SpinCommand extends AbstractCommand {
 				.setColor(color)
 				.setTitle("Your spinner is spinning...")
 				.build();
+		//TODO (from: Franziska): Same here with the queue. I need to work on this later
 		context.getChannel().sendMessageEmbeds(spinnerStartEmbed).queue(sentMessage -> {
 			
 			try {

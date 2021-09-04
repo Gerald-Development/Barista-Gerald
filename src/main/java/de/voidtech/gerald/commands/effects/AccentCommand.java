@@ -38,7 +38,7 @@ public class AccentCommand extends AbstractCommand {
 			}
 		});
 		String finalMessage = String.join("", newCharacters);
-		context.getChannel().sendMessage(finalMessage).queue();
+		context.reply(finalMessage);
 	}
 
 	@Override

@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 @Command
 public class StarboardCommand extends AbstractCommand {
-	
+	//TODO (from: Franziska): Needs some thinking and rewriting for SlashCommands. I will just not implement the context.reply just yet as it will confuse the refactoring later.
 	@Autowired
 	private ServerService serverService;
 	

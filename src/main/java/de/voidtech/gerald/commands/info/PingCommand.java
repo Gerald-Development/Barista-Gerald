@@ -22,6 +22,7 @@ public class PingCommand extends AbstractCommand {
 				.setAuthor("Ping?")
 				.setColor(Color.RED)
 				.build();
+		//TODO (from: Franziska): Queue again.
 		context.getChannel().sendMessageEmbeds(beforePingHasBeenProcessedEmbed).queue(response -> {
 			MessageEmbed pingEmbed = new EmbedBuilder()//
 					.setAuthor("Pong!")//

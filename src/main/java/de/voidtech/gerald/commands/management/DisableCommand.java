@@ -62,7 +62,7 @@ public class DisableCommand extends AbstractCommand {
 				resultMessage = "**Command `" + targetName + "` has been disabled!**";
 			}
 		}
-		context.getChannel().sendMessage(resultMessage).queue();
+		context.reply(resultMessage);
 	}
 
 	private void disableRoutine(String targetName, CommandContext context) {
@@ -90,7 +90,7 @@ public class DisableCommand extends AbstractCommand {
 				resultMessage = "**Routine `" + targetName + "`has been disabled!**";
 			}
 		}
-		context.getChannel().sendMessage(resultMessage).queue();
+		context.reply(resultMessage);
 	}
 
 	private void disableAllCommands(CommandContext context) {
@@ -102,7 +102,7 @@ public class DisableCommand extends AbstractCommand {
 			else if (!command.canBeDisabled()) enabledCommands.add(command);		
 		}
 		serverService.saveServer(server);
-		context.getChannel().sendMessage("**All commands have been disabled except for these:**\n```" + createEnabledCommandString(enabledCommands) + "```").queue();
+		context.reply("**All commands have been disabled except for these:**\n```" + createEnabledCommandString(enabledCommands) + "```");
 	}
 
 	private String createEnabledCommandString(List<AbstractCommand> enabledCommands) {

@@ -23,7 +23,8 @@ public class WouldYouRatherCommand extends AbstractCommand {
 			Document doc = Jsoup.connect("https://either.io/").get();
 			String answerA = doc.select("div.result.result-1 > .option-text").first().text();
 			String answerB = doc.select("div.result.result-2 > .option-text").first().text();
-			
+
+			//TODO (from: Franziska): Same with the queue. Need to think.
 			context.getChannel().sendMessage("**Would You Rather:**\n:a:" + answerA + "\n**OR:**\n:b:" + answerB).queue(sentMessage -> {
 				sentMessage.addReaction("🅰").queue();
 				sentMessage.addReaction("🅱").queue();

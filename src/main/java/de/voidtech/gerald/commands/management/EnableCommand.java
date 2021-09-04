@@ -48,7 +48,7 @@ public class EnableCommand extends AbstractCommand {
 		}
 		if (foundCommand == null)
 			resultMessage = "**No command was found with name `" + targetName + "`**";
-		else if (!foundCommand.canBeDisabled()) context.getChannel().sendMessage("**The command `"+ targetName + "` cannot be enabled/disabled!**").queue();
+		else if (!foundCommand.canBeDisabled()) context.reply("**The command `"+ targetName + "` cannot be enabled/disabled!**");
 		else {
 			Server server = serverService.getServer(context.getGuild().getId());
 			if (!server.getCommandBlacklist().contains(targetName)) {
@@ -59,7 +59,7 @@ public class EnableCommand extends AbstractCommand {
 				resultMessage = "**Command `" + targetName + "` has been enabled!**";
 			}
 		}
-		context.getChannel().sendMessage(resultMessage).queue();
+		context.reply(resultMessage);
 	}
 
 	private void enableRoutine(String targetName, CommandContext context) {
@@ -86,7 +86,7 @@ public class EnableCommand extends AbstractCommand {
 				resultMessage = "**Routine `" + targetName + "`has been enabled!**";
 			}
 		}
-		context.getChannel().sendMessage(resultMessage).queue();
+		context.reply(resultMessage);
 	}
 
 	private void enableAllCommands(CommandContext context) {
@@ -99,7 +99,7 @@ public class EnableCommand extends AbstractCommand {
 			serverService.saveServer(server);
 			resultMessage = "**All commands have been enabled!**";	
 		}
-		context.getChannel().sendMessage(resultMessage).queue();
+		context.reply(resultMessage);
 	}
 
 	@Override

@@ -28,18 +28,18 @@ public class ImpersonateCommand extends AbstractCommand{
 		
 		if (perms.contains(Permission.MESSAGE_MANAGE) && perms.contains(Permission.MANAGE_WEBHOOKS)) {
 			if (context.getMentionedMembers().size() == 0) {
-				context.getChannel().sendMessage("**You need to mention someone for that to work!**").queue();
+				context.reply("**You need to mention someone for that to work!**");
 			} else {
 				String memberSnowflake = ParsingUtils.filterSnowflake(args.get(0));
 				Member memberToBeImpersonated = context.getGuild().retrieveMemberById(memberSnowflake).complete();
 				if (memberToBeImpersonated == null) {
-					context.getChannel().sendMessage("**That member could not be found!**").queue();
+					context.reply("**That member could not be found!**");
 				} else {
 					sendWebhookMessage(context, args, memberToBeImpersonated);
 				}
 			}
 		} else {
-			context.getChannel().sendMessage("**I need Manage_Messages and Manage_Webhooks to do that!**").queue();
+			context.reply("**I need Manage_Messages and Manage_Webhooks to do that!**");
 		}
 	}
 

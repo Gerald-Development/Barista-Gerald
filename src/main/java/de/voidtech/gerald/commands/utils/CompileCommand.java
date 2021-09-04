@@ -7,6 +7,7 @@ import main.java.de.voidtech.gerald.commands.CommandContext;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 import java.awt.*;
@@ -124,27 +125,27 @@ public class CompileCommand extends AbstractCommand {
 					.addField("Compiler", compiler, true)//
 					.build();
 			
-			message.getChannel().sendMessageEmbeds(compilationWaitingMessage).queue(sentMessage -> {
+			message.replyEmbeds(compilationWaitingMessage).mentionRepliedUser(false).queue(sentMessage -> {
 				sendResponse(finalCode, compiler, sentMessage);					
 
 			});
 
 		} else {
-			message.getChannel().sendMessage("That language could not be found!").queue();
+			message.reply("That language could not be found!").mentionRepliedUser(false).queue();
 		}
 	}
 	//TODO (from: Franziska): This should probably not be available in SlashCommands?
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
 
-		//if (args.size() >= 0 && args.get(0).equals("languages")) {
-			//String supportedLangsString = StringUtils.join(langMap.keySet(), "\n");
-			//context.getChannel().sendMessage("**Supported Languages:**\n" + supportedLangsString).queue();
+		if (args.size() >= 0 && args.get(0).equals("languages")) {
+			String supportedLangsString = StringUtils.join(langMap.keySet(), "\n");
+			context.reply("**Supported Languages:**\n" + supportedLangsString);
 		
-		//} else {
-		//	runCompilerSystem(context, args);
-		//}
-		context.getChannel().sendMessage("This command is not available due to SlashCommand the rework. Please contact a developer").queue();
+		} else {
+			runCompilerSystem(context.getMessage(), args);
+		}
+		context.reply("This command is not available due to SlashCommand the rework. Please contact a developer");
 	}
 
 	private Map<String, String> getSupportedLangs() {

@@ -20,7 +20,7 @@ public class ServerInfoCommand extends AbstractCommand {
 		Guild guild = context.getGuild();
 		Member owner = guild.retrieveOwner().complete();
 		List<Member> memberList = guild.loadMembers().get();
-		context.getChannel().sendMessageEmbeds(createServerInfoEmbed(guild, owner, memberList)).queue();
+		context.reply(createServerInfoEmbed(guild, owner, memberList));
 	}
 
 	private MessageEmbed createServerInfoEmbed(Guild guild, Member owner, List<Member> memberList) {

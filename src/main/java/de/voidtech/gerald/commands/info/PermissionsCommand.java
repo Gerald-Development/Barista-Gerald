@@ -34,7 +34,7 @@ public class PermissionsCommand extends AbstractCommand{
 			member = ParsingUtils.getMember(context, args).getUser().getAsTag();
 		}
 		
-		context.getChannel().sendMessageEmbeds(buildPermsEmbed(perms, member)).queue();
+		context.reply(buildPermsEmbed(perms, member));
 	}
 
 	private MessageEmbed buildPermsEmbed(EnumSet<Permission> perms, String member) {

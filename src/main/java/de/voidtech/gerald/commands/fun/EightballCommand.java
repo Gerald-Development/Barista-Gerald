@@ -13,7 +13,7 @@ public class EightballCommand extends AbstractCommand{
 
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
-		context.getChannel().sendMessage(new Random().nextBoolean() ? "Yes" : "No").queue();
+		context.reply(new Random().nextBoolean() ? "Yes" : "No");
 	}
 
 	@Override

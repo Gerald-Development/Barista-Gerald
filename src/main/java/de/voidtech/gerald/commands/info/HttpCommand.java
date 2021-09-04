@@ -47,7 +47,7 @@ public class HttpCommand extends AbstractCommand {
 				.setTitle("HTTP " + code, url)
 				.setImage(url)
 				.build();
-		context.getChannel().sendMessageEmbeds(httpEmbed).queue();
+		context.reply(httpEmbed);
 	}
 
 	@Override

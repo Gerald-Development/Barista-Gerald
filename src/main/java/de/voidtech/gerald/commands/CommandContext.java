@@ -74,14 +74,14 @@ public class CommandContext {
         if (this.isSlash)
             slashCommandEvent.replyEmbeds(Arrays.asList(embeds)).setEphemeral(true).queue();
         else
-            message.replyEmbeds(Arrays.asList(embeds)).queue();
+            message.replyEmbeds(Arrays.asList(embeds)).mentionRepliedUser(false).queue();
     }
 
     public void reply(String text) {
         if (this.isSlash)
             slashCommandEvent.reply(text).setEphemeral(true).queue();
         else
-            message.reply(text).queue();
+            message.reply(text).mentionRepliedUser(false).queue();
     }
 
     public User getAuthor() {

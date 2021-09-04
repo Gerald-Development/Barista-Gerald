@@ -34,12 +34,12 @@ public class PrefixCommand extends AbstractCommand {
 				server.setPrefix(prefix);
 				serverService.saveServer(server);
 
-				context.getChannel().sendMessage(String.format("Prefix was changed to `%s`", prefix)).queue();
+				context.reply(String.format("Prefix was changed to `%s`", prefix));
 			}
 			else {
 				server.setPrefix(config.getDefaultPrefix());
 				serverService.saveServer(server);
-				context.getChannel().sendMessage(String.format("Prefix has been reset to `%s`", config.getDefaultPrefix())).queue();
+				context.reply(String.format("Prefix has been reset to `%s`", config.getDefaultPrefix()));
 			}
 		}
 	}

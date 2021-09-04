@@ -26,7 +26,7 @@ public class FactCommand extends AbstractCommand
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
 		String factOpt = getFactOpt();
-		if (factOpt != null) context.getChannel().sendMessage(factOpt).queue();
+		if (factOpt != null) context.reply(factOpt);
 	}
 	
 	private String getFactOpt() {

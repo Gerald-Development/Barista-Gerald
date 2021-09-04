@@ -46,7 +46,7 @@ public class CuddleCommand extends ActionsCommand {
 
 	@Override
 	public String[] getCommandAliases() {
-        return new String[]{"snuggle"};
+		return new String[]{"snuggle"};
 	}
 
 	@Override

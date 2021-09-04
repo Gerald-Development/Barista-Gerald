@@ -25,7 +25,7 @@ public class WhoisCommand extends AbstractCommand{
 		Member member = ParsingUtils.getMember(context, args);
 		List<String> memberRoles = member.getRoles().stream().map(Role::getAsMention).collect(Collectors.toList());
 		MessageEmbed whoisEmbed = buildEmbed(member, memberRoles);
-		context.getChannel().sendMessageEmbeds(whoisEmbed).queue();
+		context.reply(whoisEmbed);
 	}
 	
 	private MessageEmbed buildEmbed(Member member, List<String> memberRoles)

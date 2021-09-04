@@ -41,7 +41,7 @@ public class HexCommand extends AbstractCommand {
 				.setTitle("#" + hexCode.toUpperCase(), colourHexURL)
 				.setFooter(colourName)
 				.build();
-		context.getChannel().sendMessageEmbeds(hexColourEmbed).queue();
+		context.reply(hexColourEmbed);
 	}
 	
 	private String getColourName(String colourHexURL) {
@@ -62,7 +62,7 @@ public class HexCommand extends AbstractCommand {
 		if (ParsingUtils.isHexadecimal(hexCode)) {
 			sendHexImage(context, hexCode);
 		} else {
-			context.getChannel().sendMessage("**You did not supply a valid hex code!**").queue();
+			context.reply("**You did not supply a valid hex code!**");
 		}
 		
 	}
