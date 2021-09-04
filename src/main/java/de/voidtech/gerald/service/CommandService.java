@@ -1,14 +1,5 @@
 package main.java.de.voidtech.gerald.service;
 
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.routines.AbstractRoutine;
-import main.java.de.voidtech.gerald.util.CustomCollectors;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Message;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,6 +7,15 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.util.CustomCollectors;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Message;
 
 @Service
 public class CommandService
@@ -32,9 +32,6 @@ public class CommandService
 
     @Autowired
     private List<AbstractCommand> commands;
-
-    @Autowired
-    private List<AbstractRoutine> routines;
 
     @Autowired
     private LevenshteinService levenshteinService;
