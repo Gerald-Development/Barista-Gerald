@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Command
 public class DefineCommand extends AbstractCommand{
-	private final static String API_URL = "http://api.urbandictionary.com/v0/define?term=";
+	private final static String API_URL = "https://api.urbandictionary.com/v0/define?term=";
 	private final static String REGEX = "[^a-zA-Z0-9()\"'?!;:., \\n]";
 	private static final Logger LOGGER = Logger.getLogger(DefineCommand.class.getName());
 	
