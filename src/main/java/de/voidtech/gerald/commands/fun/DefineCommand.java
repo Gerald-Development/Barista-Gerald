@@ -58,7 +58,7 @@ public class DefineCommand extends AbstractCommand{
 			if (con.getResponseCode() == 200) {
 				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
 					String content = in.lines().collect(Collectors.joining());
-					JSONObject json = new JSONObject(content.toString());
+					JSONObject json = new JSONObject(content);
 					return json.getJSONArray("list");
 				}
 			}

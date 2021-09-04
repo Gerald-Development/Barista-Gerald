@@ -68,7 +68,7 @@ public class EmoteService {
         
         Emote emoteOpt = emoteList//
                 .stream()//
-                .filter(emote -> emote.getName().toLowerCase().equals(searchWord.toLowerCase()))
+                .filter(emote -> emote.getName().equalsIgnoreCase(searchWord))
                 .findFirst().orElse(null);
         if (emoteOpt != null) {
 			return new NitroliteEmote(
@@ -89,7 +89,7 @@ public class EmoteService {
 		List<NitroliteEmote> finalResult = new ArrayList<NitroliteEmote>();
 		
         List<Emote> jdaCacheResult = emoteList.stream()//
-                .filter(emote -> emote.getName().toLowerCase().equals(name.toLowerCase())).collect(Collectors.toList());
+                .filter(emote -> emote.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
         List<NitroliteEmote> persistentResult = getPersistentEmotes(name);
        
         if (jdaCacheResult.size() > 0) {
