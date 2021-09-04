@@ -114,7 +114,6 @@ public class CommandContext {
         private MessageChannel channel;
         private Member member;
         private List<String> args;
-        private Guild guild;
         private List<Member> mentionedMembers;
         private List<TextChannel> mentionedChannels;
         private List<Role> mentionedRoles;
