@@ -23,16 +23,22 @@ public class PingCommand extends AbstractCommand {
 				.setColor(Color.RED)
 				.build();
 		//TODO (from: Franziska): Queue again.
-		context.getChannel().sendMessageEmbeds(beforePingHasBeenProcessedEmbed).queue(response -> {
-			MessageEmbed pingEmbed = new EmbedBuilder()//
-					.setAuthor("Pong!")//
-					.setColor(Color.GREEN)//
-					.setDescription(String.format("Latency: %sms\nGateway Latency: %sms",
-							(System.currentTimeMillis() - time), context.getJDA().getGatewayPing()))//
-					.build();
+		if(context.isSlash())
+		{
+			context.reply("Disabled due to SlashCommand rework.");
+		}
+		else{
+			context.getChannel().sendMessageEmbeds(beforePingHasBeenProcessedEmbed).queue(response -> {
+				MessageEmbed pingEmbed = new EmbedBuilder()//
+						.setAuthor("Pong!")//
+						.setColor(Color.GREEN)//
+						.setDescription(String.format("Latency: %sms\nGateway Latency: %sms",
+								(System.currentTimeMillis() - time), context.getJDA().getGatewayPing()))//
+						.build();
 
-			response.editMessageEmbeds(pingEmbed).queue();
-		});
+				response.editMessageEmbeds(pingEmbed).queue();
+			});
+		}
 	}
 
 	@Override

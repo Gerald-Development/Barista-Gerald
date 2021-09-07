@@ -18,13 +18,19 @@
 
 package main.java.de.voidtech.gerald;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
-
-import javax.security.auth.login.LoginException;
-
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import main.java.de.voidtech.gerald.entities.GlobalConfig;
+import main.java.de.voidtech.gerald.listeners.*;
+import main.java.de.voidtech.gerald.service.GeraldConfig;
+import main.java.de.voidtech.gerald.service.GlobalConfigService;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.Compression;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,26 +38,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-
-import main.java.de.voidtech.gerald.entities.GlobalConfig;
-import main.java.de.voidtech.gerald.listeners.AutoroleListener;
-import main.java.de.voidtech.gerald.listeners.ChannelDeleteListener;
-import main.java.de.voidtech.gerald.listeners.CountingMessageDeleteListener;
-import main.java.de.voidtech.gerald.listeners.GuildGoneListener;
-import main.java.de.voidtech.gerald.listeners.MemberListener;
-import main.java.de.voidtech.gerald.listeners.MessageListener;
-import main.java.de.voidtech.gerald.listeners.ReadyListener;
-import main.java.de.voidtech.gerald.listeners.StarboardListener;
-import main.java.de.voidtech.gerald.service.GeraldConfig;
-import main.java.de.voidtech.gerald.service.GlobalConfigService;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.utils.Compression;
-import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import net.dv8tion.jda.internal.entities.EntityBuilder;
+import javax.security.auth.login.LoginException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
 
 @SpringBootApplication
 public class Gerald {
@@ -60,27 +51,33 @@ public class Gerald {
 	@DependsOn(value = {"sessionFactory"})
 	@Order(3)
 	@Autowired
+	//TODO (from: Franziska): Just get all @Listener annotated classes or rather all EventListener implented classes?!
 	public JDA getJDA(MessageListener msgListener, GuildGoneListener guildGoneListener,
 			ChannelDeleteListener channelDeleteListener, GeraldConfig configService,
 			GlobalConfigService globalConfService,	EventWaiter eventWaiter,
 			MemberListener memberListener,	ReadyListener readyListener,
 			StarboardListener starboardListener, AutoroleListener autoroleListener,
-			CountingMessageDeleteListener countingListener) throws LoginException, InterruptedException
+			CountingMessageDeleteListener countingListener, SlashCommandListener slashCommandListener) throws LoginException, InterruptedException
 	{
 		GlobalConfig globalConf = globalConfService.getGlobalConfig();
 
-		return JDABuilder.createDefault(configService.getToken())
+		JDA jda = JDABuilder.createDefault(configService.getToken())
 				.enableIntents(getNonPrivilegedIntents())
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.setBulkDeleteSplittingEnabled(false)
 				.setStatus(OnlineStatus.ONLINE)
 				.setCompression(Compression.NONE)
-				.addEventListeners(eventWaiter,	msgListener, readyListener,	guildGoneListener, channelDeleteListener, memberListener, starboardListener, autoroleListener, countingListener)
+				.addEventListeners(eventWaiter,	msgListener, readyListener,	guildGoneListener, channelDeleteListener, memberListener, starboardListener, autoroleListener, countingListener, slashCommandListener)
 				.setActivity(EntityBuilder.createActivity(globalConf.getStatus(),
 							 GlobalConstants.STREAM_URL,
 						     globalConf.getActivity()))
 				.build()
-				.awaitReady(); 
+				.awaitReady();
+
+		//TODO (from: Franziska): WIP, DO NOT USE IN PROD
+		upsertSlashCommands(jda);
+
+		return jda;
 	}
 	
 	private List<GatewayIntent> getNonPrivilegedIntents() {
@@ -89,7 +86,13 @@ public class Gerald {
 		
 		return gatewayIntents;
 	}
-	
+	//TODO (from: Franziska): WIP, DO NOT USE IN PROD
+	private void upsertSlashCommands(JDA jda) {
+		jda.upsertCommand("ping", "Check the ping.").queue();
+		jda.upsertCommand("fact", "Get a cool fact.").queue();
+		jda.upsertCommand("slap", "Slap someone.").addOption(OptionType.USER, "user", "User to slap").queue();
+	}
+
 	@Bean
 	public EventWaiter getEventWaiter()
     {

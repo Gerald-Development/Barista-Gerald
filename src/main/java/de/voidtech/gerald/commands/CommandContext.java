@@ -72,28 +72,28 @@ public class CommandContext {
     
     public void replyWithFile(byte[] attachment, String attachmentName, MessageEmbed... embeds) {
         if (this.isSlash)
-            slashCommandEvent.replyEmbeds(Arrays.asList(embeds)).setEphemeral(true).addFile(attachment, attachmentName).queue();
+            slashCommandEvent.replyEmbeds(Arrays.asList(embeds)).addFile(attachment, attachmentName).queue();
         else
             message.replyEmbeds(Arrays.asList(embeds)).mentionRepliedUser(false).addFile(attachment, attachmentName).queue();
     }
 
     public void replyWithFile(byte[] attachment, String attachmentName, String text) {
         if (this.isSlash)
-            slashCommandEvent.reply(text).setEphemeral(true).addFile(attachment, attachmentName).queue();
+            slashCommandEvent.reply(text).addFile(attachment, attachmentName).queue();
         else
             message.reply(text).mentionRepliedUser(false).addFile(attachment, attachmentName).queue();
     }
 
     public void reply(MessageEmbed... embeds) {
         if (this.isSlash)
-            slashCommandEvent.replyEmbeds(Arrays.asList(embeds)).setEphemeral(true).queue();
+            slashCommandEvent.replyEmbeds(Arrays.asList(embeds)).queue();
         else
             message.replyEmbeds(Arrays.asList(embeds)).mentionRepliedUser(false).queue();
     }
 
     public void reply(String text) {
         if (this.isSlash)
-            slashCommandEvent.reply(text).setEphemeral(true).queue();
+            slashCommandEvent.reply(text).queue();
         else
             message.reply(text).mentionRepliedUser(false).queue();
     }
