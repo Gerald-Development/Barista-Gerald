@@ -122,15 +122,15 @@ public class MathCommand extends AbstractCommand {
         }
 
         //should never return an expression token
-        public ArithmeticToken evalToken(long creation) throws RuntimeErrorException, ArithmeticException {
+        public ArithmeticToken evalToken(long creationTime) throws RuntimeErrorException, ArithmeticException {
 
-            if (System.currentTimeMillis() - creation > MILLIS_TIME_OUT) return new ArithmeticToken();
+            if (System.currentTimeMillis() - creationTime > MILLIS_TIME_OUT) return new ArithmeticToken();
             if (this.type != TokenType.EXPRESSION) return this;
 
             List<ArithmeticToken> tokens;
             
             try {
-                tokens = parseTokens(tokenize(this.expressionMaybe, creation));
+                tokens = parseTokens(tokenize(this.expressionMaybe, creationTime));
             } catch(TimeoutException e) {
                 return new ArithmeticToken();
             }
@@ -171,10 +171,10 @@ public class MathCommand extends AbstractCommand {
                             parenLevel++;
                             break;
 
-                        case '^': //do nothing
-                        case '/': //do nothing
-                        case '*': //do nothing
-                        case '+': //do nothing
+                        case '^': 
+                        case '/': 
+                        case '*': 
+                        case '+': 
                         case '-':
                             if (tempSum > -1) {
 
@@ -225,15 +225,11 @@ public class MathCommand extends AbstractCommand {
             }
 
             ArithmeticOperator exponentOperator = new ArithmeticOperator('^', Math::pow);
-            //ArithmeticOperator divisionOperator = new ArithmeticOperator('/', (n1, n2) -> n1 / n2);
             ArithmeticOperator multiplicationOperator = new ArithmeticOperator('*', (n1, n2) -> n1 * n2,'/',(val) -> 1/val);
-            //ArithmeticOperator minusOperator = new ArithmeticOperator('-', (n1, n2) -> n1 - n2);
             ArithmeticOperator additionOperator = new ArithmeticOperator('+', Double::sum,'-',(val)-> -val);
 
             tokens = exponentOperator.apply(tokens);
             tokens = multiplicationOperator.apply(tokens);
-            tokens = //divisionOperator.apply(tokens);
-            tokens = //minusOperator.apply(tokens);
             tokens = additionOperator.apply(tokens);
 
             return tokens;
@@ -262,7 +258,7 @@ public class MathCommand extends AbstractCommand {
         }
     }
 
-    private double evalExpression(String expression, long creation) throws ArithmeticException {
+    private double evalExpression(String expression, long creationTime) throws ArithmeticException {
     	
         if (!expression.matches(EXPRESSION_REGEX))
         	throw new ArithmeticException("Invalid char(s) in expression. Must only contain numbers, + - * / ^ ( )");
@@ -278,7 +274,7 @@ public class MathCommand extends AbstractCommand {
         if (openParenCount != closeParenCount)
             throw new ArithmeticException("Parentheses must match up in expression");
 
-        return new ArithmeticToken(expression).evalToken(creation).valueMaybe;
+        return new ArithmeticToken(expression).evalToken(creationTime).valueMaybe;
     }
     
     @Override
