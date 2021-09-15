@@ -6,12 +6,10 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 
 import javax.management.RuntimeErrorException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BinaryOperator;
+import java.util.function.UnaryOperator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
@@ -33,35 +31,59 @@ public class MathCommand extends AbstractCommand {
         private char operatorMaybe;
     	
         private static class ArithmeticOperator {
-        	
             private final char operator;
             private final BinaryOperator<Double> operation;
-            
+            private final Optional<Character> inverse;
+            private final Optional<UnaryOperator<Double>> inverseAction;
             public ArithmeticOperator(char operator, BinaryOperator<Double> operation) {
                 this.operator = operator;
                 this.operation = operation;
+                inverse = Optional.empty();
+                this.inverseAction = Optional.empty();
             }
-
-            public List<ArithmeticToken> apply(List<ArithmeticToken> tokens) {
+            public ArithmeticOperator(char operator, BinaryOperator<Double> operation, char inverse, UnaryOperator<Double> inverseAction) {
+                this.operator = operator;
+                this.operation = operation;
+                this.inverse = Optional.of(inverse);
+                this.inverseAction = Optional.of(inverseAction);
+            }
+            private static void validateIndice(int indice, List<ArithmeticToken> tokens,char op) throws ArithmeticException{
+                if (indice == tokens.size() - 1) throw new ArithmeticException(
+                        String.format("Expression ended with a '%c' unexpectedly", op));
+                if (indice == 0) throw new ArithmeticException(
+                        String.format("Expression cannot start with '%c'", op));
+                if (tokens.get(indice + 1).type != TokenType.VALUE || tokens.get(indice - 1).type != TokenType.VALUE)
+                    throw new ArithmeticException(String.format("'%c' not used like an operator", op));
+            }
+            public List<ArithmeticToken> apply(List<ArithmeticToken> tokens) throws ArithmeticException{
                 List<ArithmeticToken> newTokens = ArithmeticToken.copyTokenList(tokens);
+                if(inverse.isPresent()){
+                    if(!inverseAction.isPresent()) throw new Error(String.format("Uh oh somebody fucked with the code related to %s where they weren't supposed to",this.getClass().getCanonicalName()));
+                    int[] inverseIndices = IntStream.range(0, newTokens.size())
+                            .filter(i -> newTokens.get(i).type == TokenType.OPERATOR && newTokens.get(i).operatorMaybe == this.inverse.get())
+                            .toArray();
+                    for(int i : inverseIndices){
+                        validateIndice(i, newTokens, this.inverse.get());
 
-                int[] opIndices = IntStream.range(0, newTokens.size())
-                        .filter(i -> newTokens.get(i).type == TokenType.OPERATOR && newTokens.get(i).operatorMaybe == this.operator)
-                        .toArray();
-                
-                for (int i:opIndices) {
-                    if (i == newTokens.size() - 1) throw new ArithmeticException(
-                    		String.format("Expression ended with a '%c' unexpectedly", this.operator));
-                    if (i == 0) throw new ArithmeticException(
-                    		String.format("Expression cannot start with '%c'", this.operator));
-                    if (newTokens.get(i + 1).type != TokenType.VALUE || newTokens.get(i - 1).type != TokenType.VALUE)
-                    	throw new ArithmeticException(String.format("'%c' not used like an operator", this.operator));
-
-                    double second = newTokens.remove(i + 1).valueMaybe;
-                    double first = newTokens.remove(i - 1).valueMaybe;
-                    newTokens.set(i - 1, new ArithmeticToken(this.operation.apply(first, second)));
+                        newTokens.set(i+1, new ArithmeticToken(this.inverseAction.get().apply(newTokens.get(i+1).valueMaybe)));
+                        newTokens.set(i, new ArithmeticToken(this.operator));
+                    }
                 }
-                return newTokens;
+
+                    int[] operatorIndices = IntStream.range(0, newTokens.size())
+                            .filter(i -> newTokens.get(i).type == TokenType.OPERATOR && newTokens.get(i).operatorMaybe == this.operator)
+                            .toArray();
+
+                    for (int n = 0; n < operatorIndices.length;n++) {
+                        int i = operatorIndices[n];
+                        validateIndice(i, newTokens, this.operator);
+
+                        double second = newTokens.remove(i + 1).valueMaybe;
+                        double first = newTokens.remove(i - 1).valueMaybe;
+                        newTokens.set(i - 1, new ArithmeticToken(this.operation.apply(first, second)));
+                        operatorIndices = (int[]) Arrays.stream(operatorIndices).map((val)->val-2).toArray();
+                    }
+                    return newTokens;
             }
         }
 
@@ -100,15 +122,15 @@ public class MathCommand extends AbstractCommand {
         }
 
         //should never return an expression token
-        public ArithmeticToken evalToken(long creation) throws RuntimeErrorException, ArithmeticException {
+        public ArithmeticToken evalToken(long creationTime) throws RuntimeErrorException, ArithmeticException {
 
-            if (System.currentTimeMillis() - creation > MILLIS_TIME_OUT) return new ArithmeticToken();
+            if (System.currentTimeMillis() - creationTime > MILLIS_TIME_OUT) return new ArithmeticToken();
             if (this.type != TokenType.EXPRESSION) return this;
 
             List<ArithmeticToken> tokens;
             
             try {
-                tokens = parseTokens(tokenize(this.expressionMaybe, creation));
+                tokens = parseTokens(tokenize(this.expressionMaybe, creationTime));
             } catch(TimeoutException e) {
                 return new ArithmeticToken();
             }
@@ -149,10 +171,10 @@ public class MathCommand extends AbstractCommand {
                             parenLevel++;
                             break;
 
-                        case '^': //do nothing
-                        case '/': //do nothing
-                        case '*': //do nothing
-                        case '+': //do nothing
+                        case '^': 
+                        case '/': 
+                        case '*': 
+                        case '+': 
                         case '-':
                             if (tempSum > -1) {
 
@@ -203,15 +225,11 @@ public class MathCommand extends AbstractCommand {
             }
 
             ArithmeticOperator exponentOperator = new ArithmeticOperator('^', Math::pow);
-            ArithmeticOperator multiplicationOperator = new ArithmeticOperator('*', (n1, n2) -> n1 * n2);
-            ArithmeticOperator divisionOperator = new ArithmeticOperator('/', (n1, n2) -> n1 / n2);
-            ArithmeticOperator minusOperator = new ArithmeticOperator('-', (n1, n2) -> n1 - n2);
-            ArithmeticOperator additionOperator = new ArithmeticOperator('+', Double::sum);
+            ArithmeticOperator multiplicationOperator = new ArithmeticOperator('*', (n1, n2) -> n1 * n2,'/',(val) -> 1/val);
+            ArithmeticOperator additionOperator = new ArithmeticOperator('+', Double::sum,'-',(val)-> -val);
 
             tokens = exponentOperator.apply(tokens);
             tokens = multiplicationOperator.apply(tokens);
-            tokens = divisionOperator.apply(tokens);
-            tokens = minusOperator.apply(tokens);
             tokens = additionOperator.apply(tokens);
 
             return tokens;
@@ -240,7 +258,7 @@ public class MathCommand extends AbstractCommand {
         }
     }
 
-    private double evalExpression(String expression, long creation) throws ArithmeticException {
+    private double evalExpression(String expression, long creationTime) throws ArithmeticException {
     	
         if (!expression.matches(EXPRESSION_REGEX))
         	throw new ArithmeticException("Invalid char(s) in expression. Must only contain numbers, + - * / ^ ( )");
@@ -256,7 +274,7 @@ public class MathCommand extends AbstractCommand {
         if (openParenCount != closeParenCount)
             throw new ArithmeticException("Parentheses must match up in expression");
 
-        return new ArithmeticToken(expression).evalToken(creation).valueMaybe;
+        return new ArithmeticToken(expression).evalToken(creationTime).valueMaybe;
     }
     
     @Override
