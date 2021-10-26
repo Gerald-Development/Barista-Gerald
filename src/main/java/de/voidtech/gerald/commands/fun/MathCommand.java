@@ -142,14 +142,17 @@ public class MathCommand extends AbstractCommand {
                 throw new RuntimeErrorException(new Error("Unknown tokenization error"));
             }
         }
+        public static ArithmeticToken constructDecimal(long sum, long decimal, long leadingZeroes){
+            return new ArithmeticToken(sum +
+                    ((double)decimal) / Math.pow(10, (decimal != 1 ? Math.ceil(Math.log(decimal) / Math.log(10)):1)+leadingZeroes));
+        }
         public static List<ArithmeticToken> tokenize(String expression, long creation) throws TimeoutException, ArithmeticException {
             List<ArithmeticToken> children = new LinkedList<>();
-            
+            boolean leadZeroesOngoing = true;
             for (int parsePoint = 0, parenLevel = 0, tempSum = -1, tempDecimal = -1,
-            		prevParenOpen=-1; parsePoint<expression.length(); parsePoint++) {
+            		prevParenOpen=-1, leadingZeroes = 0; parsePoint<expression.length(); parsePoint++) {
                 
             	char parsedChar = expression.charAt(parsePoint);
-                
                 if (parsedChar == ')') {
                     parenLevel--;
                     if (parenLevel == 0) {
@@ -167,6 +170,7 @@ public class MathCommand extends AbstractCommand {
                                 		Math.pow(10, Math.ceil(Math.log(tempDecimal) / Math.log(10)))));
                                 tempSum = -1;
                                 tempDecimal = -1;
+                                leadZeroesOngoing = true;
                             }
                             parenLevel++;
                             break;
@@ -176,14 +180,15 @@ public class MathCommand extends AbstractCommand {
                         case '*': 
                         case '+': 
                         case '-':
-                            if (tempSum > -1) {
+                            if (tempSum > -1 || tempDecimal > -1) {
 
                                 if (tempDecimal == -1) children.add(new ArithmeticToken(tempSum));
-                                else children.add(new ArithmeticToken(tempSum + ((double)tempDecimal) / 
-                                		Math.pow(10, Math.ceil(Math.log(tempDecimal) / Math.log(10)))));
+                                else children.add(constructDecimal(tempSum,tempDecimal,leadingZeroes));
 
                                 tempSum = -1;
                                 tempDecimal = -1;
+                                leadingZeroes = 0;
+                                leadZeroesOngoing = true;
                             }
                             children.add(new ArithmeticToken(expression.charAt(parsePoint)));
                             break;
@@ -203,8 +208,9 @@ public class MathCommand extends AbstractCommand {
                             else {
                                 tempDecimal *= 10;
                                 tempDecimal += parsedChar-'0';
-                                if (parsePoint == expression.length()-1) children.add(new ArithmeticToken(tempSum +
-                                		((double)tempDecimal) / Math.pow(10, Math.ceil(Math.log(tempDecimal) / Math.log(10)))));
+                                if (parsedChar-'0' == 0 && leadZeroesOngoing)leadingZeroes++;
+                                else leadZeroesOngoing = false;
+                                if (parsePoint == expression.length()-1) children.add(constructDecimal(tempSum,tempDecimal,leadingZeroes));
                             }
                     }
                     if (children.size() > 0 && children.get(children.size() - 1).type == TokenType.TIMEOUT)
@@ -227,7 +233,6 @@ public class MathCommand extends AbstractCommand {
             ArithmeticOperator exponentOperator = new ArithmeticOperator('^', Math::pow);
             ArithmeticOperator multiplicationOperator = new ArithmeticOperator('*', (n1, n2) -> n1 * n2,'/',(val) -> 1/val);
             ArithmeticOperator additionOperator = new ArithmeticOperator('+', Double::sum,'-',(val)-> -val);
-
             tokens = exponentOperator.apply(tokens);
             tokens = multiplicationOperator.apply(tokens);
             tokens = additionOperator.apply(tokens);
