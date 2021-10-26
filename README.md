@@ -20,8 +20,6 @@ Are you having troubles or questions about Gerald or want to talk to the develop
 
 [![Discord Banner 2](https://discordapp.com/api/guilds/729317146127106059/widget.png?style=banner2)](https://discord.gg/mNmgHgjDGz)
 
-Optionally you can also send us an [email](mailto:gerald@voidtech.de).
-
 ## Built with
 - [Java 8 Adopt Open JDK](https://adoptopenjdk.net/) - an open source Java JDK
 - [Hibernate](https://hibernate.org/) - Java ORM for persistence
