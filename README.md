@@ -1,5 +1,5 @@
 # Barista-Gerald
-[![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Build Status](https://jenkins.voidtech.de/buildStatus/icon?job=Barista+Gerald)](https://jenkins.voidtech.de/job/Barista%20Gerald/)
+[![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![GPLv3 license](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Build Status](https://jenkins.voidtech.de/job/Barista%20Projects/job/dev/badge/icon)](https://jenkins.voidtech.de/job/Barista%20Projects/job/dev/badge/icon)
 
 The Java Version of the [Gerald Discord Bot](https://github.com/Elementalmp4/GeraldCore)
 
