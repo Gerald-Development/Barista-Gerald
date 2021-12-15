@@ -133,7 +133,7 @@ public class ChatCommand extends AbstractCommand{
 
 	@Override
 	public String getDescription() {
-		return "This command allows you to talk to our Chat AI! (Powered by Gavin) You will need the Manage Channels permission to set up a channel!";
+		return "This command allows you to talk to our custom-made chatbot Gavin! Brought to you by Scot_Survivor#2756";
 	}
 	@Override
 	public String getUsage() {
@@ -165,7 +165,7 @@ public class ChatCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		return new String[]{"ai", "geraldai", "geraldchat", "gavin"};
+		return new String[]{"ai", "talk", "gavin"};
 	}
 	
 	@Override

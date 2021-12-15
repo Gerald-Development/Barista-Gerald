@@ -34,9 +34,7 @@ public class PlaywrightService {
 	
 	@EventListener(ApplicationReadyEvent.class)
 	private void initialisePlaywright() {
-		
 		ExecutorService playwrightExecutor = threadManager.getThreadByName("Playwright");
-		
 		playwrightExecutor.execute(new Runnable() {
 			@Override
 			public void run() {
