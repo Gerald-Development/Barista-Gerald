@@ -1,5 +1,11 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
+import java.awt.Color;
+import java.time.Instant;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
@@ -9,51 +15,16 @@ import main.java.de.voidtech.gerald.service.CountingService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.awt.*;
-import java.time.Instant;
-import java.util.List;
 
 @Command
 public class CountCommand extends AbstractCommand {
-
-	@Autowired
-	private SessionFactory sessionFactory;
 	
 	@Autowired
 	private CountingService countService;
 	
-	private String formatAsMarkdown(String input) {
-		return "```\n" + input + "\n```";
-	}
-	
 	private void sendCountStatistics(CommandContext context) {
-		try(Session session = sessionFactory.openSession())
-		{
 			CountingChannel dbChannel = countService.getCountingChannel(context.getChannel().getId());
-						
-			String current = formatAsMarkdown(String.valueOf(dbChannel.getChannelCount()));
-			String lastUser = formatAsMarkdown(dbChannel.getLastUser().equals("") ? "Nobody" : context.getJDA().getUserById(dbChannel.getLastUser()).getAsTag());
-			String next = formatAsMarkdown(dbChannel.getChannelCount() - 1 + " or " + (dbChannel.getChannelCount() + 1));
-			String reached69 = formatAsMarkdown(String.valueOf(dbChannel.hasReached69()));
-			String numberOf69 = formatAsMarkdown(String.valueOf(dbChannel.get69ReachedCount()));
-			String livesRemaining = formatAsMarkdown(String.valueOf(dbChannel.getLives()));
-			
-			MessageEmbed countStatsEmbed = new EmbedBuilder()
-					.setColor(Color.ORANGE)
-					.setTitle("Counting Statistics")
-					.addField("Current Count", current, true)
-					.addField("Next Count", next, true)
-					.addField("Last User", lastUser, false)
-					.addField("Has reached 69?", reached69, true)
-					.addField("No. of times 69 has been reached", numberOf69, true)
-					.addField("Lives Remaining", livesRemaining, true)
-					.build();
-			context.reply(countStatsEmbed);
-		}	
+			context.reply(countService.getCountStatsEmbedForChannel(dbChannel, context.getJDA()));	
 	}
 	
 	private void startCountMethod(CommandContext context) {

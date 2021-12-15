@@ -90,6 +90,10 @@ public class CountRoutine extends AbstractRoutine {
 		} else countService.sendWarning(message, Color.ORANGE, "You cannot count twice in a row!\nThe counter has not been reset.");
 	}
 	
+	private void sendStatsMessage(CountingChannel channel, Message message) {
+		message.getChannel().sendMessageEmbeds(countService.getCountStatsEmbedForChannel(channel, message.getJDA())).queue();
+	}
+	
 	@Override
 	public void executeInternal(Message message) {	
 		CountingChannel channel = countService.getCountingChannel(message.getChannel().getId());
@@ -97,6 +101,8 @@ public class CountRoutine extends AbstractRoutine {
 		if (channel != null) {
 			if (ParsingUtils.isInteger(message.getContentRaw()))
 				playGame(message);
+			else if (message.getContentRaw().toLowerCase().equals("stats"))
+				sendStatsMessage(channel, message);
 			else if (!channel.talkingIsAllowed()) {
 				if (perms.contains(Permission.MESSAGE_MANAGE)) message.delete().queue();
 			}
