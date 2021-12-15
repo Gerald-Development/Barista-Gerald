@@ -53,4 +53,9 @@ public class NomCommand extends ActionsCommand {
 	public boolean canBeDisabled() {
 		return true;
 	}
+	
+	@Override
+	public boolean isSlashCompatible() {
+		return true;
+	}
 }

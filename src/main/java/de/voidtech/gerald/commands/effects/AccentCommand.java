@@ -81,4 +81,9 @@ public class AccentCommand extends AbstractCommand {
 		return true;
 	}
 
+	@Override
+	public boolean isSlashCompatible() {
+		return true;
+	}
+
 }

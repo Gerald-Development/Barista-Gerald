@@ -36,6 +36,7 @@ public class XKCDCommand extends AbstractCommand {
 	private static final Logger LOGGER = Logger.getLogger(XKCDCommand.class.getName());
 	
 	private static final String XKCD_URL = "https://xkcd.com/";
+	private static final String SEARCH_URL = "https://search-xkcd.mfwowocringe.repl.co/search/";
 	private static final String SUFFIX = "info.0.json";
 	private static final String EMOTE_UNICODE = "U+1f440";
 	
@@ -48,14 +49,17 @@ public class XKCDCommand extends AbstractCommand {
 				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
 					return in.lines().collect(Collectors.joining());
 				}
-			} else {
-				return "";
-			}
-			
+			} else return "";
 		} catch (IOException | JSONException e) {
 			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
 		}
 		return "";
+	}
+	
+	private String getXKCDBySearch(String search) {
+		String result = makeRequest(SEARCH_URL + search);
+		if (result.startsWith("404")) return "";
+		else return getXKCDById(new JSONObject(result).getInt("id"));
 	}
 	
 	private String getCurrentXKCD() {
@@ -94,13 +98,23 @@ public class XKCDCommand extends AbstractCommand {
 								.setTitle(num + " - " + title, img)
 								.setDescription(alt)
 								.setImage(img)
-								.setFooter(day + "-" + month + "-" + year)
+								.setFooter(day + "-" + month + "-" + year + " | Requested by " +
+										context.getAuthor().getName() + "#" + context.getAuthor().getDiscriminator())
 								.build();
 						sentMessage.editMessageEmbeds(newXkcdEmbed).queue();
 					}
 				}, 30, TimeUnit.SECONDS, () -> {});
 		});
 		
+	}
+	
+	private String formSearch(List<String> args) {
+		if (args.size() == 1) return "";
+		else {
+			String buffer = "";
+			for (int i = 1; i < args.size(); i++) buffer += args.get(i) + "+";
+			return buffer;
+		}
 	}
 	
 	@Override
@@ -110,23 +124,28 @@ public class XKCDCommand extends AbstractCommand {
 			String current = new JSONObject(response).get("num").toString();
 			String randomResponse = getXKCDById(new Random().nextInt(Integer.parseInt(current)));
 			sendXKCD(new JSONObject(randomResponse), context);
-			
-		} else if (args.get(0).equals("latest")) {
-			String currentResponse = getCurrentXKCD();
-			sendXKCD(new JSONObject(currentResponse), context);
-			
-		} else if (args.get(0).equals("id")) {
-			if (ParsingUtils.isInteger(args.get(1))) {
-				String byIdResponse = getXKCDById(Integer.parseInt(args.get(1)));
-				if (byIdResponse.equals("")) {
-					context.getChannel().sendMessage("**That ID could not be found!**").queue();
-				
-				} else {
-					sendXKCD(new JSONObject(byIdResponse), context);
+		} else {
+			switch (args.get(0)) {
+			case "latest":
+				String currentResponse = getCurrentXKCD();
+				sendXKCD(new JSONObject(currentResponse), context);
+				break;
+			case "id":
+				if (ParsingUtils.isInteger(args.get(1))) {
+					String byIdResponse = getXKCDById(Integer.parseInt(args.get(1)));
+					if (byIdResponse.equals("")) context.reply("**That ID could not be found!**");
+					else sendXKCD(new JSONObject(byIdResponse), context);
+				} else context.reply("**That ID is not valid!**");
+				break;
+			case "search":
+				String search = formSearch(args);
+				if (search.equals("")) context.reply("**Your search was invalid!**");
+				else {
+					String searchResult = getXKCDBySearch(search);
+					if (searchResult.equals("")) context.reply("**Your search returned no results!**");
+					else sendXKCD(new JSONObject(searchResult), context);
 				}
-				
-			} else {
-				context.getChannel().sendMessage("**That ID is not valid!**").queue();
+				break;
 			}
 		}
 	}
@@ -140,7 +159,8 @@ public class XKCDCommand extends AbstractCommand {
 	public String getUsage() {
 		return "xkcd\n"
 				+ "xkcd latest\n"
-				+ "xkcd id [id]";
+				+ "xkcd id [id]\n"
+				+ "xkcd search [search string]";
 	}
 
 	@Override
@@ -170,6 +190,11 @@ public class XKCDCommand extends AbstractCommand {
 
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 	

@@ -65,4 +65,6 @@ public abstract class AbstractCommand{
 
 	public abstract boolean canBeDisabled();
 	
+	public abstract boolean isSlashCompatible();
+	
 }

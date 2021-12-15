@@ -54,4 +54,9 @@ public class CuddleCommand extends ActionsCommand {
 		return true;
 	}
 
+	@Override
+	public boolean isSlashCompatible() {
+		return true;
+	}
+
 }

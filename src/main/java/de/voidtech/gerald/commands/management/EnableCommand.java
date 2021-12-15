@@ -142,5 +142,10 @@ public class EnableCommand extends AbstractCommand {
 	public boolean canBeDisabled() {
 		return false;
 	}
+	
+	@Override
+	public boolean isSlashCompatible() {
+		return true;
+	}
 
 }

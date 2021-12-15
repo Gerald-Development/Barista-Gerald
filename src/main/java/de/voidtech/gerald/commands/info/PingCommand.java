@@ -22,11 +22,7 @@ public class PingCommand extends AbstractCommand {
 				.setAuthor("Ping?")
 				.setColor(Color.RED)
 				.build();
-		//TODO (from: Franziska): Queue again.
-		if(context.isSlash())
-		{
-			context.reply("Disabled due to SlashCommand rework.");
-		}
+		if(context.isSlash()) context.reply("Pong motherfucker");
 		else{
 			context.getChannel().sendMessageEmbeds(beforePingHasBeenProcessedEmbed).queue(response -> {
 				MessageEmbed pingEmbed = new EmbedBuilder()//
@@ -78,6 +74,11 @@ public class PingCommand extends AbstractCommand {
 	
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 

@@ -1,66 +1,62 @@
 package main.java.de.voidtech.gerald.listeners;
 
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.service.CommandService;
-import main.java.de.voidtech.gerald.util.CustomCollectors;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.hooks.EventListener;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
 
 @Component
 public class SlashCommandListener implements EventListener {
 
-    @Autowired
-    private CommandService commandService;
+    //@Autowired
+    //private CommandService commandService;
 
-    @Autowired
-    private List<AbstractCommand> commands;
+    //@Autowired
+    //private List<AbstractCommand> commands;
 
-    private static final Logger LOGGER = Logger.getLogger(SlashCommandListener.class.getName());
+    //private static final Logger LOGGER = Logger.getLogger(SlashCommandListener.class.getName());
 
     @Override
     public void onEvent(@NotNull GenericEvent event) {
-        //TODO: (from: Franziska): This whole class is VERY WorkInProgress. Not at all finalized, only for testing purposes
-        if (event instanceof SlashCommandEvent) {
-            SlashCommandEvent slashCommandEvent = (SlashCommandEvent) event;
+        
+    	
+    	//TODO: (from: Franziska): This whole class is VERY WorkInProgress. Not at all finalized, only for testing purposes
+    	
+    	//TODO (from Seb): I don't have the human will to do slash commands yet. I will get the commandContext working properly and
+    	//we can tell waterloo it is in development.
+    	
+        
+    	//if (event instanceof SlashCommandEvent) {
+            //SlashCommandEvent slashCommandEvent = (SlashCommandEvent) event;
+    	
+            //List<Member> mentionedMembers = slashCommandEvent
+                    //.getOptions()
+                    //.stream()
+                    //.filter(optionMapping -> optionMapping.getType().equals(OptionType.USER))
+                    //.map(OptionMapping::getAsMember)
+                    //.collect(Collectors.toList());
 
-            List<Member> mentionedMembers = slashCommandEvent
-                    .getOptions()
-                    .stream()
-                    .filter(optionMapping -> optionMapping.getType().equals(OptionType.USER))
-                    .map(OptionMapping::getAsMember)
-                    .collect(Collectors.toList());
-
-            CommandContext context = new CommandContext.CommandContextBuilder(true)
-                    .slashCommandEvent(slashCommandEvent)
-                    .channel(slashCommandEvent.getChannel())
-                    .member(slashCommandEvent.getMember())
-                    .mentionedMembers(mentionedMembers)
-                    .build();
+              //CommandContext context = new CommandContext.CommandContextBuilder(true)
+                    //.slashCommandEvent(slashCommandEvent)
+                    //.channel(slashCommandEvent.getChannel())
+                    //.member(slashCommandEvent.getMember())
+                    //.mentionedMembers(mentionedMembers)
+                    //.privateMessage(slashCommandEvent.getChannel().getType().equals(ChannelType.PRIVATE))
+                    //.user(slashCommandEvent.getUser())
+                    //.build();
 
 
-            AbstractCommand commandOpt = commands.stream()
-                    .filter(command -> command.getName().equals(slashCommandEvent.getName()))
-                    .collect(CustomCollectors.toSingleton());
+            //AbstractCommand commandOpt = commands.stream()
+                    //.filter(command -> command.getName().equals(slashCommandEvent.getName()))
+                    //.collect(CustomCollectors.toSingleton());
 
-            if (commandOpt == null) {
-                LOGGER.log(Level.INFO, "Command not found: " + slashCommandEvent.getName());
-                return;
-            }
+            //if (commandOpt == null) {
+                //LOGGER.log(Level.INFO, "Command not found: " + slashCommandEvent.getName());
+                //return;
+            //}
 
-            commandService.handleCommand(commandOpt, context);
-        }
+            //commandService.handleCommand(commandOpt, context);
+        //}
     }
 }

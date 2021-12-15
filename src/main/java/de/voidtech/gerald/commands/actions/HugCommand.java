@@ -53,5 +53,10 @@ public class HugCommand extends ActionsCommand {
 	public boolean canBeDisabled() {
 		return true;
 	}
+	
+	@Override
+	public boolean isSlashCompatible() {
+		return true;
+	}
 
 }

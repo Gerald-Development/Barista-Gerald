@@ -26,7 +26,7 @@ import main.java.de.voidtech.gerald.service.GlobalConfigService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
+//import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -75,7 +75,7 @@ public class Gerald {
 				.awaitReady();
 
 		//TODO (from: Franziska): WIP, DO NOT USE IN PROD
-		upsertSlashCommands(jda);
+		//upsertSlashCommands(jda);
 
 		return jda;
 	}
@@ -87,11 +87,11 @@ public class Gerald {
 		return gatewayIntents;
 	}
 	//TODO (from: Franziska): WIP, DO NOT USE IN PROD
-	private void upsertSlashCommands(JDA jda) {
-		jda.upsertCommand("ping", "Check the ping.").queue();
-		jda.upsertCommand("fact", "Get a cool fact.").queue();
-		jda.upsertCommand("slap", "Slap someone.").addOption(OptionType.USER, "user", "User to slap").queue();
-	}
+	//private void upsertSlashCommands(JDA jda) {
+		//jda.upsertCommand("ping", "Check the ping.").queue();
+		//jda.upsertCommand("fact", "Get a cool fact.").queue();
+		//jda.upsertCommand("slap", "Slap someone.").addOption(OptionType.USER, "user", "User to slap").queue();
+	//}
 
 	@Bean
 	public EventWaiter getEventWaiter()

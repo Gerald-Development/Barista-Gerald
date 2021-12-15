@@ -1,6 +1,16 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
@@ -14,14 +24,6 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.apache.commons.collections4.BidiMap;
-import org.apache.commons.collections4.bidimap.DualHashBidiMap;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Command
 public class TunnelCommand extends AbstractCommand {
@@ -225,8 +227,7 @@ public class TunnelCommand extends AbstractCommand {
 				fillTunnel(context);
 				break;
 			case "dig":
-				//doTheDigging(args, context);
-				//TODO see comment above.
+				doTheDigging(args, context.getMessage());
 				context.getChannel().sendMessage("This subcommand is unavailable due to the SlashCommand rework. Contact a developer.").queue();
 				break;
 			default:
@@ -276,5 +277,10 @@ public class TunnelCommand extends AbstractCommand {
 	@Override
 	public boolean canBeDisabled() {
 		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
+		return false;
 	}
 }

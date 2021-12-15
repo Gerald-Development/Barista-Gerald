@@ -245,4 +245,9 @@ public class AutoroleCommand extends AbstractCommand {
 	public boolean canBeDisabled() {
 		return true;
 	}
+	
+	@Override
+	public boolean isSlashCompatible() {
+		return false;
+	}
 }

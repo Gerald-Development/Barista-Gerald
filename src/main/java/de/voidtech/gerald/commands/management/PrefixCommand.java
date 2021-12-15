@@ -83,5 +83,10 @@ public class PrefixCommand extends AbstractCommand {
 	public boolean canBeDisabled() {
 		return false;
 	}
+	
+	@Override
+	public boolean isSlashCompatible() {
+		return true;
+	}
 
 }

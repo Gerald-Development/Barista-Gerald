@@ -214,4 +214,8 @@ public class CompileCommand extends AbstractCommand {
 		return true;
 	}
 	
+	@Override
+	public boolean isSlashCompatible() {
+		return false;
+	}
 }

@@ -73,4 +73,9 @@ public class AvatarCommand extends AbstractCommand{
 		return true;
 	}
 	
+	@Override
+	public boolean isSlashCompatible() {
+		return true;
+	}
+	
 }

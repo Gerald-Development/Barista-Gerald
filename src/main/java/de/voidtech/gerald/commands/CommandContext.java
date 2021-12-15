@@ -20,11 +20,13 @@ public class CommandContext {
     private final boolean isSlash;
     private final Message message;
     private final SlashCommandEvent slashCommandEvent;
+    private final boolean isPrivate;
+    private final User user;
 
     private CommandContext(CommandContextBuilder builder) {
         this.channel = builder.channel;
         this.member = builder.member;
-        this.guild = member.getGuild();
+        this.guild = member == null ? null : member.getGuild();
         this.args = builder.args;
         this.mentionedMembers = Collections.unmodifiableList(builder.mentionedMembers != null ? builder.mentionedMembers : new ArrayList<>());
         this.mentionedChannels = Collections.unmodifiableList(builder.mentionedChannels != null ? builder.mentionedChannels : new ArrayList<>());
@@ -32,6 +34,12 @@ public class CommandContext {
         this.isSlash = builder.isSlash;
         this.message = builder.message;
         this.slashCommandEvent = builder.slashCommandEvent;
+        this.isPrivate = builder.isPrivateMessage;
+        this.user = builder.user;
+    }
+    
+    public boolean isPrivate() {
+    	return this.isPrivate;
     }
 
     public MessageChannel getChannel() {
@@ -67,7 +75,7 @@ public class CommandContext {
     }
 
     public JDA getJDA() {
-        return member.getJDA();
+        return user.getJDA();
     }
     
     public void replyWithFile(byte[] attachment, String attachmentName, MessageEmbed... embeds) {
@@ -99,7 +107,7 @@ public class CommandContext {
     }
 
     public User getAuthor() {
-        return this.member.getUser();
+        return this.user;
     }
 
     public Message getMessage() {
@@ -120,6 +128,8 @@ public class CommandContext {
         private final boolean isSlash;
         private Message message;
         private SlashCommandEvent slashCommandEvent;
+        private boolean isPrivateMessage;
+		private User user;
 
         public CommandContextBuilder(boolean isSlashCommand) {
             this.isSlash = isSlashCommand;
@@ -167,8 +177,18 @@ public class CommandContext {
             return this;
         }
 
+        public CommandContextBuilder privateMessage(boolean isPrivateMessage) {
+        	this.isPrivateMessage = isPrivateMessage;
+        	return this;
+        }
+        
         public CommandContext build() {
             return new CommandContext(this);
         }
+
+		public CommandContextBuilder user(User author) {
+			this.user = author;
+			return this;
+		}
     }
 }

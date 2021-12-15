@@ -48,13 +48,17 @@ public class CommandService
         String messageContent = message.getContentRaw().substring(prefix.length());
         List<String> messageArray = Arrays.asList(messageContent.trim().split("\\s+"));
 
+        boolean isPrivateMessage = message.getChannel().getType().equals(ChannelType.PRIVATE);
+        
         CommandContext cmdContext = new CommandContext.CommandContextBuilder(false)
                 .channel(message.getChannel())
-                .mentionedRoles(message.getMentionedRoles())
-                .mentionedChannels(message.getMentionedChannels())
-                .mentionedMembers(message.getMentionedMembers())
+                .mentionedRoles(isPrivateMessage ? null : message.getMentionedRoles())
+                .mentionedChannels(isPrivateMessage ? null : message.getMentionedChannels())
+                .mentionedMembers(isPrivateMessage ? null : message.getMentionedMembers())
+                .privateMessage(isPrivateMessage)
                 .args(messageArray.subList(1, messageArray.size()))
                 .member(message.getMember())
+                .user(message.getAuthor())
                 .message(message)
                 .build();
 

@@ -89,5 +89,10 @@ public class HttpCommand extends AbstractCommand {
 	public boolean canBeDisabled() {
 		return true;
 	}
+	
+	@Override
+	public boolean isSlashCompatible() {
+		return true;
+	}
 
 }

@@ -85,4 +85,9 @@ public class RoutineCommand extends AbstractCommand {
 	public boolean canBeDisabled() {
 		return false;
 	}
+	
+	@Override
+	public boolean isSlashCompatible() {
+		return true;
+	}
 }

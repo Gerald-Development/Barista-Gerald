@@ -106,5 +106,10 @@ public class HexCommand extends AbstractCommand {
 	public boolean canBeDisabled() {
 		return true;
 	}
+	
+	@Override
+	public boolean isSlashCompatible() {
+		return true;
+	}
 
 }

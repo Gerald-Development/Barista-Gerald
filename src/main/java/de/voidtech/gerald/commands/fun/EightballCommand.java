@@ -56,4 +56,9 @@ public class EightballCommand extends AbstractCommand{
 		return true;
 	}
 	
+	@Override
+	public boolean isSlashCompatible() {
+		return true;
+	}
+	
 }
