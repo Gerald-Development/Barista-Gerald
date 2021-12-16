@@ -149,6 +149,7 @@ public class MathCommand extends AbstractCommand {
         public static List<ArithmeticToken> tokenize(String expression, long creation) throws TimeoutException, ArithmeticException {
             List<ArithmeticToken> children = new LinkedList<>();
             boolean leadZeroesOngoing = true;
+            boolean implicitMul = false;
             for (int parsePoint = 0, parenLevel = 0, tempSum = -1, tempDecimal = -1,
             		prevParenOpen=-1, leadingZeroes = 0; parsePoint<expression.length(); parsePoint++) {
                 
@@ -156,15 +157,18 @@ public class MathCommand extends AbstractCommand {
                 if (parsedChar == ')') {
                     parenLevel--;
                     if (parenLevel == 0) {
+                        if(implicitMul) children.add(new ArithmeticToken('*'));
                         children.add(new ArithmeticToken(expression.substring(prevParenOpen + 1, parsePoint)).evalToken(creation));
                         prevParenOpen = -1;
                     } else if(parenLevel < 0) throw new ArithmeticException("You cannot have a close paren before its opening paren");
+                    implicitMul = false;
                 } else if(parenLevel == 0) {
                 	
                     switch(parsedChar) {
                         case '(':
                             prevParenOpen = parsePoint;
                             if (tempSum > -1) {
+                                implicitMul = true;
                                 if (tempDecimal == -1) children.add(new ArithmeticToken(tempSum));
                                 else children.add(new ArithmeticToken(tempSum + ((double)tempDecimal) /
                                 		Math.pow(10, Math.ceil(Math.log(tempDecimal) / Math.log(10)))));
