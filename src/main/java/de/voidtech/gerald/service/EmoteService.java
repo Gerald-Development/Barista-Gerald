@@ -52,13 +52,13 @@ public class EmoteService {
 	
 	public NitroliteEmote getEmoteById(String id, JDA jda) {
 		if (jda.getEmoteById(id) != null) {
-			return new NitroliteEmote(
-					jda.getEmoteById(id).getName(),
-					jda.getEmoteById(id).getId(),
-					jda.getEmoteById(id).isAnimated());
-		} else {
-			return getPersistentEmoteById(id);
-		}
+			if (jda.getEmoteById(id).isAvailable()) {
+				return new NitroliteEmote(
+						jda.getEmoteById(id).getName(),
+						jda.getEmoteById(id).getId(),
+						jda.getEmoteById(id).isAnimated());	
+			} else return getPersistentEmoteById(id);
+		} else return getPersistentEmoteById(id);
 	}
 	
 	public NitroliteEmote getEmoteByName(String searchWord, JDA jda) {
@@ -70,14 +70,15 @@ public class EmoteService {
                 .stream()//
                 .filter(emote -> emote.getName().equalsIgnoreCase(searchWord))
                 .findFirst().orElse(null);
+        
         if (emoteOpt != null) {
-			return new NitroliteEmote(
-					emoteOpt.getName(),
-					emoteOpt.getId(),
-					emoteOpt.isAnimated());
-        } else {
-        	return getPersistentEmoteByName(searchWord);
-        }
+        	if (emoteOpt.isAvailable()) {
+        		return new NitroliteEmote(
+    					emoteOpt.getName(),
+    					emoteOpt.getId(),
+    					emoteOpt.isAnimated());	
+        	} else return getPersistentEmoteByName(searchWord);	
+        } else return getPersistentEmoteByName(searchWord);
 	}
 	
 	public List<NitroliteEmote> getEmotes(String name, JDA jda) {
@@ -89,7 +90,7 @@ public class EmoteService {
 		List<NitroliteEmote> finalResult = new ArrayList<NitroliteEmote>();
 		
         List<Emote> jdaCacheResult = emoteList.stream()//
-                .filter(emote -> emote.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
+                .filter(emote -> emote.getName().equalsIgnoreCase(name) && emote.isAvailable()).collect(Collectors.toList());
         List<NitroliteEmote> persistentResult = getPersistentEmotes(name);
        
         if (jdaCacheResult.size() > 0) {
@@ -98,11 +99,7 @@ public class EmoteService {
         		finalResult.add(newEmote);
         	});
         }
-        
-        if (persistentResult.size() > 0) {
-			finalResult.addAll(persistentResult);
-        }
-		
+        if (persistentResult.size() > 0) finalResult.addAll(persistentResult);
         return finalResult;
 	}
 }
