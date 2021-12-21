@@ -69,7 +69,6 @@ public class InfoCommand extends AbstractCommand {
 				.addField("Barista Gerald Developers", "```\n"
 						+ "ElementalMP4#7458\r\n"
 						+ "Montori#4707\r\n"
-						+ "0xffset#2267\r\n"
 						+ "Scot_Survivor#8625```", false)
 				.addField("Gerald Guild Count", "```" + guildCount + "```", true)
 				.addField("Gerald Member Count", "```" + memberCount + "```", true)
