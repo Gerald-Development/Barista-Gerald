@@ -18,7 +18,7 @@ public class InviteCommand extends AbstractCommand {
 	public void executeInternal(CommandContext context, List<String> args) {
 		MessageEmbed inviteLinkEmbed = new EmbedBuilder()
 				.setColor(Color.cyan)
-				.setDescription("**[Gerald Invite Link](" + GlobalConstants.INVITE_URL + ")**")
+				.setDescription("**[Add Gerald to your server!](" + GlobalConstants.INVITE_URL + ")**")
 				.build();
 		context.reply(inviteLinkEmbed);
 	}
