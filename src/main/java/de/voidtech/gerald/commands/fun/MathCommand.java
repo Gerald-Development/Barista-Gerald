@@ -149,6 +149,7 @@ public class MathCommand extends AbstractCommand {
         public static List<ArithmeticToken> tokenize(String expression, long creation) throws TimeoutException, ArithmeticException {
             List<ArithmeticToken> children = new LinkedList<>();
             boolean leadZeroesOngoing = true;
+            boolean implicitMul = false;
             for (int parsePoint = 0, parenLevel = 0, tempSum = -1, tempDecimal = -1,
             		prevParenOpen=-1, leadingZeroes = 0; parsePoint<expression.length(); parsePoint++) {
                 
@@ -156,15 +157,18 @@ public class MathCommand extends AbstractCommand {
                 if (parsedChar == ')') {
                     parenLevel--;
                     if (parenLevel == 0) {
+                        if(implicitMul) children.add(new ArithmeticToken('*'));
                         children.add(new ArithmeticToken(expression.substring(prevParenOpen + 1, parsePoint)).evalToken(creation));
                         prevParenOpen = -1;
                     } else if(parenLevel < 0) throw new ArithmeticException("You cannot have a close paren before its opening paren");
+                    implicitMul = false;
                 } else if(parenLevel == 0) {
                 	
                     switch(parsedChar) {
                         case '(':
                             prevParenOpen = parsePoint;
                             if (tempSum > -1) {
+                                implicitMul = true;
                                 if (tempDecimal == -1) children.add(new ArithmeticToken(tempSum));
                                 else children.add(new ArithmeticToken(tempSum + ((double)tempDecimal) /
                                 		Math.pow(10, Math.ceil(Math.log(tempDecimal) / Math.log(10)))));
@@ -290,7 +294,12 @@ public class MathCommand extends AbstractCommand {
             double result = evalExpression(expression, creation);
             context.reply(String.format("The result of your expression `%s` is `%f`", expression, result));
         } catch (ArithmeticException e){
-            context.reply(String.format("Arithmetic error: %s", e.getMessage()));
+            context.reply(String.format("Arithmetic Error: %s", e.getMessage()));
+        }
+        // give feedback to the user in case of an unexpected error.
+        // Yes I know catching Exception is bad practice but it's to future proofing against more exceptions being thrown
+        catch (Exception e){
+            context.reply(String.format("Internal Error `%s`, you should copy the command you sent and error you got and tell us about it at https://discord.gg/RwftadXcCv", e.getMessage()));
         }
 
     }
