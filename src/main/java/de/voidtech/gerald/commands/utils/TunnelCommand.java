@@ -173,8 +173,6 @@ public class TunnelCommand extends AbstractCommand {
 		}
 	}
 	
-	//TODO: remove Warning once the problem has been resolved. I just don't like warnings in my Workspace.
-	@SuppressWarnings("unused")
 	private void doTheDigging(List<String> args, Message message) {
 		if (args.size() < 2) {
 			message.getChannel().sendMessage("**You need to supply a channel ID!**").queue();
