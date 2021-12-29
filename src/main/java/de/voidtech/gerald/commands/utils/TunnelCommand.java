@@ -230,7 +230,6 @@ public class TunnelCommand extends AbstractCommand {
 				break;
 			case "dig":
 				doTheDigging(args, context.getMessage());
-				context.getChannel().sendMessage("This subcommand is unavailable due to the SlashCommand rework. Contact a developer.").queue();
 				break;
 			default:
 				sendUsageError(context);
