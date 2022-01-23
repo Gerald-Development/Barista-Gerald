@@ -1,18 +1,18 @@
 package main.java.de.voidtech.gerald.commands.info;
 
-import main.java.de.voidtech.gerald.annotations.Command;
+import java.awt.Color;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.service.PlaywrightService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.*;
-import java.util.List;
-
-@Command
+//@Command
 public class JishoCommand extends AbstractCommand {
 
 	@Autowired
