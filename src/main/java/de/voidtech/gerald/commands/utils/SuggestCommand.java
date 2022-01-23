@@ -188,7 +188,13 @@ public class SuggestCommand extends AbstractCommand {
     	if (context.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
             Server server = serverService.getServer(context.getGuild().getId());
             SuggestionChannel config = getSuggestionChannel(server.getId());
-            if (config != null) validateRoleInput(context, ParsingUtils.filterSnowflake(args.get(1)), server, config);
+            if (config != null) {
+            	if (args.get(1).equals("clear")) {
+            		config.setVoteRole(null);
+            		saveRoleConfig(config);
+            		context.reply("**Suggestion role removed!**");
+            	} else validateRoleInput(context, ParsingUtils.filterSnowflake(args.get(1)), server, config);
+            }
             else context.reply("**The suggestion system has not yet been set up!**");
         } else context.reply("**You do not have permission to do that!**");
     }
