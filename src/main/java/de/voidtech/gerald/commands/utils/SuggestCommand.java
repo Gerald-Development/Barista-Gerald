@@ -211,7 +211,7 @@ public class SuggestCommand extends AbstractCommand {
                 + "suggest disable\n"
                 + "suggest suggestrole [role ID / clear]\n"
                 + "suggest voterole [role ID / clear]\n"
-                + "suggest config"
+                + "suggest config\n"
                 + "suggest [suggestion]";
     }
 
