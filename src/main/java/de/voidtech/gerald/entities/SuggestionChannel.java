@@ -21,6 +21,9 @@ public class SuggestionChannel {
 	private String voteRole;
 	
 	@Column
+	private String suggestRole;
+	
+	@Column
 	private long serverID;
 	
 	@Deprecated
@@ -33,7 +36,6 @@ public class SuggestionChannel {
 	  this.channelID = channelID;
 	  this.serverID = serverID;
 	}
-	
 	public boolean voteRoleRequired() {
 		return this.voteRole != null;
 	}
@@ -44,6 +46,18 @@ public class SuggestionChannel {
 	
 	public void setVoteRole(String roleID) {
 		this.voteRole = roleID;
+	}
+	
+	public boolean suggestRoleRequired() {
+		return this.suggestRole != null;
+	}
+	
+	public String getSuggestRoleID() {
+		return this.suggestRole;
+	}
+	
+	public void setSuggestRole(String roleID) {
+		this.suggestRole = roleID;
 	}
 	
 	public String getSuggestionChannel() {
