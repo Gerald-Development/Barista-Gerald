@@ -27,10 +27,10 @@ public class VoteListener implements EventListener {
 			Server server = serverService.getServer(reaction.getGuild().getId());
 			SuggestionChannel config = suggestionService.getSuggestionChannel(server.getId());
 			
-			if (config == null) return;
 			if (reaction.getMember().getId().equals(reaction.getJDA().getSelfUser().getId())) return;
-			if (!config.voteRoleRequired()) return;
+			if (config == null) return;
 			if (!config.getSuggestionChannel().equals(reaction.getChannel().getId())) return;
+			if (!config.voteRoleRequired()) return;
 			boolean hasRole = suggestionService.memberHasRole(reaction.getMember(), config.getVoteRoleID());
 			if (!hasRole) reaction.getReaction().removeReaction(reaction.getUser()).queue();	
 		}
