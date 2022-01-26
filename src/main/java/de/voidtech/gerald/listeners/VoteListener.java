@@ -30,6 +30,7 @@ public class VoteListener implements EventListener {
 			if (config == null) return;
 			if (reaction.getMember().getId().equals(reaction.getJDA().getSelfUser().getId())) return;
 			if (!config.voteRoleRequired()) return;
+			if (!config.getSuggestionChannel().equals(reaction.getChannel().getId())) return;
 			boolean hasRole = suggestionService.memberHasRole(reaction.getMember(), config.getVoteRoleID());
 			if (!hasRole) reaction.getReaction().removeReaction(reaction.getUser()).queue();	
 		}
