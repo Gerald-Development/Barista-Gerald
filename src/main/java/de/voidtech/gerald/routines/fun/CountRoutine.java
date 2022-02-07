@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.routines.fun;
 
 import java.awt.Color;
+import java.util.EnumSet;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -10,15 +11,15 @@ import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.entities.CountingChannel;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
+import main.java.de.voidtech.gerald.service.CountingService;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
-import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Routine
 public class CountRoutine extends AbstractRoutine {
 	private final static String CORRECT = "U+2705";
-	private final static String INCORRECT = "U+274E";
 	private final static String LETTER_N = "U+1F1F3";
 	private final static String LETTER_I = "U+1F1EE";
 	private final static String LETTER_C = "U+1F1E8";
@@ -27,92 +28,11 @@ public class CountRoutine extends AbstractRoutine {
 	@Autowired
 	private SessionFactory sessionFactory;
 	
-	private boolean isCountingChannel(String channelID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			CountingChannel dbChannel = (CountingChannel) session.createQuery("FROM CountingChannel WHERE ChannelID = :channelID")
-                    .setParameter("channelID", channelID)
-                    .uniqueResult();
-			
-			return dbChannel != null;
-		}		
-	}
-	
-	private boolean isDifferentUser(String userID, String channelID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			CountingChannel dbChannel = (CountingChannel) session.createQuery("FROM CountingChannel WHERE ChannelID = :channelID")
-                    .setParameter("channelID", channelID)
-                    .uniqueResult();
-			
-			return !dbChannel.getLastUser().equals(userID);
-		}	
-	}
-	
-	private boolean hasChannelReached69(String channelID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			CountingChannel dbChannel = (CountingChannel) session.createQuery("FROM CountingChannel WHERE ChannelID = :channelID")
-                    .setParameter("channelID", channelID)
-                    .uniqueResult();
-			
-			return dbChannel.hasReached69();
-		}	
-	}
-	
-	private int getCount(String channelID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			CountingChannel dbChannel = (CountingChannel) session.createQuery("FROM CountingChannel WHERE ChannelID = :channelID")
-                    .setParameter("channelID", channelID)
-                    .uniqueResult();
-			
-			return dbChannel.getChannelCount();
-		}		
-	}
-	
-	private void setCount(int currentCount, String channelID, String lastUserID, String mode) {
-		int newCount = 0;
-		if (mode == "increment") {
-			newCount = currentCount + 1;
-		} else if (mode == "decrement") {
-			newCount = currentCount - 1;
-		}
-		
-		try(Session session = sessionFactory.openSession())
-		{
-			session.beginTransaction();
-			CountingChannel dbChannel = (CountingChannel) session.createQuery("FROM CountingChannel WHERE ChannelID = :channelID")
-                    .setParameter("channelID", channelID)
-                    .uniqueResult();
-			
-			dbChannel.setChannelCount(newCount);
-			dbChannel.setLastUser(lastUserID);
-			
-			session.saveOrUpdate(dbChannel);
-			session.getTransaction().commit();			
-		}	
-	}
-	
-	private void resetCount(String channelID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.beginTransaction();
-			CountingChannel dbChannel = (CountingChannel) session.createQuery("FROM CountingChannel WHERE ChannelID = :channelID")
-                    .setParameter("channelID", channelID)
-                    .uniqueResult();
-			
-			dbChannel.setChannelCount(0);
-			dbChannel.setLastUser("");
-			dbChannel.setReached69(false);
-			
-			session.saveOrUpdate(dbChannel);
-			session.getTransaction().commit();			
-		}	
-	}	
+	@Autowired
+	private CountingService countService;
 
-	private boolean shouldSendNice(int countGiven, String channelID) {
-		return ((countGiven == 69 || countGiven == -69) && !hasChannelReached69(channelID));
+	private boolean shouldSendNice(int countGiven, String channelID, CountingChannel channel) {
+		return ((countGiven == 69 || countGiven == -69) && !channel.hasReached69());
 	}
 	
 	private void update69ReachedStatus(String channelID) {
@@ -139,55 +59,53 @@ public class CountRoutine extends AbstractRoutine {
 		
 		update69ReachedStatus(message.getChannel().getId());
 	}
-
-	private void sendFailureMessage(Message message) {
-		MessageEmbed failureEmbed = new EmbedBuilder()
-				.setColor(Color.RED)
-				.setTitle("You failed! :no_entry:")
-				.setDescription("**You failed! The counter has been reset!**")
-				.build();
-		message.addReaction(INCORRECT).queue();
-		message.getChannel().sendMessageEmbeds(failureEmbed).queue();
+	
+	private void playGame(Message message) {
+		if (countService.isDifferentUser(message.getMember().getId(), message.getChannel().getId())) {
+			CountingChannel channel = countService.getCountingChannel(message.getChannel().getId());
+			int currentCount = channel.getChannelCount();
+			int countGiven = Integer.parseInt(message.getContentRaw());
+			
+			if (countGiven == currentCount + 1) {
+				countService.setCount(channel, currentCount, message.getChannel().getId(), message.getMember().getId(), message.getId(), "increment");
+				message.addReaction(CORRECT).queue();
+				if (shouldSendNice(countGiven, message.getChannel().getId(), channel)) sendNice(message);
+			
+			} else if (countGiven == currentCount - 1) {
+				countService.setCount(channel, currentCount, message.getChannel().getId(), message.getMember().getId(), message.getId(), "decrement");
+				message.addReaction(CORRECT).queue();
+				if (shouldSendNice(countGiven, message.getChannel().getId(), channel)) sendNice(message);
+			
+			} else {
+				channel.removeLife();
+				if (channel.getLives() > 0) {
+					countService.sendWarning(message, Color.MAGENTA, "You counted incorrectly!\nYou have " +
+							channel.getLives() + " more chance" + (channel.getLives() != 1 ? "s" : "") + " before the count resets!");
+					countService.saveCountConfig(channel);
+				} else {
+					countService.resetCount(message.getChannel().getId());
+					countService.sendFailureMessage(message);	
+				}
+			}
+		} else countService.sendWarning(message, Color.ORANGE, "You cannot count twice in a row!\nThe counter has not been reset.");
 	}
-
-	private void sendWarning(Message message, String warning) {
-		MessageEmbed warningEmbed = new EmbedBuilder()
-				.setColor(Color.ORANGE)
-				.setTitle("Wait a minute! :warning:")
-				.setDescription("**" + warning + "**")
-				.build();
-		message.addReaction(INCORRECT).queue();
-		message.getChannel().sendMessageEmbeds(warningEmbed).queue();
+	
+	private void sendStatsMessage(CountingChannel channel, Message message) {
+		message.getChannel().sendMessageEmbeds(countService.getCountStatsEmbedForChannel(channel, message.getJDA())).queue();
 	}
 	
 	@Override
-	public void executeInternal(Message message) {		
-		if (isCountingChannel(message.getChannel().getId())) {
-			if (ParsingUtils.isInteger(message.getContentRaw())) {
-				if (isDifferentUser(message.getMember().getId(), message.getChannel().getId())) {
-					int currentCount = getCount(message.getChannel().getId());
-					int countGiven = Integer.parseInt(message.getContentRaw());
-					
-					if (countGiven == currentCount + 1) {
-						setCount(currentCount, message.getChannel().getId(), message.getMember().getId(), "increment");
-						message.addReaction(CORRECT).queue();
-						if (shouldSendNice(countGiven, message.getChannel().getId())) {
-							sendNice(message);
-						}
-					} else if (countGiven == currentCount - 1) {
-						setCount(currentCount, message.getChannel().getId(), message.getMember().getId(), "decrement");
-						message.addReaction(CORRECT).queue();
-						if (shouldSendNice(countGiven, message.getChannel().getId())) {
-							sendNice(message);
-						}
-					} else {
-						resetCount(message.getChannel().getId());
-						sendFailureMessage(message);
-					}
-				} else {
-					sendWarning(message, "You cannot count twice in a row! The counter has not been reset.");
-				}
-			}			
+	public void executeInternal(Message message) {	
+		CountingChannel channel = countService.getCountingChannel(message.getChannel().getId());
+		EnumSet<Permission> perms = message.getGuild().getSelfMember().getPermissions((GuildChannel) message.getChannel());
+		if (channel != null) {
+			if (ParsingUtils.isInteger(message.getContentRaw()))
+				playGame(message);
+			else if (message.getContentRaw().toLowerCase().equals("stats") | message.getContentRaw().toLowerCase().equals("statistics"))
+				sendStatsMessage(channel, message);
+			else if (!channel.talkingIsAllowed()) {
+				if (perms.contains(Permission.MESSAGE_MANAGE)) message.delete().queue();
+			}
 		}		
 	}
 

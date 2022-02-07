@@ -1,5 +1,12 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,14 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.entities.Message;
-
 @Command
 public class FactCommand extends AbstractCommand 
 {
@@ -25,9 +24,9 @@ public class FactCommand extends AbstractCommand
 	private static final Logger LOGGER = Logger.getLogger(FactCommand.class.getName());
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		String factOpt = getFactOpt();
-		if (factOpt != null) message.getChannel().sendMessage(factOpt).queue();
+		if (factOpt != null) context.reply(factOpt);
 	}
 	
 	private String getFactOpt() {
@@ -38,7 +37,7 @@ public class FactCommand extends AbstractCommand
 			if (con.getResponseCode() == 200) {
 				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
 					String content = in.lines().collect(Collectors.joining());
-					JSONObject json = new JSONObject(content.toString());
+					JSONObject json = new JSONObject(content);
 					return json.getString("text");
 				}
 			}
@@ -81,12 +80,16 @@ public class FactCommand extends AbstractCommand
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"uselessfact"};
-		return aliases;
+        return new String[]{"uselessfact"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 

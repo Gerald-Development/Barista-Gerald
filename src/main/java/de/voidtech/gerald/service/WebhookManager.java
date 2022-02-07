@@ -1,23 +1,21 @@
 package main.java.de.voidtech.gerald.service;
 
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.Webhook;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.net.ssl.HttpsURLConnection;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.net.ssl.HttpsURLConnection;
-
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.Webhook;
 
 @Service
 public class WebhookManager {
@@ -35,8 +33,7 @@ public class WebhookManager {
 				return webhook;
 			}
 		}
-		Webhook newWebhook = targetChannel.createWebhook(webhookName).complete();
-		return newWebhook;		
+		return targetChannel.createWebhook(webhookName).complete();
 	}
 	
 	private void executeWebhookPost(String content, String avatarUrl, String username, Webhook webhook) {
@@ -72,28 +69,24 @@ public class WebhookManager {
 	}
 	
 	public void postMessage(String content, String avatarUrl, String username, Webhook webhook) {
-        Runnable webhookThreadRunnable = new Runnable() {
-			public void run() {
-				executeWebhookPost(content, avatarUrl, username, webhook);
-			}
-		};
+        Runnable webhookThreadRunnable = () -> executeWebhookPost(content, avatarUrl, username, webhook);
 		threadManager.getThreadByName("T-Webhook").execute(webhookThreadRunnable);   
 	}
 	
-	public void postMessageWithFallback(Message message, String content, String avatarUrl, String username, String webhookName) {
-		EnumSet<Permission> perms = message.getGuild().getSelfMember().getPermissions((GuildChannel) message.getChannel());
+	public void postMessageWithFallback(CommandContext context, String content, String avatarUrl, String username, String webhookName) {
+		EnumSet<Permission> perms = context.getGuild().getSelfMember().getPermissions((GuildChannel) context.getChannel());
 		
         if (perms.contains(Permission.MANAGE_WEBHOOKS)) {
         	postMessage(
         			content,
         			avatarUrl,
         			username,
-        			getOrCreateWebhook((TextChannel) message.getChannel(),
+        			getOrCreateWebhook((TextChannel) context.getChannel(),
         					webhookName,
-        					message.getJDA().getSelfUser().getId())
+        					context.getJDA().getSelfUser().getId())
         	);
          } else {
-             message.getChannel().sendMessage(content).queue();
+             context.getChannel().sendMessage(content).queue();
          }
 	}
 	

@@ -4,8 +4,8 @@ public enum RoutineCategory {
     FUN("fun", ":video_game:"), 
     UTILS("utils", ":desktop:");
  
-    private String category;
-    private String iconName;
+    private final String category;
+    private final String iconName;
  
     RoutineCategory(String category, String iconName) {
     	this.category = category;

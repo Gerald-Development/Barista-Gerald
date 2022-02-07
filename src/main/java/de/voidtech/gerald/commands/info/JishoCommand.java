@@ -5,15 +5,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.service.PlaywrightService;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-@Command
+//@Command
 public class JishoCommand extends AbstractCommand {
 
 	@Autowired
@@ -22,22 +21,22 @@ public class JishoCommand extends AbstractCommand {
 	private static final String JISHO_BASE_URL = "https://jisho.org/search/";
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		message.getChannel().sendTyping().queue();
+	public void executeInternal(CommandContext context, List<String> args) {
+		context.getChannel().sendTyping().queue();
 		String search = JISHO_BASE_URL + String.join("%20", args).replaceAll("#", "%23");
 		byte[] resultImage = playwrightService.screenshotPage(search, 1500, 1500);
-		message.getChannel().sendMessageEmbeds(constructResultEmbed(search))
+		//TODO (from: Franziska): Same as with queue. I probably need to proxy those things through?
+		context.getChannel().sendMessageEmbeds(constructResultEmbed(search))
 		.addFile(resultImage, "screenshot.png").queue();
 	}
 	
 	private MessageEmbed constructResultEmbed(String url) {
-		MessageEmbed jishoEmbed = new EmbedBuilder()
+		return new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle("**Your Search Result:**", url)
 				.setImage("attachment://screenshot.png")
 				.setFooter("Powered by Jisho")
 				.build();
-		return jishoEmbed;
 	}
 
 	@Override
@@ -72,12 +71,16 @@ public class JishoCommand extends AbstractCommand {
 
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"japanese"};
-		return aliases;
+		return new String[]{"japanese"};
 	}
 
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 

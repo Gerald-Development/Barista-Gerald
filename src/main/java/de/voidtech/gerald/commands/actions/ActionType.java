@@ -10,7 +10,7 @@ public enum ActionType {
 	SLAP("slap"),
 	TICKLE("tickle");
  
-    private String type;
+    private final String type;
  
     ActionType(String type) {
     	this.type = type;

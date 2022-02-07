@@ -1,30 +1,26 @@
 package main.java.de.voidtech.gerald.commands.info;
 
-import java.awt.Color;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.List;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
+
+import java.awt.*;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.List;
 
 @Command
 public class ServerInfoCommand extends AbstractCommand {
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		Guild guild = message.getGuild();
+	public void executeInternal(CommandContext context, List<String> args) {
+		Guild guild = context.getGuild();
 		Member owner = guild.retrieveOwner().complete();
 		List<Member> memberList = guild.loadMembers().get();
-		message.getChannel().sendMessageEmbeds(createServerInfoEmbed(guild, owner, memberList)).queue();
+		context.reply(createServerInfoEmbed(guild, owner, memberList));
 	}
 
 	private MessageEmbed createServerInfoEmbed(Guild guild, Member owner, List<Member> memberList) {
@@ -139,12 +135,16 @@ public class ServerInfoCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"si"};
-		return aliases;
+		return new String[]{"si"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 }

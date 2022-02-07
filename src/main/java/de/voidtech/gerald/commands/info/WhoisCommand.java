@@ -1,32 +1,31 @@
 package main.java.de.voidtech.gerald.commands.info;
 
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Role;
+import org.apache.commons.lang3.StringUtils;
+
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.util.ParsingUtils;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.Role;
-
 @Command
 public class WhoisCommand extends AbstractCommand{
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		
-		Member member = ParsingUtils.getMember(message, args);
+		Member member = ParsingUtils.getMember(context, args);
 		List<String> memberRoles = member.getRoles().stream().map(Role::getAsMention).collect(Collectors.toList());
 		MessageEmbed whoisEmbed = buildEmbed(member, memberRoles);
-		message.getChannel().sendMessageEmbeds(whoisEmbed).queue();
+		context.reply(whoisEmbed);
 	}
 	
 	private MessageEmbed buildEmbed(Member member, List<String> memberRoles)
@@ -76,12 +75,16 @@ public class WhoisCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"user", "userinfo", "ui"};
-		return aliases;
+		return new String[]{"user", "userinfo", "ui"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 }

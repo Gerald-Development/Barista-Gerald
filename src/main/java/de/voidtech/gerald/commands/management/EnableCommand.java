@@ -1,17 +1,16 @@
 package main.java.de.voidtech.gerald.commands.management;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Message;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @Command
 public class EnableCommand extends AbstractCommand {
@@ -26,18 +25,18 @@ public class EnableCommand extends AbstractCommand {
 	private ServerService serverService;
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		if (!commands.contains(this)) commands.add(this);
 		
-		if (message.getMember().hasPermission(Permission.MANAGE_SERVER)) {
+		if (context.getMember().hasPermission(Permission.MANAGE_SERVER)) {
 			String targetName = args.get(0).toLowerCase();
-			if (targetName.equals("all")) enableAllCommands(message);
-			else if (targetName.startsWith("r-")) enableRoutine(targetName, message);
-			else enableCommand(targetName, message);
+			if (targetName.equals("all")) enableAllCommands(context);
+			else if (targetName.startsWith("r-")) enableRoutine(targetName, context);
+			else enableCommand(targetName, context);
 		}
 	}
 	
-	private void enableCommand(String targetName, Message message) {
+	private void enableCommand(String targetName, CommandContext context) {
 		AbstractCommand foundCommand = null;
 		String resultMessage = "";
 		for (AbstractCommand command : commands) {
@@ -49,9 +48,9 @@ public class EnableCommand extends AbstractCommand {
 		}
 		if (foundCommand == null)
 			resultMessage = "**No command was found with name `" + targetName + "`**";
-		else if (!foundCommand.canBeDisabled()) message.getChannel().sendMessage("**The command `"+ targetName + "` cannot be enabled/disabled!**").queue();
+		else if (!foundCommand.canBeDisabled()) context.reply("**The command `"+ targetName + "` cannot be enabled/disabled!**");
 		else {
-			Server server = serverService.getServer(message.getGuild().getId());
+			Server server = serverService.getServer(context.getGuild().getId());
 			if (!server.getCommandBlacklist().contains(targetName)) {
 				resultMessage = "**This command is not disabled!**";
 			} else {
@@ -60,10 +59,10 @@ public class EnableCommand extends AbstractCommand {
 				resultMessage = "**Command `" + targetName + "` has been enabled!**";
 			}
 		}
-		message.getChannel().sendMessage(resultMessage).queue();
+		context.reply(resultMessage);
 	}
 
-	private void enableRoutine(String targetName, Message message) {
+	private void enableRoutine(String targetName, CommandContext context) {
 		AbstractRoutine foundRoutine = null;
 		String resultMessage = "";
 		for (AbstractRoutine routine: routines) {
@@ -78,7 +77,7 @@ public class EnableCommand extends AbstractCommand {
 			resultMessage = "**Routine `"+ targetName + "` cannot be enabled/disabled!**";
 		else {
 			
-			Server server = serverService.getServer(message.getGuild().getId());
+			Server server = serverService.getServer(context.getGuild().getId());
 			if (!server.getRoutineBlacklist().contains(targetName))
 				resultMessage = "**This routine is not enabled!**";
 			else {
@@ -87,11 +86,11 @@ public class EnableCommand extends AbstractCommand {
 				resultMessage = "**Routine `" + targetName + "`has been enabled!**";
 			}
 		}
-		message.getChannel().sendMessage(resultMessage).queue();
+		context.reply(resultMessage);
 	}
 
-	private void enableAllCommands(Message message) {
-		Server server = serverService.getServer(message.getGuild().getId());
+	private void enableAllCommands(CommandContext context) {
+		Server server = serverService.getServer(context.getGuild().getId());
 		String resultMessage = "";
 		if (server.getCommandBlacklist().isEmpty())
 			resultMessage = "**There are no disabled commands!**";
@@ -100,7 +99,7 @@ public class EnableCommand extends AbstractCommand {
 			serverService.saveServer(server);
 			resultMessage = "**All commands have been enabled!**";	
 		}
-		message.getChannel().sendMessage(resultMessage).queue();
+		context.reply(resultMessage);
 	}
 
 	@Override
@@ -142,6 +141,11 @@ public class EnableCommand extends AbstractCommand {
 	@Override
 	public boolean canBeDisabled() {
 		return false;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
+		return true;
 	}
 
 }

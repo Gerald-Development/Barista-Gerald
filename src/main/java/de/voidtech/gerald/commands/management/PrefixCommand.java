@@ -1,17 +1,16 @@
 package main.java.de.voidtech.gerald.commands.management;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Message;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @Command
 public class PrefixCommand extends AbstractCommand {
@@ -23,10 +22,10 @@ public class PrefixCommand extends AbstractCommand {
 	private GeraldConfig config;
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		if(message.getMember().hasPermission(Permission.MANAGE_SERVER))
+	public void executeInternal(CommandContext context, List<String> args) {
+		if(context.getMember().hasPermission(Permission.MANAGE_SERVER))
 		{
-			Server server = serverService.getServer(message.getGuild().getId());
+			Server server = serverService.getServer(context.getGuild().getId());
 			
 			if(args.size() > 0)
 			{
@@ -34,13 +33,13 @@ public class PrefixCommand extends AbstractCommand {
 				
 				server.setPrefix(prefix);
 				serverService.saveServer(server);
-				
-				message.getChannel().sendMessage(String.format("Prefix was changed to `%s`", prefix)).queue();
+
+				context.reply(String.format("Prefix was changed to `%s`", prefix));
 			}
 			else {
 				server.setPrefix(config.getDefaultPrefix());
 				serverService.saveServer(server);
-				message.getChannel().sendMessage(String.format("Prefix has been reset to `%s`", config.getDefaultPrefix())).queue();
+				context.reply(String.format("Prefix has been reset to `%s`", config.getDefaultPrefix()));
 			}
 		}
 	}
@@ -83,6 +82,11 @@ public class PrefixCommand extends AbstractCommand {
 	@Override
 	public boolean canBeDisabled() {
 		return false;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
+		return true;
 	}
 
 }

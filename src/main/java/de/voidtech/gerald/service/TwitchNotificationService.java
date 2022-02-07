@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -20,48 +21,51 @@ import net.dv8tion.jda.api.entities.TextChannel;
 
 @Service
 public class TwitchNotificationService {
-	
+
 	private static final Logger LOGGER = Logger.getLogger(TwitchNotificationService.class.getName());
-	
+
 	@Autowired
 	private SessionFactory sessionFactory;
-	
+
 	@Autowired
 	private JDA jda;
-	
+
 	private TwitchClient twitchClient;
-	
+
 	@Autowired
 	public TwitchNotificationService(GeraldConfig geraldConfig) {
 		String twitchClientId = geraldConfig.getTwitchClientId();
 		String twitchClientSecret = geraldConfig.getTwitchSecret();
-		
-		LOGGER.log(Level.INFO, "Twitch Client creation with client: " + twitchClientId);
-		
-		this.twitchClient = TwitchClientBuilder.builder()
-				.withEnableHelix(true)
-				.withClientId(twitchClientId)
-				.withClientSecret(twitchClientSecret)
-				.build();
-		
-		LOGGER.log(Level.INFO, "Twitch Client has been initialised, hashcode: " + twitchClient.hashCode());
+
+		if (StringUtils.isBlank(twitchClientSecret) || StringUtils.isBlank(twitchClientId))
+			LOGGER.log(Level.INFO, "No Twitch API credentials found, skipping Twitch Client instantiation.");
+		else {
+			LOGGER.log(Level.INFO, "Twitch Client creation with client: " + twitchClientId);
+
+			this.twitchClient = TwitchClientBuilder.builder()
+					.withEnableHelix(true)
+					.withClientId(twitchClientId)
+					.withClientSecret(twitchClientSecret)
+					.build();
+
+			LOGGER.log(Level.INFO, "Twitch Client has been initialised, hashcode: " + twitchClient.hashCode());
+		}
 	}
-	
+
 	public void subscribeToAllStreamers() {
 		if (twitchClient != null) {
 			LOGGER.log(Level.INFO, "Adding Twitch API subscriptions");
-			
+
 			List<String> streamerNames = getAllStreamerNames();
 			if (streamerNames != null) {
 				for (String name : streamerNames) {
 					twitchClient.getClientHelper().enableStreamEventListener(name);
 				}
 			}
-			
+
 			LOGGER.log(Level.INFO, "Added Twitch API subscriptions!");
 			listenForTwitchEvents();
-		}
-		else {
+		} else {
 			LOGGER.log(Level.SEVERE, "No twitch client has been created, skipping Twitch subscriptions.");
 		}
 	}
@@ -90,23 +94,19 @@ public class TwitchNotificationService {
 
 	@SuppressWarnings("unchecked")
 	private List<String> getAllStreamerNames() {
-		try(Session session = sessionFactory.openSession())
-		{
-			List<String> names = (List<String>) session.createQuery("SELECT DISTINCT streamerName FROM TwitchNotificationChannel")
-                    .list();
-			return names;
-		}	
+		try (Session session = sessionFactory.openSession()) {
+			return (List<String>) session.createQuery("SELECT DISTINCT streamerName FROM TwitchNotificationChannel")
+					.list();
+		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private List<TwitchNotificationChannel> getNotificationChannelsByStreamerName(String streamerName) {
-		try(Session session = sessionFactory.openSession())
-		{
-			List<TwitchNotificationChannel> channels = (List<TwitchNotificationChannel>) session.createQuery("FROM TwitchNotificationChannel WHERE streamerName = :streamerName")
-					.setParameter("streamerName", streamerName)
-                    .list();
-			return channels;
-		}	
+		try (Session session = sessionFactory.openSession()) {
+			return (List<TwitchNotificationChannel>) session
+					.createQuery("FROM TwitchNotificationChannel WHERE streamerName = :streamerName")
+					.setParameter("streamerName", streamerName).list();
+		}
 	}
 
 	public void addSubscription(String streamerName, String channelId, String notificationMessage, long serverID) {
@@ -116,75 +116,68 @@ public class TwitchNotificationService {
 		persistChannelSubscription(streamerName, channelId, notificationMessage, serverID);
 	}
 
-	private void persistChannelSubscription(String streamerName, String channelId, String notificationMessage, long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
+	private void persistChannelSubscription(String streamerName, String channelId, String notificationMessage,
+			long serverID) {
+		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
-			
-			TwitchNotificationChannel channel = new TwitchNotificationChannel(channelId, streamerName, notificationMessage, serverID);
+
+			TwitchNotificationChannel channel = new TwitchNotificationChannel(channelId, streamerName,
+					notificationMessage, serverID);
 			session.saveOrUpdate(channel);
 			session.getTransaction().commit();
 		}
 	}
 
 	private boolean zeroChannelsSubscribed(String streamerName) {
-		try(Session session = sessionFactory.openSession())
-		{
+		try (Session session = sessionFactory.openSession()) {
 			@SuppressWarnings("rawtypes")
-			Query query = session.createQuery("SELECT COUNT(*) FROM TwitchNotificationChannel WHERE streamerName = :streamerName")
-			.setParameter("streamerName", streamerName);
-			long count = ((long)query.uniqueResult());
+			Query query = session
+					.createQuery("SELECT COUNT(*) FROM TwitchNotificationChannel WHERE streamerName = :streamerName")
+					.setParameter("streamerName", streamerName);
+			long count = ((long) query.uniqueResult());
 			session.close();
 			return count == 0;
 		}
 	}
 
 	public boolean subscriptionExists(String streamerName, long id) {
-		try(Session session = sessionFactory.openSession())
-		{
-			TwitchNotificationChannel channel = (TwitchNotificationChannel) session.createQuery("FROM TwitchNotificationChannel WHERE streamerName = :streamerName AND serverID = :serverID")
-					.setParameter("streamerName", streamerName)
-					.setParameter("serverID", id)
-                    .uniqueResult();
+		try (Session session = sessionFactory.openSession()) {
+			TwitchNotificationChannel channel = (TwitchNotificationChannel) session.createQuery(
+					"FROM TwitchNotificationChannel WHERE streamerName = :streamerName AND serverID = :serverID")
+					.setParameter("streamerName", streamerName).setParameter("serverID", id).uniqueResult();
 			return channel != null;
 		}
 	}
 
 	private void removeChannelSubscriptionByChannelId(String streamerName, String id) {
-		try(Session session = sessionFactory.openSession())
-		{
+		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
-			session.createQuery("DELETE FROM TwitchNotificationChannel WHERE channelID = :channelID AND streamerName = :streamerName")
-				.setParameter("channelID", id)
-				.setParameter("streamerName", streamerName)
-				.executeUpdate();
+			session.createQuery(
+					"DELETE FROM TwitchNotificationChannel WHERE channelID = :channelID AND streamerName = :streamerName")
+					.setParameter("channelID", id).setParameter("streamerName", streamerName).executeUpdate();
 			session.getTransaction().commit();
 		}
 	}
-	
+
 	public void removeChannelSubscription(String streamerName, long id) {
-		try(Session session = sessionFactory.openSession())
-		{
+		try (Session session = sessionFactory.openSession()) {
 			session.getTransaction().begin();
-			session.createQuery("DELETE FROM TwitchNotificationChannel WHERE serverID = :serverID AND streamerName = :streamerName")
-				.setParameter("serverID", id)
-				.setParameter("streamerName", streamerName)
-				.executeUpdate();
+			session.createQuery(
+					"DELETE FROM TwitchNotificationChannel WHERE serverID = :serverID AND streamerName = :streamerName")
+					.setParameter("serverID", id).setParameter("streamerName", streamerName).executeUpdate();
 			session.getTransaction().commit();
 		}
 		if (zeroChannelsSubscribed(streamerName)) {
 			twitchClient.getClientHelper().disableStreamEventListener(streamerName);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<TwitchNotificationChannel> getAllSubscriptionsForServer(long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			List<TwitchNotificationChannel> channels = (List<TwitchNotificationChannel>) session.createQuery("FROM TwitchNotificationChannel WHERE serverID = :serverID")
-					.setParameter("serverID", serverID)
-                    .list();
-			return channels;
-		}	
+		try (Session session = sessionFactory.openSession()) {
+			return (List<TwitchNotificationChannel>) session
+					.createQuery("FROM TwitchNotificationChannel WHERE serverID = :serverID")
+					.setParameter("serverID", serverID).list();
+		}
 	}
 }

@@ -1,25 +1,23 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.util.MRESameUserPredicate;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.util.MRESameUserPredicate;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Command
 public class BerryCommand extends AbstractCommand{
@@ -28,27 +26,27 @@ public class BerryCommand extends AbstractCommand{
 	private EventWaiter waiter;
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		BidiMap<String, String> berryMap = getBerryMap();
-		List<String> keyList = berryMap.keySet().stream().collect(Collectors.toList());
+		List<String> keyList = new ArrayList<>(berryMap.keySet());
 		String currentBerry = keyList.get(new Random().nextInt(keyList.size()));
 		
 		MessageEmbed berryQuestEmbed = new EmbedBuilder()//
-				.setTitle(String.format("%s guess that berry, you have 15 seconds!", message.getAuthor().getAsTag()))
+				.setTitle(String.format("%s guess that berry, you have 15 seconds!", context.getAuthor().getAsTag()))
 				.setColor(Color.YELLOW)
 				.setImage(berryMap.get(currentBerry))
 				.build();
-		
-		message.getChannel().sendMessageEmbeds(berryQuestEmbed).queue();
+		//TODO (from: Franziska): This command relies heavily on the Message Object or rather on the EventWaiter. It will not work with SlashCommands.
+		context.reply(berryQuestEmbed);
 		
 		waiter.waitForEvent(MessageReceivedEvent.class,
-				new MRESameUserPredicate(message.getAuthor()),
+				new MRESameUserPredicate(context.getAuthor()),
 				event -> {
-					boolean correctberry = event.getMessage().getContentRaw().toLowerCase().equals(currentBerry);
-					message.getChannel().sendMessage(String.format("%s! The Berry was **%s**",
-							correctberry ? "Correct" : "Incorrect", currentBerry)).queue();
+					boolean correctBerry = event.getMessage().getContentRaw().toLowerCase().equals(currentBerry);
+					context.getChannel().sendMessage(String.format("%s! The Berry was **%s**",
+							correctBerry ? "Correct" : "Incorrect", currentBerry)).queue();
 				}, 15, TimeUnit.SECONDS, 
-				() -> message.getChannel().sendMessage(String.format("Time is up! The Berry was **%s**", currentBerry)).queue());
+				() -> context.getChannel().sendMessage(String.format("Time is up! The Berry was **%s**", currentBerry)).queue());
 	}
 	
 	private BidiMap<String, String> getBerryMap()
@@ -125,13 +123,17 @@ public class BerryCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"bguess", "berryguess"};
-		return aliases;
+        return new String[]{"bguess", "berryguess"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
 		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
+		return false;
 	}
 
 }

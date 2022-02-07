@@ -1,25 +1,25 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import java.util.List;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+
+import java.util.List;
 
 @Command
 public class AvatarCommand extends AbstractCommand{
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		Member member = ParsingUtils.getMember(message, args);	
+	public void executeInternal(CommandContext context, List<String> args) {
+		Member member = ParsingUtils.getMember(context, args);
 		String avatarUrl = member.getUser().getAvatarUrl();
 		if (avatarUrl == null)
-			message.getChannel().sendMessage("**That user does not have an avatar!**").queue();
+			context.reply("**That user does not have an avatar!**");
 		else {
 			avatarUrl = avatarUrl + "?size=2048";
 			MessageEmbed avatarEmbed = new EmbedBuilder()
@@ -27,7 +27,7 @@ public class AvatarCommand extends AbstractCommand{
 					.setTitle(member.getUser().getName() + "'s Avatar", avatarUrl)
 					.setImage(avatarUrl)
 					.build();
-			message.getChannel().sendMessageEmbeds(avatarEmbed).queue();
+			context.reply(avatarEmbed);
 		}
 	}
 
@@ -65,12 +65,16 @@ public class AvatarCommand extends AbstractCommand{
 
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"av", "pfp"};
-		return aliases;
+		return new String[]{"av", "pfp"};
 	}
 
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 	

@@ -1,23 +1,22 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
-import java.util.List;
-
+import main.java.de.voidtech.gerald.GlobalConstants;
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.entities.ChatChannel;
+import main.java.de.voidtech.gerald.service.ChatbotService;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import main.java.de.voidtech.gerald.GlobalConstants;
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.entities.ChatChannel;
-import main.java.de.voidtech.gerald.service.ChatbotService;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
+import java.awt.*;
+import java.util.List;
 
 @Command
 public class ChatCommand extends AbstractCommand{
@@ -61,33 +60,33 @@ public class ChatCommand extends AbstractCommand{
 		}
 	}
 	
-	private void enableChannelCheckpoint(Message message) {
-		if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-			if (chatChannelEnabled(message.getChannel().getId())) {
-				message.getChannel().sendMessage("**GeraldAI is already enabled here!**").queue();
+	private void enableChannelCheckpoint(CommandContext context) {
+		if (context.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+			if (chatChannelEnabled(context.getChannel().getId())) {
+				context.reply("**GeraldAI is already enabled here!**");
 			} else {
-				enableChatChannel(message.getChannel().getId());
-				message.getChannel().sendMessage("**GeraldAI has been enabled! He will now automatically reply to your messages.**").queue();
+				enableChatChannel(context.getChannel().getId());
+				context.reply("**GeraldAI has been enabled! He will now automatically reply to your messages.**");
 			}	
 		}
 	}
 	
-	private void disableChannelCheckpoint(Message message) {
-		if (message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
-			if (chatChannelEnabled(message.getChannel().getId())) {
-				disableChatChannel(message.getChannel().getId());
-				message.getChannel().sendMessage("**GeraldAI has been disabled! He will no longer automatically reply to your messages.**").queue();
+	private void disableChannelCheckpoint(CommandContext context) {
+		if (context.getMember().hasPermission(Permission.MANAGE_CHANNEL)) {
+			if (chatChannelEnabled(context.getChannel().getId())) {
+				disableChatChannel(context.getChannel().getId());
+				context.reply("**GeraldAI has been disabled! He will no longer automatically reply to your messages.**");
 			} else {
-				message.getChannel().sendMessage("**GeraldAI is already disabled!**").queue();
+				context.reply("**GeraldAI is already disabled!**");
 			}
 		}
 	}
-	private void sendHparams(Message message) {
+	private void sendHparams(CommandContext context) {
 		JSONObject hparams = chatBot.getHparams();
 		if (hparams.toMap().containsKey("Error")) 
 		{
-			String reply = hparams.getString("Error"); 
-			message.getChannel().sendMessage(reply).queue();
+			String reply = hparams.getString("Error");
+			context.reply(reply);
 		}
 		else {
 			String title = String.format("Hyper-Parameters for %s", chatBot.getModelName().getString("ModelName"));
@@ -103,34 +102,38 @@ public class ChatCommand extends AbstractCommand{
 					.addField("Vocabulary Size", hparams.getString("TOKENIZER"), false)
 					.addField("Using Mixed_Precision", String.valueOf(hparams.getBoolean("FLOAT16")), false)
 					.addField("Number of Epochs Trained For", String.valueOf(hparams.getInt("EPOCHS")), false)
-					.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
+					.setThumbnail(context.getJDA().getSelfUser().getAvatarUrl())
 					.setFooter("Paper for reference to what these mean: https://arxiv.org/pdf/1706.03762.pdf");
 			MessageEmbed reply = eb.build();
-			message.getChannel().sendMessageEmbeds(reply).queue();
+			context.reply(reply);
 		}
 	}
 			
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		
-		if (args.get(0).equals("enable")) {
-			enableChannelCheckpoint(message);
-		} else if (args.get(0).equals("disable")) {
-			disableChannelCheckpoint(message);
-		} else if (args.get(0).equals("hparams")) {
-			sendHparams(message);
-		}
-		else {
-			message.getChannel().sendTyping().queue();
-			String reply = chatBot.getReply(String.join(" ", args), message.getGuild().getId());
-			message.getChannel().sendMessage(reply).queue();
+	public void executeInternal(CommandContext context, List<String> args) {
+
+		switch (args.get(0)) {
+			case "enable":
+				enableChannelCheckpoint(context);
+				break;
+			case "disable":
+				disableChannelCheckpoint(context);
+				break;
+			case "hparams":
+				sendHparams(context);
+				break;
+			default:
+				context.getChannel().sendTyping().queue();
+				String reply = chatBot.getReply(String.join(" ", args), context.getGuild().getId());
+				context.reply(reply);
+				break;
 		}
 		
 	}
 
 	@Override
 	public String getDescription() {
-		return "This command allows you to talk to our Chat AI! (Powered by Gavin) You will need the Manage Channels permission to set up a channel!";
+		return "This command allows you to talk to our custom-made chatbot Gavin! Brought to you by Scot_Survivor#2756";
 	}
 	@Override
 	public String getUsage() {
@@ -162,12 +165,16 @@ public class ChatCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"ai", "geraldai", "geraldchat", "gavin"};
-		return aliases;
+		return new String[]{"ai", "talk", "gavin"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 

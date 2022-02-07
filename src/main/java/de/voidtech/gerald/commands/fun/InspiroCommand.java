@@ -1,6 +1,13 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,13 +18,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-
 @Command
 public class InspiroCommand extends AbstractCommand{
 	private static final String REQUEST_URL = "https://inspirobot.me/api?generate=true";
@@ -26,7 +26,7 @@ public class InspiroCommand extends AbstractCommand{
 	private static final Logger LOGGER = Logger.getLogger(InspiroCommand.class.getName());
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		String inspiroImageURLOpt = getInspiroImageURLOpt();
 		if (inspiroImageURLOpt != null)
 		{
@@ -36,7 +36,7 @@ public class InspiroCommand extends AbstractCommand{
 					.setImage(inspiroImageURLOpt)//
 					.setFooter("Data from InspiroBot", INSPIRO_ICON)//
 					.build();
-			message.getChannel().sendMessageEmbeds(inspiroEmbed).queue();
+			context.reply(inspiroEmbed);
 		}
 	}
 	
@@ -90,12 +90,16 @@ public class InspiroCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"inspire", "inspirobot", "ib"};
-		return aliases;
+		return new String[]{"inspire", "inspirobot", "ib"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 

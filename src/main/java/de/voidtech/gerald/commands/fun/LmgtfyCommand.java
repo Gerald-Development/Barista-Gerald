@@ -1,11 +1,11 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.util.List;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.entities.Message;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+
+import java.util.List;
 
 @Command
 public class LmgtfyCommand extends AbstractCommand {
@@ -13,9 +13,9 @@ public class LmgtfyCommand extends AbstractCommand {
     private static final String GOOGLE_QUERY = "https://www.google.com/search?q=";
 
     @Override
-    public void executeInternal(Message message, List<String> args) {
+    public void executeInternal(CommandContext context, List<String> args) {
         String replyURL = "Follow this: " + GOOGLE_QUERY + String.join("+", args);
-        message.getChannel().sendMessage(replyURL).queue();
+        context.reply(replyURL);
     }
 
     @Override
@@ -50,12 +50,16 @@ public class LmgtfyCommand extends AbstractCommand {
 
     @Override
     public String[] getCommandAliases() {
-        String[] aliases = {"letmegetthat", "letmegoogle"};
-        return aliases;
+        return new String[]{"letmegetthat", "letmegoogle"};
     }
     
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 }

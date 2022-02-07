@@ -1,6 +1,16 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import java.awt.Color;
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,23 +22,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
-
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-
 @Command
 public class CompileCommand extends AbstractCommand {
 
 	private static final String WANDBOX_COMPILE_URL = "https://wandbox.org/api/compile.json";
 	private static final String EMBED_THUMBNAIL_URL = "https://cdn.discordapp.com/attachments/727233195380310016/823533201279418399/808411850555261028.gif";
 	private static final char ESCAPE_CHAR = ((char)8204);
-	private Map<String, String> langMap = getSupportedLangs();
+	private final Map<String, String> langMap = getSupportedLangs();
 	
 	private String getWandboxResponse(String payload) {
 		try {
@@ -78,7 +78,7 @@ public class CompileCommand extends AbstractCommand {
 			responseText = compilerResponse.get("program_error").toString();
 			color = Color.RED;
 			titleMessage = "Compilation Error!";
-			statusCode = compilerResponse.getString("status").toString();
+			statusCode = compilerResponse.getString("status");
 		} else {
 			if (compilerResponse.has("program_output")) {
 				responseText = compilerResponse.get("program_output").toString();	
@@ -125,27 +125,27 @@ public class CompileCommand extends AbstractCommand {
 					.addField("Compiler", compiler, true)//
 					.build();
 			
-			message.getChannel().sendMessageEmbeds(compilationWaitingMessage).queue(sentMessage -> {
+			message.replyEmbeds(compilationWaitingMessage).mentionRepliedUser(false).queue(sentMessage -> {
 				sendResponse(finalCode, compiler, sentMessage);					
 
 			});
 
 		} else {
-			message.getChannel().sendMessage("That language could not be found!").queue();
+			message.reply("That language could not be found!").mentionRepliedUser(false).queue();
 		}
 	}
-	
+	//TODO (from: Franziska): This should probably not be available in SlashCommands?
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 
 		if (args.size() >= 0 && args.get(0).equals("languages")) {
 			String supportedLangsString = StringUtils.join(langMap.keySet(), "\n");
-			message.getChannel().sendMessage("**Supported Languages:**\n" + supportedLangsString).queue();
+			context.reply("**Supported Languages:**\n" + supportedLangsString);
 		
 		} else {
-			runCompilerSystem(message, args);
+			runCompilerSystem(context.getMessage(), args);
 		}
-
+		context.reply("This command is not available due to SlashCommand the rework. Please contact a developer");
 	}
 
 	private Map<String, String> getSupportedLangs() {
@@ -206,8 +206,7 @@ public class CompileCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"execute", "run"};
-		return aliases;
+		return new String[]{"execute", "run"};
 	}
 
 	@Override
@@ -215,4 +214,8 @@ public class CompileCommand extends AbstractCommand {
 		return true;
 	}
 	
+	@Override
+	public boolean isSlashCompatible() {
+		return false;
+	}
 }

@@ -1,23 +1,24 @@
 package main.java.de.voidtech.gerald.commands.management;
 
-import java.util.List;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Message;
+
+import java.util.List;
 
 @Command
 public class SayCommand extends AbstractCommand {
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		if(message.getMember().hasPermission(Permission.MESSAGE_MANAGE))
+	public void executeInternal(CommandContext context, List<String> args) {
+		if(context.getMember().hasPermission(Permission.MESSAGE_MANAGE))
 		{
 			String msg = String.join(" ", args);
-			message.getChannel().sendMessage(msg).queue(response -> {
-				message.delete().queue();
+			context.getChannel().sendMessage(msg).queue(response -> {
+				//TODO (from: Franziska): No message to delete with slash commands. Needs work.
+				//context.delete().queue();
 			});		
 		}
 	}
@@ -54,12 +55,16 @@ public class SayCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"speak", "blessuswiththevoiceofgerald"};
-		return aliases;
+        return new String[]{"speak", "blessuswiththevoiceofgerald"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 

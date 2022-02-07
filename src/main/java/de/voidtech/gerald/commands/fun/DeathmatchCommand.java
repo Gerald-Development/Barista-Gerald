@@ -1,18 +1,19 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 @Command
 public class DeathmatchCommand extends AbstractCommand {
@@ -28,25 +29,26 @@ public class DeathmatchCommand extends AbstractCommand {
 			"atomic wedgies", "fish slaps", "clobbers", "pokes", "insults", "flicks");
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		if (message.getMentionedMembers().size() == 0) {
-			message.getChannel().sendMessage("**You need to mention an opponent!**").queue();
+	public void executeInternal(CommandContext context, List<String> args) {
+		if (context.getMentionedMembers().size() == 0) {
+			context.reply("**You need to mention an opponent!**");
 		} else {
 			ArrayList<User> userList = new ArrayList<>(2);
-			userList.add(message.getMember().getUser());
-			userList.add(message.getMentionedMembers().get(0).getUser());
+			userList.add(context.getMember().getUser());
+			userList.add(context.getMentionedMembers().get(0).getUser());
 
 			if (userList.get(0).equals(userList.get(1)))
-				message.getChannel().sendMessage("**You cannot fight yourself!**").queue();
-			else startGame(message, userList);
+				context.reply("**You cannot fight yourself!**");
+			else startGame(context, userList);
 		}
 	}
 
-	private void startGame(Message message, ArrayList<User> userList) {
+	private void startGame(CommandContext context, ArrayList<User> userList) {
 		MessageEmbed gameStartEmbed = new EmbedBuilder()
 				.setTitle(userList.get(0).getName() + " VS " + userList.get(1).getName())
 				.setColor(Color.RED).build();
-		message.getChannel().sendMessageEmbeds(gameStartEmbed).queue(sentMessage -> playRounds(sentMessage, userList));
+		//TODO (from: Franziska): relies on .queue() cannot use context.reply() I need to think about this. Maybe implement it with a consumer to specify what should happen after the reply has been queued
+		context.getChannel().sendMessageEmbeds(gameStartEmbed).queue(sentMessage -> playRounds(sentMessage, userList));
 	}
 
 	private void playRounds(Message message, ArrayList<User> userList) {
@@ -77,7 +79,7 @@ public class DeathmatchCommand extends AbstractCommand {
 	}
 
 	private String craftMessage(int damage, Turn playerTurn, ArrayList<User> userList) {
-						// if it was player ones turn write his name else player twos name etc...
+						// if it was player one's turn write his name else player twos name etc...
 		return "**" + (playerTurn == Turn.PLAYER_ONE ? userList.get(0).getName() : userList.get(1).getName()) +
 				"** " + attacksList.get(new Random().nextInt(attacksList.size())) +
 				" **" + (playerTurn != Turn.PLAYER_ONE ? userList.get(0).getName() : userList.get(1).getName()) +
@@ -139,13 +141,17 @@ public class DeathmatchCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"fight", "battle", "challenge"};
-		return aliases;
+		return new String[]{"fight", "battle", "challenge"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
 		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
+		return false;
 	}
 
 }

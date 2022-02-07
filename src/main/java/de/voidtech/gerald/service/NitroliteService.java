@@ -72,10 +72,12 @@ public class NitroliteService {
     	EnumSet<Permission> perms = originMessage.getGuild().getSelfMember().getPermissions((GuildChannel) originMessage.getChannel());
     	
 		if (originMessage.getAttachments().size() != 0) {
-			for (Attachment attachment: originMessage.getAttachments()) {
-				content = content + "\n" + attachment.getUrl();
-			}	
-		}
+            StringBuilder contentBuilder = new StringBuilder(content);
+            for (Attachment attachment: originMessage.getAttachments()) {
+				contentBuilder.append("\n").append(attachment.getUrl());
+			}
+            content = contentBuilder.toString();
+        }
     	
         if (perms.contains(Permission.MANAGE_WEBHOOKS)) {
            sendWebhookMessage(originMessage, content);

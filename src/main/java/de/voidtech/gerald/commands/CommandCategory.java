@@ -8,8 +8,8 @@ public enum CommandCategory {
     UTILS("utils", ":desktop:"),
     EFFECTS("effects", ":sparkles:");
  
-    private String category;
-    private String iconName;
+    private final String category;
+    private final String iconName;
  
     CommandCategory(String category, String iconName) {
     	this.category = category;

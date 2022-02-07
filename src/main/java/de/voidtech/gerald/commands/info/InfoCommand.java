@@ -1,9 +1,15 @@
 package main.java.de.voidtech.gerald.commands.info;
 
-import java.awt.Color;
-import java.io.IOException;
-import java.util.List;
-
+import main.java.de.voidtech.gerald.GlobalConstants;
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.routines.AbstractRoutine;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -11,16 +17,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import main.java.de.voidtech.gerald.GlobalConstants;
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.routines.AbstractRoutine;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
+import java.awt.*;
+import java.io.IOException;
+import java.util.List;
 
 @Command
 public class InfoCommand extends AbstractCommand {
@@ -58,10 +57,10 @@ public class InfoCommand extends AbstractCommand {
 	}
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		long guildCount = message.getJDA().getGuildCache().size();
-		long memberCount = message.getJDA().getGuildCache().stream().mapToInt(Guild::getMemberCount).sum();
-		long emoteCount = getEmoteCount(message.getJDA());
+	public void executeInternal(CommandContext context, List<String> args) {
+		long guildCount = context.getJDA().getGuildCache().size();
+		long memberCount = context.getJDA().getGuildCache().stream().mapToInt(Guild::getMemberCount).sum();
+		long emoteCount = getEmoteCount(context.getJDA());
 		
 		MessageEmbed informationEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
@@ -70,18 +69,17 @@ public class InfoCommand extends AbstractCommand {
 				.addField("Barista Gerald Developers", "```\n"
 						+ "ElementalMP4#7458\r\n"
 						+ "Montori#4707\r\n"
-						+ "0xffset#2267\r\n"
 						+ "Scot_Survivor#8625```", false)
-				.addField("Gerald Guild Count", "```" + String.valueOf(guildCount) + "```", true)
-				.addField("Gerald Member Count", "```" + String.valueOf(memberCount) + "```", true)
-				.addField("Nitrolite Emote Count", "```" + String.valueOf(emoteCount) + "```", false)
+				.addField("Gerald Guild Count", "```" + guildCount + "```", true)
+				.addField("Gerald Member Count", "```" + memberCount + "```", true)
+				.addField("Nitrolite Emote Count", "```" + emoteCount + "```", false)
 				.addField("Latest Build Number", "```" + getLatestBuild() + "```", true)
 				.addField("Active Threads", "```" + Thread.activeCount() + "```", true)
 				.addField("Latest Release", "```"+ GlobalConstants.VERSION +"```", false)
-				.setThumbnail(message.getJDA().getSelfUser().getAvatarUrl())
-				.setFooter("Command Count: " + commands.size() + "\nRoutine Count: " + routines.size(), message.getJDA().getSelfUser().getAvatarUrl())
+				.setThumbnail(context.getJDA().getSelfUser().getAvatarUrl())
+				.setFooter("Command Count: " + commands.size() + "\nRoutine Count: " + routines.size(), context.getJDA().getSelfUser().getAvatarUrl())
 				.build();
-		message.getChannel().sendMessageEmbeds(informationEmbed).queue();
+		context.reply(informationEmbed);
 	}
 
 	@Override
@@ -116,12 +114,16 @@ public class InfoCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"botinfo", "botstats", "bi", "bs", "stats"};
-		return aliases;
+		return new String[]{"botinfo", "botstats", "bi", "bs", "stats"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 

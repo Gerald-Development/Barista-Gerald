@@ -1,15 +1,15 @@
 package main.java.de.voidtech.gerald.commands.info;
 
-import java.awt.Color;
-import java.util.Arrays;
-import java.util.List;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+
+import java.awt.*;
+import java.util.Arrays;
+import java.util.List;
 
 @Command
 public class HttpCommand extends AbstractCommand {
@@ -33,7 +33,7 @@ public class HttpCommand extends AbstractCommand {
 	}
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		String code = args.get(0);
 		
 		if (!codeExists(code)) {
@@ -47,7 +47,7 @@ public class HttpCommand extends AbstractCommand {
 				.setTitle("HTTP " + code, url)
 				.setImage(url)
 				.build();
-		message.getChannel().sendMessageEmbeds(httpEmbed).queue();
+		context.reply(httpEmbed);
 	}
 
 	@Override
@@ -82,12 +82,16 @@ public class HttpCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"httpcat", "httpcode"};
-		return aliases;
+		return new String[]{"httpcat", "httpcode"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 

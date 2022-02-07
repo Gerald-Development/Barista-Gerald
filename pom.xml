@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>de.voidtech.gerald</groupId>
 	<artifactId>BaristaGerald</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.3-ALPHA</version>
 	<name>BaristaGerald</name>
 	<properties>
 		<finalName>${project.artifactId}-${project.version}</finalName>
@@ -87,7 +87,7 @@
 		<dependency>
 			<groupId>net.dv8tion</groupId>
 			<artifactId>JDA</artifactId>
-			<version>4.3.0_289</version>
+			<version>4.4.0_352</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

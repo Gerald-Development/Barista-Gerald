@@ -1,19 +1,19 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.util.List;
-import java.util.Random;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.entities.Message;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+
+import java.util.List;
+import java.util.Random;
 
 @Command
 public class CoinflipCommand extends AbstractCommand{
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		message.getChannel().sendMessage(new Random().nextBoolean() ? "Heads wins!" : "Tails wins!").queue();
+	public void executeInternal(CommandContext context, List<String> args) {
+		context.reply(new Random().nextBoolean() ? "Heads wins!" : "Tails wins!");
 	}
 
 	@Override
@@ -48,12 +48,16 @@ public class CoinflipCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"coin", "flip"};
-		return aliases;
+        return new String[]{"coin", "flip"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 

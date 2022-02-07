@@ -1,17 +1,17 @@
 package main.java.de.voidtech.gerald.commands.actions;
 
-import java.util.List;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.entities.Message;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+
+import java.util.List;
 
 @Command
 public class SlapCommand extends ActionsCommand {
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		super.sendAction(message, ActionType.SLAP);
+	public void executeInternal(CommandContext context, List<String> args) {
+		super.sendAction(context, ActionType.SLAP);
 	}
 
 	@Override
@@ -46,12 +46,16 @@ public class SlapCommand extends ActionsCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"smack", "hit", "punch", "kill"};
-		return aliases;
+		return new String[]{"smack", "hit", "punch", "kill"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 

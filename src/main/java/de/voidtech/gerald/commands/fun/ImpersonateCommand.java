@@ -1,21 +1,20 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.util.EnumSet;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.service.WebhookManager;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.EnumSet;
+import java.util.List;
 
 @Command
 public class ImpersonateCommand extends AbstractCommand{
@@ -24,34 +23,36 @@ public class ImpersonateCommand extends AbstractCommand{
 	private WebhookManager webhookManager;
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		EnumSet<Permission> perms = message.getGuild().getSelfMember().getPermissions((GuildChannel) message.getChannel());
+	public void executeInternal(CommandContext context, List<String> args) {
+		EnumSet<Permission> perms = context.getGuild().getSelfMember().getPermissions((GuildChannel) context.getChannel());
 		
 		if (perms.contains(Permission.MESSAGE_MANAGE) && perms.contains(Permission.MANAGE_WEBHOOKS)) {
-			if (message.getMentionedUsers().size() == 0) {
-				message.getChannel().sendMessage("**You need to mention someone for that to work!**").queue();
+			if (context.getMentionedMembers().size() == 0) {
+				context.reply("**You need to mention someone for that to work!**");
 			} else {
 				String memberSnowflake = ParsingUtils.filterSnowflake(args.get(0));
-				Member memberToBeImpersonated = message.getGuild().retrieveMemberById(memberSnowflake).complete();
+				Member memberToBeImpersonated = context.getGuild().retrieveMemberById(memberSnowflake).complete();
 				if (memberToBeImpersonated == null) {
-					message.getChannel().sendMessage("**That member could not be found!**").queue();
+					context.reply("**That member could not be found!**");
 				} else {
-					sendWebhookMessage(message, args, memberToBeImpersonated);
+					sendWebhookMessage(context, args, memberToBeImpersonated);
 				}
 			}
 		} else {
-			message.getChannel().sendMessage("**I need Manage_Messages and Manage_Webhooks to do that!**").queue();
+			context.reply("**I need Manage_Messages and Manage_Webhooks to do that!**");
 		}
 	}
 
-	private void sendWebhookMessage(Message message, List<String> args, Member memberToBeImpersonated) {
-		String messageToBeSent = "";
+	private void sendWebhookMessage(CommandContext context, List<String> args, Member memberToBeImpersonated) {
+		StringBuilder messageToBeSent = new StringBuilder();
 		for (int i = 1; i < args.size(); i++) {
-			messageToBeSent += args.get(i) + " ";
+			messageToBeSent.append(args.get(i)).append(" ");
 		}
-		Webhook impersonateHook = webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGImpersonate", message.getJDA().getSelfUser().getId());
-		webhookManager.postMessage(messageToBeSent, memberToBeImpersonated.getUser().getAvatarUrl(), memberToBeImpersonated.getUser().getName(), impersonateHook);
-		message.delete().queue();
+		Webhook impersonateHook = webhookManager.getOrCreateWebhook((TextChannel) context.getChannel(), "BGImpersonate", context.getJDA().getSelfUser().getId());
+		webhookManager.postMessage(messageToBeSent.toString(), memberToBeImpersonated.getUser().getAvatarUrl(), memberToBeImpersonated.getUser().getName(), impersonateHook);
+
+		//TODO (from: Franziska): Message needs to be deleted, message context does not have a message object. Should we add one? Do we do this somehow else? Should this command be available through slashes at all!?
+		//context.delete().queue();
 	}
 
 	@Override
@@ -86,13 +87,17 @@ public class ImpersonateCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"become", "pretend"};
-		return aliases;
+        return new String[]{"become", "pretend"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
 		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
+		return false;
 	}
 
 }

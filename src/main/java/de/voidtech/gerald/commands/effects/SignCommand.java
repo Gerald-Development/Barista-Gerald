@@ -1,14 +1,13 @@
 package main.java.de.voidtech.gerald.commands.effects;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.entities.Message;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Command
 public class SignCommand extends AbstractCommand {
@@ -16,30 +15,31 @@ public class SignCommand extends AbstractCommand {
 	private static final String BUNNY = "(\\__/) ││\n(•ㅅ•) ││\n/ 　 づ";
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		String rawText = StringUtils.join(args, " ");
 		List<String> signMessage = groupWords(args);
 		
-		int signLength = signMessage.stream().mapToInt(line -> line.length()).max().getAsInt();
-		if(rawText.length() > 60) message.getChannel().sendMessage("Your message is too long for a protest sign, keep it short.").queue();
-		else if(signLength > 14) message.getChannel().sendMessage("One of the words is too long for a protest sign, keep it short.").queue();
+		int signLength = signMessage.stream().mapToInt(String::length).max().getAsInt();
+		if(rawText.length() > 60) context.reply("Your message is too long for a protest sign, keep it short.");
+		else if(signLength > 14) context.reply("One of the words is too long for a protest sign, keep it short.");
 		else {
 			String signBunny = generateSign(signMessage, signLength);
 			signBunny += BUNNY;
-			
-			message.getChannel().sendMessage("```" + signBunny +"```").queue();
+
+			context.reply("```" + signBunny +"```");
 		}
 	}
 	
 	private String generateSign(List<String> signMessage, int maxLength)
 	{
-		String padding = StringUtils.repeat(" ", (int) Math.floor((14-maxLength)/2));	
-		String result = String.format("%s┌%s┐\n", padding, StringUtils.repeat("─", maxLength));
-		
+		String padding = StringUtils.repeat(" ", (int) Math.floor((14-maxLength)/2));
+
+		StringBuilder resultBuilder = new StringBuilder(String.format("%s┌%s┐\n", padding, StringUtils.repeat("─", maxLength)));
 		for(String message : signMessage) {
-			 result += String.format("%s│%s%s│\n", padding, message, StringUtils.repeat(" ", maxLength-message.length()));
+			 resultBuilder.append(String.format("%s│%s%s│\n", padding, message, StringUtils.repeat(" ", maxLength - message.length())));
 		}
-		
+		String result = resultBuilder.toString();
+
 		result += String.format("%s└%s┘\n", padding, StringUtils.repeat("─", maxLength));
 		
 		return result;
@@ -47,20 +47,20 @@ public class SignCommand extends AbstractCommand {
 	
 	private List<String> groupWords(final List<String> args)
 	{
-		List<String> words = new ArrayList<String>(args);
+		List<String> words = new ArrayList<>(args);
 		List<String> result = new ArrayList<>();
 		
 		while(words.size() > 0)
 		{
-			String line = words.get(0);
+			StringBuilder line = new StringBuilder(words.get(0));
 			words.remove(0);
 			while(words.size() > 1 && (line + words.get(0)).length() < 10)
 			{
-				line += words.get(0);
+				line.append(words.get(0));
 				words.remove(0);
 			}
 			
-			result.add(line);
+			result.add(line.toString());
 		}
 		
 		return result;
@@ -99,12 +99,16 @@ public class SignCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"bunnysign", "protest"};
-		return aliases;
+		return new String[]{"bunnysign", "protest"};
 	}
 
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 }

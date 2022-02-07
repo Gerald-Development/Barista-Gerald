@@ -14,6 +14,7 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.entities.Tunnel;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.JDA;
@@ -26,31 +27,31 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 @Command
 public class TunnelCommand extends AbstractCommand {
-
+	//TODO (from: Franziska): Needs some thinking and rewriting for SlashCommands. I will just not implement the context.reply just yet as it will confuse the refactoring later.
 	@Autowired
 	private EventWaiter waiter;
 	
 	@Autowired
 	private SessionFactory sessionFactory;
 
-	private BidiMap<String, String> pendingRequests = new DualHashBidiMap<String, String>();
+	private final BidiMap<String, String> pendingRequests = new DualHashBidiMap<>();
 
-	private void fillTunnel(Message message) {
-		if (tunnelExists(message.getChannel().getId(), "")) {
-			message.getChannel().sendMessage("Filling tunnel...").queue(sentMessage -> {
-				Tunnel tunnel = getTunnel(message.getChannel().getId());
+	private void fillTunnel(CommandContext context) {
+		if (tunnelExists(context.getChannel().getId(), "")) {
+			context.getChannel().sendMessage("Filling tunnel...").queue(sentMessage -> {
+				Tunnel tunnel = getTunnel(context.getChannel().getId());
 
 				String sourceChannel = tunnel.getSourceChannel();
 				String destinationChannel = tunnel.getDestChannel();
 
-				if (sourceChannel.equals(message.getChannel().getId())) {
-					message.getJDA().getTextChannelById(destinationChannel)
+				if (sourceChannel.equals(context.getChannel().getId())) {
+					context.getJDA().getTextChannelById(destinationChannel)
 					.sendMessage("**This tunnel has been filled.**").queue();
 				} else {
-					message.getJDA().getTextChannelById(sourceChannel)
+					context.getJDA().getTextChannelById(sourceChannel)
 					.sendMessage("**This tunnel has been filled.**").queue();
 				}
-				deleteTunnel(message.getChannel().getId());
+				deleteTunnel(context.getChannel().getId());
 				sentMessage.editMessage("**This tunnel has been filled.**").queue();
 			});
 		}
@@ -71,8 +72,8 @@ public class TunnelCommand extends AbstractCommand {
 							+ "**\nSay 'accept' within 30 seconds to allow this tunnel to be dug!").queue();
 					
 					waiter.waitForEvent(MessageReceivedEvent.class,
-							event -> tunnelAcceptedStatement(((MessageReceivedEvent) event), targetChannel), event -> {
-								boolean allowTunnel = event.getMessage().getContentRaw().toLowerCase().equals("accept");
+							event -> tunnelAcceptedStatement(event, targetChannel), event -> {
+								boolean allowTunnel = event.getMessage().getContentRaw().equalsIgnoreCase("accept");
 								if (allowTunnel) digTunnel(targetChannel, originChannelMessage.getChannel());
 								else denyTunnel(originChannelMessage);	
 								removeFromMap(targetChannelID, originChannelID);
@@ -96,8 +97,8 @@ public class TunnelCommand extends AbstractCommand {
 
 	private boolean tunnelAcceptedStatement(MessageReceivedEvent event, TextChannel targetChannel) {
 		
-		boolean messageEqualsAccept = event.getMessage().getContentRaw().toLowerCase().equals("accept");
-		boolean messageIsNotFromSelf = (event.getAuthor().getId() != event.getJDA().getSelfUser().getId());
+		boolean messageEqualsAccept = event.getMessage().getContentRaw().equalsIgnoreCase("accept");
+		boolean messageIsNotFromSelf = (!event.getAuthor().getId().equals(event.getJDA().getSelfUser().getId()));
 		boolean messageIsFromTargetChannel = event.getChannel().getId().equals(targetChannel.getId());
 		boolean memberHasPermissions = event.getMember().hasPermission(Permission.MANAGE_CHANNEL);
 		
@@ -155,11 +156,10 @@ public class TunnelCommand extends AbstractCommand {
 	private Tunnel getTunnel(String senderChannelID) {
 
 		try (Session session = sessionFactory.openSession()) {
-			Tunnel tunnel = (Tunnel) session
+			return (Tunnel) session
 					.createQuery(
 							"FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
 					.setParameter("senderChannelID", senderChannelID).uniqueResult();
-			return tunnel;
 		}
 	}
 
@@ -172,14 +172,14 @@ public class TunnelCommand extends AbstractCommand {
 			session.getTransaction().commit();
 		}
 	}
-
+	
 	private void doTheDigging(List<String> args, Message message) {
 		if (args.size() < 2) {
 			message.getChannel().sendMessage("**You need to supply a channel ID!**").queue();
 		} else {
 			String targetChannelID = ParsingUtils.filterSnowflake(args.get(1));
 			
-			if (targetChannelID == "")
+			if (targetChannelID.equals(""))
 				message.getChannel().sendMessage("**That is not a valid channel.**").queue();
 			else {
 				TextChannel targetChannel = message.getJDA().getTextChannelCache().getElementById(targetChannelID);
@@ -194,42 +194,43 @@ public class TunnelCommand extends AbstractCommand {
 				else {
 					if (tunnelExists(message.getChannel().getId(), targetChannel.getId()))
 						message.getChannel().sendMessage("**There is already a tunnel here!**").queue();
+					//TODO (from: Franziska): I don't understand (I also didn't try to) needs the creators attetion.
 					else sendChannelVerificationRequest(targetChannel, message, message.getAuthor());
 				}	
 			}
 		}
 	}
 	
-	private void showTunnelInfo(Message message) {
-		Tunnel tunnel = getTunnel(message.getChannel().getId());
+	private void showTunnelInfo(CommandContext context) {
+		Tunnel tunnel = getTunnel(context.getChannel().getId());
 		if (tunnel == null)
-			sendUsageError(message);
+			sendUsageError(context);
 		else {
-			JDA jda = message.getJDA();
+			JDA jda = context.getJDA();
 			String sourceChannel = "**" + jda.getTextChannelById(tunnel.getSourceChannel()).getGuild().getName() + " -> " + jda.getTextChannelById(tunnel.getSourceChannel()).getName() + "**\n";
 			String destChannel = "**" + jda.getTextChannelById(tunnel.getDestChannel()).getGuild().getName() + " -> " + jda.getTextChannelById(tunnel.getDestChannel()).getName() + "**";
-			message.getChannel().sendMessage("**This tunnel is between:**\n" + sourceChannel + destChannel).queue();
+			context.getChannel().sendMessage("**This tunnel is between:**\n" + sourceChannel + destChannel).queue();
 		}
 	}
 	
-	private void sendUsageError(Message message) {
-		message.getChannel().sendMessage("**Did you mean to use one of these?:**\n" + this.getUsage()).queue();
+	private void sendUsageError(CommandContext context) {
+		context.getChannel().sendMessage("**Did you mean to use one of these?:**\n" + this.getUsage()).queue();
 	}
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
-		if (!message.getMember().hasPermission(Permission.MANAGE_CHANNEL)) return;
-		if (args.isEmpty())	showTunnelInfo(message);
+	public void executeInternal(CommandContext context, List<String> args) {
+		if (!context.getMember().hasPermission(Permission.MANAGE_CHANNEL)) return;
+		if (args.isEmpty())	showTunnelInfo(context);
 		else {
 			switch (args.get(0)) {
 			case "fill":
-				fillTunnel(message);
+				fillTunnel(context);
 				break;
 			case "dig":
-				doTheDigging(args, message);
+				doTheDigging(args, context.getMessage());
 				break;
 			default:
-				sendUsageError(message);
+				sendUsageError(context);
 				break;			
 			}	
 		}
@@ -269,12 +270,16 @@ public class TunnelCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"spaceport", "t"};
-		return aliases;
+		return new String[]{"spaceport", "t"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
 		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
+		return false;
 	}
 }

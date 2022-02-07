@@ -1,6 +1,20 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
+import main.java.de.voidtech.gerald.util.RAESameUserPredicate;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,22 +27,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.util.ParsingUtils;
-import main.java.de.voidtech.gerald.util.RAESameUserPredicate;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
-
 @Command
 public class XKCDCommand extends AbstractCommand {
 	
@@ -38,6 +36,7 @@ public class XKCDCommand extends AbstractCommand {
 	private static final Logger LOGGER = Logger.getLogger(XKCDCommand.class.getName());
 	
 	private static final String XKCD_URL = "https://xkcd.com/";
+	private static final String SEARCH_URL = "https://search-xkcd.mfwowocringe.repl.co/search/";
 	private static final String SUFFIX = "info.0.json";
 	private static final String EMOTE_UNICODE = "U+1f440";
 	
@@ -50,14 +49,17 @@ public class XKCDCommand extends AbstractCommand {
 				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
 					return in.lines().collect(Collectors.joining());
 				}
-			} else {
-				return "";
-			}
-			
+			} else return "";
 		} catch (IOException | JSONException e) {
 			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
 		}
 		return "";
+	}
+	
+	private String getXKCDBySearch(String search) {
+		String result = makeRequest(SEARCH_URL + search);
+		if (result.startsWith("404")) return "";
+		else return getXKCDById(new JSONObject(result).getInt("id"));
 	}
 	
 	private String getCurrentXKCD() {
@@ -68,7 +70,7 @@ public class XKCDCommand extends AbstractCommand {
 		return makeRequest(XKCD_URL + id + "/" + SUFFIX);
 	}
 	
-	private void sendXKCD(JSONObject xkcd, Message message) {
+	private void sendXKCD(JSONObject xkcd, CommandContext context) {
 		String day = xkcd.get("day").toString();
 		String month = xkcd.get("month").toString();
 		String year = xkcd.get("year").toString();
@@ -83,10 +85,11 @@ public class XKCDCommand extends AbstractCommand {
 				.setImage(img)
 				.setFooter(day + "-" + month + "-" + year)
 				.build();
-		message.getChannel().sendMessageEmbeds(xkcdEmbed).queue(sentMessage -> {
+		//TODO (from: Franziska): Queue and Waiter. Need to Inspect later.
+		context.getChannel().sendMessageEmbeds(xkcdEmbed).queue(sentMessage -> {
 			sentMessage.addReaction(EMOTE_UNICODE).queue();
 			waiter.waitForEvent(MessageReactionAddEvent.class,
-					new RAESameUserPredicate(message.getAuthor()),
+					new RAESameUserPredicate(context.getAuthor()),
 					event -> {
 					boolean moreInfoButtonPressed = event.getReactionEmote().toString().equals("RE:" + EMOTE_UNICODE);
 					if (moreInfoButtonPressed) {
@@ -95,7 +98,8 @@ public class XKCDCommand extends AbstractCommand {
 								.setTitle(num + " - " + title, img)
 								.setDescription(alt)
 								.setImage(img)
-								.setFooter(day + "-" + month + "-" + year)
+								.setFooter(day + "-" + month + "-" + year + " | Requested by " +
+										context.getAuthor().getName() + "#" + context.getAuthor().getDiscriminator())
 								.build();
 						sentMessage.editMessageEmbeds(newXkcdEmbed).queue();
 					}
@@ -104,30 +108,44 @@ public class XKCDCommand extends AbstractCommand {
 		
 	}
 	
+	private String formSearch(List<String> args) {
+		if (args.size() == 1) return "";
+		else {
+			String buffer = "";
+			for (int i = 1; i < args.size(); i++) buffer += args.get(i) + "+";
+			return buffer;
+		}
+	}
+	
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		if (args.size() == 0) {
 			String response = getCurrentXKCD();
 			String current = new JSONObject(response).get("num").toString();
 			String randomResponse = getXKCDById(new Random().nextInt(Integer.parseInt(current)));
-			sendXKCD(new JSONObject(randomResponse), message);
-			
-		} else if (args.get(0).equals("latest")) {
-			String currentResponse = getCurrentXKCD();
-			sendXKCD(new JSONObject(currentResponse), message);
-			
-		} else if (args.get(0).equals("id")) {
-			if (ParsingUtils.isInteger(args.get(1))) {
-				String byIdResponse = getXKCDById(Integer.parseInt(args.get(1)));
-				if (byIdResponse.equals("")) {
-					message.getChannel().sendMessage("**That ID could not be found!**").queue();
-				
-				} else {
-					sendXKCD(new JSONObject(byIdResponse), message);
+			sendXKCD(new JSONObject(randomResponse), context);
+		} else {
+			switch (args.get(0)) {
+			case "latest":
+				String currentResponse = getCurrentXKCD();
+				sendXKCD(new JSONObject(currentResponse), context);
+				break;
+			case "id":
+				if (ParsingUtils.isInteger(args.get(1))) {
+					String byIdResponse = getXKCDById(Integer.parseInt(args.get(1)));
+					if (byIdResponse.equals("")) context.reply("**That ID could not be found!**");
+					else sendXKCD(new JSONObject(byIdResponse), context);
+				} else context.reply("**That ID is not valid!**");
+				break;
+			case "search":
+				String search = formSearch(args);
+				if (search.equals("")) context.reply("**Your search was invalid!**");
+				else {
+					String searchResult = getXKCDBySearch(search);
+					if (searchResult.equals("")) context.reply("**Your search returned no results!**");
+					else sendXKCD(new JSONObject(searchResult), context);
 				}
-				
-			} else {
-				message.getChannel().sendMessage("**That ID is not valid!**").queue();
+				break;
 			}
 		}
 	}
@@ -141,7 +159,8 @@ public class XKCDCommand extends AbstractCommand {
 	public String getUsage() {
 		return "xkcd\n"
 				+ "xkcd latest\n"
-				+ "xkcd id [id]";
+				+ "xkcd id [id]\n"
+				+ "xkcd search [search string]";
 	}
 
 	@Override
@@ -166,12 +185,16 @@ public class XKCDCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"getxkcd"};
-		return aliases;
+		return new String[]{"getxkcd"};
 	}
 
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 	

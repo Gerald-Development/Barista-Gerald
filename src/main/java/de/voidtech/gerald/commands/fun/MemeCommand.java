@@ -1,6 +1,22 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.entities.MemeBlocklist;
+import main.java.de.voidtech.gerald.service.GeraldConfig;
+import main.java.de.voidtech.gerald.service.ServerService;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,23 +29,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.entities.MemeBlocklist;
-import main.java.de.voidtech.gerald.service.GeraldConfig;
-import main.java.de.voidtech.gerald.service.ServerService;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class MemeCommand extends AbstractCommand {
@@ -48,10 +47,9 @@ public class MemeCommand extends AbstractCommand {
 	private MemeBlocklist getBlocklist(long serverID) {
 		try(Session session = sessionFactory.openSession())
 		{
-			MemeBlocklist blocklist = (MemeBlocklist) session.createQuery("FROM MemeBlocklist WHERE ServerID = :serverID")
+			return (MemeBlocklist) session.createQuery("FROM MemeBlocklist WHERE ServerID = :serverID")
                     .setParameter("serverID", serverID)
                     .uniqueResult();
-			return blocklist;
 		}
 	}
 	
@@ -147,9 +145,9 @@ public class MemeCommand extends AbstractCommand {
 		return "template not found";
 	}
 	
-	private boolean payloadIsUnblocked(JSONObject payload, long id, Message message) {
+	private boolean payloadIsUnblocked(JSONObject payload, long id, CommandContext context) {
 		if (blocklistExists(id)) {
-			MemeBlocklist blocklistEntity = getBlocklist(serverService.getServer(message.getGuild().getId()).getId());
+			MemeBlocklist blocklistEntity = getBlocklist(serverService.getServer(context.getGuild().getId()).getId());
 			String blocklistString = blocklistEntity.getBlocklist();
 			List<String> blocklist = Arrays.asList(blocklistString.split(","));
 			
@@ -160,22 +158,22 @@ public class MemeCommand extends AbstractCommand {
 		}
 	}
 	
-	private void deliverMeme(Message message, JSONObject payload) {
+	private void deliverMeme(CommandContext context, JSONObject payload) {
 		String apiResponse = postPayload(payload);
 		if (apiResponse.equals("template not found")) {
-			message.getChannel().sendMessage("Couldn't find that template :(").queue();
+			context.reply("Couldn't find that template :(");
 		} else {
 			MessageEmbed memeImageEmbed = new EmbedBuilder()
 					.setColor(Color.ORANGE)
 					.setTitle("Image URL", apiResponse)
 					.setImage(apiResponse)
-					.setFooter("Requested By " + message.getAuthor().getAsTag(), message.getAuthor().getAvatarUrl())
+					.setFooter("Requested By " + context.getAuthor().getAsTag(), context.getAuthor().getAvatarUrl())
 					.build();
-			message.getChannel().sendMessageEmbeds(memeImageEmbed).queue();
+			context.reply(memeImageEmbed);
 		}	
 	}
 	
-	private void sendMeme(Message message, List<String> args) {
+	private void sendMeme(CommandContext context, List<String> args) {
 		String messageText = String.join(" ", args);
 		JSONObject payload = null;
 		
@@ -184,32 +182,32 @@ public class MemeCommand extends AbstractCommand {
 		} else {
 			payload = assemblePayloadWithoutCaptions(messageText);
 		}
-		if (message.getChannel().getType() != ChannelType.PRIVATE) {
-			if (payloadIsUnblocked(payload, serverService.getServer(message.getGuild().getId()).getId(), message)) {
-				deliverMeme(message, payload);
+		if (context.getChannel().getType() != ChannelType.PRIVATE) {
+			if (payloadIsUnblocked(payload, serverService.getServer(context.getGuild().getId()).getId(), context)) {
+				deliverMeme(context, payload);
 			} else {
-				message.getChannel().sendMessage("**This template has been blocked**").queue();
+				context.reply("**This template has been blocked**");
 			}	
 		} else {
-			deliverMeme(message, payload);
+			deliverMeme(context, payload);
 		}
 	}
 
-	private void listBlockedMemes(Message message) {
-		if (blocklistExists(serverService.getServer(message.getGuild().getId()).getId())) {
-			MemeBlocklist blocklistEntity = getBlocklist(serverService.getServer(message.getGuild().getId()).getId());
+	private void listBlockedMemes(CommandContext context) {
+		if (blocklistExists(serverService.getServer(context.getGuild().getId()).getId())) {
+			MemeBlocklist blocklistEntity = getBlocklist(serverService.getServer(context.getGuild().getId()).getId());
 			String blocklistString = blocklistEntity.getBlocklist().replaceAll(",", "\n");
 			
-			message.getChannel().sendMessage("**Blocked Meme Templates:**\n" + blocklistString).queue();
+			context.reply("**Blocked Meme Templates:**\n" + blocklistString);
 		} else {
-			message.getChannel().sendMessage("**There is no blocklist yet!**").queue();
+			context.reply("**There is no blocklist yet!**");
 		}
 	}
 
-	private void unblockMeme(Message message, List<String> args) {
-		if (message.getMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-			if (blocklistExists(serverService.getServer(message.getGuild().getId()).getId())) {
-				MemeBlocklist blocklistEntity = getBlocklist(serverService.getServer(message.getGuild().getId()).getId());
+	private void unblockMeme(CommandContext context, List<String> args) {
+		if (context.getMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+			if (blocklistExists(serverService.getServer(context.getGuild().getId()).getId())) {
+				MemeBlocklist blocklistEntity = getBlocklist(serverService.getServer(context.getGuild().getId()).getId());
 				String blocklistString = blocklistEntity.getBlocklist();
 				List<String> blocklist = new ArrayList<String>(Arrays.asList(blocklistString.split(",")));
 				
@@ -217,26 +215,26 @@ public class MemeCommand extends AbstractCommand {
 				String templateToRemove = String.join(" ", modifiableArgs);
 				
 				if (templateToRemove.equals("")) {
-					message.getChannel().sendMessage("**You need to specify a template!**").queue();
+					context.reply("**You need to specify a template!**");
 				} else {
 					if (blocklist.contains(templateToRemove)) {
 						blocklist.remove(templateToRemove);
 						blocklistString = String.join(",", blocklist);
 						updateBlocklist(blocklistString, blocklistEntity);
-						message.getChannel().sendMessage("'" + templateToRemove + "' **has been removed from the blocklist**").queue();
+						context.reply("'" + templateToRemove + "' **has been removed from the blocklist**");
 					} else {
-						message.getChannel().sendMessage("**This template is not blocked!**").queue();
+						context.reply("**This template is not blocked!**");
 					}	
 				}
 			} else {
-				message.getChannel().sendMessage("**There is no blocklist yet!**").queue();
+				context.reply("**There is no blocklist yet!**");
 			}
 		}
 	}
 
-	private void blockMeme(Message message, List<String> args) {
-		if (message.getMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-			MemeBlocklist blocklistEntity = getOrCreateBlocklist(serverService.getServer(message.getGuild().getId()).getId());
+	private void blockMeme(CommandContext context, List<String> args) {
+		if (context.getMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+			MemeBlocklist blocklistEntity = getOrCreateBlocklist(serverService.getServer(context.getGuild().getId()).getId());
 			String blocklistString = blocklistEntity.getBlocklist();
 			List<String> blocklist = new ArrayList<String>(Arrays.asList(blocklistString.split(",")));
 			
@@ -244,34 +242,34 @@ public class MemeCommand extends AbstractCommand {
 			String templateToAdd = String.join(" ", modifiableArgs);
 			
 			if (templateToAdd.equals("")) {
-				message.getChannel().sendMessage("**You need to specify a template!**").queue();
+				context.reply("**You need to specify a template!**");
 			} else {
 				if (blocklist.contains(templateToAdd)) {
-					message.getChannel().sendMessage("**This template is already blocked!**").queue();
+					context.reply("**This template is already blocked!**");
 				} else {
 					blocklist.add(templateToAdd);
 					blocklistString = String.join(",", blocklist);
 					updateBlocklist(blocklistString, blocklistEntity);
-					message.getChannel().sendMessage("'" + templateToAdd + "' **has been added to the blocklist**").queue();
+					context.reply("'" + templateToAdd + "' **has been added to the blocklist**");
 				}		
 			}
 		}		
 	}
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		switch (args.get(0)) {
 		case "block":
-			blockMeme(message, args);
+			blockMeme(context, args);
 			break;
 		case "unblock":
-			unblockMeme(message, args);
+			unblockMeme(context, args);
 			break;
 		case "blocklist":
-			listBlockedMemes(message);
+			listBlockedMemes(context);
 			break;
 		default:
-			sendMeme(message, args);	
+			sendMeme(context, args);
 		}
 	}
 
@@ -310,12 +308,16 @@ public class MemeCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"mememaker", "makememe"};
-		return aliases;
+		return new String[]{"mememaker", "makememe"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 }

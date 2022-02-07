@@ -1,25 +1,23 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.util.MRESameUserPredicate;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.util.MRESameUserPredicate;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Command
 public class CitrusCommand extends AbstractCommand {
@@ -28,28 +26,28 @@ public class CitrusCommand extends AbstractCommand {
 	private EventWaiter waiter;
 	
 	@Override
-	public void executeInternal(Message message, List<String> args) 
+	public void executeInternal(CommandContext context, List<String> args)
 	{
 		BidiMap<String, String> citrusMap = getCitrusMap();
-		List<String> keyList = citrusMap.keySet().stream().collect(Collectors.toList());
+		List<String> keyList = new ArrayList<>(citrusMap.keySet());
 		String currentCitrus = keyList.get(new Random().nextInt(keyList.size()));
 		
 		MessageEmbed citrusQuestEmbed = new EmbedBuilder()//
-				.setTitle(String.format("%s guess that citrus, you have 15 seconds!", message.getAuthor().getAsTag()))
+				.setTitle(String.format("%s guess that citrus, you have 15 seconds!", context.getAuthor().getAsTag()))
 				.setColor(Color.YELLOW)
 				.setImage(citrusMap.get(currentCitrus))
 				.build();
-		
-		message.getChannel().sendMessageEmbeds(citrusQuestEmbed).queue();
+
+		context.reply(citrusQuestEmbed);
 		
 		waiter.waitForEvent(MessageReceivedEvent.class,
-				new MRESameUserPredicate(message.getAuthor()),
+				new MRESameUserPredicate(context.getAuthor()),
 				event -> {
 					boolean correctCitrus = event.getMessage().getContentRaw().toLowerCase().equals(currentCitrus);
-					message.getChannel().sendMessage(String.format("%s! The Citrus was **%s**",
+					context.getChannel().sendMessage(String.format("%s! The Citrus was **%s**",
 							correctCitrus ? "Correct" : "Incorrect", currentCitrus)).queue();
 				}, 15, TimeUnit.SECONDS, 
-				() -> message.getChannel().sendMessage(String.format("Time is up! The Citrus was **%s**", currentCitrus)).queue());
+				() -> context.getChannel().sendMessage(String.format("Time is up! The Citrus was **%s**", currentCitrus)).queue());
 	}
 	
 	private BidiMap<String, String> getCitrusMap()
@@ -106,13 +104,17 @@ public class CitrusCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"cguess", "citrusguess"};
-		return aliases;
+        return new String[]{"cguess", "citrusguess"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
 		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
+		return false;
 	}
 
 }

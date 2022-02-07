@@ -1,25 +1,24 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import org.apache.commons.lang3.StringUtils;
+
+import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.apache.commons.lang3.StringUtils;
-
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-
 @Command
 public class SpinCommand extends AbstractCommand {
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		Map<String, Color> colorMap = getSpinnerColors();
 
 		if (args.size() > 0) {
@@ -27,12 +26,12 @@ public class SpinCommand extends AbstractCommand {
 				int spinTime = new Random().nextInt(30);
 				Color color = colorMap.get(args.get(0).toLowerCase());
 
-				doTheSpinning(color, spinTime, message);
+				doTheSpinning(color, spinTime, context);
 			} else if (args.get(0).equals("colors")) {
 				String supportedColorsString = StringUtils.join(colorMap.keySet(), "\n");
-				message.getChannel().sendMessage("**Spinner colors:**\n" + supportedColorsString).queue();
+				context.reply("**Spinner colors:**\n" + supportedColorsString);
 			} else {
-				message.getChannel().sendMessage("That is not a valid color!").queue();
+				context.reply("That is not a valid color!");
 			}	
 		} else {
 			int spinTime = new Random().nextInt(30);
@@ -40,7 +39,7 @@ public class SpinCommand extends AbstractCommand {
 			Object[] values = colorMap.values().toArray();
 			Color color = (Color) values[new Random().nextInt(values.length)];
 
-			doTheSpinning(color, spinTime, message);
+			doTheSpinning(color, spinTime, context);
 		}
 	}
 
@@ -54,13 +53,14 @@ public class SpinCommand extends AbstractCommand {
 		return "spin [color name] OR spin colors (to see the colors you can use)";
 	}
 
-	private void doTheSpinning(Color color, int spinTime, Message message) {
+	private void doTheSpinning(Color color, int spinTime, CommandContext context) {
 		int spinDelay = spinTime * 1000;
 		MessageEmbed spinnerStartEmbed = new EmbedBuilder()
 				.setColor(color)
 				.setTitle("Your spinner is spinning...")
 				.build();
-		message.getChannel().sendMessageEmbeds(spinnerStartEmbed).queue(sentMessage -> {
+		//TODO (from: Franziska): Same here with the queue. I need to work on this later
+		context.getChannel().sendMessageEmbeds(spinnerStartEmbed).queue(sentMessage -> {
 			
 			try {
 				Thread.sleep(spinDelay);
@@ -71,13 +71,13 @@ public class SpinCommand extends AbstractCommand {
 						.build();
 				sentMessage.editMessageEmbeds(spinnerEndEmbed).queue();
 			} catch (InterruptedException e) {
-				message.getChannel().sendMessage("Your spinner broke!").queue();
+				context.getChannel().sendMessage("Your spinner broke!").queue();
 			}
 		});
 	}
 
 	private Map<String, Color> getSpinnerColors() {
-		Map<String, Color> spinnerColors = new HashMap<String, Color>();
+		Map<String, Color> spinnerColors = new HashMap<>();
 		spinnerColors.put("red", Color.RED);
 		spinnerColors.put("orange", Color.ORANGE);
 		spinnerColors.put("yellow", Color.YELLOW);
@@ -111,13 +111,17 @@ public class SpinCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"spinner", "speen"};
-		return aliases;
+		return new String[]{"spinner", "speen"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
 		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
+		return false;
 	}
 
 }

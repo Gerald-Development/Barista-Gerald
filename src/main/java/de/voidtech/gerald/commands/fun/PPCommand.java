@@ -1,23 +1,23 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
-import java.util.List;
-import java.util.Random;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+
+import java.awt.*;
+import java.util.List;
+import java.util.Random;
 
 @Command
 public class PPCommand extends AbstractCommand{
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		
-		long seed = Long.valueOf(message.getAuthor().getId());
+		long seed = Long.parseLong(context.getAuthor().getId());
 		
 		int ppSizeNumber = new Random(seed).nextInt(12);
 		String phrase = getPhrase(ppSizeNumber);
@@ -25,7 +25,7 @@ public class PPCommand extends AbstractCommand{
 		String ppSize = String.valueOf(ppSizeNumber);		
 		
 		//It's best if nobody questions this
-		if (message.getAuthor().getId().equals("341300268660555778")) {
+		if (context.getAuthor().getId().equals("341300268660555778")) {
 			ppSize = "YEEEEEEEEEEEEEEEEEEEEEEESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS";
 			phrase = "G a r g a n t u a n.";
 			color = Color.magenta;
@@ -38,7 +38,7 @@ public class PPCommand extends AbstractCommand{
 				.setDescription("Your PP is **" + ppSize + (ppSizeNumber == 1 ? " inch.** " : " inches.** ") + phrase)
 				.build();
 		
-		message.getChannel().sendMessageEmbeds(ppSizeEmbed).queue();
+		context.reply(ppSizeEmbed);
 	}
 	
 	private Color getColor(int ppSize)
@@ -91,12 +91,16 @@ public class PPCommand extends AbstractCommand{
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"ppsize"};
-		return aliases;
+		return new String[]{"ppsize"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 

@@ -2,10 +2,11 @@ package main.java.de.voidtech.gerald.service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.Browser.NewContextOptions;
@@ -13,8 +14,11 @@ import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 
-@Service
+//@Service
 public class PlaywrightService {
+	
+	@Autowired
+	private ThreadManager threadManager;
 	
 	private static final Logger LOGGER = Logger.getLogger(PlaywrightService.class.getName());
 	private BrowserContext browser = null;
@@ -25,11 +29,18 @@ public class PlaywrightService {
 				.setLocale("en-GB");
 	}
 	
-	public PlaywrightService() {
-		LOGGER.log(Level.INFO, "Playwright is being initialised");
-		Browser browserInstance = Playwright.create().firefox().launch();
-		this.browser = browserInstance.newContext(getContextOptions());
-		LOGGER.log(Level.INFO, "Playwright is ready!");
+	//@EventListener(ApplicationReadyEvent.class)
+	private void initialisePlaywright() {
+		ExecutorService playwrightExecutor = threadManager.getThreadByName("Playwright");
+		playwrightExecutor.execute(new Runnable() {
+			@Override
+			public void run() {
+				LOGGER.log(Level.INFO, "Playwright is being initialised");
+				Browser browserInstance = Playwright.create().firefox().launch();
+				browser = browserInstance.newContext(getContextOptions());
+				LOGGER.log(Level.INFO, "Playwright is ready!");
+			}
+		});
 	}
 	
 	public BrowserContext getBrowser() {

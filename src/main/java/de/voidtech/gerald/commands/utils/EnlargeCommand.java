@@ -1,5 +1,11 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -7,12 +13,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.util.ParsingUtils;
-import net.dv8tion.jda.api.entities.Message;
 
 @Command
 public class EnlargeCommand extends AbstractCommand {
@@ -37,7 +37,7 @@ public class EnlargeCommand extends AbstractCommand {
 	}
 
 	@Override
-	public void executeInternal(Message message, List<String> args) {
+	public void executeInternal(CommandContext context, List<String> args) {
 		String emoteText = args.get(0);
 		String emoteID = "";
 		
@@ -49,11 +49,11 @@ public class EnlargeCommand extends AbstractCommand {
 
 		for (String extension : FILE_EXTENSIONS) {
 			if (checkForImage(emoteID, extension)) {
-				message.getChannel().sendMessage(CDN_URL + emoteID + "." + extension).queue();
+				context.reply(CDN_URL + emoteID + "." + extension);
 				return;
 			}
 		}
-		message.getChannel().sendMessage("Couldn't find that emote").queue();
+		context.reply("Couldn't find that emote");
 	}
 
 	@Override
@@ -88,12 +88,16 @@ public class EnlargeCommand extends AbstractCommand {
 	
 	@Override
 	public String[] getCommandAliases() {
-		String[] aliases = {"jumbo"};
-		return aliases;
+        return new String[]{"jumbo"};
 	}
 	
 	@Override
 	public boolean canBeDisabled() {
+		return true;
+	}
+	
+	@Override
+	public boolean isSlashCompatible() {
 		return true;
 	}
 }
