@@ -57,7 +57,7 @@ public class Gerald {
 			GlobalConfigService globalConfService,	EventWaiter eventWaiter,
 			MemberListener memberListener,	ReadyListener readyListener,
 			StarboardListener starboardListener, AutoroleListener autoroleListener,
-			CountingMessageDeleteListener countingListener, SlashCommandListener slashCommandListener) throws LoginException, InterruptedException
+			CountingMessageDeleteListener countingListener, SlashCommandListener slashCommandListener, VoteListener voteListener) throws LoginException, InterruptedException
 	{
 		GlobalConfig globalConf = globalConfService.getGlobalConfig();
 
@@ -67,7 +67,7 @@ public class Gerald {
 				.setBulkDeleteSplittingEnabled(false)
 				.setStatus(OnlineStatus.ONLINE)
 				.setCompression(Compression.NONE)
-				.addEventListeners(eventWaiter,	msgListener, readyListener,	guildGoneListener, channelDeleteListener, memberListener, starboardListener, autoroleListener, countingListener, slashCommandListener)
+				.addEventListeners(eventWaiter,	msgListener, readyListener,	guildGoneListener, channelDeleteListener, memberListener, starboardListener, autoroleListener, countingListener, slashCommandListener, voteListener)
 				.setActivity(EntityBuilder.createActivity(globalConf.getStatus(),
 							 GlobalConstants.STREAM_URL,
 						     globalConf.getActivity()))

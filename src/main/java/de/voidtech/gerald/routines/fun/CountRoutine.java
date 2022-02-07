@@ -101,7 +101,7 @@ public class CountRoutine extends AbstractRoutine {
 		if (channel != null) {
 			if (ParsingUtils.isInteger(message.getContentRaw()))
 				playGame(message);
-			else if (message.getContentRaw().toLowerCase().equals("stats"))
+			else if (message.getContentRaw().toLowerCase().equals("stats") | message.getContentRaw().toLowerCase().equals("statistics"))
 				sendStatsMessage(channel, message);
 			else if (!channel.talkingIsAllowed()) {
 				if (perms.contains(Permission.MESSAGE_MANAGE)) message.delete().queue();
