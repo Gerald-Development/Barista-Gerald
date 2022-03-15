@@ -35,5 +35,4 @@ public class VoteListener implements EventListener {
 			if (!hasRole) reaction.getReaction().removeReaction(reaction.getUser()).queue();	
 		}
 	}
-
 }
