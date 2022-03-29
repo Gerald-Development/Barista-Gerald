@@ -26,8 +26,8 @@ public class AutoroleService {
 		{
 
             return (List<AutoroleConfig>) session.createQuery("FROM AutoroleConfig WHERE serverID = :serverID")
-.setParameter("serverID", serverID)
-.list();
+            		.setParameter("serverID", serverID)
+            		.list();
 		}
 	}
     
@@ -35,8 +35,8 @@ public class AutoroleService {
     	try(Session session = sessionFactory.openSession())
 		{
             return (AutoroleConfig) session.createQuery("FROM AutoroleConfig WHERE roleID = :roleID")
-.setParameter("roleID", roleID)
-.uniqueResult();
+            		.setParameter("roleID", roleID)
+            		.uniqueResult();
 		}
     }
     
