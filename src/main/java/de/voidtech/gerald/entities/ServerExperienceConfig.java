@@ -31,4 +31,12 @@ public class ServerExperienceConfig {
 		this.levelUpMessagesEnabled = false;
 	}
 	
+	public boolean levelUpMessagesEnabled() {
+		return this.levelUpMessagesEnabled;
+	}
+	
+	public void setLevelUpMessagesEnabled(boolean enabled) {
+		this.levelUpMessagesEnabled = enabled;
+	}
+	
 }

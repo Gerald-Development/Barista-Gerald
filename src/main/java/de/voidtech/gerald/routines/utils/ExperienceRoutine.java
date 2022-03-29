@@ -18,7 +18,7 @@ public class ExperienceRoutine extends AbstractRoutine {
 	@Override
 	public void executeInternal(Message message) {
 		if (message.getChannel().getType().equals(ChannelType.PRIVATE)) return;
-		xpService.updateUserExperience(message.getAuthor().getId(), message.getGuild().getId(), message.getChannel().getId());
+		xpService.updateUserExperience(message.getMember(), message.getGuild().getId(), message.getChannel().getId());
 	}
 
 	@Override

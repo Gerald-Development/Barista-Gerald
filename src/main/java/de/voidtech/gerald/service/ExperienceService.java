@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Random;
 
 import org.hibernate.Session;
@@ -9,7 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import main.java.de.voidtech.gerald.entities.Experience;
+import main.java.de.voidtech.gerald.entities.LevelUpRole;
 import main.java.de.voidtech.gerald.entities.Server;
+import main.java.de.voidtech.gerald.entities.ServerExperienceConfig;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 
 @Service
 public class ExperienceService {
@@ -20,7 +25,7 @@ public class ExperienceService {
 	@Autowired
 	private ServerService serverService;
 	
-	private static final int EXPERIENCE_DELAY = 60; //Delay between incrementing XP in seconds
+	private static final int EXPERIENCE_DELAY = 0; //Delay between incrementing XP in seconds
 	
 	private Experience getUserExperience(String userID, long serverID) {
 		try(Session session = sessionFactory.openSession())
@@ -29,9 +34,36 @@ public class ExperienceService {
 					.setParameter("userID", userID)
 					.setParameter("serverID", serverID)
 					.uniqueResult();
+			
 			if (xp == null) xp = new Experience(userID, serverID);
-            
 			return xp;
+		}
+	}
+	
+	private ServerExperienceConfig getServerExperienceConfig(long serverID) {
+		try(Session session = sessionFactory.openSession())
+		{
+			ServerExperienceConfig xpConf = (ServerExperienceConfig) session.createQuery("FROM ServerExperienceConfig WHERE serverID = :serverID")
+					.setParameter("serverID", serverID)
+					.uniqueResult();
+			
+			if (xpConf == null) {
+				xpConf = new ServerExperienceConfig(serverID);
+				saveServerExperienceConfig(xpConf);
+			}
+			return xpConf;
+		}
+	}
+	
+	private List<LevelUpRole> getRolesForLevel(long id, long level) {
+		try(Session session = sessionFactory.openSession())
+		{
+			@SuppressWarnings("unchecked")
+			List<LevelUpRole> roles = (List<LevelUpRole>) session.createQuery("FROM LevelUpRole WHERE serverID = :serverID AND level <= :level")
+					.setParameter("serverID", id)
+					.setParameter("level", level)
+					.list();
+			return roles;
 		}
 	}
 	
@@ -40,6 +72,28 @@ public class ExperienceService {
 		{
 			session.getTransaction().begin();	
 			session.saveOrUpdate(userXP);
+			session.getTransaction().commit();
+		}
+	}
+	
+	private void saveServerExperienceConfig(ServerExperienceConfig config) {
+		try(Session session = sessionFactory.openSession())
+		{
+			session.getTransaction().begin();	
+			session.saveOrUpdate(config);
+			session.getTransaction().commit();
+		}
+	}
+	
+
+	private void removeLevelUpRole(LevelUpRole role) {
+		try(Session session = sessionFactory.openSession())
+		{
+			session.getTransaction().begin();
+			session.createQuery("DELETE FROM LevelUpRole WHERE roleID = :roleID AND serverID = :serverID")
+				.setParameter("roleID", role.getRoleID())
+				.setParameter("serverID", role.getServerID())
+				.executeUpdate();
 			session.getTransaction().commit();
 		}
 	}
@@ -53,12 +107,15 @@ public class ExperienceService {
 		return new Random().nextInt(16);
 	}
 	
-	public void updateUserExperience(String userID, String guildID, String channelID) {
+	public void updateUserExperience(Member member, String guildID, String channelID) {
 		Server server = serverService.getServer(guildID);
-		Experience userXP = getUserExperience(userID, server.getId());
+		Experience userXP = getUserExperience(member.getId(), server.getId());
 		userXP.incrementMessageCount();
 		
-		if ((userXP.getLastMessageTime() + EXPERIENCE_DELAY) > Instant.now().getEpochSecond()) return; 
+		if ((userXP.getLastMessageTime() + EXPERIENCE_DELAY) > Instant.now().getEpochSecond()) {
+			saveUserExperience(userXP);
+			return; 
+		}
 		
 		long currentExperience = userXP.getCurrentExperience() + generateExperience();
 		long xpToNextLevel = xpToNextLevel(userXP.getLevel(), currentExperience);
@@ -66,13 +123,38 @@ public class ExperienceService {
 		if (xpToNextLevel < 0) {
 			userXP.setLevel(userXP.getLevel() + 1);
 			userXP.setCurrentXP(-1 * xpToNextLevel);
-		} else {
-			userXP.setCurrentXP(currentExperience);
-		}
+			performLevelUpActions(userXP, server, member, channelID);
+		} else userXP.setCurrentXP(currentExperience);
 		
 		userXP.setLastMessageTime(Instant.now().getEpochSecond());
 		
 		saveUserExperience(userXP);
+	}
+
+	private void performLevelUpActions(Experience userXP, Server server, Member member, String channelID) {
+		ServerExperienceConfig config = getServerExperienceConfig(server.getId());
+		
+		List<LevelUpRole> roles = getRolesForLevel(server.getId(), userXP.getLevel());
+		if (roles.isEmpty()) return;
+		
+		List<Role> memberRoles = member.getRoles();
+		
+		for (LevelUpRole role : roles) {
+			Role roleToBeGiven = member.getGuild().getRoleById(role.getRoleID());
+			if (roleToBeGiven == null) removeLevelUpRole(role);
+			else {
+				if (!memberRoles.contains(roleToBeGiven)) {
+					member.getGuild().addRoleToMember(member, roleToBeGiven).complete();
+					if (config.levelUpMessagesEnabled()) sendLevelUpMessage(role, member, channelID);
+				}
+			}
+		}
+	}
+
+	private void sendLevelUpMessage(LevelUpRole role, Member member, String channelID) {
+		member.getGuild().getTextChannelById(channelID).sendMessage(member.getAsMention() + " reached level " 
+				+ role.getLevel() + " and was given the role " 
+				+ role.getRoleID()).queue();
 	}
 
 }

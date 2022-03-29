@@ -34,5 +34,17 @@ public class LevelUpRole {
 		this.serverID = serverID;
 		this.level = level;
 	}
+	
+	public String getRoleID() {
+		return this.roleID;
+	}
+	
+	public long getServerID() {
+		return this.serverID;
+	}
+	
+	public long getLevel() {
+		return this.level;
+	}
 
 }
