@@ -13,7 +13,9 @@ import main.java.de.voidtech.gerald.entities.Experience;
 import main.java.de.voidtech.gerald.entities.LevelUpRole;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.entities.ServerExperienceConfig;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 
 @Service
@@ -145,16 +147,20 @@ public class ExperienceService {
 			else {
 				if (!memberRoles.contains(roleToBeGiven)) {
 					member.getGuild().addRoleToMember(member, roleToBeGiven).complete();
-					if (config.levelUpMessagesEnabled()) sendLevelUpMessage(role, member, channelID);
+					if (config.levelUpMessagesEnabled()) sendLevelUpMessage(role, member, roleToBeGiven, channelID);
 				}
 			}
 		}
 	}
 
-	private void sendLevelUpMessage(LevelUpRole role, Member member, String channelID) {
-		member.getGuild().getTextChannelById(channelID).sendMessage(member.getAsMention() + " reached level " 
-				+ role.getLevel() + " and was given the role " 
-				+ role.getRoleID()).queue();
+	private void sendLevelUpMessage(LevelUpRole role, Member member, Role roleToBeGiven, String channelID) {
+		MessageEmbed levelUpEmbed = new EmbedBuilder()
+				.setColor(roleToBeGiven.getColor())
+				.setTitle(member.getUser().getName() + " levelled up!")
+				.setDescription(member.getAsMention() + " reached level `" + role.getLevel()
+					+ "` and received the role " + roleToBeGiven.getAsMention())
+				.build();
+		member.getGuild().getTextChannelById(channelID).sendMessageEmbeds(levelUpEmbed).queue();
 	}
 
 }
