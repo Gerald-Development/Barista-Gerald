@@ -162,5 +162,4 @@ public class ExperienceService {
 				.build();
 		member.getGuild().getTextChannelById(channelID).sendMessageEmbeds(levelUpEmbed).queue();
 	}
-
 }
