@@ -1,11 +1,19 @@
 package main.java.de.voidtech.gerald.service;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
 import java.util.Random;
 
+import javax.xml.bind.DatatypeConverter;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +35,33 @@ public class ExperienceService {
 	@Autowired
 	private ServerService serverService;
 	
+	@Autowired
+	private GeraldConfig config;
+	
 	private static final int EXPERIENCE_DELAY = 0; //Delay between incrementing XP in seconds
+	
+	public byte[] getExperienceCard(String avatarURL, long xpAchieved, long xpNeeded,
+			long level, long rank, String username, String barColour, String background) {
+		try {
+			String cardURL = config.getExperienceCardApiURL() + "?avatar_url=" + avatarURL +
+					"&xp=" + xpAchieved + "&xp_needed=" + xpNeeded + "&level=" + level + "&rank=" + rank
+					+ "&username=" + URLEncoder.encode(username, StandardCharsets.UTF_8.toString())
+					+ "&bar_colour=" + URLEncoder.encode(barColour, StandardCharsets.UTF_8.toString())
+					+ "&bg_colour=" + URLEncoder.encode(background, StandardCharsets.UTF_8.toString());
+			URL url = new URL(cardURL);
+			//Remove the data:image/png;base64 part
+			String response = Jsoup.connect(url.toString()).get().toString().split(",")[1];
+			byte[] imageBytes = DatatypeConverter.parseBase64Binary(response);
+			return imageBytes;
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+		
+	}
 	
 	public Experience getUserExperience(String userID, long serverID) {
 		try(Session session = sessionFactory.openSession())
@@ -157,7 +191,7 @@ public class ExperienceService {
 		long currentExperience = userXP.getCurrentExperience() + generateExperience();
 		long xpToNextLevel = xpToNextLevel(userXP.getLevel(), currentExperience);
 		
-		if (xpToNextLevel < 0) {
+		if (xpToNextLevel <= 0) {
 			userXP.setLevel(userXP.getLevel() + 1);
 			userXP.setCurrentXP(-1 * xpToNextLevel);
 			performLevelUpActions(userXP, server, member, channelID);

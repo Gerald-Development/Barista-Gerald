@@ -141,15 +141,12 @@ public class ExperienceCommand extends AbstractCommand {
 
 	private void sendLevelCard(MessageChannel channel, Member member, long serverID) {
 		Experience userXP = xpService.getUserExperience(member.getId(), serverID);
-		MessageEmbed experienceEmbed = new EmbedBuilder()
-				.setColor(member.getColorRaw())
-				.setThumbnail(member.getEffectiveAvatarUrl())
-				.setTitle(member.getUser().getName() + "'s Experience")
-				.setDescription("**Level:** `" + userXP.getLevel() +
-						"`\n**XP towards next level:** `" + userXP.getCurrentExperience() +
-						"`\n**XP Needed for next level:** `" + xpService.xpNeededForLevel(userXP.getLevel() + 1) + "`")
-				.build();
-		channel.sendMessageEmbeds(experienceEmbed).queue();
+		
+		byte[] xpCard = xpService.getExperienceCard(member.getUser().getAvatarUrl(),
+				userXP.getCurrentExperience(), xpService.xpNeededForLevel(userXP.getLevel()),
+				userXP.getLevel(), 1, member.getUser().getName() + "#" + member.getUser().getDiscriminator(),
+				"#FF0000", "#2E2E2E");
+		channel.sendFile(xpCard, "xpcard.png").queue();
 	}
 
 	@Override
