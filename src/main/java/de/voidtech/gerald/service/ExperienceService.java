@@ -29,7 +29,7 @@ public class ExperienceService {
 	
 	private static final int EXPERIENCE_DELAY = 0; //Delay between incrementing XP in seconds
 	
-	private Experience getUserExperience(String userID, long serverID) {
+	public Experience getUserExperience(String userID, long serverID) {
 		try(Session session = sessionFactory.openSession())
 		{
 			Experience xp = (Experience) session.createQuery("FROM Experience WHERE userID = :userID AND serverID = :serverID")
@@ -57,7 +57,7 @@ public class ExperienceService {
 		}
 	}
 	
-	private List<LevelUpRole> getRolesForLevel(long id, long level) {
+	private List<LevelUpRole> getRolesForLevelFromServer(long id, long level) {
 		try(Session session = sessionFactory.openSession())
 		{
 			@SuppressWarnings("unchecked")
@@ -66,6 +66,28 @@ public class ExperienceService {
 					.setParameter("level", level)
 					.list();
 			return roles;
+		}
+	}
+	
+	public List<LevelUpRole> getAllLevelUpRolesForServer(long id) {
+		try(Session session = sessionFactory.openSession())
+		{
+			@SuppressWarnings("unchecked")
+			List<LevelUpRole> roles = (List<LevelUpRole>) session.createQuery("FROM LevelUpRole WHERE serverID = :serverID")
+					.setParameter("serverID", id)
+					.list();
+			return roles;
+		}
+	}
+	
+	public boolean serverHasRoleForLevel(long id, long level) {
+		try(Session session = sessionFactory.openSession())
+		{
+			LevelUpRole role = (LevelUpRole) session.createQuery("FROM LevelUpRole WHERE serverID = :serverID AND level = :level")
+				.setParameter("serverID", id)
+				.setParameter("level", level)
+				.uniqueResult();
+			return role != null;
 		}
 	}
 	
@@ -87,22 +109,35 @@ public class ExperienceService {
 		}
 	}
 	
+	public void saveLevelUpRole(LevelUpRole role) {
+		try(Session session = sessionFactory.openSession())
+		{
+			session.getTransaction().begin();	
+			session.saveOrUpdate(role);
+			session.getTransaction().commit();
+		}
+	}
+	
 
-	private void removeLevelUpRole(LevelUpRole role) {
+	public void removeLevelUpRole(long level, long serverID) {
 		try(Session session = sessionFactory.openSession())
 		{
 			session.getTransaction().begin();
-			session.createQuery("DELETE FROM LevelUpRole WHERE roleID = :roleID AND serverID = :serverID")
-				.setParameter("roleID", role.getRoleID())
-				.setParameter("serverID", role.getServerID())
+			session.createQuery("DELETE FROM LevelUpRole WHERE level = :level AND serverID = :serverID")
+				.setParameter("level", level)
+				.setParameter("serverID", serverID)
 				.executeUpdate();
 			session.getTransaction().commit();
 		}
 	}
 	
+	public long xpNeededForLevel(long level) {
+		return 5 * (level ^ 2) + (50 * level) + 100;
+	}
+	
 	private long xpToNextLevel(long currentLevel, long currentXP) {
 		long nextLevel = currentLevel + 1;
-		return 5 * (nextLevel ^ 2) + (50 * nextLevel) + 100 - currentXP;
+		return xpNeededForLevel(nextLevel) - currentXP;
 	}
 	
 	private int generateExperience() {
@@ -136,14 +171,14 @@ public class ExperienceService {
 	private void performLevelUpActions(Experience userXP, Server server, Member member, String channelID) {
 		ServerExperienceConfig config = getServerExperienceConfig(server.getId());
 		
-		List<LevelUpRole> roles = getRolesForLevel(server.getId(), userXP.getLevel());
+		List<LevelUpRole> roles = getRolesForLevelFromServer(server.getId(), userXP.getLevel());
 		if (roles.isEmpty()) return;
 		
 		List<Role> memberRoles = member.getRoles();
 		
 		for (LevelUpRole role : roles) {
 			Role roleToBeGiven = member.getGuild().getRoleById(role.getRoleID());
-			if (roleToBeGiven == null) removeLevelUpRole(role);
+			if (roleToBeGiven == null) removeLevelUpRole(role.getLevel(), role.getServerID());
 			else {
 				if (!memberRoles.contains(roleToBeGiven)) {
 					member.getGuild().addRoleToMember(member, roleToBeGiven).complete();

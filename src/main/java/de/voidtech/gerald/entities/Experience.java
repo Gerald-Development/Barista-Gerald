@@ -42,7 +42,7 @@ public class Experience {
 		this.userID = userID;
 		this.serverID = serverID;
 		this.messageCount = 0;
-		this.level = 1;
+		this.level = 0;
 		this.lastMessageTime = 0;
 		this.experienceGainedToNextLevel = 0;
 	}
