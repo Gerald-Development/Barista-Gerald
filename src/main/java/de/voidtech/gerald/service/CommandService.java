@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import main.java.de.voidtech.gerald.GlobalConstants;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.util.CustomCollectors;
@@ -99,8 +98,7 @@ public class CommandService
 	private MessageEmbed createLevenshteinEmbed(List<String> possibleOptions) {
 		EmbedBuilder levenshteinResultEmbed = new EmbedBuilder()
 				.setColor(Color.RED)
-				.setTitle("That's not a command!", GlobalConstants.LINKTREE_URL)
-				.addField("Is this what you meant?", "`" + String.join("`, `", possibleOptions) + "`", false);
+				.setTitle("I couldn't find that command! Did you mean `" + String.join("` or `", possibleOptions) + "`?");
 		return levenshteinResultEmbed.build();
 	}
 

@@ -26,7 +26,6 @@ import main.java.de.voidtech.gerald.service.GlobalConfigService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
-//import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
@@ -39,10 +38,9 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 
 import javax.security.auth.login.LoginException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 @SpringBootApplication
 public class Gerald {
@@ -62,7 +60,7 @@ public class Gerald {
 		GlobalConfig globalConf = globalConfService.getGlobalConfig();
 
 		JDA jda = JDABuilder.createDefault(configService.getToken())
-				.enableIntents(getNonPrivilegedIntents())
+				.enableIntents(getApprovedIntents())
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.setBulkDeleteSplittingEnabled(false)
 				.setStatus(OnlineStatus.ONLINE)
@@ -80,11 +78,24 @@ public class Gerald {
 		return jda;
 	}
 	
-	private List<GatewayIntent> getNonPrivilegedIntents() {
-		List<GatewayIntent> gatewayIntents = new ArrayList<>(Arrays.asList(GatewayIntent.values()));
-		gatewayIntents.remove(GatewayIntent.GUILD_PRESENCES);
+	private Set<GatewayIntent> getApprovedIntents()
+	{
+		Set<GatewayIntent> approvedIntents = new HashSet<GatewayIntent>();
 		
-		return gatewayIntents;
+		approvedIntents.add(GatewayIntent.GUILD_MEMBERS);
+		approvedIntents.add(GatewayIntent.GUILD_BANS);
+		approvedIntents.add(GatewayIntent.GUILD_EMOJIS);
+		approvedIntents.add(GatewayIntent.GUILD_WEBHOOKS);
+		approvedIntents.add(GatewayIntent.GUILD_INVITES);
+		approvedIntents.add(GatewayIntent.GUILD_VOICE_STATES);
+		approvedIntents.add(GatewayIntent.GUILD_MESSAGES);
+		approvedIntents.add(GatewayIntent.GUILD_MESSAGE_REACTIONS);
+		approvedIntents.add(GatewayIntent.GUILD_MESSAGE_TYPING);
+		approvedIntents.add(GatewayIntent.DIRECT_MESSAGES);
+		approvedIntents.add(GatewayIntent.DIRECT_MESSAGE_REACTIONS);
+		approvedIntents.add(GatewayIntent.DIRECT_MESSAGE_TYPING);
+		
+		return approvedIntents;
 	}
 	//TODO (from: Franziska): WIP, DO NOT USE IN PROD
 	//private void upsertSlashCommands(JDA jda) {
