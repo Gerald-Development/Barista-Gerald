@@ -30,6 +30,7 @@ public class PlaywrightService {
 	}
 	
 	//@EventListener(ApplicationReadyEvent.class)
+	@SuppressWarnings("unused")
 	private void initialisePlaywright() {
 		ExecutorService playwrightExecutor = threadManager.getThreadByName("Playwright");
 		playwrightExecutor.execute(new Runnable() {
