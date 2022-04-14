@@ -143,7 +143,7 @@ public class ExperienceCommand extends AbstractCommand {
 		Experience userXP = xpService.getUserExperience(member.getId(), serverID);
 		
 		byte[] xpCard = xpService.getExperienceCard(member.getUser().getAvatarUrl(),
-				userXP.getCurrentExperience(), xpService.xpNeededForLevel(userXP.getLevel()),
+				userXP.getCurrentExperience(), xpService.xpNeededForLevel(userXP.getLevel() + 1),
 				userXP.getLevel(), 1, member.getUser().getName() + "#" + member.getUser().getDiscriminator(),
 				"#FF0000", "#2E2E2E");
 		channel.sendFile(xpCard, "xpcard.png").queue();
