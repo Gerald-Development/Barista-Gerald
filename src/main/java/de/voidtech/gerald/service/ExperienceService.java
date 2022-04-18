@@ -126,7 +126,6 @@ public class ExperienceService {
 	}
 	
 	private void saveUserExperience(Experience userXP) {
-		System.out.println("Saving user XP");
 		try(Session session = sessionFactory.openSession())
 		{
 			session.getTransaction().begin();	
@@ -170,8 +169,7 @@ public class ExperienceService {
 		return 5 * (level ^ 2) + (50 * level) + 100;
 	}
 	
-	private long xpToNextLevel(long currentLevel, long currentXP) {
-		long nextLevel = currentLevel + 1;
+	private long xpToNextLevel(long nextLevel, long currentXP) {
 		return xpNeededForLevel(nextLevel) - currentXP;
 	}
 	
@@ -189,11 +187,12 @@ public class ExperienceService {
 			return; 
 		}
 		
-		long currentExperience = userXP.getCurrentExperience() + generateExperience();
-		long xpToNextLevel = xpToNextLevel(userXP.getLevel(), currentExperience);
+		userXP.incrementExperience(generateExperience());
+		long currentExperience = userXP.getCurrentExperience();
+		long xpToNextLevel = xpToNextLevel(userXP.getNextLevel(), currentExperience);
 		
 		if (xpToNextLevel <= 0) {
-			userXP.setLevel(userXP.getLevel() + 1);
+			userXP.setLevel(userXP.getNextLevel());
 			userXP.setCurrentXP(-1 * xpToNextLevel);
 			performLevelUpActions(userXP, server, member, channelID);
 		} else userXP.setCurrentXP(currentExperience);
@@ -206,7 +205,7 @@ public class ExperienceService {
 	private void performLevelUpActions(Experience userXP, Server server, Member member, String channelID) {
 		ServerExperienceConfig config = getServerExperienceConfig(server.getId());
 		
-		List<LevelUpRole> roles = getRolesForLevelFromServer(server.getId(), userXP.getLevel());
+		List<LevelUpRole> roles = getRolesForLevelFromServer(server.getId(), userXP.getCurrentLevel());
 		if (roles.isEmpty()) return;
 		
 		List<Role> memberRoles = member.getRoles();

@@ -33,6 +33,9 @@ public class Experience {
 	@Column
 	private long lastMessageTime;
 	
+	@Column
+	private long totalExperience;
+	
 	@Deprecated
 	//ONLY FOR HIBERNATE, DO NOT USE
 	Experience() {
@@ -51,6 +54,11 @@ public class Experience {
 		this.level = level;
 	}
 	
+	public void incrementExperience(long xp) {
+		this.experienceGainedToNextLevel = this.experienceGainedToNextLevel + xp;
+		this.totalExperience = this.totalExperience + xp;
+	}
+	
 	public void setCurrentXP(long xp) {
 		this.experienceGainedToNextLevel = xp;
 	}
@@ -63,8 +71,12 @@ public class Experience {
 		this.messageCount++;
 	}
 	
-	public long getLevel() {
+	public long getCurrentLevel() {
 		return this.level;
+	}
+	
+	public long getNextLevel() {
+		return this.level + 1;
 	}
 	
 	public long getCurrentExperience() {
