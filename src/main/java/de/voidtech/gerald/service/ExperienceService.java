@@ -1,13 +1,14 @@
 package main.java.de.voidtech.gerald.service;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -38,6 +39,7 @@ public class ExperienceService {
 	@Autowired
 	private GeraldConfig config;
 	
+	private static final Logger LOGGER = Logger.getLogger(ExperienceService.class.getName());
 	private static final int EXPERIENCE_DELAY = 0; //Delay between incrementing XP in seconds
 	
 	public byte[] getExperienceCard(String avatarURL, long xpAchieved, long xpNeeded,
@@ -53,14 +55,10 @@ public class ExperienceService {
 			String response = Jsoup.connect(url.toString()).get().toString().split(",")[1];
 			byte[] imageBytes = DatatypeConverter.parseBase64Binary(response);
 			return imageBytes;
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, e.getMessage());
 		}
-		
 		return null;
-		
 	}
 	
 	public Experience getUserExperience(String userID, long serverID) {
