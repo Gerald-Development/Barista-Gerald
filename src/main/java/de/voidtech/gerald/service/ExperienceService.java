@@ -43,7 +43,7 @@ public class ExperienceService {
 	public byte[] getExperienceCard(String avatarURL, long xpAchieved, long xpNeeded,
 			long level, long rank, String username, String barColour, String background) {
 		try {
-			String cardURL = config.getExperienceCardApiURL() + "?avatar_url=" + avatarURL +
+			String cardURL = config.getExperienceCardApiURL() + "xpcard/?avatar_url=" + avatarURL +
 					"&xp=" + xpAchieved + "&xp_needed=" + xpNeeded + "&level=" + level + "&rank=" + rank
 					+ "&username=" + URLEncoder.encode(username, StandardCharsets.UTF_8.toString())
 					+ "&bar_colour=" + URLEncoder.encode(barColour, StandardCharsets.UTF_8.toString())
@@ -89,6 +89,43 @@ public class ExperienceService {
 			}
 			return xpConf;
 		}
+	}
+	
+	public List<Experience> getServerLeaderboard(long serverID) {
+		try(Session session = sessionFactory.openSession())
+		{
+			@SuppressWarnings("unchecked")
+			List<Experience> leaderboard = session.createQuery("FROM Experience WHERE serverID = :serverID ORDER BY totalExperience DESC")
+					.setParameter("serverID", serverID)
+					.list();
+			return leaderboard;
+		}
+	}
+	
+	public List<Experience> getServerLeaderboardChunk(long serverID, int limit, int offset) {
+		try(Session session = sessionFactory.openSession())
+		{
+			@SuppressWarnings("unchecked")
+			List<Experience> leaderboard = session.createQuery("FROM Experience WHERE serverID = :serverID ORDER BY totalExperience DESC")
+					.setParameter("serverID", serverID)
+					.setMaxResults(limit)
+					.setFirstResult(offset)
+					.list();
+			return leaderboard;
+		}
+	}
+	
+	public int getUserLeaderboardPosition(long serverID, String userID) {
+		List<Experience> leaderboard = getServerLeaderboard(serverID);
+		int position = 0;
+		boolean found = false;
+		
+		while (!found & leaderboard.iterator().hasNext()) {
+			position++;
+			if (leaderboard.iterator().next().getUserID().equals(userID)) found = true;
+		}
+		
+		return position;
 	}
 	
 	private List<LevelUpRole> getRolesForLevelFromServer(long id, long level) {
@@ -166,7 +203,7 @@ public class ExperienceService {
 	}
 	
 	public long xpNeededForLevel(long level) {
-		return 5 * (level ^ 2) + (50 * level) + 100;
+		return (long) Math.ceil(Math.sqrt(5000 * (Math.pow(level, 3))));
 	}
 	
 	private long xpToNextLevel(long nextLevel, long currentXP) {

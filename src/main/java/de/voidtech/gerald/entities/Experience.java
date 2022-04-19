@@ -83,6 +83,10 @@ public class Experience {
 		return this.experienceGainedToNextLevel;
 	}
 	
+	public long getTotalExperience() {
+		return this.totalExperience;
+	}
+	
 	public long getLastMessageTime() {
 		return this.lastMessageTime;
 	}
