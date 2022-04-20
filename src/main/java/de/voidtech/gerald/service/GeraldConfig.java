@@ -99,7 +99,7 @@ public class GeraldConfig {
 	}
 	
 	public String getExperienceCardApiURL() {
-		String url = config.getProperty("api.gavin_url"); 
+		String url = config.getProperty("api.xp_url"); 
 		return url != null ? url : "http://localhost:3000/api/";
 	}
 }
