@@ -43,12 +43,15 @@ public class ExperienceService {
 	private static final int EXPERIENCE_DELAY = 0; //Delay between incrementing XP in seconds
 	
 	public byte[] getExperienceCard(String avatarURL, long xpAchieved, long xpNeeded,
-			long level, long rank, String username, String barColour, String background) {
+			long level, long rank, String username, String discriminator, String barFromColour,
+			String barToColour, String background) {
 		try {
 			String cardURL = config.getExperienceCardApiURL() + "xpcard/?avatar_url=" + avatarURL +
 					"&xp=" + xpAchieved + "&xp_needed=" + xpNeeded + "&level=" + level + "&rank=" + rank
 					+ "&username=" + URLEncoder.encode(username, StandardCharsets.UTF_8.toString())
-					+ "&bar_colour=" + URLEncoder.encode(barColour, StandardCharsets.UTF_8.toString())
+					+ "&discriminator=" + URLEncoder.encode(discriminator, StandardCharsets.UTF_8.toString())
+					+ "&bar_colour_from=" + URLEncoder.encode(barFromColour, StandardCharsets.UTF_8.toString())
+					+ "&bar_colour_to=" + URLEncoder.encode(barToColour, StandardCharsets.UTF_8.toString())
 					+ "&bg_colour=" + URLEncoder.encode(background, StandardCharsets.UTF_8.toString());
 			URL url = new URL(cardURL);
 			//Remove the data:image/png;base64 part

@@ -214,8 +214,8 @@ public class ExperienceCommand extends AbstractCommand {
 		
 		byte[] xpCard = xpService.getExperienceCard(member.getUser().getAvatarUrl(),
 				userXP.getCurrentExperience(), xpService.xpNeededForLevel(userXP.getNextLevel()),
-				userXP.getCurrentLevel(), 1, member.getUser().getName() + "#" + member.getUser().getDiscriminator(),
-				"#FF0000", "#2E2E2E");
+				userXP.getCurrentLevel(), 1, member.getUser().getName(), member.getUser().getDiscriminator(), "#F24548",
+				"#3B43D5", "#2F3136");
 		context.replyWithFile(xpCard, "xpcard.png");
 	}
 
