@@ -71,8 +71,6 @@ public class ExperienceService {
 					.setParameter("userID", userID)
 					.setParameter("serverID", serverID)
 					.uniqueResult();
-			
-			if (xp == null) xp = new Experience(userID, serverID);
 			return xp;
 		}
 	}
@@ -100,7 +98,10 @@ public class ExperienceService {
 					.setParameter("serverID", serverID)
 					.list();
 			return leaderboard;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+		return null;
 	}
 	
 	public List<Experience> getServerLeaderboardChunk(long serverID, int limit, int offset) {
@@ -218,6 +219,11 @@ public class ExperienceService {
 	public void updateUserExperience(Member member, String guildID, String channelID) {
 		Server server = serverService.getServer(guildID);
 		Experience userXP = getUserExperience(member.getId(), server.getId());
+		
+		if (userXP == null) {
+			userXP = new Experience(member.getId(), server.getId());
+		}
+		
 		userXP.incrementMessageCount();
 		
 		if ((userXP.getLastMessageTime() + EXPERIENCE_DELAY) > Instant.now().getEpochSecond()) {

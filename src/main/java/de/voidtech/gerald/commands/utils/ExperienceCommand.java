@@ -212,11 +212,21 @@ public class ExperienceCommand extends AbstractCommand {
 	private void sendLevelCard(CommandContext context, Member member, long serverID) {
 		Experience userXP = xpService.getUserExperience(member.getId(), serverID);
 		
-		byte[] xpCard = xpService.getExperienceCard(member.getUser().getAvatarUrl(),
-				userXP.getCurrentExperience(), xpService.xpNeededForLevel(userXP.getNextLevel()),
-				userXP.getCurrentLevel(), xpService.getUserLeaderboardPosition(serverID, member.getId()),
-				member.getUser().getName(), member.getUser().getDiscriminator(), "#F24548",
-				"#3B43D5", "#2F3136");
+		if (userXP == null) {
+			context.reply("**User is not ranked yet!**");
+			return;
+		}
+		
+		String avatarURL = member.getUser().getAvatarUrl();
+		long xpAchieved = userXP.getCurrentExperience();
+		long xpNeeded = xpService.xpNeededForLevel(userXP.getNextLevel());
+		long level = userXP.getCurrentLevel();
+		long rank = xpService.getUserLeaderboardPosition(serverID, userXP.getUserID());
+		String username = member.getUser().getName();
+		String discriminator = member.getUser().getDiscriminator(); 
+		
+		byte[] xpCard = xpService.getExperienceCard(avatarURL,
+				xpAchieved,	xpNeeded, level, rank, username, discriminator, "#F24548", "#3B43D5", "#2F3136");
 		context.replyWithFile(xpCard, "xpcard.png");
 	}
 
