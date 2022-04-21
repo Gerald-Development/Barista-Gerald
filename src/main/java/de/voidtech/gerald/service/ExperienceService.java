@@ -120,13 +120,12 @@ public class ExperienceService {
 	public int getUserLeaderboardPosition(long serverID, String userID) {
 		List<Experience> leaderboard = getServerLeaderboard(serverID);
 		int position = 0;
-		//boolean found = false;
 		
-		//while (!found & leaderboard.iterator().hasNext()) {
-			//position++;
-			//if (leaderboard.iterator().next().getUserID().equals(userID)) found = true;
-		//}
-		
+		for (Experience xp : leaderboard) {
+			position++;
+			if (xp.getUserID().equals(userID)) break;
+		}
+
 		return position;
 	}
 	
