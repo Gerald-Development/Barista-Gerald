@@ -57,13 +57,16 @@ public class ExperienceCommand extends AbstractCommand {
 					case "lb":
 						showServerLeaderboard(context, server);
 						break;
+					default:
+						context.reply("**That's not a valid subcommand!**\n" + this.getUsage());
+						break;
 				}
 			}
 		}
 	}
 
 	private void showServerLeaderboard(CommandContext context, Server server) {
-		List<Experience> topTenMembers = xpService.getServerLeaderboardChunk(server.getId(), 10, 0);
+		List<Experience> topTenMembers = xpService.getServerLeaderboardChunk(server.getId(), 5, 0);
 		int userPosition = xpService.getUserLeaderboardPosition(server.getId(), context.getAuthor().getId());
 		Experience userXP = xpService.getUserExperience(context.getAuthor().getId(), server.getId());
 		
@@ -139,7 +142,7 @@ public class ExperienceCommand extends AbstractCommand {
 	private String convertSingleDigitToEmoji(String digit) {
 		switch (digit) {
 		case "0":
-			return ":zero";
+			return ":zero:";
 		case "1":
 			return ":one:";
 		case "2":
