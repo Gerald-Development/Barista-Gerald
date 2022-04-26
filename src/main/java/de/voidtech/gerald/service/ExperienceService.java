@@ -274,4 +274,12 @@ public class ExperienceService {
 				.build();
 		member.getGuild().getTextChannelById(channelID).sendMessageEmbeds(levelUpEmbed).queue();
 	}
+
+	public boolean toggleLevelUpMessages(long id) {
+		ServerExperienceConfig config = getServerExperienceConfig(id);
+		boolean nowEnabled = !config.levelUpMessagesEnabled();
+		config.setLevelUpMessagesEnabled(nowEnabled);
+		saveServerExperienceConfig(config);
+		return nowEnabled;
+	}
 }

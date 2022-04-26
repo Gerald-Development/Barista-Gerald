@@ -17,6 +17,7 @@ import main.java.de.voidtech.gerald.service.ExperienceService;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -57,11 +58,23 @@ public class ExperienceCommand extends AbstractCommand {
 					case "lb":
 						showServerLeaderboard(context, server);
 						break;
+					case "togglemsg":
+						toggleLevelUpMessages(context, server);
+						break;
 					default:
 						context.reply("**That's not a valid subcommand!**\n" + this.getUsage());
 						break;
 				}
 			}
+		}
+	}
+
+	private void toggleLevelUpMessages(CommandContext context, Server server) {
+		boolean userCanToggle = context.getMember().hasPermission(Permission.MANAGE_SERVER);
+		if (!userCanToggle) context.reply("**You need the Manage Server permission to toggle level up messages!**");
+		else {
+			boolean enabled = xpService.toggleLevelUpMessages(server.getId());
+			context.reply("**Level up messages are now " + (enabled ? "enabled**" : "disabled**"));
 		}
 	}
 
@@ -141,31 +154,31 @@ public class ExperienceCommand extends AbstractCommand {
 	
 	private String convertSingleDigitToEmoji(String digit) {
 		switch (digit) {
-		case "0":
-			return ":zero:";
-		case "1":
-			return ":one:";
-		case "2":
-			return ":two:";
-		case "3":
-			return ":three:";
-		case "4":
-			return ":four:";
-		case "5":
-			return ":five:";
-		case "6":
-			return ":six:";
-		case "7":
-			return ":seven:";
-		case "8":
-			return ":eight:";
-		case "9":
-			return ":nine:";
-		case "10":
-			return ":ten:";
-		default:
-			return ":zero:";
-	}
+			case "0":
+				return ":zero:";
+			case "1":
+				return ":one:";
+			case "2":
+				return ":two:";
+			case "3":
+				return ":three:";
+			case "4":
+				return ":four:";
+			case "5":
+				return ":five:";
+			case "6":
+				return ":six:";
+			case "7":
+				return ":seven:";
+			case "8":
+				return ":eight:";
+			case "9":
+				return ":nine:";
+			case "10":
+				return ":ten:";
+			default:
+				return ":zero:";
+		}
 	}
 	
 	private void removeLevelUpRole(CommandContext context, List<String> args, Server server) {
@@ -239,7 +252,8 @@ public class ExperienceCommand extends AbstractCommand {
 				+ "You can gain up to 15 experience per minute.\n"
 				+ "Server admins can configure roles that are given to you when you reach a certain level.\n"
 				+ "To stop people from checking their XP, you can disable the XP command.\n"
-				+ "If you want to stop people from gaining XP, disable the r-xp routine.";
+				+ "If you want to stop people from gaining XP, disable the r-xp routine.\n"
+				+ "To disable the level up messages, use the togglemsg subcommand.";
 	}
 
 	@Override
@@ -248,6 +262,7 @@ public class ExperienceCommand extends AbstractCommand {
 				+ "xp levels\n"
 				+ "xp addrole [level] [role]\n"
 				+ "xp removerole [level]\n"
+				+ "xp togglemsg\n"
 				+ "xp leaderboard";
 	}
 
