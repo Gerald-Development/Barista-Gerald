@@ -40,7 +40,7 @@ public class ExperienceService {
 	private GeraldConfig config;
 	
 	private static final Logger LOGGER = Logger.getLogger(ExperienceService.class.getName());
-	private static final int EXPERIENCE_DELAY = 0; //Delay between incrementing XP in seconds
+	private static final int EXPERIENCE_DELAY = 60; //Delay between incrementing XP in seconds
 	
 	public byte[] getExperienceCard(String avatarURL, long xpAchieved, long xpNeeded,
 			long level, long rank, String username, String discriminator, String barFromColour,
