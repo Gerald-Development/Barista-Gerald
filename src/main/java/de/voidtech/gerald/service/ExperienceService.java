@@ -40,7 +40,7 @@ public class ExperienceService {
 	private GeraldConfig config;
 	
 	private static final Logger LOGGER = Logger.getLogger(ExperienceService.class.getName());
-	private static final int EXPERIENCE_DELAY = 60; //Delay between incrementing XP in seconds
+	private static final int EXPERIENCE_DELAY = 0; //Delay between incrementing XP in seconds
 	
 	public byte[] getExperienceCard(String avatarURL, long xpAchieved, long xpNeeded,
 			long level, long rank, String username, String discriminator, String barFromColour,
@@ -262,6 +262,20 @@ public class ExperienceService {
 					if (config.levelUpMessagesEnabled()) sendLevelUpMessage(role, member, roleToBeGiven, channelID);
 				}
 			}
+		}
+	}
+	
+	public void addRolesOnServerJoin(Server server, Member member) {
+		Experience userXP = getUserExperience(member.getId(), server.getId());
+		List<LevelUpRole> roles = getRolesForLevelFromServer(server.getId(), userXP.getCurrentLevel());
+		
+		if (roles.isEmpty()) return;
+		
+		List<Role> memberRoles = member.getRoles();
+		for (LevelUpRole role : roles) {
+			Role roleToBeGiven = member.getGuild().getRoleById(role.getRoleID());
+			if (roleToBeGiven == null) removeLevelUpRole(role.getLevel(), role.getServerID());
+			else if (!memberRoles.contains(roleToBeGiven)) member.getGuild().addRoleToMember(member, roleToBeGiven).complete();
 		}
 	}
 
