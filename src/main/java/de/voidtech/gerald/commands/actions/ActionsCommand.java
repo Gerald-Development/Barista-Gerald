@@ -1,26 +1,30 @@
 package main.java.de.voidtech.gerald.commands.actions;
 
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.ActionStats;
-import main.java.de.voidtech.gerald.service.ServerService;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
+import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.awt.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.entities.ActionStats;
+import main.java.de.voidtech.gerald.entities.Server;
+import main.java.de.voidtech.gerald.service.ServerService;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 public abstract class ActionsCommand extends AbstractCommand {
 	
@@ -63,6 +67,32 @@ public abstract class ActionsCommand extends AbstractCommand {
 		}
 		return stats;
 	}
+	
+	@SuppressWarnings("unchecked")
+	private List<ActionStats> getTopGivenInServer(ActionType type, long serverID) {
+		try(Session session = sessionFactory.openSession())
+		{
+			return (List<ActionStats>) session
+					.createQuery("FROM ActionStats WHERE type = :type AND serverID = :serverID AND givenCount > 0 ORDER BY givenCount DESC")
+					.setMaxResults(5)
+					.setParameter("type", type.getType())
+					.setParameter("serverID", serverID)
+					.list();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private List<ActionStats> getTopReceivedInServer(ActionType type, long serverID) {
+		try(Session session = sessionFactory.openSession())
+		{
+			return (List<ActionStats>) session
+					.createQuery("FROM ActionStats WHERE type = :type AND serverID = :serverID AND receivedCount > 0 ORDER BY receivedCount DESC")
+					.setMaxResults(5)
+					.setParameter("type", type.getType())
+					.setParameter("serverID", serverID)
+					.list();
+		}
+	}
 
 	private void updateStatsProfile(ActionStats stats) {
 		try(Session session = sessionFactory.openSession())
@@ -103,29 +133,71 @@ public abstract class ActionsCommand extends AbstractCommand {
 	}
 
 	public void sendAction(CommandContext context, ActionType action) {
-		if(context.getMentionedMembers().isEmpty()) {
+		if (context.getArgs().get(0).equals("leaderboard")) {
+			sendActionLeaderboard(context, action);
+			return;
+		}
+		if (context.getMentionedMembers().isEmpty()) {
 			context.reply("You need to mention someone to " + action.getType() + "!");
-        } else {
-            String gifURL = getActionGif(action.getType());
-            if (gifURL != null)
-            {
-            	updateActionStats(context.getAuthor().getId(), context.getMentionedMembers().get(0).getId(), action, context);
-            	String phrase = String.format("%s %s %s", context.getMember().getEffectiveName(), conjugateAction(action.getType()),
-						context.getMentionedMembers().get(0).getId().equals(context.getAuthor().getId()) ? "themself" : context.getMentionedMembers().get(0).getEffectiveName());
-            	
-                EmbedBuilder actionEmbedBuilder = new EmbedBuilder();
-                actionEmbedBuilder.setTitle(phrase);
-                actionEmbedBuilder.setColor(Color.ORANGE);
-                if (!gifURL.equals("")) {
-                	actionEmbedBuilder.setImage(gifURL);	
-                }
-                actionEmbedBuilder.setFooter(getStatsString(context.getAuthor().getId(), context.getMentionedMembers().get(0).getId(), action, context));
-                MessageEmbed actionEmbed = actionEmbedBuilder.build();
-				context.reply(actionEmbed);
-            }
+			return;
+		}
+		String gifURL = getActionGif(action.getType());
+        if (gifURL != null) {
+            updateActionStats(context.getAuthor().getId(), context.getMentionedMembers().get(0).getId(), action, context);
+            String phrase = String.format("%s %s %s",
+            		context.getMember().getEffectiveName(),
+            		conjugateAction(action.getType()),
+            		context.getMentionedMembers().get(0).getId().equals(context.getAuthor().getId()) ?
+            				"themself" : context.getMentionedMembers().get(0).getEffectiveName());
+            //Wow that was a big one
+            EmbedBuilder actionEmbedBuilder = new EmbedBuilder();
+            actionEmbedBuilder.setTitle(phrase);
+            actionEmbedBuilder.setColor(Color.ORANGE);
+            if (!gifURL.equals("")) actionEmbedBuilder.setImage(gifURL);
+            actionEmbedBuilder.setFooter(getStatsString(context.getAuthor().getId(), context.getMentionedMembers().get(0).getId(), action, context));
+            MessageEmbed actionEmbed = actionEmbedBuilder.build();
+			context.reply(actionEmbed);
         }
 	}
 	
+	private void sendActionLeaderboard(CommandContext context, ActionType action) {
+		Server server = serverService.getServer(context.getGuild().getId());
+		List<ActionStats> topGiven = getTopGivenInServer(action, server.getId());
+		List<ActionStats> topReceived = getTopReceivedInServer(action, server.getId());
+		
+		StringBuilder leaderboardBuilder = new StringBuilder();
+		int i = 1;
+		leaderboardBuilder.append("**Top 5 " + action.getType() + " givers**\n\n");
+		for (ActionStats stat : topGiven) {
+			leaderboardBuilder.append(ParsingUtils.convertSingleDigitToEmoji(String.valueOf(i)));
+			leaderboardBuilder.append(" ");
+			leaderboardBuilder.append(context.getGuild().retrieveMemberById(stat.getMember()).complete().getAsMention());
+			leaderboardBuilder.append(" - `");
+			leaderboardBuilder.append(stat.getGivenCount());
+			leaderboardBuilder.append("`\n");
+			i++;			
+		}
+		if (i == 1) leaderboardBuilder.append("Nobody to show! Go " + action.getType() + " someone!\n");
+		i = 1;
+		leaderboardBuilder.append("**\nTop 5 " + action.getType() + " receivers**\n\n");
+		for (ActionStats stat : topReceived) {
+			leaderboardBuilder.append(ParsingUtils.convertSingleDigitToEmoji(String.valueOf(i)));
+			leaderboardBuilder.append(" ");
+			leaderboardBuilder.append(context.getGuild().retrieveMemberById(stat.getMember()).complete().getAsMention());
+			leaderboardBuilder.append(" - `");
+			leaderboardBuilder.append(stat.getReceivedCount());
+			leaderboardBuilder.append("`\n");
+			i++;			
+		}
+		if (i == 1) leaderboardBuilder.append("Nobody to show! Go " + action.getType() + " someone!");
+		MessageEmbed leaderboardEmbed = new EmbedBuilder()
+				.setColor(Color.ORANGE)
+				.setTitle(context.getGuild().getName() + "'s " + action.getType() + " leaderboard")
+				.setDescription(leaderboardBuilder.toString())
+				.build();
+		context.reply(leaderboardEmbed);
+	}
+
 	private String conjugateAction(String action) {
 		String conjugatedAction = action;
 		

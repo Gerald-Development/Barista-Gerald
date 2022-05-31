@@ -11,6 +11,35 @@ public class ParsingUtils {
 	
 	private static final Pattern HEX_PATTERN = Pattern.compile("^([a-fA-F0-9]{6})$"); 
 	
+	public static String convertSingleDigitToEmoji(String digit) {
+		switch (digit) {
+			case "0":
+				return ":zero:";
+			case "1":
+				return ":one:";
+			case "2":
+				return ":two:";
+			case "3":
+				return ":three:";
+			case "4":
+				return ":four:";
+			case "5":
+				return ":five:";
+			case "6":
+				return ":six:";
+			case "7":
+				return ":seven:";
+			case "8":
+				return ":eight:";
+			case "9":
+				return ":nine:";
+			case "10":
+				return ":ten:";
+			default:
+				return ":zero:";
+		}
+	}
+	
 	public static boolean isInteger(String str) {
 	    if (str == null) {
 	        return false;

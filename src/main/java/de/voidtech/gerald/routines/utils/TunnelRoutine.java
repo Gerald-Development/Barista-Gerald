@@ -68,15 +68,8 @@ public class TunnelRoutine extends AbstractRoutine {
 			}
 			content = contentBuilder.toString();
 		}
-		
-		if (message.getReferencedMessage() != null) {
-			content = "> " + (message.getReferencedMessage().getContentDisplay().length() > 100 ? 
-					message.getReferencedMessage().getContentDisplay().substring(0, 100) + "..." :
-					message.getReferencedMessage().getContentDisplay())
-					+ "\n" + content;
-		}
 	
-		webhookManager.postMessage(content, message.getAuthor().getAvatarUrl(),  message.getAuthor().getName(), webhook);
+		webhookManager.postMessage(content, message.getReferencedMessage(), message.getAuthor().getAvatarUrl(), message.getAuthor().getName(), webhook);
 	}
 	
 	private void sendTunnelMessage(Tunnel tunnel, Message message) {
