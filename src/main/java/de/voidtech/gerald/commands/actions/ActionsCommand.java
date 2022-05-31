@@ -76,7 +76,6 @@ public abstract class ActionsCommand extends AbstractCommand {
 		{
 			return (List<ActionStats>) session
 					.createQuery("FROM ActionStats WHERE type = :type AND serverID = :serverID AND givenCount > 0 ORDER BY givenCount DESC")
-					.setMaxResults(5)
 					.setParameter("type", type.getType())
 					.setParameter("serverID", serverID)
 					.list();
@@ -89,7 +88,6 @@ public abstract class ActionsCommand extends AbstractCommand {
 		{
 			return (List<ActionStats>) session
 					.createQuery("FROM ActionStats WHERE type = :type AND serverID = :serverID AND receivedCount > 0 ORDER BY receivedCount DESC")
-					.setMaxResults(5)
 					.setParameter("type", type.getType())
 					.setParameter("serverID", serverID)
 					.list();
@@ -181,6 +179,7 @@ public abstract class ActionsCommand extends AbstractCommand {
 				leaderboardBuilder.append("`\n");
 				i++;				
 			}
+			if (i == 6) break;
 		}
 		if (i == 1) leaderboardBuilder.append("Nobody to show! Go " + action.getType() + " someone!\n");
 		i = 1;
@@ -196,6 +195,7 @@ public abstract class ActionsCommand extends AbstractCommand {
 				leaderboardBuilder.append("`\n");
 				i++;
 			}
+			if (i == 6) break;
 		}
 		if (i == 1) leaderboardBuilder.append("Nobody to show! Go " + action.getType() + " someone!");
 		MessageEmbed leaderboardEmbed = new EmbedBuilder()
