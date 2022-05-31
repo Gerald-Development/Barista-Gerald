@@ -97,4 +97,9 @@ public class GeraldConfig {
 	public String getMemeApiURL() {
 		return config.getProperty("api.meme_url");
 	}
+	
+	public String getExperienceCardApiURL() {
+		String url = config.getProperty("api.xp_url"); 
+		return url != null ? url : "http://localhost:3000/api/";
+	}
 }
