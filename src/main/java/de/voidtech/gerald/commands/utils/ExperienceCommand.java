@@ -3,6 +3,7 @@ package main.java.de.voidtech.gerald.commands.utils;
 import java.awt.Color;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,6 +22,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 @Command
 public class ExperienceCommand extends AbstractCommand {
@@ -61,12 +63,111 @@ public class ExperienceCommand extends AbstractCommand {
 					case "togglemsg":
 						toggleLevelUpMessages(context, server);
 						break;
+					case "noxp":
+						handleNoXpChannelSettings(context, server);
+						break;
 					default:
 						context.reply("**That's not a valid subcommand!**\n" + this.getUsage());
 						break;
 				}
 			}
 		}
+	}
+	
+	private void showNoXpHelp(CommandContext context) {
+		context.reply("**No XP Settings:**\n"
+				+ "list - shows all channels where xp will not be gained\n"
+				+ "add - add a channel that will not gain xp\n"
+				+ "clear - remove all no xp channels\n"
+				+ "remove - remove a channel that will not gain xp\n\n"
+				+ "When adding or removing a channel from the no xp list, you will be prompted to enter a channel mention or ID.");
+	}
+
+	private void handleNoXpChannelSettings(CommandContext context, Server server) {
+		String mode;
+		if (context.getArgs().size() < 2) mode = "help";
+		else mode = context.getArgs().get(1);
+		
+		switch (mode) {
+			case "list":
+				showNoXPChannels(context, server);
+				break;
+			case "add": 
+				addNoXPChannel(context, server);
+				break;
+			case "remove":
+				removeNoXPChannel(context, server);
+				break;
+			case "clear":
+				clearNoXPChannels(context, server);
+				break;
+			case "help":
+				showNoXpHelp(context);
+				break;
+			default:
+				showNoXpHelp(context);
+				break;
+		}
+	}
+
+	private void clearNoXPChannels(CommandContext context, Server server) {
+		if (!context.getMember().getPermissions().contains(Permission.MANAGE_SERVER)) {
+			context.reply("**You need the Manage Server Permission to do that!**");
+			return;
+		}
+		xpService.clearNoXpChannels(server.getId());
+		context.reply("**No XP Channels have been cleared!**");		
+	}
+
+	private void removeNoXPChannel(CommandContext context, Server server) {
+		if (!context.getMember().getPermissions().contains(Permission.MANAGE_SERVER)) {
+			context.reply("**You need the Manage Server Permission to do that!**");
+			return;
+		}
+		if (context.getArgs().size() < 3) {
+			context.reply("**You need to specify a channel to remove!**");
+			return;
+		}
+		String channelID = ParsingUtils.filterSnowflake(context.getArgs().get(2));
+		TextChannel channel = context.getGuild().getTextChannelById(channelID);
+		if (channel == null) {
+			context.reply("**You need to specify a valid text channel!**");
+			return;
+		}
+		xpService.deleteNoXpChannel(channelID, server.getId());
+		context.reply("**No XP channel** <#" + channelID + "> **has been removed!**");
+	}
+
+	private void addNoXPChannel(CommandContext context, Server server) {
+		if (!context.getMember().getPermissions().contains(Permission.MANAGE_SERVER)) {
+			context.reply("**You need the Manage Server Permission to do that!**");
+			return;
+		}
+		if (context.getArgs().size() < 3) {
+			context.reply("**You need to specify a channel to add!**");
+			return;
+		}
+		String channelID = ParsingUtils.filterSnowflake(context.getArgs().get(2));
+		TextChannel channel = context.getGuild().getTextChannelById(channelID);
+		if (channel == null) {
+			context.reply("**You need to specify a valid text channel!**");
+			return;
+		}
+		xpService.addNoXpChannel(channelID, server.getId());
+		context.reply("**No XP channel** <#" + channelID + "> **has been added!**");
+	}
+
+	private void showNoXPChannels(CommandContext context, Server server) {
+		List<String> channels = xpService.getNoExperienceChannelsForServer(server.getId(), context.getJDA())
+				.stream().map(channel -> "<#" + channel + ">").collect(Collectors.toList());
+		
+		String messageText = channels.isEmpty() ? "No channels to show!" : String.join("\n", channels);
+		
+		MessageEmbed noXPChannelsEmbed = new EmbedBuilder()
+				.setDescription(messageText)
+				.setColor(Color.ORANGE)
+				.build();
+		context.reply(noXPChannelsEmbed);
 	}
 
 	private void toggleLevelUpMessages(CommandContext context, Server server) {
@@ -147,38 +248,9 @@ public class ExperienceCommand extends AbstractCommand {
 		List<String> digits = Arrays.asList(String.valueOf(number).split("")); //Wowzer
 		String finalNumber = "";
 		for (String digit : digits) {
-			finalNumber += convertSingleDigitToEmoji(digit);
+			finalNumber += ParsingUtils.convertSingleDigitToEmoji(digit);
 		}
 		return finalNumber;
-	}
-	
-	private String convertSingleDigitToEmoji(String digit) {
-		switch (digit) {
-			case "0":
-				return ":zero:";
-			case "1":
-				return ":one:";
-			case "2":
-				return ":two:";
-			case "3":
-				return ":three:";
-			case "4":
-				return ":four:";
-			case "5":
-				return ":five:";
-			case "6":
-				return ":six:";
-			case "7":
-				return ":seven:";
-			case "8":
-				return ":eight:";
-			case "9":
-				return ":nine:";
-			case "10":
-				return ":ten:";
-			default:
-				return ":zero:";
-		}
 	}
 	
 	private void removeLevelUpRole(CommandContext context, List<String> args, Server server) {
@@ -253,7 +325,8 @@ public class ExperienceCommand extends AbstractCommand {
 				+ "Server admins can configure roles that are given to you when you reach a certain level.\n"
 				+ "To stop people from checking their XP, you can disable the XP command.\n"
 				+ "If you want to stop people from gaining XP, disable the r-xp routine.\n"
-				+ "To disable the level up messages, use the togglemsg subcommand.";
+				+ "To disable the level up messages, use the togglemsg subcommand.\n"
+				+ "To control which channels will not allow members to gain XP, use 'xp noxp help' to see how to set it up!";
 	}
 
 	@Override
@@ -263,7 +336,8 @@ public class ExperienceCommand extends AbstractCommand {
 				+ "xp addrole [level] [role]\n"
 				+ "xp removerole [level]\n"
 				+ "xp togglemsg\n"
-				+ "xp leaderboard";
+				+ "xp leaderboard\n"
+				+ "xp noxp [help/list/add/remove/clear]";
 	}
 
 	@Override

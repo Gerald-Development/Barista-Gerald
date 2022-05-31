@@ -5,10 +5,12 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -23,6 +25,7 @@ import main.java.de.voidtech.gerald.entities.LevelUpRole;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.entities.ServerExperienceConfig;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
@@ -73,6 +76,17 @@ public class ExperienceService {
 					.uniqueResult();
 			return xp;
 		}
+	}
+	
+	public List<String> getNoExperienceChannelsForServer(long serverID, JDA jda) {
+		List<String> channels = new ArrayList<String>();
+		ServerExperienceConfig config = getServerExperienceConfig(serverID);
+		config.getNoXPChannels()
+				.stream()
+				.filter(channel -> jda.getTextChannelById(channel) == null)
+				.forEach(channel -> config.removeNoExperienceChannel(channel));
+		channels = config.getNoXPChannels().stream().collect(Collectors.toList());
+		return channels;
 	}
 	
 	private ServerExperienceConfig getServerExperienceConfig(long serverID) {
@@ -201,6 +215,24 @@ public class ExperienceService {
 				.executeUpdate();
 			session.getTransaction().commit();
 		}
+	}
+	
+	public void deleteNoXpChannel(String channelID, long serverID) {
+		ServerExperienceConfig config = getServerExperienceConfig(serverID);
+		config.removeNoExperienceChannel(channelID);
+		saveServerExperienceConfig(config);
+	}
+	
+	public void clearNoXpChannels(long serverID) {
+		ServerExperienceConfig config = getServerExperienceConfig(serverID);
+		config.clearNoExperienceChannels();
+		saveServerExperienceConfig(config);
+	}
+	
+	public void addNoXpChannel(String channelID, long serverID) {
+		ServerExperienceConfig config = getServerExperienceConfig(serverID);
+		config.addNoExperienceChannel(channelID);
+		saveServerExperienceConfig(config);
 	}
 	
 	public long xpNeededForLevel(long level) {
