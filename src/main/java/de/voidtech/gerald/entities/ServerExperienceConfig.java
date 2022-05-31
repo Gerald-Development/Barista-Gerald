@@ -58,7 +58,7 @@ public class ServerExperienceConfig {
 	
 	public ServerExperienceConfig(long serverID) {
 		this.serverID = serverID;
-		this.levelUpMessagesEnabled = true;
+		this.levelUpMessagesEnabled = false;
 	}
 	
 	public boolean levelUpMessagesEnabled() {
