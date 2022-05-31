@@ -24,7 +24,9 @@ import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.utils.Result;
 
 public abstract class ActionsCommand extends AbstractCommand {
 	
@@ -169,25 +171,31 @@ public abstract class ActionsCommand extends AbstractCommand {
 		int i = 1;
 		leaderboardBuilder.append("**Top 5 " + action.getType() + " givers**\n\n");
 		for (ActionStats stat : topGiven) {
-			leaderboardBuilder.append(ParsingUtils.convertSingleDigitToEmoji(String.valueOf(i)));
-			leaderboardBuilder.append(" ");
-			leaderboardBuilder.append(context.getGuild().retrieveMemberById(stat.getMember()).complete().getAsMention());
-			leaderboardBuilder.append(" - `");
-			leaderboardBuilder.append(stat.getGivenCount());
-			leaderboardBuilder.append("`\n");
-			i++;			
+			Result<Member> memberGet = context.getGuild().retrieveMemberById(stat.getMember()).mapToResult().complete();
+			if (memberGet.isSuccess()) {
+				leaderboardBuilder.append(ParsingUtils.convertSingleDigitToEmoji(String.valueOf(i)));
+				leaderboardBuilder.append(" ");
+				leaderboardBuilder.append(memberGet.get().getAsMention()); 
+				leaderboardBuilder.append(" - `");
+				leaderboardBuilder.append(stat.getGivenCount());
+				leaderboardBuilder.append("`\n");
+				i++;				
+			}
 		}
 		if (i == 1) leaderboardBuilder.append("Nobody to show! Go " + action.getType() + " someone!\n");
 		i = 1;
 		leaderboardBuilder.append("**\nTop 5 " + action.getType() + " receivers**\n\n");
 		for (ActionStats stat : topReceived) {
-			leaderboardBuilder.append(ParsingUtils.convertSingleDigitToEmoji(String.valueOf(i)));
-			leaderboardBuilder.append(" ");
-			leaderboardBuilder.append(context.getGuild().retrieveMemberById(stat.getMember()).complete().getAsMention());
-			leaderboardBuilder.append(" - `");
-			leaderboardBuilder.append(stat.getReceivedCount());
-			leaderboardBuilder.append("`\n");
-			i++;			
+			Result<Member> memberGet = context.getGuild().retrieveMemberById(stat.getMember()).mapToResult().complete();
+			if (memberGet.isSuccess()) {
+				leaderboardBuilder.append(ParsingUtils.convertSingleDigitToEmoji(String.valueOf(i)));
+				leaderboardBuilder.append(" ");
+				leaderboardBuilder.append(memberGet.get().getAsMention());
+				leaderboardBuilder.append(" - `");
+				leaderboardBuilder.append(stat.getReceivedCount());
+				leaderboardBuilder.append("`\n");
+				i++;
+			}
 		}
 		if (i == 1) leaderboardBuilder.append("Nobody to show! Go " + action.getType() + " someone!");
 		MessageEmbed leaderboardEmbed = new EmbedBuilder()
