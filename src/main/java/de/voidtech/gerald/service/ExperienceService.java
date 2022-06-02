@@ -299,8 +299,9 @@ public class ExperienceService {
 	
 	public void addRolesOnServerJoin(Server server, Member member) {
 		Experience userXP = getUserExperience(member.getId(), server.getId());
-		List<LevelUpRole> roles = getRolesForLevelFromServer(server.getId(), userXP.getCurrentLevel());
+		if (userXP == null) return;
 		
+		List<LevelUpRole> roles = getRolesForLevelFromServer(server.getId(), userXP.getCurrentLevel());
 		if (roles.isEmpty()) return;
 		
 		List<Role> memberRoles = member.getRoles();
