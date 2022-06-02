@@ -2,6 +2,7 @@ package main.java.de.voidtech.gerald.commands.utils;
 
 import java.awt.Color;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import main.java.de.voidtech.gerald.service.SuggestionService;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
@@ -57,13 +59,19 @@ public class SuggestCommand extends AbstractCommand {
 
     @NotNull
     private MessageEmbed getMessageEmbed(CommandContext context, List<String> args) {
-        MessageEmbed newSuggestionEmbed = new EmbedBuilder()
+    	EmbedBuilder newSuggestionEmbedBuilder = new EmbedBuilder()
                 .setColor(Color.ORANGE)
-                .setTitle("New Suggestion!")
+                .setTitle("New Suggestion!", context.getMessage().getJumpUrl())
                 .addField("Suggestion", String.join(" ", args), false)
-                .setFooter("Suggested By " + context.getAuthor().getAsTag(), context.getAuthor().getAvatarUrl())
-                .build();
-        return newSuggestionEmbed;
+                .setFooter("Suggested By " + context.getAuthor().getAsTag(), context.getAuthor().getAvatarUrl());
+    	if (!context.getMessage().getAttachments().isEmpty()) {
+    		List<Attachment> possibleAttachments = context.getMessage().getAttachments()
+    				.stream()
+    				.filter(attachment -> attachment.isImage())
+    				.collect(Collectors.toList());
+    		if (!possibleAttachments.isEmpty()) newSuggestionEmbedBuilder.setImage(possibleAttachments.get(0).getUrl());
+    	}
+        return newSuggestionEmbedBuilder.build();
     }
 
     private void validateInput(String channelID, Server server, CommandContext context) {
