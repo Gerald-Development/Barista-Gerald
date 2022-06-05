@@ -32,6 +32,7 @@ public class HelpCommand extends AbstractCommand{
 	private void showCategoryList(CommandContext command) {
 		
 		boolean inlineFieldState = true;
+		int fieldCounter = 1;
 		
 		EmbedBuilder categoryListEmbedBuilder = new EmbedBuilder();
 		categoryListEmbedBuilder.setColor(Color.ORANGE);
@@ -40,10 +41,15 @@ public class HelpCommand extends AbstractCommand{
 		categoryListEmbedBuilder.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, command.getJDA().getSelfUser().getAvatarUrl());
 		
 		for (CommandCategory commandCategory : CommandCategory.values()) {
+			if (fieldCounter == 1) inlineFieldState = true;
 			String title = capitaliseFirstLetter(commandCategory.getCategory()) + " " + commandCategory.getIcon();
 			String description = "```\nhelp " + commandCategory.getCategory() + "\n```";
 			categoryListEmbedBuilder.addField(title, description, inlineFieldState);
-			inlineFieldState = !inlineFieldState;
+			fieldCounter++;
+			if (fieldCounter == 3) {
+				inlineFieldState = false;
+				fieldCounter = 1;
+			}
 		}
 		
 		categoryListEmbedBuilder.addField("Any Command :clipboard: ", "```\nhelp [command]\n```", true);	
