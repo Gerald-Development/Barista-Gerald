@@ -7,6 +7,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Service;
 
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.Browser.NewContextOptions;
@@ -14,7 +17,7 @@ import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 
-//@Service
+@Service
 public class PlaywrightService {
 	
 	@Autowired
@@ -29,8 +32,7 @@ public class PlaywrightService {
 				.setLocale("en-GB");
 	}
 	
-	//@EventListener(ApplicationReadyEvent.class)
-	@SuppressWarnings("unused")
+	@EventListener(ApplicationReadyEvent.class)
 	private void initialisePlaywright() {
 		ExecutorService playwrightExecutor = threadManager.getThreadByName("Playwright");
 		playwrightExecutor.execute(new Runnable() {
