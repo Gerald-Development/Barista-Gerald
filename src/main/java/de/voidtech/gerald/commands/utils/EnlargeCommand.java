@@ -38,14 +38,7 @@ public class EnlargeCommand extends AbstractCommand {
 
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
-		String emoteText = args.get(0);
-		String emoteID = "";
-		
-		if (emoteText.startsWith("<")) {
-			emoteID = Arrays.asList(emoteText.split(":")).get(2).replace(">", "");
-		} else {
-			emoteID = ParsingUtils.filterSnowflake(emoteText);	
-		}
+		String emoteID = ParsingUtils.filterSnowflake(args.get(0));
 
 		for (String extension : FILE_EXTENSIONS) {
 			if (checkForImage(emoteID, extension)) {
@@ -58,7 +51,7 @@ public class EnlargeCommand extends AbstractCommand {
 
 	@Override
 	public String getDescription() {
-		return "Allows you to send an enlarged image of an emote";
+		return "Allows you to send an enlarged image of an emote! Note: This only works with custom emotes!";
 	}
 
 	@Override
