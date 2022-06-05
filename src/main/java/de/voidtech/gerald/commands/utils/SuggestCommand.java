@@ -205,12 +205,12 @@ public class SuggestCommand extends AbstractCommand {
 
 	@Override
     public String getDescription() {
-        return "This command allows you to set up a suggestions box. "
-        		+ "Simply set the suggestion box channel and your users can start sending suggestions!\n"
-        		+ "If you only want certain users to make suggestions, use the suggestrole subcommand to set a suggestion role.\n"
-        		+ "If you only want certain users to vote, use the voterole subcommand to set a vote role.\n"
+        return "If you only want certain users to make suggestions, use the suggestrole subcommand to set a suggestion role.\n\n"
+        		+ "If you only want certain users to vote, use the voterole subcommand to set a vote role.\n\n"
         		+ "Use the config subcommand to see your current configuration\n"
-        		+ "All users will require these roles to make suggestions or vote. This includes admins!";
+        		+ "All users will require these roles to make suggestions or vote. This includes admins!\n\n"
+        		+ "Members with the Manage_Messages permission can use coloured circle emotes (🔵 🟢 🟠 🔴 🟣) to review suggestions "
+        		+ "(the embed colour will change and a 'reviewed by' field will appear)";
     }
 
     @Override
