@@ -1,7 +1,5 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
-import java.time.Instant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +10,7 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.entities.CountingChannel;
 import main.java.de.voidtech.gerald.service.CountingService;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class CountCommand extends AbstractCommand {
@@ -50,36 +46,6 @@ public class CountCommand extends AbstractCommand {
 		if (countService.getCountingChannel(context.getChannel().getId()) != null) {
 			sendCountStatistics(context);
 		} else context.reply("**You need to use this command in a counting channel!**");
-	}
-	
-	private void countLeaderboardMethod(CommandContext context) {
-		List<CountingChannel> topFiveChannels = countService.getTopFive();
-		
-		String leaderboard;
-		
-		int pos = 0;
-		StringBuilder leaderboardBuilder = new StringBuilder("```js\n");
-		for (Object channel : topFiveChannels) {
-			pos++;
-			String channelID = ((CountingChannel) channel).getCountingChannel();
-			String serverID = ((CountingChannel) channel).getServerID();
-			int count = ((CountingChannel) channel).getChannelCount();
-			
-			leaderboardBuilder.insert(0, "\n" + pos + ") Channel: " + context.getJDA().getGuildById(serverID).getName() + " > "
-					+ context.getJDA().getGuildChannelById(channelID).getName() + "\n"
-					+ "Count: " + count + "\n");
-		}
-		leaderboard = leaderboardBuilder.toString();
-		leaderboard += "```";
-		
-		MessageEmbed leaderboardEmbed = new EmbedBuilder()
-				.setColor(Color.ORANGE)
-				.setTitle("The 5 Highest Counts")
-				.setDescription(leaderboard)
-				.setTimestamp(Instant.now())
-				.build();
-		context.reply(leaderboardEmbed);
-		
 	}
 	
 	private void disableChat(CommandContext context) {
@@ -130,10 +96,6 @@ public class CountCommand extends AbstractCommand {
 			
 		case "disablechat":
 			disableChat(context);
-			break;
-		
-		case "leaderboard":
-			countLeaderboardMethod(context);
 			break;
 			
 		default:

@@ -1,7 +1,6 @@
 package main.java.de.voidtech.gerald.service;
 
 import java.awt.Color;
-import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -32,17 +31,6 @@ public class CountingService {
                     .uniqueResult();
 			return dbChannel;
 		}
-	}
-	
-	public List<CountingChannel> getTopFive() {
-		try(Session session = sessionFactory.openSession())
-		{
-			@SuppressWarnings("unchecked")
-			List<CountingChannel> channels = (List<CountingChannel>) session.createQuery("FROM CountingChannel"
-					+ " ORDER BY CountPosition ASC")
-					.setMaxResults(5).list();
-			return channels;
-		}	
 	}
 	
 	public void saveCountConfig(CountingChannel countChannel) {
