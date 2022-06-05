@@ -46,11 +46,8 @@ public class HelpCommand extends AbstractCommand{
 			inlineFieldState = !inlineFieldState;
 		}
 		
-		categoryListEmbedBuilder.addField("Any Command :clipboard: ", "```\nhelp [command]\n```", true);
-		
-		MessageEmbed categoryListEmbed = categoryListEmbedBuilder.build();
-		
-		command.getChannel().sendMessageEmbeds(categoryListEmbed).queue();
+		categoryListEmbedBuilder.addField("Any Command :clipboard: ", "```\nhelp [command]\n```", true);	
+		command.reply(categoryListEmbedBuilder.build());
 	}
 	
 	private boolean isCommandCategory(String categoryName) {
@@ -99,7 +96,6 @@ public class HelpCommand extends AbstractCommand{
 				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, context.getJDA().getSelfUser().getAvatarUrl())
 				.build();
 		context.reply(commandHelpEmbed);
-		
 	}
 
 	private String displayCommandCategoryOrNull(CommandCategory category) {
@@ -154,7 +150,7 @@ public class HelpCommand extends AbstractCommand{
 			String itemToBeQueried = args.get(0).toLowerCase();
 			if (isCommandCategory(itemToBeQueried)) showCommandsFromCategory(context, itemToBeQueried);
 			else if (isCommand(itemToBeQueried)) showCommand(context, itemToBeQueried);
-			else context.getChannel().sendMessage("**That command/category could not be found!**").queue();
+			else context.reply("**That command/category could not be found!**");
 		}
 	}
 
