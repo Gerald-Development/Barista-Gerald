@@ -68,7 +68,7 @@ public class CommandService
                 .collect(CustomCollectors.toSingleton());
 
         if (commandOpt == null) {
-            LOGGER.log(Level.INFO, "Command not found: " + messageArray.get(0));
+            LOGGER.logWithoutWebhook(Level.INFO, "Command not found: " + messageArray.get(0));
             tryLevenshteinOptions(message, messageArray.get(0));
             return;
         }
@@ -84,7 +84,7 @@ public class CommandService
 
         command.run(context, context.getArgs());
 
-        LOGGER.log(Level.INFO, "Command executed: " + command.getName() + " - From " + context.getAuthor().getAsTag() + "- ID: " + context.getAuthor().getId());
+        LOGGER.logWithoutWebhook(Level.INFO, "Command executed: " + command.getName() + " - From " + context.getAuthor().getAsTag() + "- ID: " + context.getAuthor().getId());
     }
 
     private String findCommand(String prompt) {

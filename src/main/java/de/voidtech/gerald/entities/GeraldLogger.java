@@ -30,8 +30,12 @@ public class GeraldLogger {
 		this.logger = Logger.getLogger(className);
 	}
 	
+	public void logWithoutWebhook(Level logLevel, String message) {
+		this.logger.log(logLevel, message);
+	}
+	
 	public void log(Level logLevel, String message) {
-		logger.log(logLevel, message);
+		this.logger.log(logLevel, message);
 		if (WebhookURL != null) logMessageToWebhook(this.className, message, logLevel);
 	}
 	
