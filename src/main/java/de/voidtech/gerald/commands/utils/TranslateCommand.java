@@ -27,22 +27,22 @@ public class TranslateCommand extends AbstractCommand {
 	
     private HashMap<String, String> getLanguages() {
     	HashMap<String, String> languages = new HashMap<String, String>();
-    	languages.put("en", "English");
-    	languages.put("ar", "Arabic");
-    	languages.put("zh", "Chinese");
-    	languages.put("fr", "French");
-    	languages.put("de", "German");
-    	languages.put("hi", "Hindi");
+    	languages.put("vi", "Vietnamese");
     	languages.put("id", "Indonesian");
-    	languages.put("it", "Italian");
-    	languages.put("ja", "Japanese");
-    	languages.put("ko", "Korean");
-    	languages.put("pl", "Polish");
     	languages.put("pt", "Portugese");
+    	languages.put("ja", "Japanese");
+    	languages.put("it", "Italian");
     	languages.put("ru", "Russian");
     	languages.put("es", "Spanish");
     	languages.put("tr", "Turkish");
-    	languages.put("vi", "Vietnamese");
+    	languages.put("en", "English");
+    	languages.put("zh", "Chinese");
+    	languages.put("ar", "Arabic");
+    	languages.put("fr", "French");
+    	languages.put("de", "German");
+    	languages.put("ko", "Korean");
+    	languages.put("pl", "Polish");
+    	languages.put("hi", "Hindi");
     	return languages;
     }
 	
