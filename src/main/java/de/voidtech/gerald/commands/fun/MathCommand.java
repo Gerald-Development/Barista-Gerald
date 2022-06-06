@@ -1,25 +1,31 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.commands.CommandContext;
-
-import javax.management.RuntimeErrorException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BinaryOperator;
 import java.util.function.UnaryOperator;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.IntStream;
+
+import javax.management.RuntimeErrorException;
+
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.entities.GeraldLogger;
+import main.java.de.voidtech.gerald.service.LogService;
 
 @Command
 public class MathCommand extends AbstractCommand {
 	
     private static final long MILLIS_TIME_OUT = 5000;
     private static final String EXPRESSION_REGEX = "[0-9+\\-*/^()\\s.]+";
-    private static final Logger LOGGER = Logger.getLogger(MathCommand.class.getName());
+    private static final GeraldLogger LOGGER = LogService.GetLogger(MathCommand.class.getSimpleName());
     
     private enum TokenType {VALUE,OPERATOR,EXPRESSION, TIMEOUT}
 

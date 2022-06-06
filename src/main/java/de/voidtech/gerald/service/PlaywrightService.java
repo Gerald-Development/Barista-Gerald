@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -17,13 +16,15 @@ import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 
+import main.java.de.voidtech.gerald.entities.GeraldLogger;
+
 @Service
 public class PlaywrightService {
 	
 	@Autowired
 	private ThreadManager threadManager;
 	
-	private static final Logger LOGGER = Logger.getLogger(PlaywrightService.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(PlaywrightService.class.getSimpleName());
 	private BrowserContext browser = null;
 	
 	private NewContextOptions getContextOptions() {

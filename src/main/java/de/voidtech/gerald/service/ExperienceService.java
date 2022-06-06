@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.DatatypeConverter;
@@ -21,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import main.java.de.voidtech.gerald.entities.Experience;
+import main.java.de.voidtech.gerald.entities.GeraldLogger;
 import main.java.de.voidtech.gerald.entities.LevelUpRole;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.entities.ServerExperienceConfig;
@@ -42,7 +42,7 @@ public class ExperienceService {
 	@Autowired
 	private GeraldConfig config;
 	
-	private static final Logger LOGGER = Logger.getLogger(ExperienceService.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(ExperienceService.class.getSimpleName());
 	private static final int EXPERIENCE_DELAY = 60; //Delay between incrementing XP in seconds
 	
 	public byte[] getExperienceCard(String avatarURL, long xpAchieved, long xpNeeded,

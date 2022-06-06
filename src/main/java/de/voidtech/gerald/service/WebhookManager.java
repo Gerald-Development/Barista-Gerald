@@ -6,7 +6,6 @@ import java.net.URL;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -16,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.entities.GeraldLogger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
@@ -30,7 +30,7 @@ public class WebhookManager {
 	@Autowired
 	private ThreadManager threadManager;
 	
-    private static final Logger LOGGER = Logger.getLogger(WebhookManager.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(WebhookManager.class.getSimpleName());
 	
 	public Webhook getOrCreateWebhook(TextChannel targetChannel, String webhookName, String selfID) {
 		

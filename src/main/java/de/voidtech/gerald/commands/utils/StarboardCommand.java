@@ -32,7 +32,7 @@ public class StarboardCommand extends AbstractCommand {
 	private StarboardService starboardService;
 	
 	@Autowired
-	EventWaiter waiter;
+	private EventWaiter waiter;
 	
 	private void getAwaitedReply(CommandContext context, String question, Consumer<String> result) {
         context.getChannel().sendMessage(question).queue();

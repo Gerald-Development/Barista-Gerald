@@ -1,12 +1,5 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.commands.CommandContext;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,14 +7,23 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.entities.GeraldLogger;
+import main.java.de.voidtech.gerald.service.LogService;
 
 @Command
 public class FactCommand extends AbstractCommand 
 {
 	private static final String REQUEST_URL = "https://uselessfacts.jsph.pl/random.json?language=en";
-	private static final Logger LOGGER = Logger.getLogger(FactCommand.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(FactCommand.class.getSimpleName());
 
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {

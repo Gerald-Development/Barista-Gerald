@@ -1,22 +1,6 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.MemeBlocklist;
-import main.java.de.voidtech.gerald.service.GeraldConfig;
-import main.java.de.voidtech.gerald.service.ServerService;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.awt.*;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,13 +11,31 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.entities.GeraldLogger;
+import main.java.de.voidtech.gerald.entities.MemeBlocklist;
+import main.java.de.voidtech.gerald.service.GeraldConfig;
+import main.java.de.voidtech.gerald.service.LogService;
+import main.java.de.voidtech.gerald.service.ServerService;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class MemeCommand extends AbstractCommand {
 	
-	private static final Logger LOGGER = Logger.getLogger(MemeCommand.class.getName());	
+	private static final GeraldLogger LOGGER = LogService.GetLogger(MemeCommand.class.getSimpleName());
 	
 	@Autowired
 	private SessionFactory sessionFactory;

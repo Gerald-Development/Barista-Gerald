@@ -3,7 +3,6 @@ package main.java.de.voidtech.gerald.routines.utils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,9 +11,11 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.annotations.Routine;
+import main.java.de.voidtech.gerald.entities.GeraldLogger;
 import main.java.de.voidtech.gerald.entities.NitroliteEmote;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
+import main.java.de.voidtech.gerald.service.LogService;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
@@ -22,7 +23,7 @@ import net.dv8tion.jda.api.entities.Message;
 @Routine
 public class NitroliteCollectorRoutine extends AbstractRoutine {
 
-	private static final Logger LOGGER = Logger.getLogger(NitroliteCollectorRoutine.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(NitroliteCollectorRoutine.class.getSimpleName());
 	private static final Pattern EMOTE_PATTERN = Pattern.compile("^(<:[^:\\s]+:[0-9]+>|<a:[^:\\s]+:[0-9]+>)+$");
 	
 	@Autowired

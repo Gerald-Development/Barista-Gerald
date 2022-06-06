@@ -1,25 +1,26 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.util.ParsingUtils;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.entities.GeraldLogger;
+import main.java.de.voidtech.gerald.service.LogService;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 
 @Command
 public class EnlargeCommand extends AbstractCommand {
 
 	private static final String CDN_URL = "https://cdn.discordapp.com/emojis/";
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64; Trident/7.0; rv:11.0) like Gecko";
-	private static final Logger LOGGER = Logger.getLogger(EnlargeCommand.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(EnlargeCommand.class.getSimpleName());
 	private static final List<String> FILE_EXTENSIONS = Arrays.asList("gif", "png", "jpg", "jpeg");
 
 	private boolean checkForImage(String emoteID, String extension) {

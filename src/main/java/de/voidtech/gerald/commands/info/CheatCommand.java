@@ -1,30 +1,33 @@
 package main.java.de.voidtech.gerald.commands.info;
 
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import com.jagrosh.jdautilities.menu.Paginator;
-import com.jagrosh.jdautilities.menu.Paginator.Builder;
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.commands.CommandContext;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import com.jagrosh.jdautilities.menu.Paginator;
+import com.jagrosh.jdautilities.menu.Paginator.Builder;
+
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.entities.GeraldLogger;
+import main.java.de.voidtech.gerald.service.LogService;
 
 @Command
 public class CheatCommand extends AbstractCommand {
 
 	private static final String CHEAT_SH_URL = "https://cheat.sh/";
-	private static final Logger LOGGER = Logger.getLogger(CheatCommand.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(CheatCommand.class.getSimpleName());
 	
 	@Autowired
 	private EventWaiter waiter;

@@ -12,7 +12,7 @@ public abstract class AbstractRoutine {
 	private ServerService serverService;
 
 	@Autowired
-	ThreadManager threadManager;
+	private ThreadManager threadManager;
 	
 	private void runRoutineInThread(Message message) {
 		Runnable routineThreadRunnable = new Runnable() {

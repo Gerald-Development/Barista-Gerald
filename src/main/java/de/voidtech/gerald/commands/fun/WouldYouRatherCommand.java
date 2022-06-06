@@ -1,20 +1,22 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Level;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import main.java.de.voidtech.gerald.entities.GeraldLogger;
+import main.java.de.voidtech.gerald.service.LogService;
 
 @Command
 public class WouldYouRatherCommand extends AbstractCommand {
-	private static final Logger LOGGER = Logger.getLogger(WouldYouRatherCommand.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(WouldYouRatherCommand.class.getSimpleName());
 
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {

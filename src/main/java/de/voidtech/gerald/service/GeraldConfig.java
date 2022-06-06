@@ -34,6 +34,10 @@ public class GeraldConfig {
 			LOGGER.log(Level.SEVERE, "There is no config file. You need a file called GeraldConfig.properties at the root of the project!");
 		}
 	}
+	
+	public String getLoggingUrl() {
+		return config.getProperty("webhook");
+	}
 
 	public String getToken() {
 		return config.getProperty("token");

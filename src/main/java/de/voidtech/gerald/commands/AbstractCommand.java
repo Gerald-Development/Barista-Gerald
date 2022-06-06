@@ -16,7 +16,7 @@ public abstract class AbstractCommand{
 	private ServerService serverService;
 	
 	@Autowired
-	ThreadManager threadManager;
+	private ThreadManager threadManager;
 	
 	private void runCommandInThread(CommandContext context, List<String> args) {
         if (context.getChannel().getType() == ChannelType.PRIVATE && !this.isDMCapable()) {

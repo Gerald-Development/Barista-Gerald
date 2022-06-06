@@ -1,16 +1,6 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.commands.CommandContext;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
-
-import java.awt.*;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,7 +10,21 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
+
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.entities.GeraldLogger;
+import main.java.de.voidtech.gerald.service.LogService;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class CompileCommand extends AbstractCommand {
@@ -29,6 +33,7 @@ public class CompileCommand extends AbstractCommand {
 	private static final String EMBED_THUMBNAIL_URL = "https://cdn.discordapp.com/attachments/727233195380310016/823533201279418399/808411850555261028.gif";
 	private static final char ESCAPE_CHAR = ((char)8204);
 	private final Map<String, String> langMap = getSupportedLangs();
+	private static final GeraldLogger LOGGER = LogService.GetLogger(CompileCommand.class.getSimpleName());
 	
 	private String getWandboxResponse(String payload) {
 		try {
@@ -53,12 +58,12 @@ public class CompileCommand extends AbstractCommand {
 				return in.lines().collect(Collectors.joining());
 							
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOGGER.log(Level.SEVERE, e.getMessage());
 			}
 			
 			con.disconnect();
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			LOGGER.log(Level.SEVERE, e1.getMessage());
 		}
 		return "";
 	}

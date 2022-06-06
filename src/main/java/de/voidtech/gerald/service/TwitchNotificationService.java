@@ -2,19 +2,21 @@ package main.java.de.voidtech.gerald.service;
 
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
 
+import main.java.de.voidtech.gerald.entities.GeraldLogger;
 import main.java.de.voidtech.gerald.entities.TwitchNotificationChannel;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -22,7 +24,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 @Service
 public class TwitchNotificationService {
 
-	private static final Logger LOGGER = Logger.getLogger(TwitchNotificationService.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(TwitchNotificationService.class.getSimpleName());
 
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -52,6 +54,7 @@ public class TwitchNotificationService {
 		}
 	}
 
+	@EventListener(ApplicationReadyEvent.class)
 	public void subscribeToAllStreamers() {
 		if (twitchClient != null) {
 			LOGGER.log(Level.INFO, "Adding Twitch API subscriptions");

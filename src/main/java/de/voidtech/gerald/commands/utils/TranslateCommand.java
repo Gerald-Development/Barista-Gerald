@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.json.JSONObject;
@@ -19,6 +20,8 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.entities.GeraldLogger;
+import main.java.de.voidtech.gerald.service.LogService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -27,6 +30,7 @@ public class TranslateCommand extends AbstractCommand {
     
 	private static final String TRANSLATE_URL = "https://libretranslate.de/translate";
 	private static HashMap<String, String> TranslateLanguages;	
+	private static final GeraldLogger LOGGER = LogService.GetLogger(TranslateCommand.class.getSimpleName());
 	
 	@EventListener(ApplicationReadyEvent.class)
 	private static void populateLanguages() {
@@ -154,12 +158,12 @@ public class TranslateCommand extends AbstractCommand {
 				return jsonResponse;
 							
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOGGER.log(Level.SEVERE, e.getMessage());
 			}
 			
 			con.disconnect();
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			LOGGER.log(Level.SEVERE, e1.getMessage());
 		}
 		return null;
 	}

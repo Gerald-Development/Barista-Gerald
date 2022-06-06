@@ -1,13 +1,6 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.commands.CommandContext;
-import net.dv8tion.jda.api.EmbedBuilder;
-import org.json.JSONObject;
-
-import java.awt.*;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,15 +8,24 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import org.json.JSONObject;
+
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.entities.GeraldLogger;
+import main.java.de.voidtech.gerald.service.LogService;
+import net.dv8tion.jda.api.EmbedBuilder;
 
 @Command
 public class ApodCommand extends AbstractCommand {
 
     private static final String API_URL = "https://api.nasa.gov/planetary/apod?api_key=lCJQbMiUG6iZMQdas8Qcg2IQ8KQmC19Ssuhc84pi";
     private static final String NASA_FOOTER = "https://cdn.freebiesupply.com/logos/large/2x/nasa-1-logo-png-transparent.png";
-    private static final Logger LOGGER = Logger.getLogger(ApodCommand.class.getName());
+    private static final GeraldLogger LOGGER = LogService.GetLogger(ApodCommand.class.getSimpleName());
 
     @Override
     public void executeInternal(CommandContext context, List<String> args) {

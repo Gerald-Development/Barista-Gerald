@@ -43,7 +43,7 @@ public class PPCommand extends AbstractCommand{
 	
 	private Color getColor(int ppSize)
 	{
-		return ppSize > 8 
+		return ppSize > 6 
 				? Color.GREEN 
 				: ppSize > 4 
 				? Color.ORANGE 
@@ -52,7 +52,7 @@ public class PPCommand extends AbstractCommand{
 	
 	private String getPhrase(int ppSize)
 	{
-		return ppSize > 8
+		return ppSize > 6
 				? "Thats pretty spankin' huge" 
 				: ppSize > 4
 				? "Meh could be bigger" 

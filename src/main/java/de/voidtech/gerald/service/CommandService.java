@@ -6,14 +6,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.entities.GeraldLogger;
 import main.java.de.voidtech.gerald.util.CustomCollectors;
 import main.java.de.voidtech.gerald.util.LevenshteinCalculator;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -24,7 +26,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 @Service
 public class CommandService
 {
-    private static final Logger LOGGER = Logger.getLogger(CommandService.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(CommandService.class.getSimpleName());
 
     private static final int LEVENSHTEIN_THRESHOLD = 1;
 
@@ -128,6 +130,7 @@ public class CommandService
         else return customPrefix;
     }
 
+    @EventListener(ApplicationReadyEvent.class)
     public void loadAliases() {
         for (AbstractCommand command: commands) {
             List<String> commandAliases = new ArrayList<>();

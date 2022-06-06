@@ -8,7 +8,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.hibernate.Session;
@@ -20,7 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.entities.ActionStats;
+import main.java.de.voidtech.gerald.entities.GeraldLogger;
 import main.java.de.voidtech.gerald.entities.Server;
+import main.java.de.voidtech.gerald.service.LogService;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -31,7 +32,7 @@ import net.dv8tion.jda.api.utils.Result;
 public abstract class ActionsCommand extends AbstractCommand {
 	
 	private static final String API_URL = "http://api.nekos.fun:8080/api/";
-	private static final Logger LOGGER = Logger.getLogger(ActionsCommand.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(ActionsCommand.class.getSimpleName());
 
 	@Autowired
 	private SessionFactory sessionFactory;

@@ -1,13 +1,6 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.commands.CommandContext;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-
-import java.awt.*;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,15 +8,23 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.entities.GeraldLogger;
+import main.java.de.voidtech.gerald.service.LogService;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class InspiroCommand extends AbstractCommand{
 	private static final String REQUEST_URL = "https://inspirobot.me/api?generate=true";
 	private static final String INSPIRO_ICON = "https://inspirobot.me/website/images/inspirobot-dark-green.png";
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64; Trident/7.0; rv:11.0) like Gecko";
-	private static final Logger LOGGER = Logger.getLogger(InspiroCommand.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(InspiroCommand.class.getSimpleName());
 
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {

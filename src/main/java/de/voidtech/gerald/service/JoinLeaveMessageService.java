@@ -41,8 +41,8 @@ public class JoinLeaveMessageService {
 		try(Session session = sessionFactory.openSession())
 		{
             return (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
-.setParameter("serverID", guildID)
-.uniqueResult();
+            		.setParameter("serverID", guildID)
+            		.uniqueResult();
 		}
 	}
 	
