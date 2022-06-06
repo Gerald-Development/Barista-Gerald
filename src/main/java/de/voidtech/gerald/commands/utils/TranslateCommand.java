@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.json.JSONObject;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
@@ -24,8 +26,10 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 public class TranslateCommand extends AbstractCommand {
     
 	private static final String TRANSLATE_URL = "https://libretranslate.de/translate";
+	private static HashMap<String, String> TranslateLanguages;	
 	
-    private HashMap<String, String> getLanguages() {
+	@EventListener(ApplicationReadyEvent.class)
+	private static void populateLanguages() {
     	HashMap<String, String> languages = new HashMap<String, String>();
     	languages.put("vi", "Vietnamese");
     	languages.put("id", "Indonesian");
@@ -43,50 +47,57 @@ public class TranslateCommand extends AbstractCommand {
     	languages.put("ko", "Korean");
     	languages.put("pl", "Polish");
     	languages.put("hi", "Hindi");
-    	return languages;
-    }
+    	TranslateLanguages = languages;
+	}
 	
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
 		String text = "";
+		String language = "";
+		//If no args are provided, translate a reply into english by default
 		if (args.isEmpty()) {
-			if (context.getMessage().getReferencedMessage() == null)
-				context.reply("**You need to either reply to a message to be translated or supply some text to be translated!**");
-			else text = context.getMessage().getReferencedMessage().getContentRaw();
+			if (context.getMessage().getReferencedMessage() == null) {
+				context.reply("**You need to either reply to a message or supply some text to be translated!**");
+				return;
+			} else text = context.getMessage().getReferencedMessage().getContentRaw();
 			sendTranslation(text, "en", context);
 		} else {
-			if (args.get(0).equals("languages")) {
+			//Check for language listing command first
+			if (args.get(0).toLowerCase().equals("languages")) {
 				sendLanguagesList(context);
 				return;
 			}
-			String language = "";
-			if (getLanguages().keySet().contains(args.get(0).toLowerCase()))
-				language = args.get(0).toLowerCase(); 
-			
+			//If args ARE provided, check for a reply with a language specified or some text with/without a language specified 
 			if (context.getMessage().getReferencedMessage() == null) {
-				if (args.size() == 1) 
-					context.reply("**You need to either reply to a message to be translated or supply some text to be translated!**");
-				else {
-					if (language.equals("")) text = String.join(" ", args);
-					else {
-						List<String> argsMutable = args.stream().collect(Collectors.toList());
-						argsMutable.remove(0);
-						text = String.join(" ", argsMutable);
+				//If only one argument is provided and that argument is a valid language, tell the shmoe they need to supply text
+				if (TranslateLanguages.keySet().contains(args.get(0).toLowerCase())) {
+					if (args.size() == 1) {
+						context.reply("**You need to either reply to a message or supply some text to be translated!**");
+						return;
+					} else {
+						language = args.get(0).toLowerCase();
+						text = String.join(" ", args.subList(1, args.size()));	
 					}
+				//If the first argument is not a valid language, translate everything into english
+				} else {
+					language = "en";
+					text = String.join(" ", args);
 				}
-			} else text = context.getMessage().getReferencedMessage().getContentRaw();
-			
-			if (language.equals("")) language = "en";
-			sendTranslation(text, language, context);
+				sendTranslation(text, language, context);
+			} else {
+				text = context.getMessage().getReferencedMessage().getContentRaw();
+				if (TranslateLanguages.keySet().contains(args.get(0).toLowerCase())) language = args.get(0).toLowerCase();
+				else language = "en";
+				sendTranslation(text, language, context);
+			}
 		}
 	}
 	
 	private void sendLanguagesList(CommandContext context) {
 		String languagesList = "";
-		HashMap<String, String> languages = getLanguages();
 		
-		for (String languageCode : languages.keySet()) {
-			languagesList += "`" + languageCode + "` - **" + languages.get(languageCode) + "**\n";
+		for (String languageCode : TranslateLanguages.keySet()) {
+			languagesList += "`" + languageCode + "` - **" + TranslateLanguages.get(languageCode) + "**\n";
 		}
 		
 		MessageEmbed languageListEmbed = new EmbedBuilder()
@@ -101,12 +112,12 @@ public class TranslateCommand extends AbstractCommand {
 	private void sendTranslation(String text, String language, CommandContext context) {
 		JSONObject translation = getTranslation(text, language);
 		String translationText = (translation == null ? "Unable to translate" : translation.getString("translatedText"));
-		String sourceLanguage = getLanguages().get(translation.getJSONObject("detectedLanguage").getString("language"));
+		String sourceLanguage = TranslateLanguages.get(translation.getJSONObject("detectedLanguage").getString("language"));
 		MessageEmbed translationEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle("Translation", "https://libretranslate.de/")
 				.addField("Original Text (Detected " + sourceLanguage + ")", text, false)
-				.addField("Translation into " + getLanguages().get(language), translationText, false)
+				.addField("Translation into " + TranslateLanguages.get(language), translationText, false)
 				.setFooter("Translated by libretranslate.de")
 				.build();
 		context.reply(translationEmbed);
@@ -157,13 +168,16 @@ public class TranslateCommand extends AbstractCommand {
 	public String getDescription() {
 		return "Translate messages and text into a variety of languages."
 				+ " Reply to a message with the translate command and an optional language choice to translate the message!"
-				+ " Or, supply your own text to be translated.";
+				+ " Or, supply your own text to be translated. Use the 'languages'"
+				+ " subcommand to see all the language codes for the supported languages!";
 	}
 
 	@Override
 	public String getUsage() {
 		return "translate [language] [text]"
-				+ "translate [text] (Language will be english here)";
+				+ "translate [text] (Language will be english here)"
+				+ "translate (reply to message to translate)"
+				+ "translate languages";
 	}
 
 	@Override
@@ -200,5 +214,4 @@ public class TranslateCommand extends AbstractCommand {
 	public boolean isSlashCompatible() {
 		return true;
 	}
-
 }
