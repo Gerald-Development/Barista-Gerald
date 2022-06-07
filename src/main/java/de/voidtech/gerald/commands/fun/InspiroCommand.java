@@ -1,72 +1,75 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
 import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.GeraldLogger;
-import main.java.de.voidtech.gerald.service.LogService;
+import main.java.de.voidtech.gerald.service.InspiroService;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 @Command
-public class InspiroCommand extends AbstractCommand{
-	private static final String REQUEST_URL = "https://inspirobot.me/api?generate=true";
-	private static final String INSPIRO_ICON = "https://inspirobot.me/website/images/inspirobot-dark-green.png";
-	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64; Trident/7.0; rv:11.0) like Gecko";
-	private static final GeraldLogger LOGGER = LogService.GetLogger(InspiroCommand.class.getSimpleName());
+public class InspiroCommand extends AbstractCommand { 
 
+	@Autowired
+	private InspiroService inspiroService;
+	
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
-		String inspiroImageURLOpt = getInspiroImageURLOpt();
-		if (inspiroImageURLOpt != null)
-		{
-			MessageEmbed inspiroEmbed = new EmbedBuilder()//
-					.setTitle("InspiroBot says:", inspiroImageURLOpt)//
-					.setColor(Color.ORANGE)//
-					.setImage(inspiroImageURLOpt)//
-					.setFooter("Data from InspiroBot", INSPIRO_ICON)//
-					.build();
-			context.reply(inspiroEmbed);
-		}
-	}
-	
-	private String getInspiroImageURLOpt() {
-		try {
-			HttpURLConnection con = (HttpURLConnection) new URL(REQUEST_URL).openConnection();
-			con.setRequestMethod("GET");
-			con.setRequestProperty("User-Agent", USER_AGENT);
-
-			if (con.getResponseCode() == 200) {
-				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-					return in.lines().collect(Collectors.joining());
-				}
+		if (args.isEmpty()) {
+			String inspiroImageURLOpt = inspiroService.getInspiroImageURLOpt();
+			if (inspiroImageURLOpt != null)
+			{
+				MessageEmbed inspiroEmbed = new EmbedBuilder()//
+						.setTitle("InspiroBot says:", inspiroImageURLOpt)//
+						.setColor(Color.ORANGE)//
+						.setImage(inspiroImageURLOpt)//
+						.setFooter("Data from InspiroBot", InspiroService.INSPIRO_ICON)//
+						.build();
+				context.reply(inspiroEmbed);
 			}
-			con.disconnect();
-		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
+		} else if (args.get(0).equals("daily")) {
+			if (args.size() == 1) {
+				context.reply("**You need to either specify a channel or use 'disable' to stop sending a daily inspiro**");
+				return;
+			}
+			if (args.get(1).equals("disable")) {
+				boolean disabled = inspiroService.disableDaily(context.getGuild().getId());
+				context.reply(disabled ? "**Daily inspiro has been disabled**" : "**Daily inspiro was not enabled!**");
+			} else {
+				String parsedID = ParsingUtils.filterSnowflake(args.get(1));
+				if (!ParsingUtils.isSnowflake(parsedID)) {
+					context.reply("**You need to supply a valid channel ID or mention!**");
+					return;
+				}
+				TextChannel channel = context.getGuild().getTextChannelById(parsedID);
+				if (channel == null) {
+					context.reply("**That's not a valid channel!**");
+					return;
+				}
+				inspiroService.scheduleInspiro(context.getGuild().getId(), parsedID);
+				context.reply("**Inspiration will now be sent daily to** <#" + parsedID + ">");
+			}
 		}
-		return null;
 	}
 
 	@Override
 	public String getDescription() {
-		return "sends a very inspiring picture";
+		return "Sends a very inspiring picture. To have one sent daily automatically in a channel of your choosing, use the 'daily' subcommand.";
 	}
 
 	@Override
 	public String getUsage() {
-		return "inspiro";
+		return "inspiro\n"
+				+ "inspiro daily [channel mention/ID]\n"
+				+ "inspiro daily disable";
 	}
 
 	@Override

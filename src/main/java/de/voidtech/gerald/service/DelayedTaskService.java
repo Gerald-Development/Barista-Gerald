@@ -110,6 +110,17 @@ public class DelayedTaskService {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<DelayedTask> getGuildTasks(String guildID, TaskType type) {
+		try(Session session = sessionFactory.openSession())
+		{
+			return session.createQuery("FROM DelayedTask WHERE guildID = :userID AND type = :type")
+                    .setParameter("userID", guildID)
+                    .setParameter("type", type.getType())
+                    .list();
+		}
+	}
+	
 	public DelayedTask getTaskByID(long id) {
 		try(Session session = sessionFactory.openSession())
 		{
