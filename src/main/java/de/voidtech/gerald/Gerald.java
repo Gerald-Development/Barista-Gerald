@@ -45,7 +45,7 @@ import java.util.Set;
 @SpringBootApplication
 public class Gerald {
 	
-	@Bean
+	@Bean("JDA")
 	@DependsOn(value = {"sessionFactory"})
 	@Order(3)
 	@Autowired
