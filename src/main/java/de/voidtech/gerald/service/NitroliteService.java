@@ -113,18 +113,16 @@ public class NitroliteService {
     }
 
 	public List<String> processNitroliteMessage(Message message) {
-		 List<String> messageTokens = Arrays.asList(message.getContentRaw().split(" "));
-	        
+		 List<String> messageTokens = Arrays.asList(message.getContentRaw().replaceAll("\\[:", " \\[:").replaceAll(":\\]", "\\:] ").split(" "));
 	     long serverID = serverService.getServer(message.getGuild().getId()).getId();
 	     boolean foundOne = false;
 
 	     for (int i = 0; i < messageTokens.size(); i++) {
 	         String token = messageTokens.get(i);
 	         NitroliteEmote emoteOpt = null;
-	            
+	         
 	         if (token.matches("\\[:[^:]*:]")) {
-	             String searchWord = token.substring(2, token.length() - 2);
-	         	
+	             String searchWord = token.substring(2, token.length() - 2);    	
 	             if (aliasExists(searchWord, serverID)) emoteOpt = getEmoteFromAlias(searchWord, serverID, message);
 	             else emoteOpt = emoteService.getEmoteByName(searchWord, message.getJDA());
 
@@ -134,6 +132,6 @@ public class NitroliteService {
 	             }
 	         }
 	     }
-	       return foundOne ? messageTokens : null; 
+	     return foundOne ? messageTokens : null; 
 	}
 }
