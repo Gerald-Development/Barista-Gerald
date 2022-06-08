@@ -22,12 +22,14 @@ public class GoogleCommand extends AbstractCommand {
 	
 	private static final String BROWSER_LOGO_IMAGE = "https://e7.pngegg.com/pngimages/293/824/png-clipart-ecosia-computer-icons-web-browser-android-illegal-logging-globe-logo-thumbnail.png";
 	
-	private static final String BROWSER_BASE_URL = "https://www.ecosia.org/";
-	private static final String BROWSER_SEARCH_URL = "search?q=";
-	private static final String BROWSER_NEWS_URL = "news?q=";
-	private static final String BROWSER_IMAGES_URL = "images?q=";
-	private static final String BROWSER_VIDEOS_URL = "videos?q=";
-	private static final String SAFE_SEARCH_SUFFIX = "&sfs=true";
+	private static final String BROWSER_BASE_URL = "https://duckduckgo.com/";
+	private static final String BROWSER_SEARCH_URL = "?ia=web&q=";
+	private static final String BROWSER_NEWS_URL = "?ia=news&q=";
+	private static final String BROWSER_IMAGES_URL = "?ia=images&q=";
+	private static final String BROWSER_VIDEOS_URL = "?ia=videos&q=";
+	
+	private static final String SAFE_MODE_ENABLED = "&kp=1";
+	private static final String SAFE_MODE_DISABLED = "&kp=-2";
 	
 	@Autowired
 	private PlaywrightService playwrightService;
@@ -65,14 +67,12 @@ public class GoogleCommand extends AbstractCommand {
 					urlBuffer += BROWSER_SEARCH_URL;
 					break;
 			}
-		} else 
-			urlBuffer += BROWSER_SEARCH_URL;
+		} else urlBuffer += BROWSER_SEARCH_URL;
 		if (queryString.equals(""))
 			return null;
 		else {
-			urlBuffer += queryString;
-			if (!nsfwAllowed)
-				urlBuffer += SAFE_SEARCH_SUFFIX; 
+			urlBuffer += queryString; 
+			urlBuffer += (nsfwAllowed ? SAFE_MODE_DISABLED : SAFE_MODE_ENABLED);
 			return urlBuffer;	
 		}
 	}

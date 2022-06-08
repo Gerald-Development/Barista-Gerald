@@ -59,8 +59,7 @@ public class PlaywrightService {
 	public byte[] screenshotPage(String url, int width, int height) {
 		Page screenshotPage = getBrowser().newPage();
 		screenshotPage.setExtraHTTPHeaders(getHttpHeaders());
-		screenshotPage.navigate(url);
-		if (screenshotPage.querySelector("#L2AGLb > div") != null) screenshotPage.querySelector("#L2AGLb > div").click(); 
+		screenshotPage.navigate(url); 
 		screenshotPage.setViewportSize(width, height);
 		byte[] screenshotBytesBuffer = screenshotPage.screenshot();
 		screenshotPage.close();	
