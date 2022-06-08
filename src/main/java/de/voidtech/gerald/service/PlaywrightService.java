@@ -15,6 +15,7 @@ import com.microsoft.playwright.Browser.NewContextOptions;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.options.Geolocation;
 
 import main.java.de.voidtech.gerald.entities.GeraldLogger;
 
@@ -25,11 +26,15 @@ public class PlaywrightService {
 	private ThreadManager threadManager;
 	
 	private static final GeraldLogger LOGGER = LogService.GetLogger(PlaywrightService.class.getSimpleName());
-	private BrowserContext browser = null;
+	public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64; Trident/7.0; rv:11.0) like Gecko";
+	private static BrowserContext browser = null;
 	
 	private NewContextOptions getContextOptions() {
 		return new Browser.NewContextOptions()
 				.setViewportSize(1000, 1000)
+				.setAcceptDownloads(false)
+				.setGeolocation(new Geolocation(51.5072, 0.1276))
+				.setUserAgent(USER_AGENT)
 				.setLocale("en-GB");
 	}
 	
@@ -48,7 +53,7 @@ public class PlaywrightService {
 	}
 	
 	public BrowserContext getBrowser() {
-		return this.browser;
+		return browser;
 	}
 	
 	public byte[] screenshotPage(String url, int width, int height) {
