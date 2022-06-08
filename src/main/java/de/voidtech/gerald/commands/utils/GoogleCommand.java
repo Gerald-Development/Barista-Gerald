@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 @Command
 public class GoogleCommand extends AbstractCommand {
 	
-	private static final String BROWSER_LOGO_IMAGE = "https://e7.pngegg.com/pngimages/293/824/png-clipart-ecosia-computer-icons-web-browser-android-illegal-logging-globe-logo-thumbnail.png";
+	private static final String BROWSER_LOGO_IMAGE = "https://upload.wikimedia.org/wikipedia/en/archive/9/90/20211207123704%21The_DuckDuckGo_Duck.png";
 	
 	private static final String BROWSER_BASE_URL = "https://duckduckgo.com/";
 	private static final String BROWSER_SEARCH_URL = "?ia=web&q=";
@@ -91,7 +91,7 @@ public class GoogleCommand extends AbstractCommand {
 				.setColor(Color.ORANGE)
 				.setTitle("**Your Search Result:**", url)
 				.setImage("attachment://screenshot.png")
-				.setFooter("Powered By Ecosia | Safe mode " + (safeSearchMode ? "disabled" : "enabled"), BROWSER_LOGO_IMAGE)
+				.setFooter("Powered By DuckDuckGo | Safe mode " + (safeSearchMode ? "disabled" : "enabled"), BROWSER_LOGO_IMAGE)
 				.build();
 	}
 	
