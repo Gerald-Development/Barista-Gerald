@@ -144,7 +144,7 @@ public class GoogleCommand extends AbstractCommand {
 
 	@Override
 	public String[] getCommandAliases() {
-		return new String[]{"search", "ecosia"};
+		return new String[]{"search", "ddg", "duckduckgo"};
 	}
 	
 	@Override
