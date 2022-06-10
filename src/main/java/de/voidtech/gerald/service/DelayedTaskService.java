@@ -43,7 +43,7 @@ public class DelayedTaskService {
 	
 	@EventListener(ApplicationReadyEvent.class)
 	private void startTimer() {
-		TimerTask requestAllowanceIncrement = new TimerTask() {
+		TimerTask checkTaskTimer = new TimerTask() {
 		    public void run() {
 		    	Thread.currentThread().setName("Task Timer"); 
 		    	checkForTasks();
@@ -51,7 +51,7 @@ public class DelayedTaskService {
 		 };
 		
 		Timer timer = new Timer();
-		timer.schedule(requestAllowanceIncrement, DELAYED_TASK_TIMER_INTERVAL, DELAYED_TASK_TIMER_INTERVAL);
+		timer.schedule(checkTaskTimer, DELAYED_TASK_TIMER_INTERVAL, DELAYED_TASK_TIMER_INTERVAL);
 	}
 	
 	private void checkForTasks() {
