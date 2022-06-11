@@ -77,7 +77,7 @@ public class NitroliteCollectorRoutine extends AbstractRoutine {
 			session.saveOrUpdate(emote);
 			session.getTransaction().commit();
 			
-			LOGGER.log(Level.INFO, "New emote '" + emoteName + "' Has been saved!");
+			LOGGER.logWithoutWebhook(Level.INFO, "New emote '" + emoteName + "' Has been saved!");
 		}
 	}
 	
@@ -93,7 +93,7 @@ public class NitroliteCollectorRoutine extends AbstractRoutine {
 
 	@Override
 	public void executeInternal(Message message) {
-		List<String> words = Arrays.asList(message.getContentRaw().split(" "));
+		List<String> words = Arrays.asList(message.getContentRaw().replaceAll("(?<! )<:", " <:").replaceAll(":>(?! )", ">:] ").split(" "));
 		words.forEach(word -> {
 			if (isEmote(word)) {
 				parseNewEmote(word, message.getJDA());
