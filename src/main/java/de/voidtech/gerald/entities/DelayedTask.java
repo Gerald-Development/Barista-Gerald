@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
 import org.json.JSONObject;
 
 import main.java.de.voidtech.gerald.tasks.TaskType;
@@ -21,6 +22,7 @@ public class DelayedTask {
 	private long id;
 	
 	@Column
+	@Type(type = "org.hibernate.type.TextType")
 	private String args; 
 	
 	@Column
