@@ -9,7 +9,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import main.java.de.voidtech.gerald.entities.GeraldLogger;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
 import net.dv8tion.jda.api.JDA;
 
 @Service
@@ -49,7 +49,7 @@ public class LogService {
 	}
 	
 	public void alertProgramShutdown() {
-		Logger.log(Level.INFO, "Barista shut down at " + formatter.format(new Date()));
+		Logger.log(Level.WARNING, "Barista shutting down at " + formatter.format(new Date()));
 	}
 	
 }

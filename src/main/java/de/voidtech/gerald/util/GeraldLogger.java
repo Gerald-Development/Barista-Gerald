@@ -1,4 +1,4 @@
-package main.java.de.voidtech.gerald.entities;
+package main.java.de.voidtech.gerald.util;
 
 import java.awt.Color;
 import java.io.OutputStream;

@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 
 import main.java.de.voidtech.gerald.commands.fun.InspiroCommand;
 import main.java.de.voidtech.gerald.entities.DelayedTask;
-import main.java.de.voidtech.gerald.entities.GeraldLogger;
 import main.java.de.voidtech.gerald.tasks.TaskType;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
 
 @Service
 public class InspiroService {

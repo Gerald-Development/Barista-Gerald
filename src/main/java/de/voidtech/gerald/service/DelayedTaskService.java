@@ -15,9 +15,9 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import main.java.de.voidtech.gerald.entities.DelayedTask;
-import main.java.de.voidtech.gerald.entities.GeraldLogger;
 import main.java.de.voidtech.gerald.tasks.AbstractTask;
 import main.java.de.voidtech.gerald.tasks.TaskType;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
 import net.dv8tion.jda.api.JDA;
 
 @Lazy

@@ -17,7 +17,7 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.options.Geolocation;
 
-import main.java.de.voidtech.gerald.entities.GeraldLogger;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
 
 @Service
 public class PlaywrightService {
