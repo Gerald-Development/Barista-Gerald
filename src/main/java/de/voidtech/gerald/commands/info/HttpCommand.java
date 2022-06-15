@@ -1,47 +1,61 @@
 package main.java.de.voidtech.gerald.commands.info;
 
+import java.awt.Color;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.service.LogService;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-import java.awt.*;
-import java.util.Arrays;
-import java.util.List;
-
 @Command
 public class HttpCommand extends AbstractCommand {
-
+	
 	private static final String HTTP_CAT = "https://http.cat/";
-	private static final String CODES = 
-			  "100,101,102,200,201,202,"
-			+ "204,206,207,300,301,302,"
-			+ "303,304,305,307,308,400,"
-			+ "401,402,403,404,405,406,"
-			+ "408,409,410,411,412,413,"
-			+ "414,415,416,417,418,420,"
-			+ "421,422,423,424,425,426,"
-			+ "429,431,444,450,451,499,"
-			+ "500,501,502,503,504,506,"
-			+ "507,508,509,510,511,599";
+	private static final GeraldLogger LOGGER = LogService.GetLogger(HttpCommand.class.getSimpleName());
+	
+	private static List<String> CatCodes = new ArrayList<String>();
+	
+	@EventListener(ApplicationReadyEvent.class)
+	private void GetCatCodes() {
+		try {
+			Document httpCat = Jsoup.connect(HTTP_CAT).get();
+			Elements catElements = httpCat.getElementsByClass("ThumbnailGrid_thumbnail__177T1");
+			for (Element cat : catElements) {
+				String url = cat.select("div > a").first().attr("href");
+				List<String> urlParts = Arrays.asList(url.split("/"));
+				String code = urlParts.get(urlParts.size() - 1);
+				CatCodes.add(code);
+			}
+			LOGGER.logWithoutWebhook(Level.INFO, "Added http codes!");
+		} catch (IOException e) {
+			LOGGER.logWithoutWebhook(Level.SEVERE, "Failed to add http codes: " + e.getMessage());
+		}
+	}
 	
 	private boolean codeExists(String code) {
-		List<String> codes = Arrays.asList(CODES.split(","));
-		return codes.contains(code);
+		return CatCodes.contains(code);
 	}
 	
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
-		String code = args.get(0);
-		
-		if (!codeExists(code)) {
-			code = "404";
-		}
-		
+		String code = codeExists(args.get(0)) ? args.get(0) : "404";
 		String url = HTTP_CAT + code + ".jpg";
-		
 		MessageEmbed httpEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle("HTTP " + code, url)
@@ -52,12 +66,12 @@ public class HttpCommand extends AbstractCommand {
 
 	@Override
 	public String getDescription() {
-		return "Shows you the description of an HTTP code, along with an HTTP cat";
+		return "Shows you the description of an HTTP code, along with a very helpful feline-based image.";
 	}
 
 	@Override
 	public String getUsage() {
-		return "http 404";
+		return "http [http code]";
 	}
 
 	@Override
@@ -94,5 +108,4 @@ public class HttpCommand extends AbstractCommand {
 	public boolean isSlashCompatible() {
 		return true;
 	}
-
 }
