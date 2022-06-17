@@ -52,7 +52,6 @@ public class WebhookManager {
         webhookPayload.put("avatar_url", avatarUrl);
         webhookPayload.put("tts", false);
         
-		
 		if (referencedMessage != null) {
 			 MessageEmbed replyTextEmbed = new EmbedBuilder()
 					.setTitle("Replying to this message", referencedMessage.getJumpUrl())
@@ -95,14 +94,10 @@ public class WebhookManager {
 		EnumSet<Permission> perms = context.getGuild().getSelfMember().getPermissions((GuildChannel) context.getChannel());
 		
         if (perms.contains(Permission.MANAGE_WEBHOOKS)) {
-        	postMessage(content, null,	avatarUrl, username,
-        			getOrCreateWebhook((TextChannel) context.getChannel(),
-        					webhookName,
-        					context.getJDA().getSelfUser().getId())
-        	);
-         } else {
-             context.getChannel().sendMessage(content).queue();
-         }
+        	Webhook webhook = getOrCreateWebhook((TextChannel) context.getChannel(),
+					webhookName, context.getJDA().getSelfUser().getId());
+        	postMessage(content, null,	avatarUrl, username, webhook);
+         } else context.getChannel().sendMessage(content).queue();
 	}
 	
 }
