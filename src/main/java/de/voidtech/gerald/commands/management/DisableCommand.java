@@ -83,11 +83,11 @@ public class DisableCommand extends AbstractCommand {
 			
 			Server server = serverService.getServer(context.getGuild().getId());
 			if (server.getRoutineBlacklist().contains(targetName))
-				resultMessage = "**This routine is already disabled!**";
+				resultMessage = "**Routine `" + foundRoutine.getName() + "` is already disabled!**";
 			else {
 				server.addToRoutineBlacklist(targetName);
 				serverService.saveServer(server);
-				resultMessage = "**Routine `" + targetName + "`has been disabled!**";
+				resultMessage = "**Routine `" + targetName + "` has been disabled!**";
 			}
 		}
 		context.reply(resultMessage);
