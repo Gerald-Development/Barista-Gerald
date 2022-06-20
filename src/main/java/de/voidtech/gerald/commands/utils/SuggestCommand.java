@@ -60,7 +60,7 @@ public class SuggestCommand extends AbstractCommand {
     @NotNull
     private MessageEmbed getMessageEmbed(CommandContext context, List<String> args) {
     	EmbedBuilder newSuggestionEmbedBuilder = new EmbedBuilder()
-                .setColor(Color.ORANGE)
+                .setColor(Color.GRAY)
                 .setTitle("New Suggestion!", context.getMessage().getJumpUrl())
                 .addField("Suggestion", String.join(" ", args), false)
                 .setFooter("Suggested By " + context.getAuthor().getAsTag(), context.getAuthor().getAvatarUrl());

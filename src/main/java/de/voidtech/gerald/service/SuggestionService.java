@@ -102,7 +102,7 @@ public class SuggestionService {
 		Field suggestionField = fields.stream().filter(f -> f.getName().equals("Suggestion")).findFirst().orElse(null);
 		suggestionModifier.clearFields()
 			.addField(suggestionField)
-			.addField("Last Reviewed By", reaction.getUser().getAsMention() + " - " + emote.getEmote(), false)
+			.addField("Last Reviewed By", reaction.getUser().getAsMention() + " " + emote.getEmote(), false)
 			.setColor(emote.getColour());
 	}
 
