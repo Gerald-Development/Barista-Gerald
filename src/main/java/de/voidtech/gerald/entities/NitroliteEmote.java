@@ -5,11 +5,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "nitroliteemote")
-
+@Table(name = "nitroliteemote", indexes = @Index(columnList = "name", name = "idx_nitrolite"))
 public class NitroliteEmote {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

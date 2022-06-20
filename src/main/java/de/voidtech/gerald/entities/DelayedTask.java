@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
@@ -13,8 +14,7 @@ import org.json.JSONObject;
 import main.java.de.voidtech.gerald.tasks.TaskType;
 
 @Entity
-@Table(name = "delayedtask")
-
+@Table(name = "delayedtask", indexes = @Index(columnList = "time", name = "idx_delayed_task"))
 public class DelayedTask {
 	
 	@Id
