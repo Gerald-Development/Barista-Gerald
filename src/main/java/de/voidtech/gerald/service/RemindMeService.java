@@ -19,7 +19,7 @@ public class RemindMeService {
 	
 	public void addReminder(CommandContext context, String message, long time) {
 		DelayedTask task = new DelayedTask(TaskType.REMIND_ME,
-				new JSONObject().put("channelID", context.getChannel().getId()).put("message", message),
+				new JSONObject().put("channelID", context.getChannel().getId()).put("message", message.replaceAll("@", "``@``")),
 				context.getGuild().getId(),
 				context.getAuthor().getId(),
 				time);		

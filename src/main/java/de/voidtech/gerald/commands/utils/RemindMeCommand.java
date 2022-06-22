@@ -138,7 +138,7 @@ public class RemindMeCommand extends AbstractCommand {
 
 	@Override
 	public String[] getCommandAliases() {
-		return new String[] {"reminder", "reminders"};
+		return new String[] {"reminder", "reminders", "remind"};
 	}
 
 	@Override
