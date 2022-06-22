@@ -37,7 +37,7 @@ public class DelayedTaskService {
 	//Time in milliseconds
 	private static final int DELAYED_TASK_TIMER_INTERVAL = 10000;
 	//Time in seconds
-	private static final int UPCOMING_TASKS_TIME = 5;
+	private static final int UPCOMING_TASKS_TIME = 10;
 	
 	private static final GeraldLogger LOGGER = LogService.GetLogger(DelayedTaskService.class.getSimpleName());
 	

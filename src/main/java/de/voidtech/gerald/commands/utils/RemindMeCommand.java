@@ -75,7 +75,7 @@ public class RemindMeCommand extends AbstractCommand {
 		long time = (timeValue * multiplicationFactor) + Instant.now().getEpochSecond();
 		
 		remindMeService.addReminder(context, message, time);
-		context.reply("**Reminder added!**");
+		context.reply("**Reminder added! I'll remind you on** <t:" + time + ":F>");
 	}
 
 	private void deleteReminder(CommandContext context, List<String> args) {

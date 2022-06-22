@@ -36,7 +36,7 @@ public class RemindMeService {
 			if (guild == null) {
 				taskService.deleteTask(task);
 			} else {
-				list += "`" + task.getTaskID() +  "` **" + guild.getName() + "** -  <t:" + task.getExecutionTime() + "> - ";
+				list += "`" + task.getTaskID() +  "` **" + guild.getName() + "** -  <t:" + task.getExecutionTime() + ":F> - ";
 				list += formatMessage(task.getArgs().getString("message"));	
 				list += "\n";
 			}
