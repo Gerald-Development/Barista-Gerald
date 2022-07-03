@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.entities.DelayedTask;
 import main.java.de.voidtech.gerald.tasks.TaskType;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.entities.Guild;
 
 @Service
@@ -19,7 +20,7 @@ public class RemindMeService {
 	
 	public void addReminder(CommandContext context, String message, long time) {
 		DelayedTask task = new DelayedTask(TaskType.REMIND_ME,
-				new JSONObject().put("channelID", context.getChannel().getId()).put("message", message.replaceAll("@", "``@``")),
+				new JSONObject().put("channelID", context.getChannel().getId()).put("message", ParsingUtils.removeVolatileMentions(message)),
 				context.getGuild().getId(),
 				context.getAuthor().getId(),
 				time);		

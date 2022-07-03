@@ -13,6 +13,7 @@ import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.service.NitroliteService;
 import main.java.de.voidtech.gerald.service.WebhookManager;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
@@ -73,7 +74,7 @@ public class TunnelRoutine extends AbstractRoutine {
 	}
 	
 	private void sendTunnelMessage(Tunnel tunnel, Message message) {
-		String messageContent = message.getContentRaw().replaceAll("@", "`@`");
+		String messageContent = ParsingUtils.removeVolatileMentions(message.getContentRaw());
 		TextChannel channel = tunnel.getSourceChannel().equals(message.getChannel().getId())
 				? message.getJDA().getTextChannelById(tunnel.getDestChannel()) 
 				: message.getJDA().getTextChannelById(tunnel.getSourceChannel());

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.util.GeraldLogger;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
@@ -44,7 +45,7 @@ public class WebhookManager {
 	}
 	
 	private void executeWebhookPost(String content, Message referencedMessage, String avatarUrl, String username, Webhook webhook) {
-		String messageToBeSent = content.replaceAll("@everyone", "``@``everyone").replaceAll("@here", "``@``here");
+		String messageToBeSent = ParsingUtils.removeVolatileMentions(content);
 		
 		JSONObject webhookPayload = new JSONObject();
         webhookPayload.put("content", messageToBeSent);
