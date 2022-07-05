@@ -41,13 +41,12 @@ public class ActivityCommand extends AbstractCommand {
 
 			if (activityWrapperOpt != null) {
 				String statusMessage = StringUtils.join(args.toArray(), " ").substring(activityWrapperOpt.toString().length());
-				context.getJDA().getPresence().setActivity(EntityBuilder.createActivity(statusMessage,GlobalConstants.STREAM_URL, activityWrapperOpt.getActivityType()));
-				
+				context.getJDA().getPresence()
+				.setActivity(EntityBuilder.createActivity(statusMessage, GlobalConstants.STREAM_URL, activityWrapperOpt.getActivityType()));
 				updatePersistentActivity(activityWrapperOpt.getActivityType(), statusMessage);
 				context.reply("**Set status to:** " + activityWrapperOpt.humanReadable + statusMessage);
-
 			} else {
-				context.reply("Please provide a valid activity: `playing, watching, listening to, streaming`");
+				context.reply("Please provide a valid activity: `playing, watching, listening to, streaming, competing in`");
 			}
 		}
 	}
@@ -87,7 +86,9 @@ public class ActivityCommand extends AbstractCommand {
 		DEFAULT("playing"),
 		STREAMING("streaming"),
 		LISTENING("listening to"),
-		WATCHING("watching");
+		WATCHING("watching"),
+		CUSTOM("custom"),
+		COMPETING("competing in");
 		
 		private final String humanReadable;
 		
@@ -113,6 +114,7 @@ public class ActivityCommand extends AbstractCommand {
 			else if(activity.startsWith("watching")) return ActivityWrapper.WATCHING;
 			else if(activity.startsWith("streaming")) return ActivityWrapper.STREAMING;
 			else if(activity.startsWith("playing")) return ActivityWrapper.DEFAULT;
+			else if(activity.startsWith("competing in")) return ActivityWrapper.COMPETING;
 			return null;
 		}
 	}
