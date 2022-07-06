@@ -74,7 +74,6 @@ public class Gerald {
 
 		//TODO (from: Franziska): WIP, DO NOT USE IN PROD
 		//upsertSlashCommands(jda);
-
 		return jda;
 	}
 	

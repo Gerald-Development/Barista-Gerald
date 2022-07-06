@@ -12,6 +12,7 @@ import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.service.InspiroService;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 
@@ -36,6 +37,10 @@ public class InspiroCommand extends AbstractCommand {
 				context.reply(inspiroEmbed);
 			}
 		} else if (args.get(0).equals("daily")) {
+			if (!context.getMember().getPermissions().contains(Permission.MANAGE_CHANNEL)) {
+				context.reply("**You need Manage Channels permissions to do that!**");
+				return;
+			}
 			if (args.size() == 1) {
 				context.reply("**You need to either specify a channel or use 'disable' to stop sending a daily inspiro**");
 				return;
