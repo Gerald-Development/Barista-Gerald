@@ -41,14 +41,11 @@ public class PlaywrightService {
 	@EventListener(ApplicationReadyEvent.class)
 	private void initialisePlaywright() {
 		ExecutorService playwrightExecutor = threadManager.getThreadByName("Playwright");
-		playwrightExecutor.execute(new Runnable() {
-			@Override
-			public void run() {
-				LOGGER.log(Level.INFO, "Playwright is being initialised");
-				Browser browserInstance = Playwright.create().firefox().launch();
-				browser = browserInstance.newContext(getContextOptions());
-				LOGGER.log(Level.INFO, "Playwright is ready!");
-			}
+		playwrightExecutor.execute(() -> {
+			LOGGER.log(Level.INFO, "Playwright is being initialised");
+			Browser browserInstance = Playwright.create().firefox().launch();
+			browser = browserInstance.newContext(getContextOptions());
+			LOGGER.log(Level.INFO, "Playwright is ready!");
 		});
 	}
 	

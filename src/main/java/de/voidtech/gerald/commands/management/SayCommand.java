@@ -16,9 +16,7 @@ public class SayCommand extends AbstractCommand {
 		if(context.getMember().hasPermission(Permission.MESSAGE_MANAGE))
 		{
 			String msg = String.join(" ", args);
-			context.getChannel().sendMessage(msg).queue(response -> {
-				context.getMessage().delete().queue();
-			});		
+			context.getChannel().sendMessage(msg).queue(response -> context.getMessage().delete().queue());
 		}
 	}
 

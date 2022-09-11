@@ -114,9 +114,9 @@ public class XKCDCommand extends AbstractCommand {
 	private String formSearch(List<String> args) {
 		if (args.size() == 1) return "";
 		else {
-			String buffer = "";
-			for (int i = 1; i < args.size(); i++) buffer += args.get(i) + "+";
-			return buffer;
+			StringBuilder buffer = new StringBuilder();
+			for (int i = 1; i < args.size(); i++) buffer.append(args.get(i)).append("+");
+			return buffer.toString();
 		}
 	}
 	

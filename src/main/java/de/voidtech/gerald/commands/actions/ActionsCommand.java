@@ -168,7 +168,7 @@ public abstract class ActionsCommand extends AbstractCommand {
 		
 		StringBuilder leaderboardBuilder = new StringBuilder();
 		int i = 1;
-		leaderboardBuilder.append("**Top 5 " + action.getType() + " givers**\n\n");
+		leaderboardBuilder.append("**Top 5 ").append(action.getType()).append(" givers**\n\n");
 		for (ActionStats stat : topGiven) {
 			Result<Member> memberGet = context.getGuild().retrieveMemberById(stat.getMember()).mapToResult().complete();
 			if (memberGet.isSuccess()) {
@@ -182,9 +182,9 @@ public abstract class ActionsCommand extends AbstractCommand {
 			}
 			if (i == 6) break;
 		}
-		if (i == 1) leaderboardBuilder.append("Nobody to show! Go " + action.getType() + " someone!\n");
+		if (i == 1) leaderboardBuilder.append("Nobody to show! Go ").append(action.getType()).append(" someone!\n");
 		i = 1;
-		leaderboardBuilder.append("**\nTop 5 " + action.getType() + " receivers**\n\n");
+		leaderboardBuilder.append("**\nTop 5 ").append(action.getType()).append(" receivers**\n\n");
 		for (ActionStats stat : topReceived) {
 			Result<Member> memberGet = context.getGuild().retrieveMemberById(stat.getMember()).mapToResult().complete();
 			if (memberGet.isSuccess()) {
@@ -198,7 +198,7 @@ public abstract class ActionsCommand extends AbstractCommand {
 			}
 			if (i == 6) break;
 		}
-		if (i == 1) leaderboardBuilder.append("Nobody to show! Go " + action.getType() + " someone!");
+		if (i == 1) leaderboardBuilder.append("Nobody to show! Go ").append(action.getType()).append(" someone!");
 		MessageEmbed leaderboardEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle(context.getGuild().getName() + "'s " + action.getType() + " leaderboard")

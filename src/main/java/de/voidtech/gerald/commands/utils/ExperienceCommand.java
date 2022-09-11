@@ -3,6 +3,7 @@ package main.java.de.voidtech.gerald.commands.utils;
 import java.awt.Color;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -184,22 +185,22 @@ public class ExperienceCommand extends AbstractCommand {
 		int userPosition = xpService.getUserLeaderboardPosition(server.getId(), context.getAuthor().getId());
 		Experience userXP = xpService.getUserExperience(context.getAuthor().getId(), server.getId());
 		
-		String leaderboard = "";
+		StringBuilder leaderboard = new StringBuilder();
 		int rank = 1;
 		
 		for (Experience xp : topTenMembers) {
-			leaderboard += numberToEmoji(rank) + " <@" + xp.getUserID() + ">\n";
-			leaderboard += "```js\nLevel " + xp.getCurrentLevel() + " | XP " + xp.getTotalExperience() + "\n```";
+			leaderboard.append(numberToEmoji(rank)).append(" <@").append(xp.getUserID()).append(">\n");
+			leaderboard.append("```js\nLevel ").append(xp.getCurrentLevel()).append(" | XP ").append(xp.getTotalExperience()).append("\n```");
 			rank++;
 		}
 		
-		leaderboard += "\n**Your Position**\n";
-		leaderboard += numberToEmoji(userPosition) + " <@" + userXP.getUserID() + ">\n";
-		leaderboard += "```js\nLevel " + userXP.getCurrentLevel() + " | XP " + userXP.getTotalExperience() + "\n```";
+		leaderboard.append("\n**Your Position**\n");
+		leaderboard.append(numberToEmoji(userPosition)).append(" <@").append(userXP.getUserID()).append(">\n");
+		leaderboard.append("```js\nLevel ").append(userXP.getCurrentLevel()).append(" | XP ").append(userXP.getTotalExperience()).append("\n```");
 		
 		MessageEmbed leaderboardEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
-				.setDescription(leaderboard)
+				.setDescription(leaderboard.toString())
 				.setTitle(context.getGuild().getName() + "'s Most Active Members")
 				.build();
 		context.reply(leaderboardEmbed);
@@ -229,7 +230,7 @@ public class ExperienceCommand extends AbstractCommand {
 		}
 		
 		Guild guild = context.getJDA().getGuildById(server.getGuildID());
-		if (guild.getRoleById(roleID) == null) {
+		if (Objects.requireNonNull(guild).getRoleById(roleID) == null) {
 			context.reply("**Please provide a valid role mention or role ID**");
 			return;
 		}
@@ -246,11 +247,11 @@ public class ExperienceCommand extends AbstractCommand {
 	
 	private String numberToEmoji(int number) {
 		List<String> digits = Arrays.asList(String.valueOf(number).split("")); //Wowzer
-		String finalNumber = "";
+		StringBuilder finalNumber = new StringBuilder();
 		for (String digit : digits) {
-			finalNumber += ParsingUtils.convertSingleDigitToEmoji(digit);
+			finalNumber.append(ParsingUtils.convertSingleDigitToEmoji(digit));
 		}
-		return finalNumber;
+		return finalNumber.toString();
 	}
 	
 	private void removeLevelUpRole(CommandContext context, List<String> args, Server server) {
@@ -284,14 +285,14 @@ public class ExperienceCommand extends AbstractCommand {
 		if (levelUpRoles.isEmpty()) 
 			context.reply("**There are no level roles set up in this server! See the help page for more info!**");
 		else {
-			String roleMessage = "";
+			StringBuilder roleMessage = new StringBuilder();
 			for (LevelUpRole role : levelUpRoles) {
-				roleMessage += "`" + role.getLevel() + "` - " + "<@&" + role.getRoleID() + ">\n";
+				roleMessage.append("`").append(role.getLevel()).append("` - ").append("<@&").append(role.getRoleID()).append(">\n");
 			}
 			MessageEmbed levelRolesEmbed = new EmbedBuilder()
 					.setColor(Color.ORANGE)
 					.setTitle("Level up roles for " + guild.getName())
-					.setDescription(roleMessage)
+					.setDescription(roleMessage.toString())
 					.build();
 			context.reply(levelRolesEmbed);
 		}

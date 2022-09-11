@@ -59,7 +59,9 @@ public class Gerald {
 	{
 		GlobalConfig globalConf = globalConfService.getGlobalConfig();
 
-		JDA jda = JDABuilder.createDefault(configService.getToken())
+		//TODO (from: Franziska): WIP, DO NOT USE IN PROD
+		//upsertSlashCommands(jda);
+		return JDABuilder.createDefault(configService.getToken())
 				.enableIntents(getApprovedIntents())
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.setBulkDeleteSplittingEnabled(false)
@@ -71,10 +73,6 @@ public class Gerald {
 						     globalConf.getActivity()))
 				.build()
 				.awaitReady();
-
-		//TODO (from: Franziska): WIP, DO NOT USE IN PROD
-		//upsertSlashCommands(jda);
-		return jda;
 	}
 	
 	private Set<GatewayIntent> getApprovedIntents()

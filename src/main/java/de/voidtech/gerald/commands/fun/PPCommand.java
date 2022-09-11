@@ -32,7 +32,7 @@ public class PPCommand extends AbstractCommand{
 		boolean shouldContinue = true;
 		if (!args.isEmpty()) shouldContinue = tryRigUser(context);
 		if (!shouldContinue) return;
-		String userID = "";
+		String userID;
 		if (context.getMentionedMembers().isEmpty()) userID = context.getAuthor().getId();
 		else userID = context.getMentionedMembers().get(0).getId();
 		int ppSizeNumber = determineLength(userID);

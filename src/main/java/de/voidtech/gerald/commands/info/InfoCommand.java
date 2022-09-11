@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 @Command
 public class InfoCommand extends AbstractCommand {
@@ -53,7 +54,7 @@ public class InfoCommand extends AbstractCommand {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return doc.select("body").text();
+		return Objects.requireNonNull(doc).select("body").text();
 	}
 	
 	@Override

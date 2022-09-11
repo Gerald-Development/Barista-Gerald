@@ -40,7 +40,7 @@ public class DisableCommand extends AbstractCommand {
 
 	private void disableCommand(String targetName, CommandContext context) {
 		AbstractCommand foundCommand = null;
-		String resultMessage = "";
+		String resultMessage;
 		for (AbstractCommand command : commands) {
 			if (command.getName().equals(targetName)) {
 				foundCommand = command;
@@ -67,7 +67,7 @@ public class DisableCommand extends AbstractCommand {
 
 	private void disableRoutine(String targetName, CommandContext context) {
 		AbstractRoutine foundRoutine = null;
-		String resultMessage = "";
+		String resultMessage;
 		for (AbstractRoutine routine: routines) {
 			if (routine.getName().equals(targetName)) {
 				foundRoutine = routine;

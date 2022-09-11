@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -36,7 +37,7 @@ public class CheatCommand extends AbstractCommand {
 		try {
 			String requestURL = CHEAT_SH_URL + topic + "?TQ";
 			Document doc = Jsoup.connect(requestURL).get();
-			return doc.select("pre").first().text();
+			return Objects.requireNonNull(doc.select("pre").first()).text();
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
 		}
@@ -83,9 +84,7 @@ public class CheatCommand extends AbstractCommand {
 			pagedResponseBuilder.waitOnSinglePage(true);
 			pagedResponseBuilder.setTimeout(120, TimeUnit.SECONDS);
 			pagedResponseBuilder.setText("**Your cheat sheet:**");
-			pagedResponseBuilder.setFinalAction(msg -> {
-                    msg.clearReactions().queue();
-            });
+			pagedResponseBuilder.setFinalAction(msg -> msg.clearReactions().queue());
 			Paginator pagedResponseEmbed = pagedResponseBuilder.build();
 			pagedResponseEmbed.display(botMessage);
 		});

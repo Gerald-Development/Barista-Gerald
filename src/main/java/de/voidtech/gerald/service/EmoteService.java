@@ -2,6 +2,7 @@ package main.java.de.voidtech.gerald.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.hibernate.Session;
@@ -52,11 +53,11 @@ public class EmoteService {
 	
 	public NitroliteEmote getEmoteById(String id, JDA jda) {
 		if (jda.getEmoteById(id) != null) {
-			if (jda.getEmoteById(id).isAvailable()) {
+			if (Objects.requireNonNull(jda.getEmoteById(id)).isAvailable()) {
 				return new NitroliteEmote(
-						jda.getEmoteById(id).getName(),
-						jda.getEmoteById(id).getId(),
-						jda.getEmoteById(id).isAnimated());	
+						Objects.requireNonNull(jda.getEmoteById(id)).getName(),
+						Objects.requireNonNull(jda.getEmoteById(id)).getId(),
+						Objects.requireNonNull(jda.getEmoteById(id)).isAnimated());
 			} else return getPersistentEmoteById(id);
 		} else return getPersistentEmoteById(id);
 	}

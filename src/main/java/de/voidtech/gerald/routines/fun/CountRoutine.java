@@ -2,6 +2,7 @@ package main.java.de.voidtech.gerald.routines.fun;
 
 import java.awt.Color;
 import java.util.EnumSet;
+import java.util.Objects;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -61,7 +62,7 @@ public class CountRoutine extends AbstractRoutine {
 	}
 	
 	private void playGame(Message message) {
-		if (countService.isDifferentUser(message.getMember().getId(), message.getChannel().getId())) {
+		if (countService.isDifferentUser(Objects.requireNonNull(message.getMember()).getId(), message.getChannel().getId())) {
 			CountingChannel channel = countService.getCountingChannel(message.getChannel().getId());
 			int currentCount = channel.getChannelCount();
 			int countGiven = Integer.parseInt(message.getContentRaw());

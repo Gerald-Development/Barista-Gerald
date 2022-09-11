@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,7 @@ public class DogCommand extends AbstractCommand{
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
 		String dogApiResponse = getDog();
-		JSONArray dogApiObject = new JSONArray(dogApiResponse);
+		JSONArray dogApiObject = new JSONArray(Objects.requireNonNull(dogApiResponse));
 		JSONObject dog = (JSONObject) dogApiObject.get(0);
 		
 		MessageEmbed dogEmbed = new EmbedBuilder()

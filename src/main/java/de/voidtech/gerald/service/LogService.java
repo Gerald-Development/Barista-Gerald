@@ -33,11 +33,7 @@ public class LogService {
 		Logger = GetLogger(LogService.class.getSimpleName());
 		
 		alertProgramStarted();
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-	        public void run() {
-	            alertProgramShutdown();
-	        }
-	    }, "Shutdown Alert"));
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> alertProgramShutdown(), "Shutdown Alert"));
 	}	
 	
 	public static GeraldLogger GetLogger(String className) {

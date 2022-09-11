@@ -3,6 +3,7 @@ package main.java.de.voidtech.gerald.service;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -109,7 +110,7 @@ public class NitroliteService {
 
     private void sendWebhookMessage(Message message, String content) {    	
     	Webhook webhook = webhookManager.getOrCreateWebhook((TextChannel) message.getChannel(), "BGNitrolite", message.getJDA().getSelfUser().getId());
-    	webhookManager.postMessage(content, message.getReferencedMessage(), message.getAuthor().getAvatarUrl(), message.getMember().getEffectiveName(), webhook); 
+    	webhookManager.postMessage(content, message.getReferencedMessage(), message.getAuthor().getAvatarUrl(), Objects.requireNonNull(message.getMember()).getEffectiveName(), webhook);
     }
 
 	public List<String> processNitroliteMessage(Message message) {
@@ -119,7 +120,7 @@ public class NitroliteService {
 
 	     for (int i = 0; i < messageTokens.size(); i++) {
 	         String token = messageTokens.get(i);
-	         NitroliteEmote emoteOpt = null;
+	         NitroliteEmote emoteOpt;
 	         if (token.matches("\\[:[^:]*:]")) {
 	             String searchWord = token.substring(2, token.length() - 2);    	
 	             if (aliasExists(searchWord, serverID)) emoteOpt = getEmoteFromAlias(searchWord, serverID, message);

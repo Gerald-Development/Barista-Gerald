@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -37,7 +38,7 @@ public class WebhookManager {
 		
 		List<Webhook> webhooks = targetChannel.retrieveWebhooks().complete();
 		for (Webhook webhook : webhooks) {
-			if (webhook.getName().equals(webhookName) && webhook.getOwnerAsUser().getId().equals(selfID)) {
+			if (webhook.getName().equals(webhookName) && Objects.requireNonNull(webhook.getOwnerAsUser()).getId().equals(selfID)) {
 				return webhook;
 			}
 		}

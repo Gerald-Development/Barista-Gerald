@@ -2,6 +2,7 @@ package main.java.de.voidtech.gerald.listeners;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +24,7 @@ public class AutoroleListener implements EventListener {
 	private ServerService serverService;
 	
 	@Override
-	public void onEvent(GenericEvent event) {
+	public void onEvent(@NotNull GenericEvent event) {
 		if (event instanceof GuildMemberJoinEvent) {
 			GuildMemberJoinEvent joinEvent = (GuildMemberJoinEvent) event;
 			Server server = serverService.getServer(joinEvent.getGuild().getId());

@@ -2,6 +2,7 @@ package main.java.de.voidtech.gerald.commands.fun;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 
 import org.jsoup.Jsoup;
@@ -23,8 +24,8 @@ public class WouldYouRatherCommand extends AbstractCommand {
 		context.getChannel().sendTyping().queue();
 		try {
 			Document doc = Jsoup.connect("https://either.io/").get();
-			String answerA = doc.select("div.result.result-1 > .option-text").first().text();
-			String answerB = doc.select("div.result.result-2 > .option-text").first().text();
+			String answerA = Objects.requireNonNull(doc.select("div.result.result-1 > .option-text").first()).text();
+			String answerB = Objects.requireNonNull(doc.select("div.result.result-2 > .option-text").first()).text();
 
 			//TODO (from: Franziska): Same with the queue. Need to think.
 			context.getChannel().sendMessage("**Would You Rather:**\n:a:" + answerA + "\n**OR:**\n:b:" + answerB).queue(sentMessage -> {

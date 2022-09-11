@@ -36,7 +36,6 @@ public class PingResponseRoutine extends AbstractRoutine {
     private void sendPingInfoMessage(Message message) {
     	Server guild = serverService.getServer(message.getGuild().getId());
 		String prefix = guild.getPrefix() == null ? config.getDefaultPrefix() : guild.getPrefix();
-		new GlobalConstants();
 		String linktree = GlobalConstants.LINKTREE_URL;
 		
 		MessageEmbed pingResponseEmbed = new EmbedBuilder()

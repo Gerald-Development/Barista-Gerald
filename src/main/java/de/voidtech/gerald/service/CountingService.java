@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.service;
 
 import java.awt.Color;
+import java.util.Objects;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -23,7 +24,7 @@ public class CountingService {
 	public SessionFactory sessionFactory;	
 	
 	public CountingChannel getCountingChannel (String channelID) {
-		CountingChannel dbChannel = null;
+		CountingChannel dbChannel;
 		try(Session session = sessionFactory.openSession())
 		{
 			dbChannel = (CountingChannel) session.createQuery("FROM CountingChannel WHERE ChannelID = :channelID")
@@ -69,8 +70,8 @@ public class CountingService {
 	public void setCount(CountingChannel channel, int currentCount, String channelID, String lastUserID, String lastMessageId, String mode) {
 		
 		int newCount = 0;
-		if (mode == "increment") newCount = currentCount + 1;
-		else if (mode == "decrement") newCount = currentCount - 1;
+		if (mode.equals("increment")) newCount = currentCount + 1;
+		else if (mode.equals("decrement")) newCount = currentCount - 1;
 
         try(Session session = sessionFactory.openSession())
 		{
@@ -129,13 +130,13 @@ public class CountingService {
 	
 	public MessageEmbed getCountStatsEmbedForChannel(CountingChannel dbChannel, JDA jda) {
 		String current = formatAsMarkdown(String.valueOf(dbChannel.getChannelCount()));
-		String lastUser = formatAsMarkdown(dbChannel.getLastUser().equals("") ? "Nobody" : jda.getUserById(dbChannel.getLastUser()).getAsTag());
+		String lastUser = formatAsMarkdown(dbChannel.getLastUser().equals("") ? "Nobody" : Objects.requireNonNull(jda.getUserById(dbChannel.getLastUser())).getAsTag());
 		String next = formatAsMarkdown(dbChannel.getChannelCount() - 1 + " or " + (dbChannel.getChannelCount() + 1));
 		String reached69 = formatAsMarkdown(String.valueOf(dbChannel.hasReached69()));
 		String numberOf69 = formatAsMarkdown(String.valueOf(dbChannel.get69ReachedCount()));
 		String livesRemaining = formatAsMarkdown(String.valueOf(dbChannel.getLives()));
-		
-		MessageEmbed countStatsEmbed = new EmbedBuilder()
+
+		return new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle("Counting Statistics")
 				.addField("Current Count", current, true)
@@ -145,6 +146,5 @@ public class CountingService {
 				.addField("No. of times 69 has been reached", numberOf69, true)
 				.addField("Lives Remaining", livesRemaining, true)
 				.build();
-		return countStatsEmbed;
 	}	
 }

@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -36,7 +37,7 @@ public class DefineCommand extends AbstractCommand{
 		
 		JSONArray definitions = getDefinition(query);
 		
-		if (definitions.length() == 0) {
+		if (Objects.requireNonNull(definitions).length() == 0) {
 			context.reply("That could not be defined!");
 		} else {
 			JSONObject definition = definitions.getJSONObject(0);

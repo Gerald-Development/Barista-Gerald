@@ -2,6 +2,7 @@ package main.java.de.voidtech.gerald.commands.utils;
 
 import java.awt.Color;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +36,7 @@ public class SuggestCommand extends AbstractCommand {
 
     private void postSuggestion(CommandContext context, List<String> args, SuggestionChannel config) {
     	MessageEmbed newSuggestionEmbed = getMessageEmbed(context, args);
-        context.getGuild().getTextChannelById(config.getSuggestionChannel()).sendMessageEmbeds(newSuggestionEmbed).queue(sentMessage -> {
+        Objects.requireNonNull(context.getGuild().getTextChannelById(config.getSuggestionChannel())).sendMessageEmbeds(newSuggestionEmbed).queue(sentMessage -> {
             sentMessage.addReaction(CHECK).queue();
             sentMessage.addReaction(CROSS).queue();
             context.reply("**Your suggestion has been posted!**");
@@ -50,7 +51,7 @@ public class SuggestCommand extends AbstractCommand {
             if (config.suggestRoleRequired()) {
             	boolean hasRole = suggestionService.memberHasRole(context.getMember(), config.getSuggestRoleID());
             	if (!hasRole) context.reply("**You need the** `"
-            									+ context.getGuild().getRoleById(config.getSuggestRoleID()).getName()
+            									+ Objects.requireNonNull(context.getGuild().getRoleById(config.getSuggestRoleID())).getName()
             									+ "` **role to make suggestions!**");
             	else postSuggestion(context, args, config);
             } else postSuggestion(context, args, config);
@@ -67,7 +68,7 @@ public class SuggestCommand extends AbstractCommand {
     	if (!context.getMessage().getAttachments().isEmpty()) {
     		List<Attachment> possibleAttachments = context.getMessage().getAttachments()
     				.stream()
-    				.filter(attachment -> attachment.isImage())
+    				.filter(Attachment::isImage)
     				.collect(Collectors.toList());
     		if (!possibleAttachments.isEmpty()) newSuggestionEmbedBuilder.setImage(possibleAttachments.get(0).getUrl());
     	}
@@ -118,7 +119,7 @@ public class SuggestCommand extends AbstractCommand {
             if (suggestionService.isRole(roleID, context)) {
                 config.setSuggestRole(roleID);
                 suggestionService.saveSuggestionChannel(config);
-                context.reply("**Suggestion role set to** `" + context.getGuild().getRoleById(roleID).getName() + "`");
+                context.reply("**Suggestion role set to** `" + Objects.requireNonNull(context.getGuild().getRoleById(roleID)).getName() + "`");
             } else context.reply("**That is not a valid role!**");
         } else context.reply("**That is not a valid role!**");
 	}
@@ -128,7 +129,7 @@ public class SuggestCommand extends AbstractCommand {
             if (suggestionService.isRole(roleID, context)) {
                 config.setVoteRole(roleID);
                 suggestionService.saveSuggestionChannel(config);
-                context.reply("**Vote role set to** `" + context.getGuild().getRoleById(roleID).getName() + "`");
+                context.reply("**Vote role set to** `" + Objects.requireNonNull(context.getGuild().getRoleById(roleID)).getName() + "`");
             } else context.reply("**That is not a valid role!**");
         } else context.reply("**That is not a valid role!**");
 	}
@@ -170,9 +171,9 @@ public class SuggestCommand extends AbstractCommand {
 		else {
 			String channel = "<#" + config.getSuggestionChannel() + ">";
 			String voteRole = config.getVoteRoleID() == null ? "None set!" :
-				context.getGuild().getRoleById(config.getVoteRoleID()).getName();
+				Objects.requireNonNull(context.getGuild().getRoleById(config.getVoteRoleID())).getName();
 			String suggestRole = config.getSuggestRoleID() == null ? "None set!" :
-				context.getGuild().getRoleById(config.getSuggestRoleID()).getName();
+				Objects.requireNonNull(context.getGuild().getRoleById(config.getSuggestRoleID())).getName();
 			context.getChannel().sendMessage("**Channel:** " + channel + "\n"
 					+ "**Vote role:** `" + voteRole + "`\n"
 					+ "**Suggestion Role:** `" + suggestRole + "`").queue();

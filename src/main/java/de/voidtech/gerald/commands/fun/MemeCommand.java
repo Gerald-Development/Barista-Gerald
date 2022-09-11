@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -124,7 +125,7 @@ public class MemeCommand extends AbstractCommand {
 			con.setRequestProperty("Accept", "application/json");
 			
 			try (OutputStream os = con.getOutputStream()) {
-				byte[] input = payload.getBytes("utf-8");
+				byte[] input = payload.getBytes(StandardCharsets.UTF_8);
 				os.write(input, 0, input.length);
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
@@ -177,7 +178,7 @@ public class MemeCommand extends AbstractCommand {
 	
 	private void sendMeme(CommandContext context, List<String> args) {
 		String messageText = String.join(" ", args);
-		JSONObject payload = null;
+		JSONObject payload;
 		
 		if (messageText.contains("-")) {
 			payload = assemblePayloadWithCaptions(args, messageText);			

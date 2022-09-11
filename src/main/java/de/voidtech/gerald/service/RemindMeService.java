@@ -30,19 +30,19 @@ public class RemindMeService {
 	public String getRemindersList(CommandContext context) {
 		List<DelayedTask> tasks = taskService.getUserTasksOfType(context.getAuthor().getId(), TaskType.REMIND_ME);
 		
-		String list = "";
+		StringBuilder list = new StringBuilder();
 		
 		for (DelayedTask task : tasks) {
 			Guild guild = context.getJDA().getGuildById(task.getGuildID());
 			if (guild == null) {
 				taskService.deleteTask(task);
 			} else {
-				list += "`" + task.getTaskID() +  "` **" + guild.getName() + "** -  <t:" + task.getExecutionTime() + ":F> - ";
-				list += formatMessage(task.getArgs().getString("message"));	
-				list += "\n";
+				list.append("`").append(task.getTaskID()).append("` **").append(guild.getName()).append("** -  <t:").append(task.getExecutionTime()).append(":F> - ");
+				list.append(formatMessage(task.getArgs().getString("message")));
+				list.append("\n");
 			}
 		}
-		return list == "" ? "**No reminders!**" : list;
+		return list.toString().equals("") ? "**No reminders!**" : list.toString();
 	}
 
 	private String formatMessage(String msg) {

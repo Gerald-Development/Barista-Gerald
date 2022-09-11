@@ -2,6 +2,7 @@ package main.java.de.voidtech.gerald.routines.utils;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -82,7 +83,7 @@ public class TunnelRoutine extends AbstractRoutine {
 		List<String> processedNitroliteMessage = nitroliteService.processNitroliteMessage(message);
 		if (processedNitroliteMessage != null) messageContent = String.join(" ", processedNitroliteMessage);
 		
-		EnumSet<Permission> perms = channel.getGuild().getSelfMember().getPermissions(channel);
+		EnumSet<Permission> perms = Objects.requireNonNull(channel).getGuild().getSelfMember().getPermissions(channel);
 		if (perms.contains(Permission.MANAGE_WEBHOOKS)) {
 			Webhook webhook = webhookManager.getOrCreateWebhook(channel, "BGTunnel", message.getJDA().getSelfUser().getId());
 			sendWebhookMessage(webhook, messageContent, message);

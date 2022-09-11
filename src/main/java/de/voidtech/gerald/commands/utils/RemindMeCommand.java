@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
@@ -24,15 +22,14 @@ public class RemindMeCommand extends AbstractCommand {
 	@Autowired
 	private RemindMeService remindMeService;
 
-	private static HashMap<String, Integer> TimeMultipliers = new HashMap<String, Integer>();
-	
-	@EventListener(ApplicationReadyEvent.class)
-	private void populateTimeMultipliers() {
-		TimeMultipliers.put("w", Integer.valueOf(604800));
-		TimeMultipliers.put("d", Integer.valueOf(86400));
-		TimeMultipliers.put("h", Integer.valueOf(3600));
-		TimeMultipliers.put("m", Integer.valueOf(60));
-		TimeMultipliers.put("s", Integer.valueOf(1));
+	private static final HashMap<String, Integer> TimeMultipliers = new HashMap<>();
+
+	static {
+		TimeMultipliers.put("w", 604800);
+		TimeMultipliers.put("d", 86400);
+		TimeMultipliers.put("h", 3600);
+		TimeMultipliers.put("m", 60);
+		TimeMultipliers.put("s", 1);
 	}
 	
 	@Override
@@ -52,7 +49,7 @@ public class RemindMeCommand extends AbstractCommand {
 		
 		String timeString = args.get(0);
 		String message = String.join(" ", args.subList(1, args.size()));
-		String timeMultiplier = timeString.substring(timeString.length() - 1, timeString.length());
+		String timeMultiplier = timeString.substring(timeString.length() - 1);
 		
 		if (!TimeMultipliers.containsKey(timeMultiplier)) {
 			context.reply("**You need to enter a valid time multiplier!**");

@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.service;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -30,10 +31,9 @@ public class SuggestionService {
 	
     public SuggestionChannel getSuggestionChannel(long serverID) {
         try (Session session = sessionFactory.openSession()) {
-            SuggestionChannel suggestionChannel = (SuggestionChannel) session.createQuery("FROM SuggestionChannel WHERE ServerID = :serverID")
-                    .setParameter("serverID", serverID)
-                    .uniqueResult();
-            return suggestionChannel;
+			return (SuggestionChannel) session.createQuery("FROM SuggestionChannel WHERE ServerID = :serverID")
+					.setParameter("serverID", serverID)
+					.uniqueResult();
         }
     }
     
@@ -87,9 +87,9 @@ public class SuggestionService {
 		if (emote == null) return;
 		//If message is not a suggestion channel embed, ignore
 		Message message = reaction.getChannel().retrieveMessageById(reaction.getMessageId()).complete();
-		if (!message.getAuthor().getId().equals(reaction.getJDA().getSelfUser().getId())) return;;
+		if (!message.getAuthor().getId().equals(reaction.getJDA().getSelfUser().getId())) return;
 		if (message.getEmbeds().isEmpty()) return;
-		if (!message.getEmbeds().get(0).getTitle().equals("New Suggestion!")) return;
+		if (!Objects.requireNonNull(message.getEmbeds().get(0).getTitle()).equals("New Suggestion!")) return;
 		//Edit embed colour and remove reaction
 		EmbedBuilder suggestionModifier = new EmbedBuilder(message.getEmbeds().get(0));
 		updateEmbed(suggestionModifier, reaction, emote);
@@ -99,7 +99,7 @@ public class SuggestionService {
 	
 	private void updateEmbed(EmbedBuilder suggestionModifier, GuildMessageReactionAddEvent reaction, SuggestionEmote emote) {
 		List<Field> fields = suggestionModifier.getFields();
-		Field suggestionField = fields.stream().filter(f -> f.getName().equals("Suggestion")).findFirst().orElse(null);
+		Field suggestionField = fields.stream().filter(f -> Objects.requireNonNull(f.getName()).equals("Suggestion")).findFirst().orElse(null);
 		suggestionModifier.clearFields()
 			.addField(suggestionField)
 			.addField("Last Reviewed By", reaction.getUser().getAsMention() + " " + emote.getEmote(), false)

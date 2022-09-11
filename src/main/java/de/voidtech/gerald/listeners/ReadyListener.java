@@ -3,6 +3,7 @@ package main.java.de.voidtech.gerald.listeners;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import main.java.de.voidtech.gerald.service.GeraldConfig;
@@ -17,7 +18,7 @@ public class ReadyListener implements EventListener {
 	private static final Logger LOGGER = Logger.getLogger(GeraldConfig.class.getName());
 	
 	@Override
-	public void onEvent(GenericEvent event) {
+	public void onEvent(@NotNull GenericEvent event) {
 		if (event instanceof ReadyEvent) {
 			String clientName = event.getJDA().getSelfUser().getAsTag();
 			LOGGER.log(Level.INFO, "Coffee Machine is ready! Serving lattes as " + clientName);	

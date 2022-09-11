@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,7 @@ public class CompileCommand extends AbstractCommand {
 			con.setRequestProperty("Accept", "application/json");
 			
 			try (OutputStream os = con.getOutputStream()) {
-				byte[] input = payload.getBytes("utf-8");
+				byte[] input = payload.getBytes(StandardCharsets.UTF_8);
 				os.write(input, 0, input.length);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -73,10 +74,10 @@ public class CompileCommand extends AbstractCommand {
 		String response = getWandboxResponse(payload);
 		
 		JSONObject compilerResponse = new JSONObject(response);
-		String responseText = "";
-		Color color = null;
-		String titleMessage = "";
-		String statusCode = "";
+		String responseText;
+		Color color;
+		String titleMessage;
+		String statusCode;
 		String permLink = compilerResponse.getString("url");
 		
 		if (compilerResponse.has("program_error")) {
@@ -130,10 +131,7 @@ public class CompileCommand extends AbstractCommand {
 					.addField("Compiler", compiler, true)//
 					.build();
 			
-			message.replyEmbeds(compilationWaitingMessage).mentionRepliedUser(false).queue(sentMessage -> {
-				sendResponse(finalCode, compiler, sentMessage);					
-
-			});
+			message.replyEmbeds(compilationWaitingMessage).mentionRepliedUser(false).queue(sentMessage -> sendResponse(finalCode, compiler, sentMessage));
 
 		} else {
 			message.reply("That language could not be found!").mentionRepliedUser(false).queue();
@@ -143,7 +141,7 @@ public class CompileCommand extends AbstractCommand {
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
 
-		if (args.size() >= 0 && args.get(0).equals("languages")) {
+		if (args.get(0).equals("languages")) {
 			String supportedLangsString = StringUtils.join(langMap.keySet(), "\n");
 			context.reply("**Supported Languages:**\n" + supportedLangsString);
 		

@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.tasks;
 
 import java.awt.Color;
+import java.util.Objects;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class InspiroTask extends AbstractTask {
 	@Override
 	public void executeInternal(JSONObject args, JDA jda, String userID, String guildID) {
 		String channelID = args.getString("channelID");
-		TextChannel channel = jda.getGuildById(guildID).getTextChannelById(channelID);
+		TextChannel channel = Objects.requireNonNull(jda.getGuildById(guildID)).getTextChannelById(channelID);
 		if (channel == null) return;
 		
 		String inspiroImageURLOpt = inspiroService.getInspiroImageURLOpt();

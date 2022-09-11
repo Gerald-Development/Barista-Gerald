@@ -1,5 +1,6 @@
 package main.java.de.voidtech.gerald.listeners;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,7 @@ public class VoteListener implements EventListener {
 	private SuggestionService suggestionService;
 	
 	@Override
-	public void onEvent(GenericEvent event) {
+	public void onEvent(@NotNull GenericEvent event) {
 		if (event instanceof GuildMessageReactionAddEvent) {
 			GuildMessageReactionAddEvent reaction = (GuildMessageReactionAddEvent) event;
 			suggestionService.handleVote(reaction);

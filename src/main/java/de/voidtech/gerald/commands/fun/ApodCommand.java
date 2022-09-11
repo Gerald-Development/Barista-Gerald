@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,7 @@ public class ApodCommand extends AbstractCommand {
         JSONObject response = getNasaDataOpt();
         
         EmbedBuilder nasaEmbed = new EmbedBuilder()
-                .setTitle(response.getString("title"))
+                .setTitle(Objects.requireNonNull(response).getString("title"))
                 .setColor(Color.ORANGE)
                 .setFooter("Data from NASA", NASA_FOOTER);
 

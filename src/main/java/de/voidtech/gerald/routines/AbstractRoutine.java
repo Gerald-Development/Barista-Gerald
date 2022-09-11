@@ -15,11 +15,7 @@ public abstract class AbstractRoutine {
 	private ThreadManager threadManager;
 	
 	private void runRoutineInThread(Message message) {
-		Runnable routineThreadRunnable = new Runnable() {
-			public void run() {
-				executeInternal(message);
-			}
-		};
+		Runnable routineThreadRunnable = () -> executeInternal(message);
 		threadManager.getThreadByName("T-Routine").execute(routineThreadRunnable);
 	}
 

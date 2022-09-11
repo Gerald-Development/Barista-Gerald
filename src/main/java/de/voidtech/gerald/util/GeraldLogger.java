@@ -22,8 +22,8 @@ public class GeraldLogger {
 	public static String WebhookURL;
 	public static String BotName;
 	
-	private String className;	
-	private Logger logger;
+	private final String className;
+	private final Logger logger;
 	
 	public GeraldLogger(String className) {
 		this.className = className;

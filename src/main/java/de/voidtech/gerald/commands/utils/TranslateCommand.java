@@ -7,8 +7,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -56,8 +58,8 @@ public class TranslateCommand extends AbstractCommand {
 	
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
-		String text = "";
-		String language = "";
+		String text;
+		String language;
 		//If no args are provided, translate a reply into english by default
 		if (args.isEmpty()) {
 			if (context.getMessage().getReferencedMessage() == null) {
@@ -98,16 +100,16 @@ public class TranslateCommand extends AbstractCommand {
 	}
 	
 	private void sendLanguagesList(CommandContext context) {
-		String languagesList = "";
+		StringBuilder languagesList = new StringBuilder();
 		
 		for (String languageCode : TranslateLanguages.keySet()) {
-			languagesList += "`" + languageCode + "` - **" + TranslateLanguages.get(languageCode) + "**\n";
+			languagesList.append("`").append(languageCode).append("` - **").append(TranslateLanguages.get(languageCode)).append("**\n");
 		}
 		
 		MessageEmbed languageListEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle("Language Codes List")
-				.setDescription(languagesList)
+				.setDescription(languagesList.toString())
 				.build();
 		context.reply(languageListEmbed);
 		
@@ -116,7 +118,7 @@ public class TranslateCommand extends AbstractCommand {
 	private void sendTranslation(String text, String language, CommandContext context) {
 		JSONObject translation = getTranslation(text, language);
 		String translationText = (translation == null ? "Unable to translate" : translation.getString("translatedText"));
-		String sourceLanguage = TranslateLanguages.get(translation.getJSONObject("detectedLanguage").getString("language"));
+		String sourceLanguage = TranslateLanguages.get(Objects.requireNonNull(translation).getJSONObject("detectedLanguage").getString("language"));
 		MessageEmbed translationEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle("Translation", "https://libretranslate.de/")
@@ -146,7 +148,7 @@ public class TranslateCommand extends AbstractCommand {
 			con.setRequestProperty("Accept", "application/json");
 			
 			try (OutputStream os = con.getOutputStream()) {
-				byte[] input = payload.getBytes("utf-8");
+				byte[] input = payload.getBytes(StandardCharsets.UTF_8);
 				os.write(input, 0, input.length);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -154,8 +156,7 @@ public class TranslateCommand extends AbstractCommand {
 			
 			try (OutputStream os = con.getOutputStream(); BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
 				String response = in.lines().collect(Collectors.joining());
-				JSONObject jsonResponse = new JSONObject(response);
-				return jsonResponse;
+				return new JSONObject(response);
 							
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, e.getMessage());

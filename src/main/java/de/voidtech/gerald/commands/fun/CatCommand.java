@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,7 @@ public class CatCommand extends AbstractCommand{
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
 		String catApiResponse = getCat();
-		JSONArray catApiObject = new JSONArray(catApiResponse);
+		JSONArray catApiObject = new JSONArray(Objects.requireNonNull(catApiResponse));
 		JSONObject cat = (JSONObject) catApiObject.get(0);
 		
 		MessageEmbed catEmbed = new EmbedBuilder()

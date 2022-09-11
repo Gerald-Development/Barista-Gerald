@@ -12,11 +12,11 @@ public class SuggestionEmote {
 	private static final SuggestionEmote ORANGE = new SuggestionEmote("U+1f7e0", new Color(241, 141, 0, 255), ":orange_circle:");
 	private static final SuggestionEmote RED = new SuggestionEmote("U+1f534", new Color(217, 41, 64, 255), ":red_circle:");
 	
-	private static final List<SuggestionEmote> EMOTE_LIST = Arrays.asList(new SuggestionEmote[] {BLUE, GREEN, ORANGE, RED, PURPLE});
+	private static final List<SuggestionEmote> EMOTE_LIST = Arrays.asList(BLUE, GREEN, ORANGE, RED, PURPLE);
 	
-	private String name;
-	private String emote;
-	private Color colour;
+	private final String name;
+	private final String emote;
+	private final Color colour;
 	
 	SuggestionEmote(String name, Color colour, String emote) {
 		this.name = name;

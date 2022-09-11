@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Objects;
 
 @Command
 public class HelpCommand extends AbstractCommand{	
@@ -44,7 +45,7 @@ public class HelpCommand extends AbstractCommand{
 			if (fieldCounter == 1) inlineFieldState = true;
 			String title = capitaliseFirstLetter(commandCategory.getCategory()) + " " + commandCategory.getIcon();
 			String description = "```\nhelp " + commandCategory.getCategory() + "\n```";
-			categoryListEmbedBuilder.addField(title, description, inlineFieldState);
+			categoryListEmbedBuilder.addField(title, description, true);
 			fieldCounter++;
 			if (fieldCounter == 3) {
 				inlineFieldState = false;
@@ -124,7 +125,7 @@ public class HelpCommand extends AbstractCommand{
 
 		MessageEmbed commandHelpEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
-				.setTitle("How it works: " + capitaliseFirstLetter(commandToBeDisplayed.getName()) + " Command", GlobalConstants.LINKTREE_URL)
+				.setTitle("How it works: " + capitaliseFirstLetter(Objects.requireNonNull(commandToBeDisplayed).getName()) + " Command", GlobalConstants.LINKTREE_URL)
 				.setThumbnail(context.getJDA().getSelfUser().getAvatarUrl())
 				.addField("Command Name", "```" + capitaliseFirstLetter(commandToBeDisplayed.getName()) + "```", true)
 				.addField("Category", "```" + displayCommandCategoryOrNull(commandToBeDisplayed.getCommandCategory()) + "```", true)

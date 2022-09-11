@@ -88,7 +88,7 @@ public class CommandService
     }
 
     private String findCommand(String prompt) {
-        String commandToBeFound = "";
+        String commandToBeFound;
         if (aliases.containsKey(prompt.toLowerCase())) {
             commandToBeFound = aliases.get(prompt.toLowerCase());
         } else {
@@ -105,7 +105,7 @@ public class CommandService
 	}
 
     private void tryLevenshteinOptions(Message message, String commandName) {
-        List<String> possibleOptions = new ArrayList<>();
+        List<String> possibleOptions;
         possibleOptions = commands.stream()
                 .map(AbstractCommand::getName)
                 .filter(name -> LevenshteinCalculator.calculate(commandName, name) <= LEVENSHTEIN_THRESHOLD)

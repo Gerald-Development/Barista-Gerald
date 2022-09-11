@@ -3,6 +3,7 @@ package main.java.de.voidtech.gerald.commands.utils;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 
 import org.jsoup.Jsoup;
@@ -49,7 +50,7 @@ public class HexCommand extends AbstractCommand {
 	private String getColourName(String colourHexURL) {
 		try {
 			Document colourHexPage = Jsoup.connect(colourHexURL).get();
-			return colourHexPage.select("#information > div.color-description > p > strong").first().text();
+			return Objects.requireNonNull(colourHexPage.select("#information > div.color-description > p > strong").first()).text();
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
 			e.printStackTrace();

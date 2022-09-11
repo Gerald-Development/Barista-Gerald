@@ -20,6 +20,7 @@ import java.awt.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class StarboardService {
@@ -149,8 +150,8 @@ public class StarboardService {
 	}
 	
 	private void editStarboardMessage(StarboardMessage starboardMessage, Message message, long starCountFromMessage, StarboardConfig config) {
-		Message selfMessage = message.getJDA()//
-		 .getTextChannelById(config.getChannelID())//
+		Message selfMessage = Objects.requireNonNull(message.getJDA()//
+						.getTextChannelById(config.getChannelID()))//
 		 .retrieveMessageById(starboardMessage.getSelfMessageID())//
 		 .complete();
 		selfMessage.editMessage(":star: **" + starCountFromMessage + "**").queue();
@@ -161,7 +162,7 @@ public class StarboardService {
 		
 		if (starboardMessage == null) {
 			MessageEmbed starboardEmbed = constructEmbed(message);
-			message.getJDA().getTextChannelById(config.getChannelID()).sendMessageEmbeds(starboardEmbed).queue(sentMessage -> {
+			Objects.requireNonNull(message.getJDA().getTextChannelById(config.getChannelID())).sendMessageEmbeds(starboardEmbed).queue(sentMessage -> {
 				sentMessage.editMessage(":star: **" + starCountFromMessage + "**").queue();
 				persistMessage(message.getId(), sentMessage.getId(), serverID);
 			});
@@ -218,7 +219,7 @@ public class StarboardService {
 		if (newIgnoredChannelList.size() == 0)
 			newIgnoredChannelList = null;
 		StarboardConfig config = getStarboardConfig(serverID);
-		config.setIgnoredChannels(newIgnoredChannelList);
+		config.setIgnoredChannels(Objects.requireNonNull(newIgnoredChannelList));
 		updateConfig(config);
 	}
 }

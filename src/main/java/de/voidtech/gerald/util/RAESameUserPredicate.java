@@ -1,5 +1,6 @@
 package main.java.de.voidtech.gerald.util;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import net.dv8tion.jda.api.entities.User;
@@ -15,6 +16,6 @@ public class RAESameUserPredicate implements Predicate<MessageReactionAddEvent> 
 	
 	@Override
 	public boolean test(MessageReactionAddEvent t) {
-		return t.getUser().getId().equals(originalUser.getId());
+		return Objects.requireNonNull(t.getUser()).getId().equals(originalUser.getId());
 	}
 }
