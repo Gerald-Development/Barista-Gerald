@@ -1,27 +1,30 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
+import java.awt.Color;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.service.LogService;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import java.awt.*;
-import java.io.IOException;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Command
 public class HexCommand extends AbstractCommand {
 
 	private static final String IMAGE_SOURCE_URL = "https://via.placeholder.com/250/";
 	private static final String COLOUR_HEX_BASE_URL = "https://www.colorhexa.com/";
-	private static final Logger LOGGER = Logger.getLogger(HexCommand.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(HexCommand.class.getSimpleName());
 	
 	private Color getEmbedColour(String hex) {
 		return new Color(
@@ -47,7 +50,7 @@ public class HexCommand extends AbstractCommand {
 	private String getColourName(String colourHexURL) {
 		try {
 			Document colourHexPage = Jsoup.connect(colourHexURL).get();
-			return colourHexPage.select("#information > div.color-description > p > strong").first().text();
+			return Objects.requireNonNull(colourHexPage.select("#information > div.color-description > p > strong").first()).text();
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
 			e.printStackTrace();

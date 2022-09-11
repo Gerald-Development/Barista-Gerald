@@ -1,16 +1,6 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.commands.CommandContext;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.awt.*;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,8 +9,20 @@ import java.net.URL;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.service.LogService;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 @Command
 public class RedditCommand extends AbstractCommand {
@@ -28,7 +30,7 @@ public class RedditCommand extends AbstractCommand {
 	private static final String BASE_URL = "https://www.reddit.com/r/";
 	private static final String SUFFIX = "/top/.json?t=all&limit=10";
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64; Trident/7.0; rv:11.0) like Gecko";
-	private static final Logger LOGGER = Logger.getLogger(RedditCommand.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(RedditCommand.class.getSimpleName());
 	private static final String NO_IMAGE_URL = "https://cdn.discordapp.com/attachments/727233195380310016/850452145810964500/no_image_here_buster.gif";
 	
 	private JSONObject getRedditData(String fullUrl) {

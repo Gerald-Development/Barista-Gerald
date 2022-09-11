@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.BidiMap;
@@ -45,10 +46,10 @@ public class TunnelCommand extends AbstractCommand {
 				String destinationChannel = tunnel.getDestChannel();
 
 				if (sourceChannel.equals(context.getChannel().getId())) {
-					context.getJDA().getTextChannelById(destinationChannel)
+					Objects.requireNonNull(context.getJDA().getTextChannelById(destinationChannel))
 					.sendMessage("**This tunnel has been filled.**").queue();
 				} else {
-					context.getJDA().getTextChannelById(sourceChannel)
+					Objects.requireNonNull(context.getJDA().getTextChannelById(sourceChannel))
 					.sendMessage("**This tunnel has been filled.**").queue();
 				}
 				deleteTunnel(context.getChannel().getId());
@@ -100,7 +101,7 @@ public class TunnelCommand extends AbstractCommand {
 		boolean messageEqualsAccept = event.getMessage().getContentRaw().equalsIgnoreCase("accept");
 		boolean messageIsNotFromSelf = (!event.getAuthor().getId().equals(event.getJDA().getSelfUser().getId()));
 		boolean messageIsFromTargetChannel = event.getChannel().getId().equals(targetChannel.getId());
-		boolean memberHasPermissions = event.getMember().hasPermission(Permission.MANAGE_CHANNEL);
+		boolean memberHasPermissions = Objects.requireNonNull(event.getMember()).hasPermission(Permission.MANAGE_CHANNEL);
 		
 		return messageEqualsAccept && messageIsNotFromSelf && messageIsFromTargetChannel && memberHasPermissions;
 	}
@@ -207,8 +208,8 @@ public class TunnelCommand extends AbstractCommand {
 			sendUsageError(context);
 		else {
 			JDA jda = context.getJDA();
-			String sourceChannel = "**" + jda.getTextChannelById(tunnel.getSourceChannel()).getGuild().getName() + " -> " + jda.getTextChannelById(tunnel.getSourceChannel()).getName() + "**\n";
-			String destChannel = "**" + jda.getTextChannelById(tunnel.getDestChannel()).getGuild().getName() + " -> " + jda.getTextChannelById(tunnel.getDestChannel()).getName() + "**";
+			String sourceChannel = "**" + Objects.requireNonNull(jda.getTextChannelById(tunnel.getSourceChannel())).getGuild().getName() + " -> " + Objects.requireNonNull(jda.getTextChannelById(tunnel.getSourceChannel())).getName() + "**\n";
+			String destChannel = "**" + Objects.requireNonNull(jda.getTextChannelById(tunnel.getDestChannel())).getGuild().getName() + " -> " + Objects.requireNonNull(jda.getTextChannelById(tunnel.getDestChannel())).getName() + "**";
 			context.getChannel().sendMessage("**This tunnel is between:**\n" + sourceChannel + destChannel).queue();
 		}
 	}

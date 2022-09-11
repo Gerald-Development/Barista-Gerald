@@ -8,7 +8,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.hibernate.Session;
@@ -21,15 +20,19 @@ import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.entities.ActionStats;
 import main.java.de.voidtech.gerald.entities.Server;
+import main.java.de.voidtech.gerald.service.LogService;
 import main.java.de.voidtech.gerald.service.ServerService;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.utils.Result;
 
 public abstract class ActionsCommand extends AbstractCommand {
 	
 	private static final String API_URL = "http://api.nekos.fun:8080/api/";
-	private static final Logger LOGGER = Logger.getLogger(ActionsCommand.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(ActionsCommand.class.getSimpleName());
 
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -74,7 +77,6 @@ public abstract class ActionsCommand extends AbstractCommand {
 		{
 			return (List<ActionStats>) session
 					.createQuery("FROM ActionStats WHERE type = :type AND serverID = :serverID AND givenCount > 0 ORDER BY givenCount DESC")
-					.setMaxResults(5)
 					.setParameter("type", type.getType())
 					.setParameter("serverID", serverID)
 					.list();
@@ -87,7 +89,6 @@ public abstract class ActionsCommand extends AbstractCommand {
 		{
 			return (List<ActionStats>) session
 					.createQuery("FROM ActionStats WHERE type = :type AND serverID = :serverID AND receivedCount > 0 ORDER BY receivedCount DESC")
-					.setMaxResults(5)
 					.setParameter("type", type.getType())
 					.setParameter("serverID", serverID)
 					.list();
@@ -167,29 +168,37 @@ public abstract class ActionsCommand extends AbstractCommand {
 		
 		StringBuilder leaderboardBuilder = new StringBuilder();
 		int i = 1;
-		leaderboardBuilder.append("**Top 5 " + action.getType() + " givers**\n\n");
+		leaderboardBuilder.append("**Top 5 ").append(action.getType()).append(" givers**\n\n");
 		for (ActionStats stat : topGiven) {
-			leaderboardBuilder.append(ParsingUtils.convertSingleDigitToEmoji(String.valueOf(i)));
-			leaderboardBuilder.append(" ");
-			leaderboardBuilder.append(context.getGuild().retrieveMemberById(stat.getMember()).complete().getAsMention());
-			leaderboardBuilder.append(" - `");
-			leaderboardBuilder.append(stat.getGivenCount());
-			leaderboardBuilder.append("`\n");
-			i++;			
+			Result<Member> memberGet = context.getGuild().retrieveMemberById(stat.getMember()).mapToResult().complete();
+			if (memberGet.isSuccess()) {
+				leaderboardBuilder.append(ParsingUtils.convertSingleDigitToEmoji(String.valueOf(i)));
+				leaderboardBuilder.append(" ");
+				leaderboardBuilder.append(memberGet.get().getAsMention()); 
+				leaderboardBuilder.append(" - `");
+				leaderboardBuilder.append(stat.getGivenCount());
+				leaderboardBuilder.append("`\n");
+				i++;				
+			}
+			if (i == 6) break;
 		}
-		if (i == 1) leaderboardBuilder.append("Nobody to show! Go " + action.getType() + " someone!\n");
+		if (i == 1) leaderboardBuilder.append("Nobody to show! Go ").append(action.getType()).append(" someone!\n");
 		i = 1;
-		leaderboardBuilder.append("**\nTop 5 " + action.getType() + " receivers**\n\n");
+		leaderboardBuilder.append("**\nTop 5 ").append(action.getType()).append(" receivers**\n\n");
 		for (ActionStats stat : topReceived) {
-			leaderboardBuilder.append(ParsingUtils.convertSingleDigitToEmoji(String.valueOf(i)));
-			leaderboardBuilder.append(" ");
-			leaderboardBuilder.append(context.getGuild().retrieveMemberById(stat.getMember()).complete().getAsMention());
-			leaderboardBuilder.append(" - `");
-			leaderboardBuilder.append(stat.getReceivedCount());
-			leaderboardBuilder.append("`\n");
-			i++;			
+			Result<Member> memberGet = context.getGuild().retrieveMemberById(stat.getMember()).mapToResult().complete();
+			if (memberGet.isSuccess()) {
+				leaderboardBuilder.append(ParsingUtils.convertSingleDigitToEmoji(String.valueOf(i)));
+				leaderboardBuilder.append(" ");
+				leaderboardBuilder.append(memberGet.get().getAsMention());
+				leaderboardBuilder.append(" - `");
+				leaderboardBuilder.append(stat.getReceivedCount());
+				leaderboardBuilder.append("`\n");
+				i++;
+			}
+			if (i == 6) break;
 		}
-		if (i == 1) leaderboardBuilder.append("Nobody to show! Go " + action.getType() + " someone!");
+		if (i == 1) leaderboardBuilder.append("Nobody to show! Go ").append(action.getType()).append(" someone!");
 		MessageEmbed leaderboardEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle(context.getGuild().getName() + "'s " + action.getType() + " leaderboard")

@@ -5,8 +5,8 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
@@ -30,13 +32,13 @@ public class WebhookManager {
 	@Autowired
 	private ThreadManager threadManager;
 	
-    private static final Logger LOGGER = Logger.getLogger(WebhookManager.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(WebhookManager.class.getSimpleName());
 	
 	public Webhook getOrCreateWebhook(TextChannel targetChannel, String webhookName, String selfID) {
 		
 		List<Webhook> webhooks = targetChannel.retrieveWebhooks().complete();
 		for (Webhook webhook : webhooks) {
-			if (webhook.getName().equals(webhookName) && webhook.getOwnerAsUser().getId().equals(selfID)) {
+			if (webhook.getName().equals(webhookName) && Objects.requireNonNull(webhook.getOwnerAsUser()).getId().equals(selfID)) {
 				return webhook;
 			}
 		}
@@ -44,7 +46,7 @@ public class WebhookManager {
 	}
 	
 	private void executeWebhookPost(String content, Message referencedMessage, String avatarUrl, String username, Webhook webhook) {
-		String messageToBeSent = content.replaceAll("@everyone", "``@``everyone").replaceAll("@here", "``@``here");
+		String messageToBeSent = ParsingUtils.removeVolatileMentions(content);
 		
 		JSONObject webhookPayload = new JSONObject();
         webhookPayload.put("content", messageToBeSent);
@@ -52,7 +54,6 @@ public class WebhookManager {
         webhookPayload.put("avatar_url", avatarUrl);
         webhookPayload.put("tts", false);
         
-		
 		if (referencedMessage != null) {
 			 MessageEmbed replyTextEmbed = new EmbedBuilder()
 					.setTitle("Replying to this message", referencedMessage.getJumpUrl())
@@ -95,14 +96,10 @@ public class WebhookManager {
 		EnumSet<Permission> perms = context.getGuild().getSelfMember().getPermissions((GuildChannel) context.getChannel());
 		
         if (perms.contains(Permission.MANAGE_WEBHOOKS)) {
-        	postMessage(content, null,	avatarUrl, username,
-        			getOrCreateWebhook((TextChannel) context.getChannel(),
-        					webhookName,
-        					context.getJDA().getSelfUser().getId())
-        	);
-         } else {
-             context.getChannel().sendMessage(content).queue();
-         }
+        	Webhook webhook = getOrCreateWebhook((TextChannel) context.getChannel(),
+					webhookName, context.getJDA().getSelfUser().getId());
+        	postMessage(content, null,	avatarUrl, username, webhook);
+         } else context.getChannel().sendMessage(content).queue();
 	}
 	
 }

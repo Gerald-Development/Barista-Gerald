@@ -64,7 +64,7 @@ public class EnableCommand extends AbstractCommand {
 
 	private void enableRoutine(String targetName, CommandContext context) {
 		AbstractRoutine foundRoutine = null;
-		String resultMessage = "";
+		String resultMessage;
 		for (AbstractRoutine routine: routines) {
 			if (routine.getName().equals(targetName)) {
 				foundRoutine = routine;
@@ -79,7 +79,7 @@ public class EnableCommand extends AbstractCommand {
 			
 			Server server = serverService.getServer(context.getGuild().getId());
 			if (!server.getRoutineBlacklist().contains(targetName))
-				resultMessage = "**This routine is not enabled!**";
+				resultMessage = "**Routine `" + foundRoutine.getName() + "` is not disabled!**";
 			else {
 				server.removeFromRoutineBlacklist(targetName);
 				serverService.saveServer(server);
@@ -91,9 +91,9 @@ public class EnableCommand extends AbstractCommand {
 
 	private void enableAllCommands(CommandContext context) {
 		Server server = serverService.getServer(context.getGuild().getId());
-		String resultMessage = "";
+		String resultMessage;
 		if (server.getCommandBlacklist().isEmpty())
-			resultMessage = "**There are no disabled commands!**";
+			resultMessage = "**There are no disabled commands to enable!**";
 		else {
 			server.clearCommandBlacklist();
 			serverService.saveServer(server);

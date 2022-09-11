@@ -8,7 +8,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -17,13 +16,15 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import main.java.de.voidtech.gerald.util.GeraldLogger;
+
 @Service
 public class ChatbotService {
 	
 	@Autowired
 	GeraldConfig configService;
 	
-	private static final Logger LOGGER = Logger.getLogger(ChatbotService.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(ChatbotService.class.getSimpleName());
 	private static final String ERROR_STRING = "I'm not sure how to respond to that.";
 
 	@NotNull

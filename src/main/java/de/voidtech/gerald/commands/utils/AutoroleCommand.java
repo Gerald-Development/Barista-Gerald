@@ -42,8 +42,8 @@ public class AutoroleCommand extends AbstractCommand {
 	@Autowired
 	private EventWaiter waiter;
 	
-	private void getAwaitedReply(CommandContext context, String question, Consumer<String> result) {
-        context.getChannel().sendMessage(question).queue();
+	private void getAwaitedReply(CommandContext context, Consumer<String> result) {
+        context.getChannel().sendMessage("**Please supply a role mention or ID:**").queue();
         waiter.waitForEvent(MessageReceivedEvent.class,
                 new MRESameUserPredicate(context.getAuthor()),
                 event -> result.accept(event.getMessage().getContentRaw()), 30, TimeUnit.SECONDS,
@@ -113,7 +113,7 @@ public class AutoroleCommand extends AbstractCommand {
 	}
 
 	private void promptForRole(CommandContext context) {
-		getAwaitedReply(context, "**Please supply a role mention or ID:**", roleInput -> {
+		getAwaitedReply(context, roleInput -> {
 			String roleID = ParsingUtils.filterSnowflake(roleInput);
 			if (context.getGuild().getRoleById(roleID) != null) promptForHumanAvailability(context, roleID);
 			else context.getChannel().sendMessage("**You did not provide a valid role!**").queue();

@@ -40,6 +40,10 @@ public class ParsingUtils {
 		}
 	}
 	
+	public static String removeVolatileMentions(String text) {
+		return text.replaceAll("@everyone", "``@``everyone").replaceAll("@here", "``@``here").replaceAll("<@&", "<");
+	}
+	
 	public static boolean isInteger(String str) {
 	    if (str == null) {
 	        return false;

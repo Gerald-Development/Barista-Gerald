@@ -7,10 +7,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -24,6 +23,7 @@ import main.java.de.voidtech.gerald.entities.Experience;
 import main.java.de.voidtech.gerald.entities.LevelUpRole;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.entities.ServerExperienceConfig;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
@@ -42,7 +42,7 @@ public class ExperienceService {
 	@Autowired
 	private GeraldConfig config;
 	
-	private static final Logger LOGGER = Logger.getLogger(ExperienceService.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(ExperienceService.class.getSimpleName());
 	private static final int EXPERIENCE_DELAY = 60; //Delay between incrementing XP in seconds
 	
 	public byte[] getExperienceCard(String avatarURL, long xpAchieved, long xpNeeded,
@@ -59,8 +59,7 @@ public class ExperienceService {
 			URL url = new URL(cardURL);
 			//Remove the data:image/png;base64 part
 			String response = Jsoup.connect(url.toString()).get().toString().split(",")[1];
-			byte[] imageBytes = DatatypeConverter.parseBase64Binary(response);
-			return imageBytes;
+			return DatatypeConverter.parseBase64Binary(response);
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, e.getMessage());
 		}
@@ -70,22 +69,21 @@ public class ExperienceService {
 	public Experience getUserExperience(String userID, long serverID) {
 		try(Session session = sessionFactory.openSession())
 		{
-			Experience xp = (Experience) session.createQuery("FROM Experience WHERE userID = :userID AND serverID = :serverID")
+			return (Experience) session.createQuery("FROM Experience WHERE userID = :userID AND serverID = :serverID")
 					.setParameter("userID", userID)
 					.setParameter("serverID", serverID)
 					.uniqueResult();
-			return xp;
 		}
 	}
 	
 	public List<String> getNoExperienceChannelsForServer(long serverID, JDA jda) {
-		List<String> channels = new ArrayList<String>();
+		List<String> channels;
 		ServerExperienceConfig config = getServerExperienceConfig(serverID);
 		config.getNoXPChannels()
 				.stream()
 				.filter(channel -> jda.getTextChannelById(channel) == null)
-				.forEach(channel -> config.removeNoExperienceChannel(channel));
-		channels = config.getNoXPChannels().stream().collect(Collectors.toList());
+				.forEach(config::removeNoExperienceChannel);
+		channels = new ArrayList<>(config.getNoXPChannels());
 		return channels;
 	}
 	
@@ -299,8 +297,9 @@ public class ExperienceService {
 	
 	public void addRolesOnServerJoin(Server server, Member member) {
 		Experience userXP = getUserExperience(member.getId(), server.getId());
-		List<LevelUpRole> roles = getRolesForLevelFromServer(server.getId(), userXP.getCurrentLevel());
+		if (userXP == null) return;
 		
+		List<LevelUpRole> roles = getRolesForLevelFromServer(server.getId(), userXP.getCurrentLevel());
 		if (roles.isEmpty()) return;
 		
 		List<Role> memberRoles = member.getRoles();
@@ -318,7 +317,7 @@ public class ExperienceService {
 				.setDescription(member.getAsMention() + " reached level `" + role.getLevel()
 					+ "` and received the role " + roleToBeGiven.getAsMention())
 				.build();
-		member.getGuild().getTextChannelById(channelID).sendMessageEmbeds(levelUpEmbed).queue();
+		Objects.requireNonNull(member.getGuild().getTextChannelById(channelID)).sendMessageEmbeds(levelUpEmbed).queue();
 	}
 
 	public boolean toggleLevelUpMessages(long id) {

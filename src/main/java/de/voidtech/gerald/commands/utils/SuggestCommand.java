@@ -2,6 +2,8 @@ package main.java.de.voidtech.gerald.commands.utils;
 
 import java.awt.Color;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import main.java.de.voidtech.gerald.service.SuggestionService;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
@@ -33,7 +36,7 @@ public class SuggestCommand extends AbstractCommand {
 
     private void postSuggestion(CommandContext context, List<String> args, SuggestionChannel config) {
     	MessageEmbed newSuggestionEmbed = getMessageEmbed(context, args);
-        context.getGuild().getTextChannelById(config.getSuggestionChannel()).sendMessageEmbeds(newSuggestionEmbed).queue(sentMessage -> {
+        Objects.requireNonNull(context.getGuild().getTextChannelById(config.getSuggestionChannel())).sendMessageEmbeds(newSuggestionEmbed).queue(sentMessage -> {
             sentMessage.addReaction(CHECK).queue();
             sentMessage.addReaction(CROSS).queue();
             context.reply("**Your suggestion has been posted!**");
@@ -48,7 +51,7 @@ public class SuggestCommand extends AbstractCommand {
             if (config.suggestRoleRequired()) {
             	boolean hasRole = suggestionService.memberHasRole(context.getMember(), config.getSuggestRoleID());
             	if (!hasRole) context.reply("**You need the** `"
-            									+ context.getGuild().getRoleById(config.getSuggestRoleID()).getName()
+            									+ Objects.requireNonNull(context.getGuild().getRoleById(config.getSuggestRoleID())).getName()
             									+ "` **role to make suggestions!**");
             	else postSuggestion(context, args, config);
             } else postSuggestion(context, args, config);
@@ -57,13 +60,19 @@ public class SuggestCommand extends AbstractCommand {
 
     @NotNull
     private MessageEmbed getMessageEmbed(CommandContext context, List<String> args) {
-        MessageEmbed newSuggestionEmbed = new EmbedBuilder()
-                .setColor(Color.ORANGE)
-                .setTitle("New Suggestion!")
+    	EmbedBuilder newSuggestionEmbedBuilder = new EmbedBuilder()
+                .setColor(Color.GRAY)
+                .setTitle("New Suggestion!", context.getMessage().getJumpUrl())
                 .addField("Suggestion", String.join(" ", args), false)
-                .setFooter("Suggested By " + context.getAuthor().getAsTag(), context.getAuthor().getAvatarUrl())
-                .build();
-        return newSuggestionEmbed;
+                .setFooter("Suggested By " + context.getAuthor().getAsTag(), context.getAuthor().getAvatarUrl());
+    	if (!context.getMessage().getAttachments().isEmpty()) {
+    		List<Attachment> possibleAttachments = context.getMessage().getAttachments()
+    				.stream()
+    				.filter(Attachment::isImage)
+    				.collect(Collectors.toList());
+    		if (!possibleAttachments.isEmpty()) newSuggestionEmbedBuilder.setImage(possibleAttachments.get(0).getUrl());
+    	}
+        return newSuggestionEmbedBuilder.build();
     }
 
     private void validateInput(String channelID, Server server, CommandContext context) {
@@ -110,7 +119,7 @@ public class SuggestCommand extends AbstractCommand {
             if (suggestionService.isRole(roleID, context)) {
                 config.setSuggestRole(roleID);
                 suggestionService.saveSuggestionChannel(config);
-                context.reply("**Suggestion role set to** `" + context.getGuild().getRoleById(roleID).getName() + "`");
+                context.reply("**Suggestion role set to** `" + Objects.requireNonNull(context.getGuild().getRoleById(roleID)).getName() + "`");
             } else context.reply("**That is not a valid role!**");
         } else context.reply("**That is not a valid role!**");
 	}
@@ -120,7 +129,7 @@ public class SuggestCommand extends AbstractCommand {
             if (suggestionService.isRole(roleID, context)) {
                 config.setVoteRole(roleID);
                 suggestionService.saveSuggestionChannel(config);
-                context.reply("**Vote role set to** `" + context.getGuild().getRoleById(roleID).getName() + "`");
+                context.reply("**Vote role set to** `" + Objects.requireNonNull(context.getGuild().getRoleById(roleID)).getName() + "`");
             } else context.reply("**That is not a valid role!**");
         } else context.reply("**That is not a valid role!**");
 	}
@@ -162,9 +171,9 @@ public class SuggestCommand extends AbstractCommand {
 		else {
 			String channel = "<#" + config.getSuggestionChannel() + ">";
 			String voteRole = config.getVoteRoleID() == null ? "None set!" :
-				context.getGuild().getRoleById(config.getVoteRoleID()).getName();
+				Objects.requireNonNull(context.getGuild().getRoleById(config.getVoteRoleID())).getName();
 			String suggestRole = config.getSuggestRoleID() == null ? "None set!" :
-				context.getGuild().getRoleById(config.getSuggestRoleID()).getName();
+				Objects.requireNonNull(context.getGuild().getRoleById(config.getSuggestRoleID())).getName();
 			context.getChannel().sendMessage("**Channel:** " + channel + "\n"
 					+ "**Vote role:** `" + voteRole + "`\n"
 					+ "**Suggestion Role:** `" + suggestRole + "`").queue();
@@ -197,12 +206,12 @@ public class SuggestCommand extends AbstractCommand {
 
 	@Override
     public String getDescription() {
-        return "This command allows you to set up a suggestions box. "
-        		+ "Simply set the suggestion box channel and your users can start sending suggestions!\n"
-        		+ "If you only want certain users to make suggestions, use the suggestrole subcommand to set a suggestion role.\n"
-        		+ "If you only want certain users to vote, use the voterole subcommand to set a vote role.\n"
+        return "If you only want certain users to make suggestions, use the suggestrole subcommand to set a suggestion role.\n\n"
+        		+ "If you only want certain users to vote, use the voterole subcommand to set a vote role.\n\n"
         		+ "Use the config subcommand to see your current configuration\n"
-        		+ "All users will require these roles to make suggestions or vote. This includes admins!";
+        		+ "All users will require these roles to make suggestions or vote. This includes admins!\n\n"
+        		+ "Members with the Manage_Messages permission can use coloured circle emotes (🔵 🟢 🟠 🔴 🟣) to review suggestions "
+        		+ "(the embed colour will change and a 'reviewed by' field will appear)";
     }
 
     @Override

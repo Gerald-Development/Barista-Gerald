@@ -20,7 +20,7 @@ public class ThreadManager {
 				     .daemon(true)
 				     .priority(Thread.NORM_PRIORITY)
 				     .build();
-			threadMap.put(threadID, Executors.newSingleThreadExecutor(factory));	
+			threadMap.put(threadID, Executors.newCachedThreadPool(factory));
 		}
 		
 		return threadMap.get(threadID);

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Objects;
 
 @Command
 public class HelpCommand extends AbstractCommand{	
@@ -32,6 +33,7 @@ public class HelpCommand extends AbstractCommand{
 	private void showCategoryList(CommandContext command) {
 		
 		boolean inlineFieldState = true;
+		int fieldCounter = 1;
 		
 		EmbedBuilder categoryListEmbedBuilder = new EmbedBuilder();
 		categoryListEmbedBuilder.setColor(Color.ORANGE);
@@ -40,17 +42,19 @@ public class HelpCommand extends AbstractCommand{
 		categoryListEmbedBuilder.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, command.getJDA().getSelfUser().getAvatarUrl());
 		
 		for (CommandCategory commandCategory : CommandCategory.values()) {
+			if (fieldCounter == 1) inlineFieldState = true;
 			String title = capitaliseFirstLetter(commandCategory.getCategory()) + " " + commandCategory.getIcon();
 			String description = "```\nhelp " + commandCategory.getCategory() + "\n```";
-			categoryListEmbedBuilder.addField(title, description, inlineFieldState);
-			inlineFieldState = !inlineFieldState;
+			categoryListEmbedBuilder.addField(title, description, true);
+			fieldCounter++;
+			if (fieldCounter == 3) {
+				inlineFieldState = false;
+				fieldCounter = 1;
+			}
 		}
 		
-		categoryListEmbedBuilder.addField("Any Command :clipboard: ", "```\nhelp [command]\n```", true);
-		
-		MessageEmbed categoryListEmbed = categoryListEmbedBuilder.build();
-		
-		command.getChannel().sendMessageEmbeds(categoryListEmbed).queue();
+		categoryListEmbedBuilder.addField("Any Command :clipboard: ", "```\nhelp [command]\n```", true);	
+		command.reply(categoryListEmbedBuilder.build());
 	}
 	
 	private boolean isCommandCategory(String categoryName) {
@@ -99,7 +103,6 @@ public class HelpCommand extends AbstractCommand{
 				.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, context.getJDA().getSelfUser().getAvatarUrl())
 				.build();
 		context.reply(commandHelpEmbed);
-		
 	}
 
 	private String displayCommandCategoryOrNull(CommandCategory category) {
@@ -122,7 +125,7 @@ public class HelpCommand extends AbstractCommand{
 
 		MessageEmbed commandHelpEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
-				.setTitle("How it works: " + capitaliseFirstLetter(commandToBeDisplayed.getName()) + " Command", GlobalConstants.LINKTREE_URL)
+				.setTitle("How it works: " + capitaliseFirstLetter(Objects.requireNonNull(commandToBeDisplayed).getName()) + " Command", GlobalConstants.LINKTREE_URL)
 				.setThumbnail(context.getJDA().getSelfUser().getAvatarUrl())
 				.addField("Command Name", "```" + capitaliseFirstLetter(commandToBeDisplayed.getName()) + "```", true)
 				.addField("Category", "```" + displayCommandCategoryOrNull(commandToBeDisplayed.getCommandCategory()) + "```", true)
@@ -154,7 +157,7 @@ public class HelpCommand extends AbstractCommand{
 			String itemToBeQueried = args.get(0).toLowerCase();
 			if (isCommandCategory(itemToBeQueried)) showCommandsFromCategory(context, itemToBeQueried);
 			else if (isCommand(itemToBeQueried)) showCommand(context, itemToBeQueried);
-			else context.getChannel().sendMessage("**That command/category could not be found!**").queue();
+			else context.reply("**That command/category could not be found!**");
 		}
 	}
 

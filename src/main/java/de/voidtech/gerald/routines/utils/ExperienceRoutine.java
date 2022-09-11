@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.routines.utils;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,7 +29,7 @@ public class ExperienceRoutine extends AbstractRoutine {
 		Server server = serverService.getServer(message.getGuild().getId());
 		List<String> noxp = xpService.getNoExperienceChannelsForServer(server.getId(), message.getJDA());
 		if (noxp.contains(message.getChannel().getId())) return;
-		xpService.updateUserExperience(message.getMember(), message.getGuild().getId(), message.getChannel().getId());
+		xpService.updateUserExperience(Objects.requireNonNull(message.getMember()), message.getGuild().getId(), message.getChannel().getId());
 	}
 
 	@Override

@@ -1,30 +1,34 @@
 package main.java.de.voidtech.gerald.commands.info;
 
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import com.jagrosh.jdautilities.menu.Paginator;
-import com.jagrosh.jdautilities.menu.Paginator.Builder;
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.commands.CommandContext;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import com.jagrosh.jdautilities.menu.Paginator;
+import com.jagrosh.jdautilities.menu.Paginator.Builder;
+
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.service.LogService;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
 
 @Command
 public class CheatCommand extends AbstractCommand {
 
 	private static final String CHEAT_SH_URL = "https://cheat.sh/";
-	private static final Logger LOGGER = Logger.getLogger(CheatCommand.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(CheatCommand.class.getSimpleName());
 	
 	@Autowired
 	private EventWaiter waiter;
@@ -33,7 +37,7 @@ public class CheatCommand extends AbstractCommand {
 		try {
 			String requestURL = CHEAT_SH_URL + topic + "?TQ";
 			Document doc = Jsoup.connect(requestURL).get();
-			return doc.select("pre").first().text();
+			return Objects.requireNonNull(doc.select("pre").first()).text();
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
 		}
@@ -80,9 +84,7 @@ public class CheatCommand extends AbstractCommand {
 			pagedResponseBuilder.waitOnSinglePage(true);
 			pagedResponseBuilder.setTimeout(120, TimeUnit.SECONDS);
 			pagedResponseBuilder.setText("**Your cheat sheet:**");
-			pagedResponseBuilder.setFinalAction(msg -> {
-                    msg.clearReactions().queue();
-            });
+			pagedResponseBuilder.setFinalAction(msg -> msg.clearReactions().queue());
 			Paginator pagedResponseEmbed = pagedResponseBuilder.build();
 			pagedResponseEmbed.display(botMessage);
 		});

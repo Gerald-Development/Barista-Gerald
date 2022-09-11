@@ -1,30 +1,33 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.commands.CommandContext;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.awt.*;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.service.LogService;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class CatCommand extends AbstractCommand{
 
 	private static final String API_URL = "https://api.thecatapi.com/v1/images/search";
-	private static final Logger LOGGER = Logger.getLogger(CatCommand.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(CatCommand.class.getSimpleName());
 	
 	private String getCat() {
         try {
@@ -47,7 +50,7 @@ public class CatCommand extends AbstractCommand{
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
 		String catApiResponse = getCat();
-		JSONArray catApiObject = new JSONArray(catApiResponse);
+		JSONArray catApiObject = new JSONArray(Objects.requireNonNull(catApiResponse));
 		JSONObject cat = (JSONObject) catApiObject.get(0);
 		
 		MessageEmbed catEmbed = new EmbedBuilder()

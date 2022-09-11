@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Objects;
 
 @Command
 public class CacheSearchCommand extends AbstractCommand{
@@ -33,7 +34,7 @@ public class CacheSearchCommand extends AbstractCommand{
 			
 			if (client.getGuildById(args.get(0)) != null) {
 				Guild guild = client.getGuildById(args.get(0));
-				Member owner = guild.retrieveOwner().complete();
+				Member owner = Objects.requireNonNull(guild).retrieveOwner().complete();
 				resultMessage = "**Guild Cache**\n```\n"
 						+ "Guild Name: " + guild.getName()
 				+ "\nGuild ID: " + guild.getId()
@@ -46,7 +47,7 @@ public class CacheSearchCommand extends AbstractCommand{
 			} else if (client.getGuildChannelById(args.get(0)) != null) {
 				GuildChannel channel = client.getGuildChannelById(args.get(0));
 				resultMessage = "**Channel Cache**\n```\n"
-				+ "Channel Name: " + channel.getName()
+				+ "Channel Name: " + Objects.requireNonNull(channel).getName()
 				+ "\nChannel Type: " + channel.getType()
 				+ "\nChannel ID: " + channel.getId()
 				+ "\nGuild Name: " + channel.getGuild().getName()

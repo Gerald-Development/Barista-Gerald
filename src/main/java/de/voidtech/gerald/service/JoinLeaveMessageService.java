@@ -2,6 +2,7 @@ package main.java.de.voidtech.gerald.service;
 
 import java.awt.Color;
 import java.time.Instant;
+import java.util.Objects;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -41,8 +42,8 @@ public class JoinLeaveMessageService {
 		try(Session session = sessionFactory.openSession())
 		{
             return (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
-.setParameter("serverID", guildID)
-.uniqueResult();
+            		.setParameter("serverID", guildID)
+            		.uniqueResult();
 		}
 	}
 	
@@ -60,7 +61,7 @@ public class JoinLeaveMessageService {
 					.setTimestamp(Instant.now())
 					.build();
 			
-			((MessageChannel) channel).sendMessageEmbeds(joinMessageEmbed).queue();
+			((MessageChannel) Objects.requireNonNull(channel)).sendMessageEmbeds(joinMessageEmbed).queue();
 		}
 	}
 	
@@ -74,11 +75,11 @@ public class JoinLeaveMessageService {
 			
 			MessageEmbed leaveMessageEmbed = new EmbedBuilder()
 					.setColor(Color.red)
-					.setDescription(member.getAsMention() + " **(" + member.getUser().getAsTag() + ") " + message + "**")
+					.setDescription(Objects.requireNonNull(member).getAsMention() + " **(" + member.getUser().getAsTag() + ") " + message + "**")
 					.setTimestamp(Instant.now())
 					.build();
 			
-			((MessageChannel) channel).sendMessageEmbeds(leaveMessageEmbed).queue();
+			((MessageChannel) Objects.requireNonNull(channel)).sendMessageEmbeds(leaveMessageEmbed).queue();
 		}
 	}
 	

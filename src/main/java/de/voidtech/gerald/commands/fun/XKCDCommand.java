@@ -1,20 +1,6 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.util.ParsingUtils;
-import main.java.de.voidtech.gerald.util.RAESameUserPredicate;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.awt.*;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,8 +10,25 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.service.LogService;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
+import main.java.de.voidtech.gerald.util.RAESameUserPredicate;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 @Command
 public class XKCDCommand extends AbstractCommand {
@@ -33,7 +36,7 @@ public class XKCDCommand extends AbstractCommand {
 	@Autowired
 	private EventWaiter waiter;
 	
-	private static final Logger LOGGER = Logger.getLogger(XKCDCommand.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(XKCDCommand.class.getSimpleName());
 	
 	private static final String XKCD_URL = "https://xkcd.com/";
 	private static final String SEARCH_URL = "https://search-xkcd.mfwowocringe.repl.co/search/";
@@ -111,9 +114,9 @@ public class XKCDCommand extends AbstractCommand {
 	private String formSearch(List<String> args) {
 		if (args.size() == 1) return "";
 		else {
-			String buffer = "";
-			for (int i = 1; i < args.size(); i++) buffer += args.get(i) + "+";
-			return buffer;
+			StringBuilder buffer = new StringBuilder();
+			for (int i = 1; i < args.size(); i++) buffer.append(args.get(i)).append("+");
+			return buffer.toString();
 		}
 	}
 	

@@ -1,26 +1,31 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.commands.CommandContext;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
-
-import java.awt.*;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
+
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.service.LogService;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class CompileCommand extends AbstractCommand {
@@ -29,6 +34,7 @@ public class CompileCommand extends AbstractCommand {
 	private static final String EMBED_THUMBNAIL_URL = "https://cdn.discordapp.com/attachments/727233195380310016/823533201279418399/808411850555261028.gif";
 	private static final char ESCAPE_CHAR = ((char)8204);
 	private final Map<String, String> langMap = getSupportedLangs();
+	private static final GeraldLogger LOGGER = LogService.GetLogger(CompileCommand.class.getSimpleName());
 	
 	private String getWandboxResponse(String payload) {
 		try {
@@ -42,7 +48,7 @@ public class CompileCommand extends AbstractCommand {
 			con.setRequestProperty("Accept", "application/json");
 			
 			try (OutputStream os = con.getOutputStream()) {
-				byte[] input = payload.getBytes("utf-8");
+				byte[] input = payload.getBytes(StandardCharsets.UTF_8);
 				os.write(input, 0, input.length);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -53,12 +59,12 @@ public class CompileCommand extends AbstractCommand {
 				return in.lines().collect(Collectors.joining());
 							
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOGGER.log(Level.SEVERE, e.getMessage());
 			}
 			
 			con.disconnect();
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			LOGGER.log(Level.SEVERE, e1.getMessage());
 		}
 		return "";
 	}
@@ -68,10 +74,10 @@ public class CompileCommand extends AbstractCommand {
 		String response = getWandboxResponse(payload);
 		
 		JSONObject compilerResponse = new JSONObject(response);
-		String responseText = "";
-		Color color = null;
-		String titleMessage = "";
-		String statusCode = "";
+		String responseText;
+		Color color;
+		String titleMessage;
+		String statusCode;
 		String permLink = compilerResponse.getString("url");
 		
 		if (compilerResponse.has("program_error")) {
@@ -125,10 +131,7 @@ public class CompileCommand extends AbstractCommand {
 					.addField("Compiler", compiler, true)//
 					.build();
 			
-			message.replyEmbeds(compilationWaitingMessage).mentionRepliedUser(false).queue(sentMessage -> {
-				sendResponse(finalCode, compiler, sentMessage);					
-
-			});
+			message.replyEmbeds(compilationWaitingMessage).mentionRepliedUser(false).queue(sentMessage -> sendResponse(finalCode, compiler, sentMessage));
 
 		} else {
 			message.reply("That language could not be found!").mentionRepliedUser(false).queue();
@@ -138,7 +141,7 @@ public class CompileCommand extends AbstractCommand {
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
 
-		if (args.size() >= 0 && args.get(0).equals("languages")) {
+		if (args.get(0).equals("languages")) {
 			String supportedLangsString = StringUtils.join(langMap.keySet(), "\n");
 			context.reply("**Supported Languages:**\n" + supportedLangsString);
 		

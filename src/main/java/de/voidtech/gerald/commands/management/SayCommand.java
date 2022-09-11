@@ -16,10 +16,7 @@ public class SayCommand extends AbstractCommand {
 		if(context.getMember().hasPermission(Permission.MESSAGE_MANAGE))
 		{
 			String msg = String.join(" ", args);
-			context.getChannel().sendMessage(msg).queue(response -> {
-				//TODO (from: Franziska): No message to delete with slash commands. Needs work.
-				//context.delete().queue();
-			});		
+			context.getChannel().sendMessage(msg).queue(response -> context.getMessage().delete().queue());
 		}
 	}
 

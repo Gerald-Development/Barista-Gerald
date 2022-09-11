@@ -1,19 +1,20 @@
 package main.java.de.voidtech.gerald.service;
 
-import main.java.de.voidtech.gerald.routines.AbstractRoutine;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Message;
+import java.util.List;
+import java.util.logging.Level;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import main.java.de.voidtech.gerald.routines.AbstractRoutine;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Message;
 
 @Service
 public class MessageHandler {
 
-    private static final Logger LOGGER = Logger.getLogger(MessageHandler.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(MessageHandler.class.getSimpleName());
     
     @Autowired
     private List<AbstractRoutine> routines;

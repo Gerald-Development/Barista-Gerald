@@ -1,5 +1,6 @@
 package main.java.de.voidtech.gerald.util;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import net.dv8tion.jda.api.entities.Member;
@@ -15,6 +16,6 @@ public class BCESameUserPredicate implements Predicate<ButtonClickEvent> {
 	
 	@Override
 	public boolean test(ButtonClickEvent t) {
-		return t.getMember().getId().equals(originalUser.getId());
+		return Objects.requireNonNull(t.getMember()).getId().equals(originalUser.getId());
 	}
 }

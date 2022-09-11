@@ -1,5 +1,6 @@
 package main.java.de.voidtech.gerald.listeners;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,7 @@ public class StarboardListener implements EventListener {
 	private StarboardService starboardService;
 	
 	@Override
-	public void onEvent(GenericEvent event) {
+	public void onEvent(@NotNull GenericEvent event) {
 		if (event instanceof GuildMessageReactionAddEvent) {
 			GuildMessageReactionAddEvent reaction = (GuildMessageReactionAddEvent) event;
 			if (reaction.getReactionEmote().toString().equals("RE:" + STAR_UNICODE)) { 

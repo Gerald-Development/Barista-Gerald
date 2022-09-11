@@ -15,7 +15,7 @@ public class SlashCommandListener implements EventListener {
     //@Autowired
     //private List<AbstractCommand> commands;
 
-    //private static final Logger LOGGER = Logger.getLogger(SlashCommandListener.class.getName());
+	//private static final GeraldLogger LOGGER = LogService.GetLogger(SlashCommandListener.class.getSimpleName());
 
     @Override
     public void onEvent(@NotNull GenericEvent event) {

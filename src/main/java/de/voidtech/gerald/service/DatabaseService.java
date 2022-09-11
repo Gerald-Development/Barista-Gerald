@@ -4,7 +4,6 @@ import java.util.EnumSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.persistence.Entity;
 
@@ -22,12 +21,14 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import main.java.de.voidtech.gerald.util.GeraldLogger;
+
 @Service
 @EnableTransactionManagement
 @org.springframework.context.annotation.Configuration
 public class DatabaseService 
 {
-	private static final Logger LOGGER = Logger.getLogger(DatabaseService.class.getName());
+	private static final GeraldLogger LOGGER = LogService.GetLogger(DatabaseService.class.getSimpleName());
 	
 	@Autowired
 	private GeraldConfig config;
