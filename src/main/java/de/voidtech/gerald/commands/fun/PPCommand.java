@@ -41,7 +41,7 @@ public class PPCommand extends AbstractCommand{
 		String ppSize = String.valueOf(ppSizeNumber);		
 		
 		//It's best if nobody questions this
-		if (context.getAuthor().getId().equals("341300268660555778")) {
+		if (userID.equals("341300268660555778")) {
 			ppSize = "YEEEEEEEEEEEEEEEEEEEEEEESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS";
 			phrase = "G a r g a n t u a n.";
 			color = Color.magenta;
@@ -62,6 +62,7 @@ public class PPCommand extends AbstractCommand{
 		if (context.getArgs().get(0).equals("rig")) {
 			String userID = ParsingUtils.filterSnowflake(context.getArgs().get(1));
 			int length = Integer.parseInt(context.getArgs().get(2));
+			deleteRigged(userID);
 			saveRigged(new RiggedLength(userID, length));
 			context.reply("**Member** <@" + userID + "> **has been rigged at** `" + length + "` **inches**");
 			return false;
