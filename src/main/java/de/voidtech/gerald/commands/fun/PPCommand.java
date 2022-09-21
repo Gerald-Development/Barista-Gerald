@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.List;
 import java.util.Random;
 
+import net.dv8tion.jda.api.entities.User;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,16 +33,16 @@ public class PPCommand extends AbstractCommand{
 		boolean shouldContinue = true;
 		if (!args.isEmpty()) shouldContinue = tryRigUser(context);
 		if (!shouldContinue) return;
-		String userID;
-		if (context.getMentionedMembers().isEmpty()) userID = context.getAuthor().getId();
-		else userID = context.getMentionedMembers().get(0).getId();
-		int ppSizeNumber = determineLength(userID);
+		User user;
+		if (context.getMentionedMembers().isEmpty()) user = context.getAuthor();
+		else user = context.getMentionedMembers().get(0).getUser();
+		int ppSizeNumber = determineLength(user.getId());
 		String phrase = getPhrase(ppSizeNumber);
 		Color color = getColor(ppSizeNumber);
 		String ppSize = String.valueOf(ppSizeNumber);		
 		
 		//It's best if nobody questions this
-		if (userID.equals("341300268660555778")) {
+		if (user.getId().equals("341300268660555778")) {
 			ppSize = "YEEEEEEEEEEEEEEEEEEEEEEESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS";
 			phrase = "G a r g a n t u a n.";
 			color = Color.magenta;
@@ -49,7 +50,7 @@ public class PPCommand extends AbstractCommand{
 		//You saw nothing...
 		
 		MessageEmbed ppSizeEmbed = new EmbedBuilder()//
-				.setTitle("How big is your PP?")
+				.setTitle("How big is " + user.getName() + "'s PP?")
 				.setColor(color)
 				.setDescription("Your PP is **" + ppSize + (ppSizeNumber == 1 ? " inch.** " : " inches.** ") + phrase)
 				.build();
@@ -152,7 +153,7 @@ public class PPCommand extends AbstractCommand{
 
 	@Override
 	public boolean isDMCapable() {
-		return true;
+		return false;
 	}
 
 	@Override
