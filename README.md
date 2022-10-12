@@ -65,3 +65,5 @@ Note: Docker Compose automatically consumes the `.env` file in its working direc
 Do you want to contribute to the bot yourself? Great news: you can! Just join our Discord and coordinate with us.
 
 We prefer to plan our development work ahead of implementing them so if you want to contribute to the Gerald code base we would be delighted to see you on our discord server. Alternatively you can take a look at the issues tab where we try to plan and document upcoming features and bugfixes.
+
+.
