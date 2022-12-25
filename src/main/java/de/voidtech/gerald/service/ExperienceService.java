@@ -175,7 +175,7 @@ public class ExperienceService {
 		}
 	}
 	
-	private void saveUserExperience(Experience userXP) {
+	public void saveUserExperience(Experience userXP) {
 		try(Session session = sessionFactory.openSession())
 		{
 			session.getTransaction().begin();	
