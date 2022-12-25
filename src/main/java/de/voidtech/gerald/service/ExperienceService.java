@@ -234,7 +234,7 @@ public class ExperienceService {
 	}
 	
 	public long xpNeededForLevel(long level) {
-		return (long) Math.ceil(Math.sqrt(5000 * (Math.pow(level, 3))));
+		return (long) Math.ceil(((double)5 / (double) 6) * (level * ((2 * Math.pow(level, 2)) + (27 * level) + 91)));
 	}
 	
 	private long xpToNextLevel(long nextLevel, long currentXP) {
