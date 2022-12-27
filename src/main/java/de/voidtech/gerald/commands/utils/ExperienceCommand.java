@@ -36,7 +36,7 @@ public class ExperienceCommand extends AbstractCommand {
 	
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
-		Server server = serverService.getServer("425410562965635074");
+		Server server = serverService.getServer(context.getGuild().getId());
 		if (args.isEmpty()) sendLevelCard(context, context.getMember(), server.getId());
 		else {
 			String ID = ParsingUtils.filterSnowflake(args.get(0));
