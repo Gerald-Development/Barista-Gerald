@@ -305,15 +305,14 @@ public class ExperienceCommand extends AbstractCommand {
 		}
 		
 		String avatarURL = member.getUser().getAvatarUrl();
-		long xpAchieved = userXP.getCurrentExperience();
-		long xpNeeded = xpService.xpNeededForLevel(userXP.getNextLevel());
+		long currentExperience = xpService.xpGainedToNextLevelWithoutPreviousLevels(userXP.getNextLevel(), userXP.getTotalExperience());
+		long xpNeeded = xpService.xpNeededForLevelWithoutPreviousLevels(userXP.getNextLevel());
 		long level = userXP.getCurrentLevel();
 		long rank = xpService.getUserLeaderboardPosition(serverID, userXP.getUserID());
 		String username = member.getUser().getName();
 		String discriminator = member.getUser().getDiscriminator(); 
 		
-		byte[] xpCard = xpService.getExperienceCard(avatarURL,
-				xpAchieved,	xpNeeded, level, rank, username, discriminator, "#F24548", "#3B43D5", "#2F3136");
+		byte[] xpCard = xpService.getExperienceCard(avatarURL, currentExperience, xpNeeded, level, rank, username, discriminator);
 		context.replyWithFile(xpCard, "xpcard.png");
 	}
 

@@ -87,17 +87,14 @@ public class Mee6ExperienceImporter {
 
     private void loadPages(Server server, int page, CommandContext context) {
         LOGGER.logWithoutWebhook(Level.INFO, "Loading page " + page + " for server " + server.getGuildID());
-        JSONArray result = getLeaderboardPage(server.getGuildID(), page).getJSONArray("players");;
+        JSONArray result = getLeaderboardPage(server.getGuildID(), page).getJSONArray("players");
         for (int i = 0; i < result.length(); i++) {
             JSONObject xp = result.getJSONObject(i);
             Experience userXp = new Experience(xp.getString("id"), server.getId());
             long gainedXp = xp.getLong("xp");
             long level = xp.getLong("level");
-            long xpToLevel = xpService.xpNeededForLevel(level);
-            long xpToNext = gainedXp - xpToLevel;
             userXp.setLevel(level);
             userXp.setTotalExperience(gainedXp);
-            userXp.setCurrentXP(xpToNext);
 
             xpService.saveUserExperience(userXp);
         }

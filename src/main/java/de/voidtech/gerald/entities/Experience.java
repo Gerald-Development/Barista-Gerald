@@ -25,9 +25,6 @@ public class Experience {
 	private long messageCount;
 	
 	@Column
-	private long experienceGainedToNextLevel;
-	
-	@Column
 	private long level;
 	
 	@Column
@@ -47,7 +44,6 @@ public class Experience {
 		this.messageCount = 0;
 		this.level = 0;
 		this.lastMessageTime = 0;
-		this.experienceGainedToNextLevel = 0;
 	}
 	
 	public void setLevel(long level) {
@@ -55,12 +51,7 @@ public class Experience {
 	}
 	
 	public void incrementExperience(long xp) {
-		this.experienceGainedToNextLevel = this.experienceGainedToNextLevel + xp;
 		this.totalExperience = this.totalExperience + xp;
-	}
-	
-	public void setCurrentXP(long xp) {
-		this.experienceGainedToNextLevel = xp;
 	}
 
 	public void setTotalExperience(long xp) {
@@ -81,10 +72,6 @@ public class Experience {
 	
 	public long getNextLevel() {
 		return this.level + 1;
-	}
-	
-	public long getCurrentExperience() {
-		return this.experienceGainedToNextLevel;
 	}
 	
 	public long getTotalExperience() {

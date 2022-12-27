@@ -7,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.logging.Level;
 
@@ -43,19 +42,22 @@ public class ExperienceService {
 	private GeraldConfig config;
 	
 	private static final GeraldLogger LOGGER = LogService.GetLogger(ExperienceService.class.getSimpleName());
-	private static final int EXPERIENCE_DELAY = 60; //Delay between incrementing XP in seconds
+	private static final int EXPERIENCE_DELAY = 0; //Delay between incrementing XP in seconds
+
+	private static final String BAR_FROM = "#F24548";
+	private static final String BAR_TO = "#3B43D5";
+	private static final String BACKGROUND = "#2F3136";
 	
 	public byte[] getExperienceCard(String avatarURL, long xpAchieved, long xpNeeded,
-			long level, long rank, String username, String discriminator, String barFromColour,
-			String barToColour, String background) {
+			long level, long rank, String username, String discriminator) {
 		try {
 			String cardURL = config.getExperienceCardApiURL() + "xpcard/?avatar_url=" + avatarURL +
 					"&xp=" + xpAchieved + "&xp_needed=" + xpNeeded + "&level=" + level + "&rank=" + rank
 					+ "&username=" + URLEncoder.encode(username, StandardCharsets.UTF_8.toString())
 					+ "&discriminator=" + URLEncoder.encode(discriminator, StandardCharsets.UTF_8.toString())
-					+ "&bar_colour_from=" + URLEncoder.encode(barFromColour, StandardCharsets.UTF_8.toString())
-					+ "&bar_colour_to=" + URLEncoder.encode(barToColour, StandardCharsets.UTF_8.toString())
-					+ "&bg_colour=" + URLEncoder.encode(background, StandardCharsets.UTF_8.toString());
+					+ "&bar_colour_from=" + URLEncoder.encode(BAR_FROM, StandardCharsets.UTF_8.toString())
+					+ "&bar_colour_to=" + URLEncoder.encode(BAR_TO, StandardCharsets.UTF_8.toString())
+					+ "&bg_colour=" + URLEncoder.encode(BACKGROUND, StandardCharsets.UTF_8.toString());
 			URL url = new URL(cardURL);
 			//Remove the data:image/png;base64 part
 			String response = Jsoup.connect(url.toString()).get().toString().split(",")[1];
@@ -266,12 +268,21 @@ public class ExperienceService {
 		saveServerExperienceConfig(config);
 	}
 	
-	public long xpNeededForLevel(long level) {
+	public long totalXpNeededForLevel(long level) {
 		return (long) Math.ceil(((double)5 / (double) 6) * (level * ((2 * Math.pow(level, 2)) + (27 * level) + 91)));
+	}
+
+	public long xpNeededForLevelWithoutPreviousLevels(long level) {
+		return level == 0 ? totalXpNeededForLevel(level) : totalXpNeededForLevel(level) - totalXpNeededForLevel(level - 1);
+	}
+
+	public long xpGainedToNextLevelWithoutPreviousLevels(long level, long currentXp) {
+		long excess = level == 0 ? 0 : totalXpNeededForLevel(level - 1);
+		return currentXp - excess;
 	}
 	
 	private long xpToNextLevel(long nextLevel, long currentXP) {
-		return xpNeededForLevel(nextLevel) - currentXP;
+		return totalXpNeededForLevel(nextLevel) - currentXP;
 	}
 	
 	private int generateExperience() {
@@ -294,14 +305,12 @@ public class ExperienceService {
 		}
 		
 		userXP.incrementExperience(generateExperience());
-		long currentExperience = userXP.getCurrentExperience();
+		long currentExperience = userXP.getTotalExperience();
 		long xpToNextLevel = xpToNextLevel(userXP.getNextLevel(), currentExperience);
-		
 		if (xpToNextLevel <= 0) {
 			userXP.setLevel(userXP.getNextLevel());
-			userXP.setCurrentXP(-1 * xpToNextLevel);
 			performLevelUpActions(userXP, server, member, channelID);
-		} else userXP.setCurrentXP(currentExperience);
+		}
 		
 		userXP.setLastMessageTime(Instant.now().getEpochSecond());
 		
