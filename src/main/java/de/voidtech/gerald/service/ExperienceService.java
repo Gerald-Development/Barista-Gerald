@@ -214,6 +214,39 @@ public class ExperienceService {
 			session.getTransaction().commit();
 		}
 	}
+
+	private void removeAllLevelUpRoles(long serverID) {
+		try(Session session = sessionFactory.openSession())
+		{
+			session.getTransaction().begin();
+			session.createQuery("DELETE FROM LevelUpRole WHERE serverID = :serverID")
+					.setParameter("serverID", serverID)
+					.executeUpdate();
+			session.getTransaction().commit();
+		}
+	}
+
+	private void removeAllUserExperience(long serverID) {
+		try(Session session = sessionFactory.openSession())
+		{
+			session.getTransaction().begin();
+			session.createQuery("DELETE FROM Experience WHERE serverID = :serverID")
+					.setParameter("serverID", serverID)
+					.executeUpdate();
+			session.getTransaction().commit();
+		}
+	}
+
+	private void deleteServerExperienceConfig(long serverID) {
+		try(Session session = sessionFactory.openSession())
+		{
+			session.getTransaction().begin();
+			session.createQuery("DELETE FROM ServerExperienceConfig WHERE serverID = :serverID")
+					.setParameter("serverID", serverID)
+					.executeUpdate();
+			session.getTransaction().commit();
+		}
+	}
 	
 	public void deleteNoXpChannel(String channelID, long serverID) {
 		ServerExperienceConfig config = getServerExperienceConfig(serverID);
@@ -317,7 +350,7 @@ public class ExperienceService {
 				.setDescription(member.getAsMention() + " reached level `" + role.getLevel()
 					+ "` and received the role " + roleToBeGiven.getAsMention())
 				.build();
-		Objects.requireNonNull(member.getGuild().getTextChannelById(channelID)).sendMessageEmbeds(levelUpEmbed).queue();
+		member.getGuild().getTextChannelById(channelID).sendMessageEmbeds(levelUpEmbed).queue();
 	}
 
 	public boolean toggleLevelUpMessages(long id) {
@@ -326,5 +359,11 @@ public class ExperienceService {
 		config.setLevelUpMessagesEnabled(nowEnabled);
 		saveServerExperienceConfig(config);
 		return nowEnabled;
+	}
+
+	public void resetServer(long id) {
+		removeAllLevelUpRoles(id);
+		removeAllUserExperience(id);
+		deleteServerExperienceConfig(id);
 	}
 }

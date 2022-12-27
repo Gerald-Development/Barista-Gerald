@@ -36,7 +36,7 @@ public class ExperienceCommand extends AbstractCommand {
 	
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
-		Server server = serverService.getServer(context.getGuild().getId());
+		Server server = serverService.getServer("425410562965635074");
 		if (args.isEmpty()) sendLevelCard(context, context.getMember(), server.getId());
 		else {
 			String ID = ParsingUtils.filterSnowflake(args.get(0));
@@ -47,7 +47,7 @@ public class ExperienceCommand extends AbstractCommand {
 			} else {
 				switch (args.get(0)) {
 					case "levels":
-						showAllLevelRoles(context, server, context.getGuild());
+						showAllLevelRoles(context, server);
 						break;
 					case "addrole":
 						addLevelUpRole(context, args, server);
@@ -56,8 +56,6 @@ public class ExperienceCommand extends AbstractCommand {
 						removeLevelUpRole(context, args, server);
 						break;
 					case "leaderboard":
-						showServerLeaderboard(context, server);
-						break;
 					case "lb":
 						showServerLeaderboard(context, server);
 						break;
@@ -280,7 +278,7 @@ public class ExperienceCommand extends AbstractCommand {
 		context.reply(roleDeletedEmbed);
 	}
 
-	private void showAllLevelRoles(CommandContext context, Server server, Guild guild) {
+	private void showAllLevelRoles(CommandContext context, Server server) {
 		List<LevelUpRole> levelUpRoles = xpService.getAllLevelUpRolesForServer(server.getId());
 		if (levelUpRoles.isEmpty()) 
 			context.reply("**There are no level roles set up in this server! See the help page for more info!**");
@@ -291,7 +289,7 @@ public class ExperienceCommand extends AbstractCommand {
 			}
 			MessageEmbed levelRolesEmbed = new EmbedBuilder()
 					.setColor(Color.ORANGE)
-					.setTitle("Level up roles for " + guild.getName())
+					.setTitle("Level up roles for " + context.getGuild().getName())
 					.setDescription(roleMessage.toString())
 					.build();
 			context.reply(levelRolesEmbed);

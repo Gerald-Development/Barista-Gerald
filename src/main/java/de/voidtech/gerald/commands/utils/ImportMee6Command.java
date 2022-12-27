@@ -6,6 +6,7 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.Mee6ExperienceImporter;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -26,13 +27,25 @@ public class ImportMee6Command extends AbstractCommand {
             return;
         }
 
-        if (!mee6ExperienceImporter.leaderboardExists(context.getGuild().getId())) {
+        String guildId = args.isEmpty() ? context.getGuild().getId() : ParsingUtils.filterSnowflake(args.get(0));
+
+        if (!ParsingUtils.isSnowflake(guildId)) {
+            context.reply("**You need to provide a valid guild snowflake!**");
+            return;
+        }
+
+        if (context.getJDA().getGuildById(guildId) == null) {
+            context.reply("**Guild not found**");
+            return;
+        }
+
+        if (!mee6ExperienceImporter.leaderboardExists(guildId)) {
             context.reply("**I couldn't find a MEE6 leaderboard for this server!**");
             return;
         }
 
         context.reply("**Importing MEE6 leaderboard. You will be alerted when this is finished!**");
-        mee6ExperienceImporter.extractLeaderboardData(context);
+        mee6ExperienceImporter.extractLeaderboardData(context, guildId);
     }
 
     @Override

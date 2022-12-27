@@ -2,6 +2,7 @@ package main.java.de.voidtech.gerald.service;
 
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.entities.Experience;
+import main.java.de.voidtech.gerald.entities.LevelUpRole;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.util.GeraldLogger;
 import org.json.JSONArray;
@@ -46,7 +47,7 @@ public class Mee6ExperienceImporter {
         }
     }
 
-    public JSONArray getLeaderboardPage(String guildID, int page) {
+    public JSONObject getLeaderboardPage(String guildID, int page) {
         try {
             HttpURLConnection con = (HttpURLConnection) new URL(API_BASE_URL + guildID + "?page=" + page).openConnection();
             con.setRequestMethod("GET");
@@ -54,7 +55,7 @@ public class Mee6ExperienceImporter {
             con.disconnect();
             if (con.getResponseCode() == 200) {
                 try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-                    return new JSONObject(in.lines().collect(Collectors.joining())).getJSONArray("players");
+                    return new JSONObject(in.lines().collect(Collectors.joining()));
                 }
             } else {
                 LOGGER.logWithoutWebhook(Level.WARNING, "Unexpected status " + con.getResponseCode() + " - retrying after 5 seconds...");
@@ -66,21 +67,38 @@ public class Mee6ExperienceImporter {
         }
     }
 
-    public void extractLeaderboardData(CommandContext context) {
-        int page = 0;
-        Server server = serverService.getServer(context.getGuild().getId());
-        ExecutorService mee6Executor = threadManager.getThreadByName("T-MEE6");
-        mee6Executor.execute(() -> insertResults(server, page, context));
+    private void getLevelRoles(Server server) {
+        JSONArray roleRewards = getLeaderboardPage(server.getGuildID(), 0).getJSONArray("role_rewards");
+        for (int i = 0; i < roleRewards.length(); i++) {
+            JSONObject roleReward = roleRewards.getJSONObject(i);
+            LevelUpRole role = new LevelUpRole(roleReward.getJSONObject("role").getString("id"),
+                    server.getId(), roleReward.getLong("rank"));
+            xpService.saveLevelUpRole(role);
+        }
     }
 
-    private void insertResults(Server server, int page, CommandContext context) {
+    public void extractLeaderboardData(CommandContext context, String guildId) {
+        Server server = serverService.getServer(guildId);
+        xpService.resetServer(server.getId());
+        getLevelRoles(server);
+        ExecutorService mee6Executor = threadManager.getThreadByName("T-MEE6");
+        mee6Executor.execute(() -> loadPages(server, 0, context));
+    }
+
+    private void loadPages(Server server, int page, CommandContext context) {
         LOGGER.logWithoutWebhook(Level.INFO, "Loading page " + page + " for server " + server.getGuildID());
-        JSONArray result = getLeaderboardPage(server.getGuildID(), page);
+        JSONArray result = getLeaderboardPage(server.getGuildID(), page).getJSONArray("players");;
         for (int i = 0; i < result.length(); i++) {
             JSONObject xp = result.getJSONObject(i);
             Experience userXp = new Experience(xp.getString("id"), server.getId());
-            userXp.setCurrentXP(xp.getLong("xp"));
-            userXp.setLevel(xp.getLong("level"));
+            long gainedXp = xp.getLong("xp");
+            long level = xp.getLong("level");
+            long xpToLevel = xpService.xpNeededForLevel(level);
+            long xpToNext = gainedXp - xpToLevel;
+            userXp.setLevel(level);
+            userXp.setTotalExperience(gainedXp);
+            userXp.setCurrentXP(xpToNext);
+
             xpService.saveUserExperience(userXp);
         }
         if (result.length() < 100) {
@@ -95,6 +113,6 @@ public class Mee6ExperienceImporter {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        insertResults(server, page, context);
+        loadPages(server, page, context);
     }
 }

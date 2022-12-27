@@ -62,6 +62,10 @@ public class Experience {
 	public void setCurrentXP(long xp) {
 		this.experienceGainedToNextLevel = xp;
 	}
+
+	public void setTotalExperience(long xp) {
+		this.totalExperience = xp;
+	}
 	
 	public void setLastMessageTime(long lastMessageTime) {
 		this.lastMessageTime = lastMessageTime;
