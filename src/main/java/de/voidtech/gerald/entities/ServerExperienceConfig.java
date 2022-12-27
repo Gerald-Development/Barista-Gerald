@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.entities;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -28,6 +29,9 @@ public class ServerExperienceConfig {
 	
 	@Column
 	private boolean levelUpMessagesEnabled;
+
+	@Column(columnDefinition = "int default -1")
+	private int rate;
 	
 	//TODO: Don't fetch EAGER for this.
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -59,6 +63,11 @@ public class ServerExperienceConfig {
 	public ServerExperienceConfig(long serverID) {
 		this.serverID = serverID;
 		this.levelUpMessagesEnabled = false;
+		this.rate = -1;
+	}
+
+	public void setRate(int rate) {
+		this.rate = rate;
 	}
 	
 	public boolean levelUpMessagesEnabled() {
@@ -68,5 +77,8 @@ public class ServerExperienceConfig {
 	public void setLevelUpMessagesEnabled(boolean enabled) {
 		this.levelUpMessagesEnabled = enabled;
 	}
-	
+
+	public int getExperienceIncrement() {
+		return this.rate == -1 ? new Random().nextInt(16) : this.rate;
+	}
 }

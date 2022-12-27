@@ -285,12 +285,9 @@ public class ExperienceService {
 		return totalXpNeededForLevel(nextLevel) - currentXP;
 	}
 	
-	private int generateExperience() {
-		return new Random().nextInt(16);
-	}
-	
 	public void updateUserExperience(Member member, String guildID, String channelID) {
 		Server server = serverService.getServer(guildID);
+		ServerExperienceConfig config = getServerExperienceConfig(server.getId());
 		Experience userXP = getUserExperience(member.getId(), server.getId());
 		
 		if (userXP == null) {
@@ -304,7 +301,7 @@ public class ExperienceService {
 			return; 
 		}
 		
-		userXP.incrementExperience(generateExperience());
+		userXP.incrementExperience(config.getExperienceIncrement());
 		long currentExperience = userXP.getTotalExperience();
 		long xpToNextLevel = xpToNextLevel(userXP.getNextLevel(), currentExperience);
 		if (xpToNextLevel <= 0) {
