@@ -372,4 +372,15 @@ public class ExperienceService {
 		removeAllUserExperience(id);
 		deleteServerExperienceConfig(id);
 	}
+
+	public String getServerExperienceRate(long id) {
+		ServerExperienceConfig config = getServerExperienceConfig(id);
+		return config.rateIsRandomised() ? "Random (1-15)" : String.valueOf(config.getRate());
+	}
+
+	public void setServerGainRate(int gainRate, long id) {
+		ServerExperienceConfig config = getServerExperienceConfig(id);
+		config.setRate(gainRate);
+		saveServerExperienceConfig(config);
+	}
 }

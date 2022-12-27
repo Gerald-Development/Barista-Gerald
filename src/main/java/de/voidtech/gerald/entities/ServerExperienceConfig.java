@@ -69,6 +69,10 @@ public class ServerExperienceConfig {
 	public void setRate(int rate) {
 		this.rate = rate;
 	}
+
+	public boolean rateIsRandomised() {
+		return this.rate == -1;
+	}
 	
 	public boolean levelUpMessagesEnabled() {
 		return this.levelUpMessagesEnabled;
@@ -79,6 +83,10 @@ public class ServerExperienceConfig {
 	}
 
 	public int getExperienceIncrement() {
-		return this.rate == -1 ? new Random().nextInt(16) : this.rate;
+		return rateIsRandomised() ? new Random().nextInt(15) + 1 : this.rate;
+	}
+
+	public int getRate() {
+		return this.rate;
 	}
 }
