@@ -42,7 +42,7 @@ public class ExperienceService {
 	private GeraldConfig config;
 	
 	private static final GeraldLogger LOGGER = LogService.GetLogger(ExperienceService.class.getSimpleName());
-	private static final int EXPERIENCE_DELAY = 0; //Delay between incrementing XP in seconds
+	private static final int EXPERIENCE_DELAY = 60; //Delay between incrementing XP in seconds
 
 	private static final String BAR_FROM = "#F24548";
 	private static final String BAR_TO = "#3B43D5";
