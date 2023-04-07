@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import main.java.de.voidtech.gerald.entities.AutoroleConfigRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,51 +17,27 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 public class AutoroleService {
 	
 	@Autowired
-	private SessionFactory sessionFactory;
-	
-    @SuppressWarnings("unchecked")
-	public List<AutoroleConfig> getAutoroleConfigs(long serverID) {
-    	try(Session session = sessionFactory.openSession())
-		{
+	private AutoroleConfigRepository repository;
 
-            return (List<AutoroleConfig>) session.createQuery("FROM AutoroleConfig WHERE serverID = :serverID")
-            		.setParameter("serverID", serverID)
-            		.list();
-		}
+	public List<AutoroleConfig> getAutoroleConfigs(long serverID) {
+    	return repository.getAutoroleConfigsByServerId(serverID);
 	}
     
     public AutoroleConfig getAutoroleConfigByRoleID(String roleID) {
-    	try(Session session = sessionFactory.openSession())
-		{
-            return (AutoroleConfig) session.createQuery("FROM AutoroleConfig WHERE roleID = :roleID")
-            		.setParameter("roleID", roleID)
-            		.uniqueResult();
-		}
+    	return getAutoroleConfigByRoleID(roleID);
     }
     
     public void deleteAutoroleConfig(String roleID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			session.createQuery("DELETE FROM AutoroleConfig WHERE roleID = :roleID")
-				.setParameter("roleID", roleID)
-				.executeUpdate();
-			session.getTransaction().commit();
-		}
+		repository.deleteAutoroleConfigByRoleId(roleID);
 	}
 
 	public void saveAutoroleConfig(AutoroleConfig config) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();	
-			session.saveOrUpdate(config);
-			session.getTransaction().commit();
-		}
+		repository.save(config);
 	}
 
 	public void addRolesToMember(GuildMemberJoinEvent event, List<AutoroleConfig> configs) {
 		EnumSet<Permission> perms = event.getGuild().getSelfMember().getPermissions();
-		List<AutoroleConfig> discardedConfigs = new ArrayList<AutoroleConfig>();
+		List<AutoroleConfig> discardedConfigs = new ArrayList<>();
 		
 		if (perms.contains(Permission.MANAGE_ROLES)) {
 			for (AutoroleConfig config : configs) {
@@ -84,13 +59,6 @@ public class AutoroleService {
 	}
 
 	public void removeAllGuildConfigs(long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			session.createQuery("DELETE FROM AutoroleConfig WHERE serverID = :serverID")
-				.setParameter("serverID", serverID)
-				.executeUpdate();
-			session.getTransaction().commit();
-		}
+		repository.deleteAutoroleConfigsByServerId(serverID);
 	}
 }
