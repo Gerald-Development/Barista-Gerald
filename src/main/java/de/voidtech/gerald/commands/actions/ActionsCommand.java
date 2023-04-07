@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import main.java.de.voidtech.gerald.entities.ActionStatsRepository;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,31 +34,17 @@ public abstract class ActionsCommand extends AbstractCommand {
 	private static final GeraldLogger LOGGER = LogService.GetLogger(ActionsCommand.class.getSimpleName());
 
 	@Autowired
-	private SessionFactory sessionFactory;
+	private ActionStatsRepository repository;
 	
 	@Autowired
 	private ServerService serverService;
 	
 	private ActionStats getStatsProfile(String id, ActionType action, long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return (ActionStats) session.createQuery("FROM ActionStats WHERE memberID = :member AND type = :type AND serverID = :serverID")
-                    .setParameter("member", id)
-                    .setParameter("type", action.getType())
-                    .setParameter("serverID", serverID)
-                    .uniqueResult();
-		}
+		return repository.getActionStatsProfile(id, action.getType(), serverID);
 	}
 	
 	private void createStatsProfile(String id, ActionType action, long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			
-			ActionStats stats = new ActionStats(action.getType(), id, 0, 0, serverID);
-			session.saveOrUpdate(stats);
-			session.getTransaction().commit();
-		}
+		repository.save(new ActionStats(action.getType(), id, 0, 0, serverID));
 	}
 	
 	private ActionStats getOrCreateProfile(String id, ActionType action, long serverID) {
@@ -70,38 +55,17 @@ public abstract class ActionsCommand extends AbstractCommand {
 		}
 		return stats;
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	private List<ActionStats> getTopGivenInServer(ActionType type, long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return (List<ActionStats>) session
-					.createQuery("FROM ActionStats WHERE type = :type AND serverID = :serverID AND givenCount > 0 ORDER BY givenCount DESC")
-					.setParameter("type", type.getType())
-					.setParameter("serverID", serverID)
-					.list();
-		}
+		return repository.getTopGivenByTypeInServer(type.getType(), serverID);
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	private List<ActionStats> getTopReceivedInServer(ActionType type, long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return (List<ActionStats>) session
-					.createQuery("FROM ActionStats WHERE type = :type AND serverID = :serverID AND receivedCount > 0 ORDER BY receivedCount DESC")
-					.setParameter("type", type.getType())
-					.setParameter("serverID", serverID)
-					.list();
-		}
+		return repository.getTopReceivedByTypeInServer(type.getType(), serverID);
 	}
 
 	private void updateStatsProfile(ActionStats stats) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			session.saveOrUpdate(stats);
-			session.getTransaction().commit();
-		}
+		repository.save(stats);
 	}
 	
 	private void updateActionStats(String giver, String receiver, ActionType action, CommandContext context) {
