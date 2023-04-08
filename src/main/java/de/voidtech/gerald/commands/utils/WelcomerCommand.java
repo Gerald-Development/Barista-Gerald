@@ -6,14 +6,13 @@ import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.entities.JoinLeaveMessage;
+import main.java.de.voidtech.gerald.entities.JoinLeaveMessageRepository;
 import main.java.de.voidtech.gerald.entities.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.util.MRESameUserPredicate;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -26,30 +25,17 @@ public class WelcomerCommand extends AbstractCommand{
 	private ServerService serverService;
 	
 	@Autowired
-	private SessionFactory sessionFactory;
+	private JoinLeaveMessageRepository repository;
 	
 	@Autowired
 	private EventWaiter waiter;
 
 	private boolean customMessageEnabled(long guildID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			JoinLeaveMessage joinLeaveMessage = (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
-                    .setParameter("serverID", guildID)
-                    .uniqueResult();
-			return joinLeaveMessage != null;
-		}
+		return repository.getJoinLeaveMessageByServerId(guildID) != null;
 	}
 	
 	private void deleteCustomMessage(long guildID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			session.createQuery("DELETE FROM JoinLeaveMessage WHERE ServerID = :guildID")
-				.setParameter("guildID", guildID)
-				.executeUpdate();
-			session.getTransaction().commit();
-		}
+		repository.deleteByServerId(guildID);
 	}
 	
 	private boolean channelExists (String channel, CommandContext context) {
@@ -62,63 +48,29 @@ public class WelcomerCommand extends AbstractCommand{
 	}
 	
 	private void addJoinLeaveMessage(long serverID, String channel, String joinMessage, String leaveMessage) {
-		try (Session session = sessionFactory.openSession()) {
-			session.getTransaction().begin();
-		
-			JoinLeaveMessage joinLeaveMessage = new JoinLeaveMessage(serverID, channel, joinMessage, leaveMessage);
-			
-			session.saveOrUpdate(joinLeaveMessage);
-			session.getTransaction().commit();
-		}
-		
+		repository.save(new JoinLeaveMessage(serverID, channel, joinMessage, leaveMessage));
 	}
 	
 	private JoinLeaveMessage getJoinLeaveMessageEntity(long guildID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
-                    .setParameter("serverID", guildID)
-                    .uniqueResult();
-		}
+		return repository.getJoinLeaveMessageByServerId(guildID);
 	}
 	
 	private void updateChannel(long serverID, String channel) {
 		JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(serverID);
-		
-		try (Session session = sessionFactory.openSession()) {
-			session.getTransaction().begin();
-
-			joinLeaveMessage.setChannelID(channel);
-			
-			session.saveOrUpdate(joinLeaveMessage);
-			session.getTransaction().commit();
-		}
+		joinLeaveMessage.setChannelID(channel);
+		repository.save(joinLeaveMessage);
 	}
 	
 	private void updateJoinMessage(long serverID, String joinMessage) {
 		JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(serverID);
-		
-		try (Session session = sessionFactory.openSession()) {
-			session.getTransaction().begin();
-
-			joinLeaveMessage.setJoinMessage(joinMessage);
-			
-			session.saveOrUpdate(joinLeaveMessage);
-			session.getTransaction().commit();
-		}
+		joinLeaveMessage.setJoinMessage(joinMessage);
+		repository.save(joinLeaveMessage);
 	}
 	
 	private void updateLeaveMessage(long serverID, String leaveMessage) {
 		JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(serverID);
-		
-		try (Session session = sessionFactory.openSession()) {
-			session.getTransaction().begin();
-
-			joinLeaveMessage.setLeaveMessage(leaveMessage);
-			
-			session.saveOrUpdate(joinLeaveMessage);
-			session.getTransaction().commit();
-		}
+		joinLeaveMessage.setLeaveMessage(leaveMessage);
+		repository.save(joinLeaveMessage);
 	}
 	
 	private void clearWelcomer(Server server, CommandContext context) {
