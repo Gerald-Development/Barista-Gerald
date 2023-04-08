@@ -1,7 +1,6 @@
 package main.java.de.voidtech.gerald.service;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import main.java.de.voidtech.gerald.entities.GlobalConfigRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,23 +10,14 @@ import main.java.de.voidtech.gerald.entities.GlobalConfig;
 public class GlobalConfigService {
 	
 	@Autowired
-	private SessionFactory sf;
+	private GlobalConfigRepository repository;
 
-	public GlobalConfig getGlobalConfig()
-	{
-		try(Session session = sf.openSession())
-		{
-			GlobalConfig globalConf = (GlobalConfig) session.createQuery("FROM GlobalConfig").uniqueResult();
-			
-			if(globalConf == null)
-			{
-				globalConf = new GlobalConfig();
-				
-				session.beginTransaction();
-				session.persist(globalConf);
-			}
-			
-			return globalConf;
+	public GlobalConfig getGlobalConfig() {
+		GlobalConfig config = repository.getGlobalConfig();
+		if (config == null) {
+			config = new GlobalConfig();
+			repository.save(config);
 		}
+		return config;
 	}
 }
