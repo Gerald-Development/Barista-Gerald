@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface ActionStatsRepository extends JpaRepository<ActionStats, Long> {
 
-    @Query("FROM ActionStats WHERE memberID = :member AND type = :type AND serverID = :serverID")
+    @Query("FROM ActionStats WHERE memberID = :memberID AND type = :type AND serverID = :serverID")
     ActionStats getActionStatsProfile(String memberID, String type, long serverID);
 
     @Query("FROM ActionStats WHERE type = :type AND serverID = :serverID AND givenCount > 0 ORDER BY givenCount DESC")

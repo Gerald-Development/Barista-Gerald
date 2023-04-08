@@ -7,21 +7,15 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Level;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import main.java.de.voidtech.gerald.entities.*;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import main.java.de.voidtech.gerald.entities.Experience;
-import main.java.de.voidtech.gerald.entities.LevelUpRole;
-import main.java.de.voidtech.gerald.entities.Server;
-import main.java.de.voidtech.gerald.entities.ServerExperienceConfig;
 import main.java.de.voidtech.gerald.util.GeraldLogger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -33,7 +27,13 @@ import net.dv8tion.jda.api.entities.Role;
 public class ExperienceService {
 	
 	@Autowired
-	private SessionFactory sessionFactory;
+	private ExperienceRepository experienceRepository;
+
+	@Autowired
+	private ServerExperienceConfigRepository configRepository;
+
+	@Autowired
+	private LevelUpRoleRepository levelRepository;
 	
 	@Autowired
 	private ServerService serverService;
@@ -69,13 +69,7 @@ public class ExperienceService {
 	}
 	
 	public Experience getUserExperience(String userID, long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return (Experience) session.createQuery("FROM Experience WHERE userID = :userID AND serverID = :serverID")
-					.setParameter("userID", userID)
-					.setParameter("serverID", serverID)
-					.uniqueResult();
-		}
+		return experienceRepository.getUserExperience(userID, serverID);
 	}
 	
 	public List<String> getNoExperienceChannelsForServer(long serverID, JDA jda) {
@@ -90,45 +84,20 @@ public class ExperienceService {
 	}
 	
 	private ServerExperienceConfig getServerExperienceConfig(long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			ServerExperienceConfig xpConf = (ServerExperienceConfig) session.createQuery("FROM ServerExperienceConfig WHERE serverID = :serverID")
-					.setParameter("serverID", serverID)
-					.uniqueResult();
-			
-			if (xpConf == null) {
-				xpConf = new ServerExperienceConfig(serverID);
-				saveServerExperienceConfig(xpConf);
-			}
-			return xpConf;
+		ServerExperienceConfig xpConf = configRepository.getServerExperienceConfig(serverID);
+		if (xpConf == null) {
+			xpConf = new ServerExperienceConfig(serverID);
+			configRepository.save(xpConf);
 		}
+		return xpConf;
 	}
 	
 	public List<Experience> getServerLeaderboard(long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			@SuppressWarnings("unchecked")
-			List<Experience> leaderboard = session.createQuery("FROM Experience WHERE serverID = :serverID ORDER BY totalExperience DESC")
-					.setParameter("serverID", serverID)
-					.list();
-			return leaderboard;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		return experienceRepository.getServerLeaderboard(serverID);
 	}
 	
 	public List<Experience> getServerLeaderboardChunk(long serverID, int limit, int offset) {
-		try(Session session = sessionFactory.openSession())
-		{
-			@SuppressWarnings("unchecked")
-			List<Experience> leaderboard = session.createQuery("FROM Experience WHERE serverID = :serverID ORDER BY totalExperience DESC")
-					.setParameter("serverID", serverID)
-					.setMaxResults(limit)
-					.setFirstResult(offset)
-					.list();
-			return leaderboard;
-		}
+			return experienceRepository.getLeaderboardChunk(serverID, limit, offset);
 	}
 	
 	public int getUserLeaderboardPosition(long serverID, String userID) {
@@ -144,110 +113,44 @@ public class ExperienceService {
 	}
 	
 	private List<LevelUpRole> getRolesForLevelFromServer(long id, long level) {
-		try(Session session = sessionFactory.openSession())
-		{
-			@SuppressWarnings("unchecked")
-			List<LevelUpRole> roles = (List<LevelUpRole>) session.createQuery("FROM LevelUpRole WHERE serverID = :serverID AND level <= :level")
-					.setParameter("serverID", id)
-					.setParameter("level", level)
-					.list();
-			return roles;
-		}
+		return levelRepository.getLevelUpRolesInServerForLevel(id, level);
 	}
 	
 	public List<LevelUpRole> getAllLevelUpRolesForServer(long id) {
-		try(Session session = sessionFactory.openSession())
-		{
-			@SuppressWarnings("unchecked")
-			List<LevelUpRole> roles = (List<LevelUpRole>) session.createQuery("FROM LevelUpRole WHERE serverID = :serverID")
-					.setParameter("serverID", id)
-					.list();
-			return roles;
-		}
+		return levelRepository.getAllLevelUpRolesForServer(id);
 	}
 	
 	public boolean serverHasRoleForLevel(long id, long level) {
-		try(Session session = sessionFactory.openSession())
-		{
-			LevelUpRole role = (LevelUpRole) session.createQuery("FROM LevelUpRole WHERE serverID = :serverID AND level = :level")
-				.setParameter("serverID", id)
-				.setParameter("level", level)
-				.uniqueResult();
-			return role != null;
-		}
+		return levelRepository.getLevelUpRoleForLevelInServer(id, level) != null;
 	}
 	
 	public void saveUserExperience(Experience userXP) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();	
-			session.saveOrUpdate(userXP);
-			session.getTransaction().commit();
-		}
+		experienceRepository.save(userXP);
 	}
 	
 	private void saveServerExperienceConfig(ServerExperienceConfig config) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();	
-			session.saveOrUpdate(config);
-			session.getTransaction().commit();
-		}
+		configRepository.save(config);
 	}
 	
 	public void saveLevelUpRole(LevelUpRole role) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();	
-			session.saveOrUpdate(role);
-			session.getTransaction().commit();
-		}
+		levelRepository.save(role);
 	}
 	
 
 	public void removeLevelUpRole(long level, long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			session.createQuery("DELETE FROM LevelUpRole WHERE level = :level AND serverID = :serverID")
-				.setParameter("level", level)
-				.setParameter("serverID", serverID)
-				.executeUpdate();
-			session.getTransaction().commit();
-		}
+		levelRepository.deleteRoleFromServer(serverID, level);
 	}
 
 	private void removeAllLevelUpRoles(long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			session.createQuery("DELETE FROM LevelUpRole WHERE serverID = :serverID")
-					.setParameter("serverID", serverID)
-					.executeUpdate();
-			session.getTransaction().commit();
-		}
+		levelRepository.deleteAllRolesFromServer(serverID);
 	}
 
 	private void removeAllUserExperience(long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			session.createQuery("DELETE FROM Experience WHERE serverID = :serverID")
-					.setParameter("serverID", serverID)
-					.executeUpdate();
-			session.getTransaction().commit();
-		}
+		experienceRepository.deleteAllExperienceForServer(serverID);
 	}
 
 	private void deleteServerExperienceConfig(long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			session.createQuery("DELETE FROM ServerExperienceConfig WHERE serverID = :serverID")
-					.setParameter("serverID", serverID)
-					.executeUpdate();
-			session.getTransaction().commit();
-		}
+		configRepository.deleteServerExperienceConfig(serverID);
 	}
 	
 	public void deleteNoXpChannel(String channelID, long serverID) {
