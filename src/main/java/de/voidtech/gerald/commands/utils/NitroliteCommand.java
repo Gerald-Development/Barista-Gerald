@@ -6,6 +6,7 @@ import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.entities.NitroliteAlias;
+import main.java.de.voidtech.gerald.entities.NitroliteAliasRepository;
 import main.java.de.voidtech.gerald.entities.NitroliteEmote;
 import main.java.de.voidtech.gerald.service.EmoteService;
 import main.java.de.voidtech.gerald.service.NitroliteService;
@@ -13,8 +14,6 @@ import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.WebhookManager;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -31,60 +30,33 @@ public class NitroliteCommand extends AbstractCommand {
 	private ServerService serverService;
 	
 	@Autowired
-	private SessionFactory sessionFactory;
-	
-	@Autowired
 	private EmoteService emoteService;
 	
 	@Autowired
 	private WebhookManager webhookManager;
-	
+
+	@Autowired
+	private NitroliteAliasRepository aliasRepository;
+
 	@Autowired
 	private EventWaiter waiter;
 		
 	private boolean aliasAlreadyExists(String name, long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			NitroliteAlias alias = (NitroliteAlias) session.createQuery("FROM NitroliteAlias WHERE ServerID = :serverID AND aliasName = :aliasName")
-                    .setParameter("serverID", serverID)
-                    .setParameter("aliasName", name)
-                    .uniqueResult();
-			return alias != null;
-		}
+		return aliasRepository.getAliasByNameAndServerID(serverID, name) != null;
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	private List<NitroliteAlias> getAliases(long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return (List<NitroliteAlias>) session.createQuery("FROM NitroliteAlias WHERE ServerID = :serverID")
-                    .setParameter("serverID", serverID)
-                    .list();
-		}
+		return aliasRepository.getAllAliasesByServerID(serverID);
 	}
 	
 	private void createEmoteAlias(CommandContext context, String aliasName, String aliasID) {
 		long serverID = serverService.getServer(context.getGuild().getId()).getId();
-		try (Session session = sessionFactory.openSession()) {
-			session.getTransaction().begin();
-		
-			NitroliteAlias alias = new NitroliteAlias(serverID, aliasName, aliasID);			
-			session.saveOrUpdate(alias);
-			session.getTransaction().commit();
-		}
+		aliasRepository.save(new NitroliteAlias(serverID, aliasName, aliasID));
 		context.reply("**Alias created with the name **`" + aliasName + "`**!**");
 	}
 	
 	private void removeAlias(String aliasName, long serverID, CommandContext context) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			session.createQuery("DELETE FROM NitroliteAlias WHERE ServerID = :serverID AND AliasName = :aliasName")
-				.setParameter("serverID", serverID)
-				.setParameter("aliasName", aliasName)
-				.executeUpdate();
-			session.getTransaction().commit();
-		}
+		aliasRepository.deleteAliasByNameAndServerID(serverID, aliasName);
 		context.reply("**Alias with name **`" + aliasName + "`** has been deleted!**");
 	}
 	

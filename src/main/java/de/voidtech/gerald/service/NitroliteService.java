@@ -5,8 +5,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import main.java.de.voidtech.gerald.entities.NitroliteAliasRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,46 +25,25 @@ public class NitroliteService {
 	private WebhookManager webhookManager;
 	
 	@Autowired
-	private SessionFactory sessionFactory;
-	
-	@Autowired
 	private EmoteService emoteService;
+
+	@Autowired
+	private NitroliteAliasRepository aliasRepository;
 	
 	@Autowired
 	private ServerService serverService;
 	
 	public boolean aliasExists(String name, long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			NitroliteAlias alias = (NitroliteAlias) session.createQuery("FROM NitroliteAlias WHERE ServerID = :serverID AND aliasName = :aliasName")
-                    .setParameter("serverID", serverID)
-                    .setParameter("aliasName", name)
-                    .uniqueResult();
-			return alias != null;
-		}
+		return aliasRepository.getAliasByNameAndServerID(serverID, name) != null;
 	}
 	
     public NitroliteEmote getEmoteFromAlias(String name, long serverID, Message message) {
-    	try(Session session = sessionFactory.openSession())
-		{
-			NitroliteAlias alias = (NitroliteAlias) session.createQuery("FROM NitroliteAlias WHERE ServerID = :serverID AND aliasName = :aliasName")
-                    .setParameter("serverID", serverID)
-                    .setParameter("aliasName", name)
-                    .uniqueResult();
-			
-			return emoteService.getEmoteById(alias.getEmoteID(), message.getJDA());
-		}
+		NitroliteAlias alias = aliasRepository.getAliasByNameAndServerID(serverID, name);
+		return emoteService.getEmoteById(alias.getEmoteID(), message.getJDA());
 	}
     
     public void deleteAliasesUsingEmote(String emoteID) {
-    	try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			session.createQuery("DELETE FROM NitroliteAlias WHERE emoteID = :emoteID")
-				.setParameter("emoteID", emoteID)
-				.executeUpdate();
-			session.getTransaction().commit();
-		}
+    	aliasRepository.deleteAliasByEmoteID(emoteID);
     }
 	
     public void sendMessage(Message originMessage, String content) {

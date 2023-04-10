@@ -9,7 +9,6 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "nitrolitealias")
-
 public class NitroliteAlias {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
