@@ -3,8 +3,7 @@ package main.java.de.voidtech.gerald.service;
 import java.util.List;
 import java.util.Objects;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import main.java.de.voidtech.gerald.entities.SuggestionChannelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,35 +23,21 @@ import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEve
 public class SuggestionService {
 	
     @Autowired
-    private SessionFactory sessionFactory;
+    private SuggestionChannelRepository repository;
     
     @Autowired
     private ServerService serverService;
 	
     public SuggestionChannel getSuggestionChannel(long serverID) {
-        try (Session session = sessionFactory.openSession()) {
-			return (SuggestionChannel) session.createQuery("FROM SuggestionChannel WHERE ServerID = :serverID")
-					.setParameter("serverID", serverID)
-					.uniqueResult();
-        }
+        return repository.getChannelByServerId(serverID);
     }
     
     public void deleteSuggestionChannel(long guildID) {
-        try (Session session = sessionFactory.openSession()) {
-            session.getTransaction().begin();
-            session.createQuery("DELETE FROM SuggestionChannel WHERE ServerID = :guildID")
-                    .setParameter("guildID", guildID)
-                    .executeUpdate();
-            session.getTransaction().commit();
-        }
+        repository.deleteSuggestionChannel(guildID);
     }
     
     public void saveSuggestionChannel(SuggestionChannel config) {
-    	try (Session session = sessionFactory.openSession()) {
-            session.getTransaction().begin();
-            session.saveOrUpdate(config);
-            session.getTransaction().commit();
-        }
+    	repository.save(config);
     }
     
     public boolean isGuildChannel(String channelID, CommandContext context) {
