@@ -2,17 +2,13 @@ package main.java.de.voidtech.gerald.service;
 
 import main.java.de.voidtech.gerald.GlobalConstants;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.Server;
-import main.java.de.voidtech.gerald.entities.StarboardConfig;
-import main.java.de.voidtech.gerald.entities.StarboardMessage;
+import main.java.de.voidtech.gerald.entities.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,54 +22,31 @@ import java.util.Objects;
 public class StarboardService {
 	
 	@Autowired
-	private SessionFactory sessionFactory;
+	private StarboardConfigRepository configRepository;
+
+	@Autowired
+	private StarboardMessageRepository messageRepository;
 	
 	private static final String STAR_UNICODE = "U+2b50";
  
 	public StarboardConfig getStarboardConfig(long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return (StarboardConfig) session.createQuery("FROM StarboardConfig WHERE ServerID = :serverID")
-                    .setParameter("serverID", serverID)
-                    .uniqueResult();
-		}	
+		return configRepository.getConfigByServerID(serverID);
 	}
  
 	public void deleteStarboardConfig(CommandContext context, Server server) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			session.createQuery("DELETE FROM StarboardConfig WHERE ServerID = :serverID")
-				.setParameter("serverID", server.getId())
-				.executeUpdate();
-			session.getTransaction().commit();
-			context.getChannel().sendMessage("**The Starboard has been disabled. You will need to run setup again if you wish to undo this! Your starred messages will not be lost.**").queue();
-		}
+		configRepository.deleteConfigByServerID(server.getId());
+		context.getChannel().sendMessage("**The Starboard has been disabled. You will need to run setup again if you wish to undo this! Your starred messages will not be lost.**").queue();
 	}
 
 	public void updateConfig(StarboardConfig config) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();			
-			session.saveOrUpdate(config);
-			session.getTransaction().commit();
-		}		
+		configRepository.save(config);
 	}
  
 	public void completeStarboardSetup(CommandContext context, String channelID, String starCount, Server server) {
 		int requiredStarCount = Integer.parseInt(starCount);
-		
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			
-			StarboardConfig config = new StarboardConfig(server.getId(), channelID, requiredStarCount, null);
-			
-			session.saveOrUpdate(config);
-			session.getTransaction().commit();
-			
-			context.getChannel().sendMessageEmbeds(createSetupEmbed(config)).queue();
-		}
+		StarboardConfig config = new StarboardConfig(server.getId(), channelID, requiredStarCount, null);
+		configRepository.save(config);
+		context.getChannel().sendMessageEmbeds(createSetupEmbed(config)).queue();
 	}
 	
 	private MessageEmbed createSetupEmbed(StarboardConfig config) {
@@ -88,24 +61,11 @@ public class StarboardService {
 
 	//This method may look like something else, but it is used to check if the channel a star is added to is a starboard channel or not
 	public boolean reactionIsInStarboardChannel(String channelID, long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			StarboardConfig config = (StarboardConfig) session.createQuery("FROM StarboardConfig WHERE serverID = :serverID AND starboardChannel = :channelID")
-                    .setParameter("serverID", serverID)
-                    .setParameter("channelID", channelID)
-                    .uniqueResult();
-			return config != null;
-		}
+		return configRepository.getConfigIfServerIdAndChannelIdMatch(serverID, channelID) != null;
 	}
 	
 	private StarboardMessage getStarboardMessage(long serverID, String messageID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return (StarboardMessage) session.createQuery("FROM StarboardMessage WHERE serverID = :serverID AND originMessageID = :messageID")
-                    .setParameter("serverID", serverID)
-                    .setParameter("messageID", messageID)
-                    .uniqueResult();
-		}
+		return messageRepository.getMessageByIdAndServerID(serverID, messageID);
 	}
 	
 	private MessageEmbed constructEmbed(Message message) {
@@ -140,20 +100,14 @@ public class StarboardService {
 	}
 	
 	private synchronized void persistMessage(String originMessageID, String selfMessageID, long serverID) {		
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			StarboardMessage message = new StarboardMessage(originMessageID, selfMessageID, serverID);
-			session.saveOrUpdate(message);
-			session.getTransaction().commit();
-		}
+		messageRepository.save(new StarboardMessage(originMessageID, selfMessageID, serverID));
 	}
 	
 	private void editStarboardMessage(StarboardMessage starboardMessage, Message message, long starCountFromMessage, StarboardConfig config) {
-		Message selfMessage = Objects.requireNonNull(message.getJDA()//
-						.getTextChannelById(config.getChannelID()))//
-		 .retrieveMessageById(starboardMessage.getSelfMessageID())//
-		 .complete();
+		Message selfMessage = message.getJDA()
+				.getTextChannelById(config.getChannelID())
+				.retrieveMessageById(starboardMessage.getSelfMessageID())
+				.complete();
 		selfMessage.editMessage(":star: **" + starCountFromMessage + "**").queue();
 	}
 
@@ -162,7 +116,7 @@ public class StarboardService {
 		
 		if (starboardMessage == null) {
 			MessageEmbed starboardEmbed = constructEmbed(message);
-			Objects.requireNonNull(message.getJDA().getTextChannelById(config.getChannelID())).sendMessageEmbeds(starboardEmbed).queue(sentMessage -> {
+			message.getJDA().getTextChannelById(config.getChannelID()).sendMessageEmbeds(starboardEmbed).queue(sentMessage -> {
 				sentMessage.editMessage(":star: **" + starCountFromMessage + "**").queue();
 				persistMessage(message.getId(), sentMessage.getId(), serverID);
 			});

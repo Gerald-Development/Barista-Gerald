@@ -12,7 +12,6 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "StarboardConfig")
-
 public class StarboardConfig {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
