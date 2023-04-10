@@ -5,8 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import main.java.de.voidtech.gerald.entities.NitroliteEmoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,39 +15,20 @@ import net.dv8tion.jda.api.entities.Emote;
 
 @Service
 public class EmoteService {
-	
+
 	@Autowired
-	private SessionFactory sessionFactory;
+	private NitroliteEmoteRepository repository;
 	
 	private List<NitroliteEmote> getPersistentEmotes(String name) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return session.createQuery("FROM NitroliteEmote WHERE LOWER(name) LIKE :name", NitroliteEmote.class)
-                    .setParameter("name", "%" + name.toLowerCase() + "%")
-                    .list();
-		}
+		return repository.getEmoteListWithSimilarNames("%" + name.toLowerCase() + "%");
 	}
 	
 	private NitroliteEmote getPersistentEmoteById(String id) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return (NitroliteEmote) session.createQuery("FROM NitroliteEmote WHERE emoteID = :id")
-                    .setParameter("id", id)
-                    .setFirstResult(0)
-                    .setMaxResults(1)
-                    .uniqueResult();
-		}
+		return repository.getEmoteByEmoteId(id);
 	}
 	
 	private NitroliteEmote getPersistentEmoteByName(String name) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return (NitroliteEmote) session.createQuery("FROM NitroliteEmote WHERE LOWER(name) = :name")
-                    .setParameter("name", name.toLowerCase())
-                    .setFirstResult(0)
-                    .setMaxResults(1)
-                    .uniqueResult();
-		}
+		return repository.getOneEmoteByName(name);
 	}
 	
 	public NitroliteEmote getEmoteById(String id, JDA jda) {
