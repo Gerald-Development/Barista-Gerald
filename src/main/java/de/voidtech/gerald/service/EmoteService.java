@@ -2,7 +2,6 @@ package main.java.de.voidtech.gerald.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import main.java.de.voidtech.gerald.persistence.repository.NitroliteEmoteRepository;
@@ -19,27 +18,38 @@ public class EmoteService {
 	@Autowired
 	private NitroliteEmoteRepository repository;
 	
-	private List<NitroliteEmote> getPersistentEmotes(String name) {
-		return repository.getEmoteListWithSimilarNames("%" + name.toLowerCase() + "%");
-	}
+	//private List<NitroliteEmote> getPersistentEmotes(String name) {
+		//return repository.getEmoteListWithSimilarNames("%" + name.toLowerCase() + "%");
+	//}
 	
-	private NitroliteEmote getPersistentEmoteById(String id) {
-		return repository.getEmoteByEmoteId(id);
-	}
+	//private NitroliteEmote getPersistentEmoteById(String id) {
+		//return repository.getEmoteByEmoteId(id);
+	//}
 	
-	private NitroliteEmote getPersistentEmoteByName(String name) {
-		return repository.getOneEmoteByName(name);
-	}
-	
+	//private NitroliteEmote getPersistentEmoteByName(String name) {
+		//return repository.getOneEmoteByName(name);
+	//}
+
+	//I wanna bring this functionality back one day. Just not today. (Seb)
+
 	public NitroliteEmote getEmoteById(String id, JDA jda) {
+		/*
 		if (jda.getEmoteById(id) != null) {
-			if (Objects.requireNonNull(jda.getEmoteById(id)).isAvailable()) {
+			if (jda.getEmoteById(id).isAvailable()) {
 				return new NitroliteEmote(
-						Objects.requireNonNull(jda.getEmoteById(id)).getName(),
-						Objects.requireNonNull(jda.getEmoteById(id)).getId(),
-						Objects.requireNonNull(jda.getEmoteById(id)).isAnimated());
+						jda.getEmoteById(id).getName(),
+						jda.getEmoteById(id).getId(),
+						jda.getEmoteById(id).isAnimated());
 			} else return getPersistentEmoteById(id);
 		} else return getPersistentEmoteById(id);
+		 */
+		if (jda.getEmoteById(id) == null) return null;
+		else {
+			return new NitroliteEmote(
+					jda.getEmoteById(id).getName(),
+					jda.getEmoteById(id).getId(),
+					jda.getEmoteById(id).isAnimated());
+		}
 	}
 	
 	public NitroliteEmote getEmoteByName(String searchWord, JDA jda) {
@@ -51,15 +61,24 @@ public class EmoteService {
                 .stream()//
                 .filter(emote -> emote.getName().equalsIgnoreCase(searchWord))
                 .findFirst().orElse(null);
-        
+
+		/*
         if (emoteOpt != null) {
         	if (emoteOpt.isAvailable()) {
         		return new NitroliteEmote(
     					emoteOpt.getName(),
     					emoteOpt.getId(),
-    					emoteOpt.isAnimated());	
-        	} else return getPersistentEmoteByName(searchWord);	
+    					emoteOpt.isAnimated());
+        	} else return getPersistentEmoteByName(searchWord);
         } else return getPersistentEmoteByName(searchWord);
+		 */
+		if (emoteOpt == null) return null;
+		else {
+			return new NitroliteEmote(
+					emoteOpt.getName(),
+					emoteOpt.getId(),
+					emoteOpt.isAnimated());
+		}
 	}
 	
 	public List<NitroliteEmote> getEmotes(String name, JDA jda) {
@@ -68,11 +87,11 @@ public class EmoteService {
                 .stream()
                 .collect(Collectors.toList());
 		
-		List<NitroliteEmote> finalResult = new ArrayList<NitroliteEmote>();
+		List<NitroliteEmote> finalResult = new ArrayList<>();
 		
         List<Emote> jdaCacheResult = emoteList.stream()//
                 .filter(emote -> emote.getName().equalsIgnoreCase(name) && emote.isAvailable()).collect(Collectors.toList());
-        List<NitroliteEmote> persistentResult = getPersistentEmotes(name);
+        //List<NitroliteEmote> persistentResult = getPersistentEmotes(name);
        
         if (jdaCacheResult.size() > 0) {
         	jdaCacheResult.forEach(emote -> {
@@ -80,7 +99,7 @@ public class EmoteService {
         		finalResult.add(newEmote);
         	});
         }
-        if (persistentResult.size() > 0) finalResult.addAll(persistentResult);
+        //if (persistentResult.size() > 0) finalResult.addAll(persistentResult);
         return finalResult;
 	}
 }
