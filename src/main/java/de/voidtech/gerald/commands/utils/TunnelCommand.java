@@ -4,10 +4,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import main.java.de.voidtech.gerald.entities.TunnelRepository;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
@@ -29,11 +28,12 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 @Command
 public class TunnelCommand extends AbstractCommand {
 	//TODO (from: Franziska): Needs some thinking and rewriting for SlashCommands. I will just not implement the context.reply just yet as it will confuse the refactoring later.
+
+	@Autowired
+	private TunnelRepository repository;
+
 	@Autowired
 	private EventWaiter waiter;
-	
-	@Autowired
-	private SessionFactory sessionFactory;
 
 	private final BidiMap<String, String> pendingRequests = new DualHashBidiMap<>();
 
@@ -46,11 +46,9 @@ public class TunnelCommand extends AbstractCommand {
 				String destinationChannel = tunnel.getDestChannel();
 
 				if (sourceChannel.equals(context.getChannel().getId())) {
-					Objects.requireNonNull(context.getJDA().getTextChannelById(destinationChannel))
-					.sendMessage("**This tunnel has been filled.**").queue();
+					context.getJDA().getTextChannelById(destinationChannel).sendMessage("**This tunnel has been filled.**").queue();
 				} else {
-					Objects.requireNonNull(context.getJDA().getTextChannelById(sourceChannel))
-					.sendMessage("**This tunnel has been filled.**").queue();
+					context.getJDA().getTextChannelById(sourceChannel).sendMessage("**This tunnel has been filled.**").queue();
 				}
 				deleteTunnel(context.getChannel().getId());
 				sentMessage.editMessage("**This tunnel has been filled.**").queue();
@@ -118,60 +116,25 @@ public class TunnelCommand extends AbstractCommand {
 	}
 
 	private void writeTunnelPair(String sourceChannelID, String destChannelID) {
-		try (Session session = sessionFactory.openSession()) {
-			session.getTransaction().begin();
-
-			Tunnel tunnel = new Tunnel(sourceChannelID, destChannelID);
-			session.saveOrUpdate(tunnel);
-			session.getTransaction().commit();
-		}
+		repository.save(new Tunnel(sourceChannelID, destChannelID));
 	}
 
 	private boolean tunnelExists(String senderChannelID, String destChannelID) {
 		if (destChannelID.equals("")) {
-			try (Session session = sessionFactory.openSession()) {
-				Tunnel tunnel = (Tunnel) session
-						.createQuery(
-								"FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
-						.setParameter("senderChannelID", senderChannelID).uniqueResult();
-				return tunnel != null;
-			}	
+			return repository.getTunnelBySingleChannelId(senderChannelID) != null;
 		} else {
-			try (Session sessionFirst = sessionFactory.openSession()) {
-				Tunnel tunnelFirst = (Tunnel) sessionFirst
-						.createQuery(
-								"FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
-						.setParameter("senderChannelID", senderChannelID).uniqueResult();
-				
-				try (Session sessionLast = sessionFactory.openSession()) {
-					Tunnel tunnelLast = (Tunnel) sessionLast
-							.createQuery(
-									"FROM Tunnel WHERE sourceChannelID = :destChannelID OR destChannelID = :destChannelID")
-							.setParameter("destChannelID", destChannelID).uniqueResult();
-					return tunnelFirst != null || tunnelLast != null;
-				}	
-			}	
+			Tunnel tunnelFirst = repository.getTunnelBySingleChannelId(senderChannelID);
+			Tunnel tunnelLast = repository.getTunnelBySingleChannelId(destChannelID);
+			return tunnelFirst != null || tunnelLast != null;
 		}
 	}
 
 	private Tunnel getTunnel(String senderChannelID) {
-
-		try (Session session = sessionFactory.openSession()) {
-			return (Tunnel) session
-					.createQuery(
-							"FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
-					.setParameter("senderChannelID", senderChannelID).uniqueResult();
-		}
+		return repository.getTunnelBySingleChannelId(senderChannelID);
 	}
 
 	private void deleteTunnel(String senderChannelID) {
-		try (Session session = sessionFactory.openSession()) {
-			session.getTransaction().begin();
-			session.createQuery(
-					"DELETE FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
-					.setParameter("senderChannelID", senderChannelID).executeUpdate();
-			session.getTransaction().commit();
-		}
+		repository.deleteTunnel(senderChannelID);
 	}
 	
 	private void doTheDigging(List<String> args, Message message) {
