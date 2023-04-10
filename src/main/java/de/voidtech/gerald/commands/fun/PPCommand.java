@@ -4,9 +4,8 @@ import java.awt.Color;
 import java.util.List;
 import java.util.Random;
 
+import main.java.de.voidtech.gerald.entities.RiggedLengthRepository;
 import net.dv8tion.jda.api.entities.User;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.annotations.Command;
@@ -23,7 +22,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 public class PPCommand extends AbstractCommand{
 
 	@Autowired
-	private SessionFactory sessionFactory;
+	private RiggedLengthRepository repository;
 	
 	@Autowired
 	private GeraldConfig config;
@@ -95,23 +94,11 @@ public class PPCommand extends AbstractCommand{
 	}
 	
 	private void deleteRigged(String userID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			session.createQuery("DELETE FROM RiggedLength WHERE memberID = :memberID")
-				.setParameter("memberID", userID)
-				.executeUpdate();
-			session.getTransaction().commit();
-		}		
+		repository.deleteByMemberID(userID);
 	}
 	
 	private void saveRigged(RiggedLength rigged) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			session.saveOrUpdate(rigged);
-			session.getTransaction().commit();
-		}
+		repository.save(rigged);
 	}
 	
 	private int determineLength(String userID) {
@@ -123,12 +110,7 @@ public class PPCommand extends AbstractCommand{
 	}
 	
 	private RiggedLength getRigged(String userID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return (RiggedLength) session.createQuery("FROM RiggedLength where memberID = :memberID")
-					.setParameter("memberID", userID)
-					.uniqueResult();
-		}
+		return repository.getRiggedLengthByMemberID(userID);
 	}
 	
 	@Override
