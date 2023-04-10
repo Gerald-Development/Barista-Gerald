@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import main.java.de.voidtech.gerald.entities.MemeBlocklistRepository;
+import main.java.de.voidtech.gerald.persistence.repository.MemeBlocklistRepository;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,7 +22,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.MemeBlocklist;
+import main.java.de.voidtech.gerald.persistence.entity.MemeBlocklist;
 import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.LogService;
 import main.java.de.voidtech.gerald.service.ServerService;

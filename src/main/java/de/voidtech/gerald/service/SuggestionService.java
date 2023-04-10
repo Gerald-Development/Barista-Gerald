@@ -3,14 +3,14 @@ package main.java.de.voidtech.gerald.service;
 import java.util.List;
 import java.util.Objects;
 
-import main.java.de.voidtech.gerald.entities.SuggestionChannelRepository;
+import main.java.de.voidtech.gerald.persistence.repository.SuggestionChannelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.Server;
-import main.java.de.voidtech.gerald.entities.SuggestionChannel;
-import main.java.de.voidtech.gerald.entities.SuggestionEmote;
+import main.java.de.voidtech.gerald.persistence.entity.Server;
+import main.java.de.voidtech.gerald.persistence.entity.SuggestionChannel;
+import main.java.de.voidtech.gerald.persistence.entity.SuggestionEmote;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;

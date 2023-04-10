@@ -11,7 +11,13 @@ import java.util.logging.Level;
 
 import javax.xml.bind.DatatypeConverter;
 
-import main.java.de.voidtech.gerald.entities.*;
+import main.java.de.voidtech.gerald.persistence.entity.Experience;
+import main.java.de.voidtech.gerald.persistence.entity.LevelUpRole;
+import main.java.de.voidtech.gerald.persistence.entity.Server;
+import main.java.de.voidtech.gerald.persistence.entity.ServerExperienceConfig;
+import main.java.de.voidtech.gerald.persistence.repository.ExperienceRepository;
+import main.java.de.voidtech.gerald.persistence.repository.LevelUpRoleRepository;
+import main.java.de.voidtech.gerald.persistence.repository.ServerExperienceConfigRepository;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

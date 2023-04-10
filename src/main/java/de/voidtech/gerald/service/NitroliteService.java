@@ -5,12 +5,12 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
-import main.java.de.voidtech.gerald.entities.NitroliteAliasRepository;
+import main.java.de.voidtech.gerald.persistence.repository.NitroliteAliasRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import main.java.de.voidtech.gerald.entities.NitroliteAlias;
-import main.java.de.voidtech.gerald.entities.NitroliteEmote;
+import main.java.de.voidtech.gerald.persistence.entity.NitroliteAlias;
+import main.java.de.voidtech.gerald.persistence.entity.NitroliteEmote;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;

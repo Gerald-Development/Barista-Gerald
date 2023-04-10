@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import main.java.de.voidtech.gerald.entities.TunnelRepository;
+import main.java.de.voidtech.gerald.persistence.repository.TunnelRepository;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.Tunnel;
+import main.java.de.voidtech.gerald.persistence.entity.Tunnel;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;

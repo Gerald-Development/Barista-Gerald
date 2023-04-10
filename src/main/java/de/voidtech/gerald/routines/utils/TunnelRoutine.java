@@ -4,11 +4,11 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
-import main.java.de.voidtech.gerald.entities.TunnelRepository;
+import main.java.de.voidtech.gerald.persistence.repository.TunnelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.annotations.Routine;
-import main.java.de.voidtech.gerald.entities.Tunnel;
+import main.java.de.voidtech.gerald.persistence.entity.Tunnel;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.service.NitroliteService;

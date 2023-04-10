@@ -19,7 +19,7 @@
 package main.java.de.voidtech.gerald;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import main.java.de.voidtech.gerald.entities.GlobalConfig;
+import main.java.de.voidtech.gerald.persistence.entity.GlobalConfig;
 import main.java.de.voidtech.gerald.listeners.*;
 import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.GlobalConfigService;
@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 
 import javax.security.auth.login.LoginException;

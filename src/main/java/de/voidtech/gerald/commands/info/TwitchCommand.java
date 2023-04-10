@@ -5,7 +5,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.TwitchNotificationChannel;
+import main.java.de.voidtech.gerald.persistence.entity.TwitchNotificationChannel;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.TwitchNotificationService;
 import main.java.de.voidtech.gerald.util.MRESameUserPredicate;

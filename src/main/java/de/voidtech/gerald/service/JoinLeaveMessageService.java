@@ -4,12 +4,12 @@ import java.awt.Color;
 import java.time.Instant;
 import java.util.Objects;
 
-import main.java.de.voidtech.gerald.entities.JoinLeaveMessageRepository;
+import main.java.de.voidtech.gerald.persistence.repository.JoinLeaveMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import main.java.de.voidtech.gerald.entities.JoinLeaveMessage;
-import main.java.de.voidtech.gerald.entities.Server;
+import main.java.de.voidtech.gerald.persistence.entity.JoinLeaveMessage;
+import main.java.de.voidtech.gerald.persistence.entity.Server;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;

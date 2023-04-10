@@ -2,7 +2,11 @@ package main.java.de.voidtech.gerald.service;
 
 import main.java.de.voidtech.gerald.GlobalConstants;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.*;
+import main.java.de.voidtech.gerald.persistence.entity.Server;
+import main.java.de.voidtech.gerald.persistence.entity.StarboardConfig;
+import main.java.de.voidtech.gerald.persistence.entity.StarboardMessage;
+import main.java.de.voidtech.gerald.persistence.repository.StarboardConfigRepository;
+import main.java.de.voidtech.gerald.persistence.repository.StarboardMessageRepository;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;

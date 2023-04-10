@@ -3,10 +3,8 @@ package main.java.de.voidtech.gerald.service;
 import java.util.List;
 import java.util.logging.Level;
 
+import main.java.de.voidtech.gerald.persistence.repository.TwitchNotificationChannelRepository;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -16,7 +14,7 @@ import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
 
-import main.java.de.voidtech.gerald.entities.TwitchNotificationChannel;
+import main.java.de.voidtech.gerald.persistence.entity.TwitchNotificationChannel;
 import main.java.de.voidtech.gerald.util.GeraldLogger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -27,10 +25,10 @@ public class TwitchNotificationService {
 	private static final GeraldLogger LOGGER = LogService.GetLogger(TwitchNotificationService.class.getSimpleName());
 
 	@Autowired
-	private SessionFactory sessionFactory;
+	private JDA jda;
 
 	@Autowired
-	private JDA jda;
+	private TwitchNotificationChannelRepository repository;
 
 	private TwitchClient twitchClient;
 
@@ -95,21 +93,12 @@ public class TwitchNotificationService {
 		return channel.getNotificationMessage() + "\nhttps://twitch.tv/" + channel.getStreamerName();
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<String> getAllStreamerNames() {
-		try (Session session = sessionFactory.openSession()) {
-			return (List<String>) session.createQuery("SELECT DISTINCT streamerName FROM TwitchNotificationChannel")
-					.list();
-		}
+		return repository.getAllTwitchChannels();
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<TwitchNotificationChannel> getNotificationChannelsByStreamerName(String streamerName) {
-		try (Session session = sessionFactory.openSession()) {
-			return (List<TwitchNotificationChannel>) session
-					.createQuery("FROM TwitchNotificationChannel WHERE streamerName = :streamerName")
-					.setParameter("streamerName", streamerName).list();
-		}
+		return repository.getChannelsByStreamerName(streamerName);
 	}
 
 	public void addSubscription(String streamerName, String channelId, String notificationMessage, long serverID) {
@@ -119,68 +108,30 @@ public class TwitchNotificationService {
 		persistChannelSubscription(streamerName, channelId, notificationMessage, serverID);
 	}
 
-	private void persistChannelSubscription(String streamerName, String channelId, String notificationMessage,
-			long serverID) {
-		try (Session session = sessionFactory.openSession()) {
-			session.getTransaction().begin();
-
-			TwitchNotificationChannel channel = new TwitchNotificationChannel(channelId, streamerName,
-					notificationMessage, serverID);
-			session.saveOrUpdate(channel);
-			session.getTransaction().commit();
-		}
+	private void persistChannelSubscription(String streamerName, String channelId, String notificationMessage, long serverID) {
+		repository.save(new TwitchNotificationChannel(channelId, streamerName, notificationMessage, serverID));
 	}
 
 	private boolean zeroChannelsSubscribed(String streamerName) {
-		try (Session session = sessionFactory.openSession()) {
-			@SuppressWarnings("rawtypes")
-			Query query = session
-					.createQuery("SELECT COUNT(*) FROM TwitchNotificationChannel WHERE streamerName = :streamerName")
-					.setParameter("streamerName", streamerName);
-			long count = ((long) query.uniqueResult());
-			session.close();
-			return count == 0;
-		}
+		return repository.getCountSubscribedToStreamer(streamerName) == 0;
 	}
 
 	public boolean subscriptionExists(String streamerName, long id) {
-		try (Session session = sessionFactory.openSession()) {
-			TwitchNotificationChannel channel = (TwitchNotificationChannel) session.createQuery(
-					"FROM TwitchNotificationChannel WHERE streamerName = :streamerName AND serverID = :serverID")
-					.setParameter("streamerName", streamerName).setParameter("serverID", id).uniqueResult();
-			return channel != null;
-		}
+		return repository.getSubscriptionByStreamerNameAndServer(streamerName, id) != null;
 	}
 
 	private void removeChannelSubscriptionByChannelId(String streamerName, String id) {
-		try (Session session = sessionFactory.openSession()) {
-			session.getTransaction().begin();
-			session.createQuery(
-					"DELETE FROM TwitchNotificationChannel WHERE channelID = :channelID AND streamerName = :streamerName")
-					.setParameter("channelID", id).setParameter("streamerName", streamerName).executeUpdate();
-			session.getTransaction().commit();
-		}
+		repository.deleteSubscriptionByChannelId(id, streamerName);
 	}
 
 	public void removeChannelSubscription(String streamerName, long id) {
-		try (Session session = sessionFactory.openSession()) {
-			session.getTransaction().begin();
-			session.createQuery(
-					"DELETE FROM TwitchNotificationChannel WHERE serverID = :serverID AND streamerName = :streamerName")
-					.setParameter("serverID", id).setParameter("streamerName", streamerName).executeUpdate();
-			session.getTransaction().commit();
-		}
+		repository.deleteSubscriptionByServerId(id, streamerName);
 		if (zeroChannelsSubscribed(streamerName)) {
 			twitchClient.getClientHelper().disableStreamEventListener(streamerName);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<TwitchNotificationChannel> getAllSubscriptionsForServer(long serverID) {
-		try (Session session = sessionFactory.openSession()) {
-			return (List<TwitchNotificationChannel>) session
-					.createQuery("FROM TwitchNotificationChannel WHERE serverID = :serverID")
-					.setParameter("serverID", serverID).list();
-		}
+		return repository.getAllSubscriptionsForServer(serverID);
 	}
 }

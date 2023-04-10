@@ -1,6 +1,6 @@
 package main.java.de.voidtech.gerald.commands;
 
-import main.java.de.voidtech.gerald.entities.Server;
+import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.ThreadManager;
 import net.dv8tion.jda.api.Permission;

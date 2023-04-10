@@ -1,12 +1,10 @@
 package main.java.de.voidtech.gerald.service;
 
-import main.java.de.voidtech.gerald.entities.ServerRepository;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import main.java.de.voidtech.gerald.persistence.repository.ServerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import main.java.de.voidtech.gerald.entities.Server;
+import main.java.de.voidtech.gerald.persistence.entity.Server;
 
 @Service
 public class ServerService {

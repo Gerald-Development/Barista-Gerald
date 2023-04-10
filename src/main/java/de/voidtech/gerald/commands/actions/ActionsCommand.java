@@ -10,15 +10,15 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import main.java.de.voidtech.gerald.entities.ActionStatsRepository;
+import main.java.de.voidtech.gerald.persistence.repository.ActionStatsRepository;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.ActionStats;
-import main.java.de.voidtech.gerald.entities.Server;
+import main.java.de.voidtech.gerald.persistence.entity.ActionStats;
+import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.service.LogService;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.util.GeraldLogger;

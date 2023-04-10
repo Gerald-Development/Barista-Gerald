@@ -1,6 +1,6 @@
 package main.java.de.voidtech.gerald.routines.fun;
 
-import main.java.de.voidtech.gerald.entities.ChatChannelRepository;
+import main.java.de.voidtech.gerald.persistence.repository.ChatChannelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.annotations.Routine;

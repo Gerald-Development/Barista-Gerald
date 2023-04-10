@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import main.java.de.voidtech.gerald.entities.CountingChannel;
+import main.java.de.voidtech.gerald.persistence.entity.CountingChannel;
 import main.java.de.voidtech.gerald.service.CountingService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;

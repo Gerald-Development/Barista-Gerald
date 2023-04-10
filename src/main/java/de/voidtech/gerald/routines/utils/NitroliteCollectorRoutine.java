@@ -7,8 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import main.java.de.voidtech.gerald.annotations.Routine;
-import main.java.de.voidtech.gerald.entities.NitroliteEmote;
-import main.java.de.voidtech.gerald.entities.NitroliteEmoteRepository;
+import main.java.de.voidtech.gerald.persistence.entity.NitroliteEmote;
+import main.java.de.voidtech.gerald.persistence.repository.NitroliteEmoteRepository;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.service.LogService;

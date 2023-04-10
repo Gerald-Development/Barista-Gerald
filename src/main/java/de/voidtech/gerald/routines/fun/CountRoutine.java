@@ -4,11 +4,11 @@ import java.awt.Color;
 import java.util.EnumSet;
 import java.util.Objects;
 
-import main.java.de.voidtech.gerald.entities.CountingChannelRepository;
+import main.java.de.voidtech.gerald.persistence.repository.CountingChannelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.annotations.Routine;
-import main.java.de.voidtech.gerald.entities.CountingChannel;
+import main.java.de.voidtech.gerald.persistence.entity.CountingChannel;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.service.CountingService;

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-import main.java.de.voidtech.gerald.entities.AutoroleConfigRepository;
+import main.java.de.voidtech.gerald.persistence.repository.AutoroleConfigRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import main.java.de.voidtech.gerald.entities.AutoroleConfig;
+import main.java.de.voidtech.gerald.persistence.entity.AutoroleConfig;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;

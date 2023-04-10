@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import main.java.de.voidtech.gerald.entities.NitroliteEmoteRepository;
+import main.java.de.voidtech.gerald.persistence.repository.NitroliteEmoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import main.java.de.voidtech.gerald.entities.NitroliteEmote;
+import main.java.de.voidtech.gerald.persistence.entity.NitroliteEmote;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Emote;
 

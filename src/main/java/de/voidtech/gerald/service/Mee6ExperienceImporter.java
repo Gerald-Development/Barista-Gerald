@@ -1,9 +1,9 @@
 package main.java.de.voidtech.gerald.service;
 
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.Experience;
-import main.java.de.voidtech.gerald.entities.LevelUpRole;
-import main.java.de.voidtech.gerald.entities.Server;
+import main.java.de.voidtech.gerald.persistence.entity.Experience;
+import main.java.de.voidtech.gerald.persistence.entity.LevelUpRole;
+import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.util.GeraldLogger;
 import org.json.JSONArray;
 import org.json.JSONObject;

@@ -5,7 +5,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.AutoroleConfig;
+import main.java.de.voidtech.gerald.persistence.entity.AutoroleConfig;
 import main.java.de.voidtech.gerald.service.AutoroleService;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.util.BCESameUserPredicate;

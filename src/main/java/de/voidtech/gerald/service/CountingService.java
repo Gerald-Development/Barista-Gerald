@@ -3,13 +3,11 @@ package main.java.de.voidtech.gerald.service;
 import java.awt.Color;
 import java.util.Objects;
 
-import main.java.de.voidtech.gerald.entities.CountingChannelRepository;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import main.java.de.voidtech.gerald.persistence.repository.CountingChannelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import main.java.de.voidtech.gerald.entities.CountingChannel;
+import main.java.de.voidtech.gerald.persistence.entity.CountingChannel;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
