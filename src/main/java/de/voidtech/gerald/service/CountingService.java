@@ -86,7 +86,7 @@ public class CountingService {
 	
 	public MessageEmbed getCountStatsEmbedForChannel(CountingChannel dbChannel, JDA jda) {
 		String current = formatAsMarkdown(String.valueOf(dbChannel.getChannelCount()));
-		String lastUser = formatAsMarkdown(dbChannel.getLastUser().equals("") ? "Nobody" : Objects.requireNonNull(jda.getUserById(dbChannel.getLastUser())).getAsTag());
+		String lastUser = formatAsMarkdown(dbChannel.getLastUser().equals("") ? "Nobody" : jda.getUserById(dbChannel.getLastUser()).getAsTag());
 		String next = formatAsMarkdown(dbChannel.getChannelCount() - 1 + " or " + (dbChannel.getChannelCount() + 1));
 		String reached69 = formatAsMarkdown(String.valueOf(dbChannel.hasReached69()));
 		String numberOf69 = formatAsMarkdown(String.valueOf(dbChannel.get69ReachedCount()));
