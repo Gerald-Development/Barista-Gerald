@@ -117,6 +117,8 @@ public class Gerald {
 		properties.put("spring.jpa.properties.hibernate.dialect", configService.getHibernateDialect());
 		properties.put("jdbc.driver", configService.getDriver());
 		properties.put("spring.jpa.hibernate.ddl-auto", "update");
+		properties.put("spring.jpa.hibernate.naming.physical-strategy", "org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl");
+		properties.put("spring.jpa.hibernate.naming.implicit-strategy", "org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl");
 		
 		springApp.setDefaultProperties(properties);		
 		springApp.run(args);
