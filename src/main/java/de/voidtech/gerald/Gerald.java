@@ -117,7 +117,7 @@ public class Gerald {
 		properties.put("spring.jpa.properties.hibernate.dialect", configService.getHibernateDialect());
 		properties.put("jdbc.driver", configService.getDriver());
 		properties.put("spring.jpa.hibernate.ddl-auto", "update");
-		properties.put("spring.jpa.hibernate.naming.physical-strategy", "main.java.de.voidtech.gerald.persistence.GeraldNameStrategy");
+		properties.put("spring.jpa.hibernate.naming.physical-strategy", "main.java.de.voidtech.gerald.persistence.CustomPhysicalNamingStrategy");
 		
 		springApp.setDefaultProperties(properties);		
 		springApp.run(args);
