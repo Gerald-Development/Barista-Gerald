@@ -9,7 +9,6 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "actionstats")
-
 public class ActionStats {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
