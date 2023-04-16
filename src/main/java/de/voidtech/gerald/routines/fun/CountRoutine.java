@@ -4,12 +4,11 @@ import java.awt.Color;
 import java.util.EnumSet;
 import java.util.Objects;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import main.java.de.voidtech.gerald.persistence.repository.CountingChannelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.annotations.Routine;
-import main.java.de.voidtech.gerald.entities.CountingChannel;
+import main.java.de.voidtech.gerald.persistence.entity.CountingChannel;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.service.CountingService;
@@ -27,29 +26,20 @@ public class CountRoutine extends AbstractRoutine {
 	private final static String LETTER_E = "U+1F1EA";
 	
 	@Autowired
-	private SessionFactory sessionFactory;
-	
-	@Autowired
 	private CountingService countService;
+
+	@Autowired
+	private CountingChannelRepository repository;
 
 	private boolean shouldSendNice(int countGiven, String channelID, CountingChannel channel) {
 		return ((countGiven == 69 || countGiven == -69) && !channel.hasReached69());
 	}
 	
 	private void update69ReachedStatus(String channelID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.beginTransaction();
-			CountingChannel dbChannel = (CountingChannel) session.createQuery("FROM CountingChannel WHERE ChannelID = :channelID")
-                    .setParameter("channelID", channelID)
-                    .uniqueResult();
-			
-			dbChannel.setReached69(true);
-			dbChannel.setNumberOfTimes69HasBeenReached(dbChannel.get69ReachedCount() + 1);
-			
-			session.saveOrUpdate(dbChannel);
-			session.getTransaction().commit();			
-		}	
+		CountingChannel config = repository.getCountingChannelByChannelId(channelID);
+		config.setReached69(true);
+		config.setNumberOfTimes69HasBeenReached(config.get69ReachedCount() + 1);
+		repository.save(config);
 	}
 	
 	private void sendNice(Message message) {
@@ -68,12 +58,12 @@ public class CountRoutine extends AbstractRoutine {
 			int countGiven = Integer.parseInt(message.getContentRaw());
 			
 			if (countGiven == currentCount + 1) {
-				countService.setCount(channel, currentCount, message.getChannel().getId(), message.getMember().getId(), message.getId(), "increment");
+				countService.setCount(channel, currentCount, message.getMember().getId(), message.getId(), "increment");
 				message.addReaction(CORRECT).queue();
 				if (shouldSendNice(countGiven, message.getChannel().getId(), channel)) sendNice(message);
 			
 			} else if (countGiven == currentCount - 1) {
-				countService.setCount(channel, currentCount, message.getChannel().getId(), message.getMember().getId(), message.getId(), "decrement");
+				countService.setCount(channel, currentCount, message.getMember().getId(), message.getId(), "decrement");
 				message.addReaction(CORRECT).queue();
 				if (shouldSendNice(countGiven, message.getChannel().getId(), channel)) sendNice(message);
 			
@@ -102,7 +92,8 @@ public class CountRoutine extends AbstractRoutine {
 		if (channel != null) {
 			if (ParsingUtils.isInteger(message.getContentRaw()))
 				playGame(message);
-			else if (message.getContentRaw().toLowerCase().equals("stats") | message.getContentRaw().toLowerCase().equals("statistics"))
+			else if (message.getContentRaw().equalsIgnoreCase("stats") |
+					message.getContentRaw().equalsIgnoreCase("statistics"))
 				sendStatsMessage(channel, message);
 			else if (!channel.talkingIsAllowed()) {
 				if (perms.contains(Permission.MESSAGE_MANAGE)) message.delete().queue();

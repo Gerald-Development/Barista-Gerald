@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import main.java.de.voidtech.gerald.entities.Server;
+import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.GenericEvent;

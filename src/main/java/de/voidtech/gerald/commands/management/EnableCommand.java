@@ -4,7 +4,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.Server;
+import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.Permission;

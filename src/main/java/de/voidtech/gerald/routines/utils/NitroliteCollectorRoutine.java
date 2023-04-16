@@ -6,12 +6,9 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.annotations.Routine;
-import main.java.de.voidtech.gerald.entities.NitroliteEmote;
+import main.java.de.voidtech.gerald.persistence.entity.NitroliteEmote;
+import main.java.de.voidtech.gerald.persistence.repository.NitroliteEmoteRepository;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.service.LogService;
@@ -19,15 +16,16 @@ import main.java.de.voidtech.gerald.util.GeraldLogger;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Routine
 public class NitroliteCollectorRoutine extends AbstractRoutine {
 
+	@Autowired
+	private NitroliteEmoteRepository repository;
+
 	private static final GeraldLogger LOGGER = LogService.GetLogger(NitroliteCollectorRoutine.class.getSimpleName());
 	private static final Pattern EMOTE_PATTERN = Pattern.compile("^(<:[^:\\s]+:[0-9]+>|<a:[^:\\s]+:[0-9]+>)+$");
-	
-	@Autowired
-	private SessionFactory sessionFactory;
 	
 	private boolean isEmote(String word) {
 		Matcher emoteMatcher = EMOTE_PATTERN.matcher(word);
@@ -35,15 +33,7 @@ public class NitroliteCollectorRoutine extends AbstractRoutine {
 	}
 	
 	private boolean emoteNotInDatabase(String name, String id) {
-		
-		try(Session session = sessionFactory.openSession())
-		{
-			NitroliteEmote emote = (NitroliteEmote) session.createQuery("FROM NitroliteEmote WHERE name = :name AND emoteID = :id")
-                    .setParameter("name", name)
-                    .setParameter("id", id)
-                    .uniqueResult();
-			return emote == null;
-		}
+		return repository.getEmoteByNameAndID(name, id) == null;
 	}
 	
 	private boolean emoteIsAlreadyStored(String name, String id, JDA jda) {	
@@ -68,17 +58,8 @@ public class NitroliteCollectorRoutine extends AbstractRoutine {
 	}
 	
 	private void storeNewEmote(String emoteName, String emoteID, boolean emoteIsAnimated) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			
-			NitroliteEmote emote = new NitroliteEmote(emoteName, emoteID, emoteIsAnimated);
-			
-			session.saveOrUpdate(emote);
-			session.getTransaction().commit();
-			
-			LOGGER.logWithoutWebhook(Level.INFO, "New emote '" + emoteName + "' Has been saved!");
-		}
+		repository.save(new NitroliteEmote(emoteName, emoteID, emoteIsAnimated));
+		LOGGER.logWithoutWebhook(Level.INFO, "New emote '" + emoteName + "' Has been saved!");
 	}
 	
 	private void parseNewEmote(String word, JDA jda) {

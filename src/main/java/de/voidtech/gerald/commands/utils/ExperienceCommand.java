@@ -12,9 +12,9 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.Experience;
-import main.java.de.voidtech.gerald.entities.LevelUpRole;
-import main.java.de.voidtech.gerald.entities.Server;
+import main.java.de.voidtech.gerald.persistence.entity.Experience;
+import main.java.de.voidtech.gerald.persistence.entity.LevelUpRole;
+import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.service.ExperienceService;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
@@ -47,7 +47,7 @@ public class ExperienceCommand extends AbstractCommand {
 			} else {
 				switch (args.get(0)) {
 					case "levels":
-						showAllLevelRoles(context, server, context.getGuild());
+						showAllLevelRoles(context, server);
 						break;
 					case "addrole":
 						addLevelUpRole(context, args, server);
@@ -56,8 +56,6 @@ public class ExperienceCommand extends AbstractCommand {
 						removeLevelUpRole(context, args, server);
 						break;
 					case "leaderboard":
-						showServerLeaderboard(context, server);
-						break;
 					case "lb":
 						showServerLeaderboard(context, server);
 						break;
@@ -67,6 +65,9 @@ public class ExperienceCommand extends AbstractCommand {
 					case "noxp":
 						handleNoXpChannelSettings(context, server);
 						break;
+					case "rate":
+						handleXpRate(context, server);
+						break;
 					default:
 						context.reply("**That's not a valid subcommand!**\n" + this.getUsage());
 						break;
@@ -74,7 +75,36 @@ public class ExperienceCommand extends AbstractCommand {
 			}
 		}
 	}
-	
+
+	private void handleXpRate(CommandContext context, Server server) {
+		if (context.getArgs().size() == 1) {
+			context.reply("**XP gain rate is currently `" + xpService.getServerExperienceRate(server.getId()) + "` per minute**");
+		} else {
+			if (!context.getMember().hasPermission(Permission.MANAGE_SERVER)) {
+				context.reply("**You need the Manage Server Permission to do that!**");
+				return;
+			}
+
+			if (context.getArgs().get(1).equals("random")) {
+				xpService.setServerGainRate(-1, server.getId());
+				context.reply("**XP gain rate is now randomised (between 1 and 15)**");
+				return;
+			}
+
+			if (!ParsingUtils.isInteger(context.getArgs().get(1))) {
+				context.reply("**The provided XP gain rate must be a number!**");
+				return;
+			}
+			int gainRate = Integer.valueOf(context.getArgs().get(1));
+			if (gainRate < 1 || gainRate > 25) {
+				context.reply("**XP gain rate must be between 1 and 25**");
+				return;
+			}
+			xpService.setServerGainRate(gainRate, server.getId());
+			context.reply("**Set XP gain rate to `" + gainRate + "`**");
+		}
+	}
+
 	private void showNoXpHelp(CommandContext context) {
 		context.reply("**No XP Settings:**\n"
 				+ "list - shows all channels where xp will not be gained\n"
@@ -280,7 +310,8 @@ public class ExperienceCommand extends AbstractCommand {
 		context.reply(roleDeletedEmbed);
 	}
 
-	private void showAllLevelRoles(CommandContext context, Server server, Guild guild) {
+	private void showAllLevelRoles(CommandContext context, Server server) {
+		String rate = xpService.getServerExperienceRate(server.getId());
 		List<LevelUpRole> levelUpRoles = xpService.getAllLevelUpRolesForServer(server.getId());
 		if (levelUpRoles.isEmpty()) 
 			context.reply("**There are no level roles set up in this server! See the help page for more info!**");
@@ -291,8 +322,9 @@ public class ExperienceCommand extends AbstractCommand {
 			}
 			MessageEmbed levelRolesEmbed = new EmbedBuilder()
 					.setColor(Color.ORANGE)
-					.setTitle("Level up roles for " + guild.getName())
+					.setTitle("Level up roles for " + context.getGuild().getName())
 					.setDescription(roleMessage.toString())
+					.setFooter("XP Gain Rate: " + rate + " per minute")
 					.build();
 			context.reply(levelRolesEmbed);
 		}
@@ -307,15 +339,14 @@ public class ExperienceCommand extends AbstractCommand {
 		}
 		
 		String avatarURL = member.getUser().getAvatarUrl();
-		long xpAchieved = userXP.getCurrentExperience();
-		long xpNeeded = xpService.xpNeededForLevel(userXP.getNextLevel());
+		long currentExperience = xpService.xpGainedToNextLevelWithoutPreviousLevels(userXP.getNextLevel(), userXP.getTotalExperience());
+		long xpNeeded = xpService.xpNeededForLevelWithoutPreviousLevels(userXP.getNextLevel());
 		long level = userXP.getCurrentLevel();
 		long rank = xpService.getUserLeaderboardPosition(serverID, userXP.getUserID());
 		String username = member.getUser().getName();
 		String discriminator = member.getUser().getDiscriminator(); 
 		
-		byte[] xpCard = xpService.getExperienceCard(avatarURL,
-				xpAchieved,	xpNeeded, level, rank, username, discriminator, "#F24548", "#3B43D5", "#2F3136");
+		byte[] xpCard = xpService.getExperienceCard(avatarURL, currentExperience, xpNeeded, level, rank, username, discriminator);
 		context.replyWithFile(xpCard, "xpcard.png");
 	}
 
@@ -338,7 +369,8 @@ public class ExperienceCommand extends AbstractCommand {
 				+ "xp removerole [level]\n"
 				+ "xp togglemsg\n"
 				+ "xp leaderboard\n"
-				+ "xp noxp [help/list/add/remove/clear]";
+				+ "xp noxp [help/list/add/remove/clear]\n" +
+				"xp rate [random/(choose an xp rate)]";
 	}
 
 	@Override

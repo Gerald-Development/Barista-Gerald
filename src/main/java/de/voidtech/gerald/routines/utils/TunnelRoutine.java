@@ -4,12 +4,11 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import main.java.de.voidtech.gerald.persistence.repository.TunnelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import main.java.de.voidtech.gerald.annotations.Routine;
-import main.java.de.voidtech.gerald.entities.Tunnel;
+import main.java.de.voidtech.gerald.persistence.entity.Tunnel;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.service.NitroliteService;
@@ -25,7 +24,7 @@ import net.dv8tion.jda.api.entities.Webhook;
 public class TunnelRoutine extends AbstractRoutine {
 	
 	@Autowired
-	private SessionFactory sessionFactory;
+	private TunnelRepository repository;
 	
 	@Autowired
 	private WebhookManager webhookManager;
@@ -34,14 +33,7 @@ public class TunnelRoutine extends AbstractRoutine {
 	private NitroliteService nitroliteService;
 	
 	private boolean tunnelExists(String senderChannelID) {
-		
-		try(Session session = sessionFactory.openSession())
-		{
-			Tunnel tunnel = (Tunnel) session.createQuery("FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
-                    .setParameter("senderChannelID", senderChannelID)
-                    .uniqueResult();
-			return tunnel != null;
-		}
+		return repository.getTunnelBySingleChannelId(senderChannelID) != null;
 	}
 	
 	private boolean targetChannelExists(Tunnel tunnel, Message message) {
@@ -54,12 +46,7 @@ public class TunnelRoutine extends AbstractRoutine {
 	}
 	
 	private Tunnel getTunnel(String senderChannelID) {
-		try(Session session = sessionFactory.openSession())
-		{
-            return (Tunnel) session.createQuery("FROM Tunnel WHERE sourceChannelID = :senderChannelID OR destChannelID = :senderChannelID")
-.setParameter("senderChannelID", senderChannelID)
-.uniqueResult();
-		}
+		return repository.getTunnelBySingleChannelId(senderChannelID);
 	}
 	
 	private void sendWebhookMessage(Webhook webhook, String content, Message message) {
@@ -91,12 +78,7 @@ public class TunnelRoutine extends AbstractRoutine {
 	}
 	
 	private void deleteTunnel(String channelId) {
-		try (Session session = sessionFactory.openSession()) {
-			session.getTransaction().begin();
-			session.createQuery("DELETE FROM Tunnel WHERE sourceChannelID = :channelID OR destChannelID = :channelID")
-					.setParameter("channelID", channelId).executeUpdate();
-			session.getTransaction().commit();
-		}		
+		repository.deleteTunnel(channelId);
 	}
 	
 	private void deleteTunnelAndSendError(Message message) {

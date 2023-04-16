@@ -5,7 +5,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.GlobalConfig;
+import main.java.de.voidtech.gerald.persistence.entity.GlobalConfig;
 import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.GlobalConfigService;
 import net.dv8tion.jda.api.entities.Activity.ActivityType;

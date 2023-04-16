@@ -7,22 +7,21 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Random;
 import java.util.logging.Level;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import main.java.de.voidtech.gerald.persistence.entity.Experience;
+import main.java.de.voidtech.gerald.persistence.entity.LevelUpRole;
+import main.java.de.voidtech.gerald.persistence.entity.Server;
+import main.java.de.voidtech.gerald.persistence.entity.ServerExperienceConfig;
+import main.java.de.voidtech.gerald.persistence.repository.ExperienceRepository;
+import main.java.de.voidtech.gerald.persistence.repository.LevelUpRoleRepository;
+import main.java.de.voidtech.gerald.persistence.repository.ServerExperienceConfigRepository;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import main.java.de.voidtech.gerald.entities.Experience;
-import main.java.de.voidtech.gerald.entities.LevelUpRole;
-import main.java.de.voidtech.gerald.entities.Server;
-import main.java.de.voidtech.gerald.entities.ServerExperienceConfig;
 import main.java.de.voidtech.gerald.util.GeraldLogger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -34,7 +33,13 @@ import net.dv8tion.jda.api.entities.Role;
 public class ExperienceService {
 	
 	@Autowired
-	private SessionFactory sessionFactory;
+	private ExperienceRepository experienceRepository;
+
+	@Autowired
+	private ServerExperienceConfigRepository configRepository;
+
+	@Autowired
+	private LevelUpRoleRepository levelRepository;
 	
 	@Autowired
 	private ServerService serverService;
@@ -44,18 +49,21 @@ public class ExperienceService {
 	
 	private static final GeraldLogger LOGGER = LogService.GetLogger(ExperienceService.class.getSimpleName());
 	private static final int EXPERIENCE_DELAY = 60; //Delay between incrementing XP in seconds
+
+	private static final String BAR_FROM = "#F24548";
+	private static final String BAR_TO = "#3B43D5";
+	private static final String BACKGROUND = "#2F3136";
 	
 	public byte[] getExperienceCard(String avatarURL, long xpAchieved, long xpNeeded,
-			long level, long rank, String username, String discriminator, String barFromColour,
-			String barToColour, String background) {
+			long level, long rank, String username, String discriminator) {
 		try {
 			String cardURL = config.getExperienceCardApiURL() + "xpcard/?avatar_url=" + avatarURL +
 					"&xp=" + xpAchieved + "&xp_needed=" + xpNeeded + "&level=" + level + "&rank=" + rank
 					+ "&username=" + URLEncoder.encode(username, StandardCharsets.UTF_8.toString())
 					+ "&discriminator=" + URLEncoder.encode(discriminator, StandardCharsets.UTF_8.toString())
-					+ "&bar_colour_from=" + URLEncoder.encode(barFromColour, StandardCharsets.UTF_8.toString())
-					+ "&bar_colour_to=" + URLEncoder.encode(barToColour, StandardCharsets.UTF_8.toString())
-					+ "&bg_colour=" + URLEncoder.encode(background, StandardCharsets.UTF_8.toString());
+					+ "&bar_colour_from=" + URLEncoder.encode(BAR_FROM, StandardCharsets.UTF_8.toString())
+					+ "&bar_colour_to=" + URLEncoder.encode(BAR_TO, StandardCharsets.UTF_8.toString())
+					+ "&bg_colour=" + URLEncoder.encode(BACKGROUND, StandardCharsets.UTF_8.toString());
 			URL url = new URL(cardURL);
 			//Remove the data:image/png;base64 part
 			String response = Jsoup.connect(url.toString()).get().toString().split(",")[1];
@@ -67,13 +75,7 @@ public class ExperienceService {
 	}
 	
 	public Experience getUserExperience(String userID, long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return (Experience) session.createQuery("FROM Experience WHERE userID = :userID AND serverID = :serverID")
-					.setParameter("userID", userID)
-					.setParameter("serverID", serverID)
-					.uniqueResult();
-		}
+		return experienceRepository.getUserExperience(userID, serverID);
 	}
 	
 	public List<String> getNoExperienceChannelsForServer(long serverID, JDA jda) {
@@ -88,45 +90,20 @@ public class ExperienceService {
 	}
 	
 	private ServerExperienceConfig getServerExperienceConfig(long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			ServerExperienceConfig xpConf = (ServerExperienceConfig) session.createQuery("FROM ServerExperienceConfig WHERE serverID = :serverID")
-					.setParameter("serverID", serverID)
-					.uniqueResult();
-			
-			if (xpConf == null) {
-				xpConf = new ServerExperienceConfig(serverID);
-				saveServerExperienceConfig(xpConf);
-			}
-			return xpConf;
+		ServerExperienceConfig xpConf = configRepository.getServerExperienceConfig(serverID);
+		if (xpConf == null) {
+			xpConf = new ServerExperienceConfig(serverID);
+			configRepository.save(xpConf);
 		}
+		return xpConf;
 	}
 	
 	public List<Experience> getServerLeaderboard(long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			@SuppressWarnings("unchecked")
-			List<Experience> leaderboard = session.createQuery("FROM Experience WHERE serverID = :serverID ORDER BY totalExperience DESC")
-					.setParameter("serverID", serverID)
-					.list();
-			return leaderboard;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		return experienceRepository.getServerLeaderboard(serverID);
 	}
 	
 	public List<Experience> getServerLeaderboardChunk(long serverID, int limit, int offset) {
-		try(Session session = sessionFactory.openSession())
-		{
-			@SuppressWarnings("unchecked")
-			List<Experience> leaderboard = session.createQuery("FROM Experience WHERE serverID = :serverID ORDER BY totalExperience DESC")
-					.setParameter("serverID", serverID)
-					.setMaxResults(limit)
-					.setFirstResult(offset)
-					.list();
-			return leaderboard;
-		}
+			return experienceRepository.getLeaderboardChunk(serverID, limit, offset);
 	}
 	
 	public int getUserLeaderboardPosition(long serverID, String userID) {
@@ -142,77 +119,44 @@ public class ExperienceService {
 	}
 	
 	private List<LevelUpRole> getRolesForLevelFromServer(long id, long level) {
-		try(Session session = sessionFactory.openSession())
-		{
-			@SuppressWarnings("unchecked")
-			List<LevelUpRole> roles = (List<LevelUpRole>) session.createQuery("FROM LevelUpRole WHERE serverID = :serverID AND level <= :level")
-					.setParameter("serverID", id)
-					.setParameter("level", level)
-					.list();
-			return roles;
-		}
+		return levelRepository.getLevelUpRolesInServerForLevel(id, level);
 	}
 	
 	public List<LevelUpRole> getAllLevelUpRolesForServer(long id) {
-		try(Session session = sessionFactory.openSession())
-		{
-			@SuppressWarnings("unchecked")
-			List<LevelUpRole> roles = (List<LevelUpRole>) session.createQuery("FROM LevelUpRole WHERE serverID = :serverID")
-					.setParameter("serverID", id)
-					.list();
-			return roles;
-		}
+		return levelRepository.getAllLevelUpRolesForServer(id);
 	}
 	
 	public boolean serverHasRoleForLevel(long id, long level) {
-		try(Session session = sessionFactory.openSession())
-		{
-			LevelUpRole role = (LevelUpRole) session.createQuery("FROM LevelUpRole WHERE serverID = :serverID AND level = :level")
-				.setParameter("serverID", id)
-				.setParameter("level", level)
-				.uniqueResult();
-			return role != null;
-		}
+		return levelRepository.getLevelUpRoleForLevelInServer(id, level) != null;
 	}
 	
-	private void saveUserExperience(Experience userXP) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();	
-			session.saveOrUpdate(userXP);
-			session.getTransaction().commit();
-		}
+	public void saveUserExperience(Experience userXP) {
+		experienceRepository.save(userXP);
 	}
 	
 	private void saveServerExperienceConfig(ServerExperienceConfig config) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();	
-			session.saveOrUpdate(config);
-			session.getTransaction().commit();
-		}
+		configRepository.save(config);
 	}
 	
 	public void saveLevelUpRole(LevelUpRole role) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();	
-			session.saveOrUpdate(role);
-			session.getTransaction().commit();
-		}
+		levelRepository.save(role);
 	}
 	
 
 	public void removeLevelUpRole(long level, long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			session.createQuery("DELETE FROM LevelUpRole WHERE level = :level AND serverID = :serverID")
-				.setParameter("level", level)
-				.setParameter("serverID", serverID)
-				.executeUpdate();
-			session.getTransaction().commit();
-		}
+		levelRepository.deleteRoleFromServer(serverID, level);
+	}
+
+	private void removeAllLevelUpRoles(long serverID) {
+		levelRepository.deleteAllRolesFromServer(serverID);
+	}
+
+	private void removeAllUserExperience(long serverID) {
+		experienceRepository.deleteAllExperienceForServer(serverID);
+	}
+
+	private void deleteServerExperienceConfig(long serverID) {
+		configRepository.deleteServerExperienceConfig(serverID);
 	}
 	
 	public void deleteNoXpChannel(String channelID, long serverID) {
@@ -233,20 +177,26 @@ public class ExperienceService {
 		saveServerExperienceConfig(config);
 	}
 	
-	public long xpNeededForLevel(long level) {
-		return (long) Math.ceil(Math.sqrt(5000 * (Math.pow(level, 3))));
+	public long totalXpNeededForLevel(long level) {
+		return (long) Math.ceil(((double)5 / (double) 6) * (level * ((2 * Math.pow(level, 2)) + (27 * level) + 91)));
+	}
+
+	public long xpNeededForLevelWithoutPreviousLevels(long level) {
+		return level == 0 ? totalXpNeededForLevel(level) : totalXpNeededForLevel(level) - totalXpNeededForLevel(level - 1);
+	}
+
+	public long xpGainedToNextLevelWithoutPreviousLevels(long level, long currentXp) {
+		long excess = level == 0 ? 0 : totalXpNeededForLevel(level - 1);
+		return currentXp - excess;
 	}
 	
 	private long xpToNextLevel(long nextLevel, long currentXP) {
-		return xpNeededForLevel(nextLevel) - currentXP;
-	}
-	
-	private int generateExperience() {
-		return new Random().nextInt(16);
+		return totalXpNeededForLevel(nextLevel) - currentXP;
 	}
 	
 	public void updateUserExperience(Member member, String guildID, String channelID) {
 		Server server = serverService.getServer(guildID);
+		ServerExperienceConfig config = getServerExperienceConfig(server.getId());
 		Experience userXP = getUserExperience(member.getId(), server.getId());
 		
 		if (userXP == null) {
@@ -260,15 +210,13 @@ public class ExperienceService {
 			return; 
 		}
 		
-		userXP.incrementExperience(generateExperience());
-		long currentExperience = userXP.getCurrentExperience();
+		userXP.incrementExperience(config.getExperienceIncrement());
+		long currentExperience = userXP.getTotalExperience();
 		long xpToNextLevel = xpToNextLevel(userXP.getNextLevel(), currentExperience);
-		
 		if (xpToNextLevel <= 0) {
 			userXP.setLevel(userXP.getNextLevel());
-			userXP.setCurrentXP(-1 * xpToNextLevel);
 			performLevelUpActions(userXP, server, member, channelID);
-		} else userXP.setCurrentXP(currentExperience);
+		}
 		
 		userXP.setLastMessageTime(Instant.now().getEpochSecond());
 		
@@ -317,7 +265,7 @@ public class ExperienceService {
 				.setDescription(member.getAsMention() + " reached level `" + role.getLevel()
 					+ "` and received the role " + roleToBeGiven.getAsMention())
 				.build();
-		Objects.requireNonNull(member.getGuild().getTextChannelById(channelID)).sendMessageEmbeds(levelUpEmbed).queue();
+		member.getGuild().getTextChannelById(channelID).sendMessageEmbeds(levelUpEmbed).queue();
 	}
 
 	public boolean toggleLevelUpMessages(long id) {
@@ -326,5 +274,22 @@ public class ExperienceService {
 		config.setLevelUpMessagesEnabled(nowEnabled);
 		saveServerExperienceConfig(config);
 		return nowEnabled;
+	}
+
+	public void resetServer(long id) {
+		removeAllLevelUpRoles(id);
+		removeAllUserExperience(id);
+		deleteServerExperienceConfig(id);
+	}
+
+	public String getServerExperienceRate(long id) {
+		ServerExperienceConfig config = getServerExperienceConfig(id);
+		return config.rateIsRandomised() ? "Random (1-15)" : String.valueOf(config.getRate());
+	}
+
+	public void setServerGainRate(int gainRate, long id) {
+		ServerExperienceConfig config = getServerExperienceConfig(id);
+		config.setRate(gainRate);
+		saveServerExperienceConfig(config);
 	}
 }

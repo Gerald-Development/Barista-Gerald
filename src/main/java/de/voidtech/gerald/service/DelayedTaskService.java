@@ -6,15 +6,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import main.java.de.voidtech.gerald.persistence.repository.DelayedTaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import main.java.de.voidtech.gerald.entities.DelayedTask;
+import main.java.de.voidtech.gerald.persistence.entity.DelayedTask;
 import main.java.de.voidtech.gerald.tasks.AbstractTask;
 import main.java.de.voidtech.gerald.tasks.TaskType;
 import main.java.de.voidtech.gerald.util.GeraldLogger;
@@ -25,7 +24,7 @@ import net.dv8tion.jda.api.JDA;
 public class DelayedTaskService {
 	
 	@Autowired
-	private SessionFactory sessionFactory;
+	private DelayedTaskRepository repository;
 	
 	@Autowired
 	private List<AbstractTask> abstractTasks;
@@ -71,63 +70,26 @@ public class DelayedTaskService {
 	}
 	
 	public void saveDelayedTask(DelayedTask task) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();			
-			session.saveOrUpdate(task);
-			session.getTransaction().commit();
-		}	
+		repository.save(task);
 	}
 	
 	public void deleteTask(DelayedTask task) {
-		try(Session session = sessionFactory.openSession())	{
-			session.getTransaction().begin();
-			session.createQuery("DELETE FROM DelayedTask WHERE id = :id")
-				.setParameter("id", task.getTaskID())
-				.executeUpdate();
-			session.getTransaction().commit();
-		}
+		repository.deleteTaskById(task.getTaskID());
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<DelayedTask> getUpcomingTasks(long taskTimeThreshold) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return session.createQuery("FROM DelayedTask WHERE time < :timeThreshold")
-                    .setParameter("timeThreshold", taskTimeThreshold)
-                    .list();
-		}
+		return repository.getUpcomingtasks(taskTimeThreshold);
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	public List<DelayedTask> getUserTasksOfType(String userID, TaskType type) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return session.createQuery("FROM DelayedTask WHERE userID = :userID AND type = :type")
-                    .setParameter("userID", userID)
-                    .setParameter("type", type.getType())
-                    .list();
-		}
+		return repository.getTasksByUserIdAndTaskType(userID, type.getType());
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	public List<DelayedTask> getGuildTasks(String guildID, TaskType type) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return session.createQuery("FROM DelayedTask WHERE guildID = :userID AND type = :type")
-                    .setParameter("userID", guildID)
-                    .setParameter("type", type.getType())
-                    .list();
-		}
+		return repository.getTasksByGuildIdAndTaskType(guildID, type.getType());
 	}
 	
 	public DelayedTask getTaskByID(long id) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return (DelayedTask) session.createQuery("FROM DelayedTask WHERE id = :id")
-                    .setParameter("id", id)
-                    .uniqueResult();
-		}
+		return repository.getTaskById(id);
 	}
-
 }

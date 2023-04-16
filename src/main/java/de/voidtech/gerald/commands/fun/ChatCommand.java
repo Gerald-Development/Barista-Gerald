@@ -5,13 +5,12 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.ChatChannel;
+import main.java.de.voidtech.gerald.persistence.entity.ChatChannel;
+import main.java.de.voidtech.gerald.persistence.repository.ChatChannelRepository;
 import main.java.de.voidtech.gerald.service.ChatbotService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,42 +21,21 @@ import java.util.List;
 public class ChatCommand extends AbstractCommand{
 	
 	@Autowired
-	private SessionFactory sessionFactory;
-	
-	@Autowired
 	private ChatbotService chatBot;
+
+	@Autowired
+	private ChatChannelRepository repository;
 	
 	private boolean chatChannelEnabled(String channelID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			ChatChannel channel = (ChatChannel) session.createQuery("FROM ChatChannel WHERE ChannelID = :channelID")
-                    .setParameter("channelID", channelID)
-                    .uniqueResult();
-			return channel != null;
-		}
+		return repository.getChatChannelByChannelId(channelID) != null;
 	}
 	
 	private void enableChatChannel(String channelID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			
-			ChatChannel channel = new ChatChannel(channelID);
-			
-			session.saveOrUpdate(channel);
-			session.getTransaction().commit();
-		}
+		repository.save(new ChatChannel(channelID));
 	}
 	
 	private void disableChatChannel(String channelID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			session.createQuery("DELETE FROM ChatChannel WHERE ChannelID = :channelID")
-				.setParameter("channelID", channelID)
-				.executeUpdate();
-			session.getTransaction().commit();
-		}
+		repository.deleteChatChannelByChannelId(channelID);
 	}
 	
 	private void enableChannelCheckpoint(CommandContext context) {

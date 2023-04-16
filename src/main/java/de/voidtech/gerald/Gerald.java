@@ -1,6 +1,6 @@
 /*
 	BaristaGerald A General Purpose Discord Bot
-    Copyright (C) 2020-2021  Barista Gerald Dev Team (https://github.com/Gerald-Development/Barista-Gerald)
+    Copyright (C) 2020-2023  Barista Gerald Dev Team (https://github.com/Gerald-Development/Barista-Gerald)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 package main.java.de.voidtech.gerald;
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import main.java.de.voidtech.gerald.entities.GlobalConfig;
+import main.java.de.voidtech.gerald.persistence.entity.GlobalConfig;
 import main.java.de.voidtech.gerald.listeners.*;
 import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.GlobalConfigService;
@@ -34,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 
 import javax.security.auth.login.LoginException;
@@ -46,7 +45,6 @@ import java.util.Set;
 public class Gerald {
 	
 	@Bean("JDA")
-	@DependsOn(value = {"sessionFactory"})
 	@Order(3)
 	@Autowired
 	//TODO (from: Franziska): Just get all @Listener annotated classes or rather all EventListener implented classes?!
@@ -119,6 +117,7 @@ public class Gerald {
 		properties.put("spring.jpa.properties.hibernate.dialect", configService.getHibernateDialect());
 		properties.put("jdbc.driver", configService.getDriver());
 		properties.put("spring.jpa.hibernate.ddl-auto", "update");
+		properties.put("spring.jpa.hibernate.naming.physical-strategy", "main.java.de.voidtech.gerald.persistence.CustomPhysicalNamingStrategy");
 		
 		springApp.setDefaultProperties(properties);		
 		springApp.run(args);

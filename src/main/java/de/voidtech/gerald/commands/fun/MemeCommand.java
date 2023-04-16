@@ -14,8 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import main.java.de.voidtech.gerald.persistence.repository.MemeBlocklistRepository;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,7 +22,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.MemeBlocklist;
+import main.java.de.voidtech.gerald.persistence.entity.MemeBlocklist;
 import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.LogService;
 import main.java.de.voidtech.gerald.service.ServerService;
@@ -39,7 +38,7 @@ public class MemeCommand extends AbstractCommand {
 	private static final GeraldLogger LOGGER = LogService.GetLogger(MemeCommand.class.getSimpleName());
 	
 	@Autowired
-	private SessionFactory sessionFactory;
+	private MemeBlocklistRepository repository;
 	
 	@Autowired
 	private ServerService serverService;
@@ -48,53 +47,28 @@ public class MemeCommand extends AbstractCommand {
 	private GeraldConfig config;
 	
 	private MemeBlocklist getBlocklist(long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			return (MemeBlocklist) session.createQuery("FROM MemeBlocklist WHERE ServerID = :serverID")
-                    .setParameter("serverID", serverID)
-                    .uniqueResult();
-		}
+		return repository.getBlocklist(serverID);
 	}
 	
 	private boolean blocklistExists(long serverID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			MemeBlocklist blocklist = (MemeBlocklist) session.createQuery("FROM MemeBlocklist WHERE ServerID = :serverID")
-                    .setParameter("serverID", serverID)
-                    .uniqueResult();
-			return blocklist != null;
-		}
+		return getBlocklist(serverID) != null;
 	}
 	
 	private MemeBlocklist getOrCreateBlocklist(long serverID) {
 		if (!blocklistExists(serverID)) {
-			try(Session session = sessionFactory.openSession())
-			{
-				session.getTransaction().begin();
-				
-				MemeBlocklist blocklist = new MemeBlocklist(serverID, "");
-				session.saveOrUpdate(blocklist);
-				session.getTransaction().commit();
-			}
+			repository.save(new MemeBlocklist(serverID, ""));
 		}
 		
 		return getBlocklist(serverID);
 	}
 	
 	private void updateBlocklist(String blocklistString, MemeBlocklist blocklistEntity) {
-		try(Session session = sessionFactory.openSession())
-		{
-			session.getTransaction().begin();
-			
-			blocklistEntity.setBlocklist(blocklistString);
-			
-			session.saveOrUpdate(blocklistEntity);
-			session.getTransaction().commit();
-		}
+		blocklistEntity.setBlocklist(blocklistString);
+		repository.save(blocklistEntity);
 	}
 	
-	private JSONObject assemblePayloadWithCaptions(List<String> args, String messageText) {
-		List<String> captionsList = new ArrayList<String>(Arrays.asList(messageText.split("-")));
+	private JSONObject assemblePayloadWithCaptions(String messageText) {
+		List<String> captionsList = new ArrayList<>(Arrays.asList(messageText.split("-")));
 		String templateName = captionsList.get(0);
 		
 		captionsList.remove(0);
@@ -181,7 +155,7 @@ public class MemeCommand extends AbstractCommand {
 		JSONObject payload;
 		
 		if (messageText.contains("-")) {
-			payload = assemblePayloadWithCaptions(args, messageText);			
+			payload = assemblePayloadWithCaptions(messageText);
 		} else {
 			payload = assemblePayloadWithoutCaptions(messageText);
 		}

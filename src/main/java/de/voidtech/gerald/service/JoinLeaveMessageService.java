@@ -4,13 +4,12 @@ import java.awt.Color;
 import java.time.Instant;
 import java.util.Objects;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import main.java.de.voidtech.gerald.persistence.repository.JoinLeaveMessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import main.java.de.voidtech.gerald.entities.JoinLeaveMessage;
-import main.java.de.voidtech.gerald.entities.Server;
+import main.java.de.voidtech.gerald.persistence.entity.JoinLeaveMessage;
+import main.java.de.voidtech.gerald.persistence.entity.Server;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
@@ -26,25 +25,14 @@ public class JoinLeaveMessageService {
 	private ServerService serverService;
 	
 	@Autowired
-	private SessionFactory sessionFactory;
-	
+	private JoinLeaveMessageRepository repository;
+
 	private boolean customMessageEnabled(long guildID) {
-		try(Session session = sessionFactory.openSession())
-		{
-			JoinLeaveMessage joinLeaveMessage = (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
-                    .setParameter("serverID", guildID)
-                    .uniqueResult();
-			return joinLeaveMessage != null;
-		}
+		return getJoinLeaveMessageEntity(guildID) != null;
 	}
 	
 	private JoinLeaveMessage getJoinLeaveMessageEntity(long guildID) {
-		try(Session session = sessionFactory.openSession())
-		{
-            return (JoinLeaveMessage) session.createQuery("FROM JoinLeaveMessage WHERE ServerID = :serverID")
-            		.setParameter("serverID", guildID)
-            		.uniqueResult();
-		}
+		return repository.getJoinLeaveMessageByServerId(guildID);
 	}
 	
 	public void sendJoinMessage(GuildMemberJoinEvent event) {
@@ -79,7 +67,7 @@ public class JoinLeaveMessageService {
 					.setTimestamp(Instant.now())
 					.build();
 			
-			((MessageChannel) Objects.requireNonNull(channel)).sendMessageEmbeds(leaveMessageEmbed).queue();
+			((MessageChannel) channel).sendMessageEmbeds(leaveMessageEmbed).queue();
 		}
 	}
 	

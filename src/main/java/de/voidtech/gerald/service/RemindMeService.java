@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.entities.DelayedTask;
+import main.java.de.voidtech.gerald.persistence.entity.DelayedTask;
 import main.java.de.voidtech.gerald.tasks.TaskType;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.entities.Guild;

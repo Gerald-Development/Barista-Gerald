@@ -15,8 +15,6 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.json.JSONObject;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
@@ -29,13 +27,12 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class TranslateCommand extends AbstractCommand {
-    
+
 	private static final String TRANSLATE_URL = "https://libretranslate.de/translate";
-	private static HashMap<String, String> TranslateLanguages;	
+	private static final HashMap<String, String> TranslateLanguages;
 	private static final GeraldLogger LOGGER = LogService.GetLogger(TranslateCommand.class.getSimpleName());
-	
-	@EventListener(ApplicationReadyEvent.class)
-	private static void populateLanguages() {
+
+	static {
     	HashMap<String, String> languages = new HashMap<String, String>();
     	languages.put("vi", "Vietnamese");
     	languages.put("id", "Indonesian");
@@ -146,22 +143,22 @@ public class TranslateCommand extends AbstractCommand {
 			con.setRequestProperty("Content-Type", "application/json; utf-8");
 			con.setDoOutput(true);
 			con.setRequestProperty("Accept", "application/json");
-			
+
 			try (OutputStream os = con.getOutputStream()) {
 				byte[] input = payload.getBytes(StandardCharsets.UTF_8);
 				os.write(input, 0, input.length);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 			try (OutputStream os = con.getOutputStream(); BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
 				String response = in.lines().collect(Collectors.joining());
 				return new JSONObject(response);
-							
+
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, e.getMessage());
 			}
-			
+
 			con.disconnect();
 		} catch (IOException e1) {
 			LOGGER.log(Level.SEVERE, e1.getMessage());
