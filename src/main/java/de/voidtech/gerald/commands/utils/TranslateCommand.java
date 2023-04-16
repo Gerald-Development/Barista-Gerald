@@ -1,28 +1,36 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
 import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import main.java.de.voidtech.gerald.service.HttpClientService;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
+
 import org.json.JSONObject;
 
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.service.LogService;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Command
 public class TranslateCommand extends AbstractCommand {
 
-	@Autowired
-	private HttpClientService httpClientService;
-
 	private static final String TRANSLATE_URL = "https://libretranslate.de/translate";
 	private static final HashMap<String, String> TranslateLanguages;
+	private static final GeraldLogger LOGGER = LogService.GetLogger(TranslateCommand.class.getSimpleName());
 
 	static {
     	HashMap<String, String> languages = new HashMap<String, String>();
@@ -128,7 +136,34 @@ public class TranslateCommand extends AbstractCommand {
 	}
 	
 	private JSONObject getTranslatedResponse(String payload) {
-		return httpClientService.postAndReturnJson(TRANSLATE_URL, payload);
+		try {
+			URL requestURL = new URL(TRANSLATE_URL);
+			HttpURLConnection con = (HttpURLConnection) requestURL.openConnection();
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Content-Type", "application/json; utf-8");
+			con.setDoOutput(true);
+			con.setRequestProperty("Accept", "application/json");
+
+			try (OutputStream os = con.getOutputStream()) {
+				byte[] input = payload.getBytes(StandardCharsets.UTF_8);
+				os.write(input, 0, input.length);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			try (OutputStream os = con.getOutputStream(); BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+				String response = in.lines().collect(Collectors.joining());
+				return new JSONObject(response);
+
+			} catch (IOException e) {
+				LOGGER.log(Level.SEVERE, e.getMessage());
+			}
+
+			con.disconnect();
+		} catch (IOException e1) {
+			LOGGER.log(Level.SEVERE, e1.getMessage());
+		}
+		return null;
 	}
 
 	@Override
