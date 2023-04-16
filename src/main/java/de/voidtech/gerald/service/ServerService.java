@@ -15,7 +15,10 @@ public class ServerService {
 	public synchronized Server getServer(String guildID)
 	{
 		Server server = repository.getServerByGuildID(guildID);
-		if(server == null) repository.save(new Server(guildID));
+		if(server == null) {
+			server = new Server(guildID);
+			repository.save(server);
+		}
 		return server;
 	}
 	
