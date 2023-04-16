@@ -1,17 +1,10 @@
 package main.java.de.voidtech.gerald.commands.actions;
 
 import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import main.java.de.voidtech.gerald.persistence.repository.ActionStatsRepository;
-import org.json.JSONException;
+import main.java.de.voidtech.gerald.service.HttpClientService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,9 +12,7 @@ import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.persistence.entity.ActionStats;
 import main.java.de.voidtech.gerald.persistence.entity.Server;
-import main.java.de.voidtech.gerald.service.LogService;
 import main.java.de.voidtech.gerald.service.ServerService;
-import main.java.de.voidtech.gerald.util.GeraldLogger;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -29,15 +20,16 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.utils.Result;
 
 public abstract class ActionsCommand extends AbstractCommand {
-	
 	private static final String API_URL = "http://api.nekos.fun:8080/api/";
-	private static final GeraldLogger LOGGER = LogService.GetLogger(ActionsCommand.class.getSimpleName());
 
 	@Autowired
 	private ActionStatsRepository repository;
 	
 	@Autowired
 	private ServerService serverService;
+
+	@Autowired
+	private HttpClientService httpClientService;
 	
 	private ActionStats getStatsProfile(String id, ActionType action, long serverID) {
 		return repository.getActionStatsProfile(id, action.getType(), serverID);
@@ -186,21 +178,7 @@ public abstract class ActionsCommand extends AbstractCommand {
 	}
 	
 	private String getActionGif(String action) {
-		try {
-			HttpURLConnection con = (HttpURLConnection) new URL(API_URL + action).openConnection();
-			con.setRequestMethod("GET");
-
-			if (con.getResponseCode() == 200) {
-				try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-					String content = in.lines().collect(Collectors.joining());
-					JSONObject json = new JSONObject(content);
-					return json.getString("image");
-				}
-			}
-			con.disconnect();
-		} catch (IOException | JSONException e) {
-			LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
-		}
-		return "";
+		JSONObject response = httpClientService.getAndReturnJson(API_URL + action);
+		return response.getString("image");
 	}
 }
