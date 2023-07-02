@@ -1,5 +1,23 @@
 package main.java.de.voidtech.gerald.service;
 
+import main.java.de.voidtech.gerald.persistence.entity.Experience;
+import main.java.de.voidtech.gerald.persistence.entity.LevelUpRole;
+import main.java.de.voidtech.gerald.persistence.entity.Server;
+import main.java.de.voidtech.gerald.persistence.entity.ServerExperienceConfig;
+import main.java.de.voidtech.gerald.persistence.repository.ExperienceRepository;
+import main.java.de.voidtech.gerald.persistence.repository.LevelUpRoleRepository;
+import main.java.de.voidtech.gerald.persistence.repository.ServerExperienceConfigRepository;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Role;
+import org.jsoup.Jsoup;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -8,26 +26,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-
-import javax.xml.bind.DatatypeConverter;
-
-import main.java.de.voidtech.gerald.persistence.entity.Experience;
-import main.java.de.voidtech.gerald.persistence.entity.LevelUpRole;
-import main.java.de.voidtech.gerald.persistence.entity.Server;
-import main.java.de.voidtech.gerald.persistence.entity.ServerExperienceConfig;
-import main.java.de.voidtech.gerald.persistence.repository.ExperienceRepository;
-import main.java.de.voidtech.gerald.persistence.repository.LevelUpRoleRepository;
-import main.java.de.voidtech.gerald.persistence.repository.ServerExperienceConfigRepository;
-import org.jsoup.Jsoup;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import main.java.de.voidtech.gerald.util.GeraldLogger;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.Role;
 
 @Service
 public class ExperienceService {
@@ -55,12 +53,11 @@ public class ExperienceService {
 	private static final String BACKGROUND = "#2F3136";
 	
 	public byte[] getExperienceCard(String avatarURL, long xpAchieved, long xpNeeded,
-			long level, long rank, String username, String discriminator) {
+			long level, long rank, String username) {
 		try {
 			String cardURL = config.getExperienceCardApiURL() + "xpcard/?avatar_url=" + avatarURL +
 					"&xp=" + xpAchieved + "&xp_needed=" + xpNeeded + "&level=" + level + "&rank=" + rank
 					+ "&username=" + URLEncoder.encode(username, StandardCharsets.UTF_8.toString())
-					+ "&discriminator=" + URLEncoder.encode(discriminator, StandardCharsets.UTF_8.toString())
 					+ "&bar_colour_from=" + URLEncoder.encode(BAR_FROM, StandardCharsets.UTF_8.toString())
 					+ "&bar_colour_to=" + URLEncoder.encode(BAR_TO, StandardCharsets.UTF_8.toString())
 					+ "&bg_colour=" + URLEncoder.encode(BACKGROUND, StandardCharsets.UTF_8.toString());

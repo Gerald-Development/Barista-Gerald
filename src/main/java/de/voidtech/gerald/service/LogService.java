@@ -1,16 +1,15 @@
 package main.java.de.voidtech.gerald.service;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.logging.Level;
-
+import main.java.de.voidtech.gerald.util.GeraldLogger;
+import net.dv8tion.jda.api.JDA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import main.java.de.voidtech.gerald.util.GeraldLogger;
-import net.dv8tion.jda.api.JDA;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Level;
 
 @Service
 public class LogService {

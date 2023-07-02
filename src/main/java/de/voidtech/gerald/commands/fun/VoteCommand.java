@@ -6,14 +6,15 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.List;
 
 @Command
 public class VoteCommand extends AbstractCommand{
-	private final static String CHECK = "U+2705";
-	private final static String CROSS = "U+274C";
+	private final static Emoji CHECK = Emoji.fromUnicode("U+2705");
+	private final static Emoji CROSS = Emoji.fromUnicode("U+274C");
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
 		if (context.isSlash()) context.reply("Vote created!");
@@ -28,7 +29,7 @@ public class VoteCommand extends AbstractCommand{
 				.setColor(Color.ORANGE)
 				.setTitle("Vote!")
 				.setDescription(voteTopic)
-				.setFooter("Requested By " + context.getAuthor().getAsTag(), context.getAuthor().getAvatarUrl())
+				.setFooter("Requested By " + context.getAuthor().getEffectiveName(), context.getAuthor().getAvatarUrl())
 				.build();
 	}
 

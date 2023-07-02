@@ -7,7 +7,6 @@ import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
 import java.awt.*;
@@ -26,12 +25,12 @@ public class PermissionsCommand extends AbstractCommand{
 				perms = context.getGuild().getPublicRole().getPermissions();
 				member = "Everyone";
 			} else {
-				perms = ParsingUtils.getMember(context, args).getPermissions((GuildChannel) context.getChannel());
-				member = ParsingUtils.getMember(context, args).getUser().getAsTag();
+				perms = ParsingUtils.getMember(context, args).getPermissions(context.getMessage().getGuildChannel());
+				member = ParsingUtils.getMember(context, args).getUser().getEffectiveName();
 			}	
 		} else {
-			perms = ParsingUtils.getMember(context, args).getPermissions((GuildChannel) context.getChannel());
-			member = ParsingUtils.getMember(context, args).getUser().getAsTag();
+			perms = ParsingUtils.getMember(context, args).getPermissions(context.getMessage().getGuildChannel());
+			member = ParsingUtils.getMember(context, args).getUser().getEffectiveName();
 		}
 		
 		context.reply(buildPermsEmbed(perms, member));

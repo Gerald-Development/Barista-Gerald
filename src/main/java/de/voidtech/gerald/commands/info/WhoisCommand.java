@@ -31,7 +31,7 @@ public class WhoisCommand extends AbstractCommand{
 	private MessageEmbed buildEmbed(Member member, List<String> memberRoles)
 	{
 		return new EmbedBuilder()//
-				.setTitle("Who is " + member.getUser().getAsTag() + "?")//
+				.setTitle("Who is " + member.getUser().getEffectiveName() + "?")//
 				.setThumbnail(member.getUser().getAvatarUrl())
 				.setColor(member.getColor())
 				.addField("Nickname:", member.getEffectiveName(), true)

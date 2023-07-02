@@ -5,7 +5,11 @@ import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
 import java.awt.*;
 import java.time.format.DateTimeFormatter;
@@ -32,10 +36,10 @@ public class ServerInfoCommand extends AbstractCommand {
 		int humanCount = totalMemberCount - botCount;
 		int channelCount = guild.getChannels().size();
 		int roleCount = guild.getRoles().size();
-		int animatedEmoteCount = (int) guild.getEmotes().stream()
-				.filter(Emote::isAnimated)
+		int animatedEmoteCount = (int) guild.getEmojis().stream()
+				.filter(RichCustomEmoji::isAnimated)
 				.count();
-		int staticEmoteCount = guild.getEmotes().size() - animatedEmoteCount;
+		int staticEmoteCount = guild.getEmojis().size() - animatedEmoteCount;
 		
 		EmbedBuilder serverInfoEmbed = new EmbedBuilder()//
 				.addField("Owner Information :crown:", getOwnerInformation(owner), false)//
@@ -56,7 +60,7 @@ public class ServerInfoCommand extends AbstractCommand {
 
 	private String getGuildEmoteInformation(Guild guild, int animatedEmoteCount, int staticEmoteCount) {
 		return String.format("```Total Emote Count: %s\nAnimated Emote Count: %s\nStatic Emote Count: %s```",
-				guild.getEmotes().size(), animatedEmoteCount, staticEmoteCount);
+				guild.getEmojis().size(), animatedEmoteCount, staticEmoteCount);
 	}
 
 	private String getMemberInformation(int totalMemberCount, int humanCount, int botCount) {
@@ -70,7 +74,7 @@ public class ServerInfoCommand extends AbstractCommand {
 	}
 
 	private String getOwnerInformation(Member owner) {
-		return String.format("```Owner ID: %s\nOwner Tag: %s```", owner.getId(), owner.getUser().getAsTag());
+		return String.format("```Owner ID: %s\nOwner Tag: %s```", owner.getId(), owner.getUser().getEffectiveName());
 	}
 
 	private String getBoostTier(String tier) {

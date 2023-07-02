@@ -21,3 +21,4 @@ GeraldConfig.properties
 .env
 /.idea/
 BaristaGerald.iml
+.DS_Store

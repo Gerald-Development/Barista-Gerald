@@ -1,23 +1,22 @@
 package main.java.de.voidtech.gerald.commands.actions;
 
-import java.awt.Color;
-import java.util.List;
-
-import main.java.de.voidtech.gerald.persistence.repository.ActionStatsRepository;
-import main.java.de.voidtech.gerald.service.HttpClientService;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.persistence.entity.ActionStats;
 import main.java.de.voidtech.gerald.persistence.entity.Server;
+import main.java.de.voidtech.gerald.persistence.repository.ActionStatsRepository;
+import main.java.de.voidtech.gerald.service.HttpClientService;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.utils.Result;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
+import java.util.List;
 
 public abstract class ActionsCommand extends AbstractCommand {
 	private static final String API_URL = "http://api.nekos.fun:8080/api/";
@@ -82,8 +81,8 @@ public abstract class ActionsCommand extends AbstractCommand {
 		ActionStats giverStats = getOrCreateProfile(giver, action, serverID);
 		ActionStats receiverStats = getOrCreateProfile(receiver, action, serverID);
 		
-		String giverTag = context.getMember().getJDA().retrieveUserById(giver).complete().getAsTag();
-		String receiverTag = context.getMember().getJDA().retrieveUserById(receiver).complete().getAsTag();
+		String giverTag = context.getMember().getJDA().retrieveUserById(giver).complete().getEffectiveName();
+		String receiverTag = context.getMember().getJDA().retrieveUserById(receiver).complete().getEffectiveName();
 
 		return giverTag + " has " + conjugateAction(action.getType()) + " people " + giverStats.getGivenCount() + " times\n"
 				+ receiverTag + " has been " + conjugateAction(action.getType()) + " by people " + receiverStats.getReceivedCount() + " times";

@@ -1,23 +1,6 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-
+import main.java.de.voidtech.gerald.util.EventWaiter;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
@@ -28,7 +11,23 @@ import main.java.de.voidtech.gerald.util.ParsingUtils;
 import main.java.de.voidtech.gerald.util.RAESameUserPredicate;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 @Command
 public class XKCDCommand extends AbstractCommand {
@@ -90,11 +89,11 @@ public class XKCDCommand extends AbstractCommand {
 				.build();
 		//TODO (from: Franziska): Queue and Waiter. Need to Inspect later.
 		context.getChannel().sendMessageEmbeds(xkcdEmbed).queue(sentMessage -> {
-			sentMessage.addReaction(EMOTE_UNICODE).queue();
+			sentMessage.addReaction(Emoji.fromUnicode(EMOTE_UNICODE)).queue();
 			waiter.waitForEvent(MessageReactionAddEvent.class,
 					new RAESameUserPredicate(context.getAuthor()),
 					event -> {
-					boolean moreInfoButtonPressed = event.getReactionEmote().toString().equals("RE:" + EMOTE_UNICODE);
+					boolean moreInfoButtonPressed = event.getEmoji().asUnicode().getAsCodepoints().equals(EMOTE_UNICODE);
 					if (moreInfoButtonPressed) {
 						MessageEmbed newXkcdEmbed = new EmbedBuilder()
 								.setColor(Color.CYAN)

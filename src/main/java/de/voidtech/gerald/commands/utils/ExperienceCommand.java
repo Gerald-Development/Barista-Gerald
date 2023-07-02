@@ -1,13 +1,5 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import java.awt.Color;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
@@ -23,7 +15,14 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Command
 public class ExperienceCommand extends AbstractCommand {
@@ -344,9 +343,8 @@ public class ExperienceCommand extends AbstractCommand {
 		long level = userXP.getCurrentLevel();
 		long rank = xpService.getUserLeaderboardPosition(serverID, userXP.getUserID());
 		String username = member.getUser().getName();
-		String discriminator = member.getUser().getDiscriminator(); 
 		
-		byte[] xpCard = xpService.getExperienceCard(avatarURL, currentExperience, xpNeeded, level, rank, username, discriminator);
+		byte[] xpCard = xpService.getExperienceCard(avatarURL, currentExperience, xpNeeded, level, rank, username);
 		context.replyWithFile(xpCard, "xpcard.png");
 	}
 

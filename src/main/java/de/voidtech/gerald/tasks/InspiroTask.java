@@ -1,17 +1,16 @@
 package main.java.de.voidtech.gerald.tasks;
 
-import java.awt.Color;
-import java.util.Objects;
-
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.annotations.Task;
 import main.java.de.voidtech.gerald.service.InspiroService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
+import java.util.Objects;
 
 @Task
 public class InspiroTask extends AbstractTask {

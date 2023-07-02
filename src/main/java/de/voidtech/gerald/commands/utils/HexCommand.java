@@ -1,14 +1,5 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import java.awt.Color;
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.logging.Level;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
@@ -18,6 +9,14 @@ import main.java.de.voidtech.gerald.util.GeraldLogger;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import java.awt.*;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
 
 @Command
 public class HexCommand extends AbstractCommand {

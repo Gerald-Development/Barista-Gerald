@@ -29,7 +29,7 @@ public class ShipCommand extends AbstractCommand{
 			Color color = getColor(shipRating);
 			
 			MessageEmbed shipEmbed = new EmbedBuilder()//
-					.setTitle(user1.getAsTag() + HEART + user2.getAsTag())
+					.setTitle(user1.getEffectiveName() + HEART + user2.getEffectiveName())
 					.setColor(color)
 					.setDescription(String.format("Your love match percentage is %d%c %s", shipRating, '%', phrase))
 					.build();

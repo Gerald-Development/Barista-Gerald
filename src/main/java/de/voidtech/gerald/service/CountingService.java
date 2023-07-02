@@ -1,23 +1,22 @@
 package main.java.de.voidtech.gerald.service;
 
-import java.awt.Color;
-import java.util.Objects;
-
-import main.java.de.voidtech.gerald.persistence.repository.CountingChannelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import main.java.de.voidtech.gerald.persistence.entity.CountingChannel;
+import main.java.de.voidtech.gerald.persistence.repository.CountingChannelRepository;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.awt.*;
 
 @Service
 public class CountingService {
 	
-	private final static String INCORRECT = "U+274C";
+	private final static Emoji INCORRECT = Emoji.fromUnicode("U+274C");
 
 	@Autowired
 	public CountingChannelRepository repository;
@@ -86,7 +85,7 @@ public class CountingService {
 	
 	public MessageEmbed getCountStatsEmbedForChannel(CountingChannel dbChannel, JDA jda) {
 		String current = formatAsMarkdown(String.valueOf(dbChannel.getChannelCount()));
-		String lastUser = formatAsMarkdown(dbChannel.getLastUser().equals("") ? "Nobody" : jda.getUserById(dbChannel.getLastUser()).getAsTag());
+		String lastUser = formatAsMarkdown(dbChannel.getLastUser().equals("") ? "Nobody" : jda.getUserById(dbChannel.getLastUser()).getEffectiveName());
 		String next = formatAsMarkdown(dbChannel.getChannelCount() - 1 + " or " + (dbChannel.getChannelCount() + 1));
 		String reached69 = formatAsMarkdown(String.valueOf(dbChannel.hasReached69()));
 		String numberOf69 = formatAsMarkdown(String.valueOf(dbChannel.get69ReachedCount()));

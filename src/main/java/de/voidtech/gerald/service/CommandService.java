@@ -1,27 +1,26 @@
 package main.java.de.voidtech.gerald.service;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
-
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.util.CustomCollectors;
 import main.java.de.voidtech.gerald.util.GeraldLogger;
 import main.java.de.voidtech.gerald.util.LevenshteinCalculator;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Service;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 @Service
 public class CommandService
@@ -53,13 +52,14 @@ public class CommandService
         
         CommandContext cmdContext = new CommandContext.CommandContextBuilder(false)
                 .channel(message.getChannel())
-                .mentionedRoles(isPrivateMessage ? null : message.getMentionedRoles())
-                .mentionedChannels(isPrivateMessage ? null : message.getMentionedChannels())
-                .mentionedMembers(isPrivateMessage ? null : message.getMentionedMembers())
+                .mentionedRoles(isPrivateMessage ? null : message.getMentions().getRoles())
+                .mentionedChannels(isPrivateMessage ? null : message.getMentions().getChannels())
+                .mentionedMembers(isPrivateMessage ? null : message.getMentions().getMembers())
                 .privateMessage(isPrivateMessage)
                 .args(messageArray.subList(1, messageArray.size()))
                 .member(message.getMember())
                 .user(message.getAuthor())
+                .guildChannel(message.getGuildChannel())
                 .message(message)
                 .build();
 
@@ -84,7 +84,7 @@ public class CommandService
 
         command.run(context, context.getArgs());
 
-        LOGGER.logWithoutWebhook(Level.INFO, "Command executed: " + command.getName() + " - From " + context.getAuthor().getAsTag() + "- ID: " + context.getAuthor().getId());
+        LOGGER.logWithoutWebhook(Level.INFO, "Command executed: " + command.getName() + " - From " + context.getAuthor().getEffectiveName() + "- ID: " + context.getAuthor().getId());
     }
 
     private String findCommand(String prompt) {

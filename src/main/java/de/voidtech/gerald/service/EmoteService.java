@@ -1,16 +1,15 @@
 package main.java.de.voidtech.gerald.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import main.java.de.voidtech.gerald.persistence.entity.NitroliteEmote;
 import main.java.de.voidtech.gerald.persistence.repository.NitroliteEmoteRepository;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import main.java.de.voidtech.gerald.persistence.entity.NitroliteEmote;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Emote;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmoteService {
@@ -43,21 +42,21 @@ public class EmoteService {
 			} else return getPersistentEmoteById(id);
 		} else return getPersistentEmoteById(id);
 		 */
-		if (jda.getEmoteById(id) == null) return null;
+		if (jda.getEmojiById(id) == null) return null;
 		else {
 			return new NitroliteEmote(
-					jda.getEmoteById(id).getName(),
-					jda.getEmoteById(id).getId(),
-					jda.getEmoteById(id).isAnimated());
+					jda.getEmojiById(id).getName(),
+					jda.getEmojiById(id).getId(),
+					jda.getEmojiById(id).isAnimated());
 		}
 	}
 	
 	public NitroliteEmote getEmoteByName(String searchWord, JDA jda) {
-        List<Emote> emoteList = jda.getEmoteCache()
+        List<RichCustomEmoji> emoteList = jda.getEmojiCache()
                 .stream()
                 .collect(Collectors.toList());
         
-        Emote emoteOpt = emoteList//
+        RichCustomEmoji emoteOpt = emoteList//
                 .stream()//
                 .filter(emote -> emote.getName().equalsIgnoreCase(searchWord))
                 .findFirst().orElse(null);
@@ -82,14 +81,14 @@ public class EmoteService {
 	}
 	
 	public List<NitroliteEmote> getEmotes(String name, JDA jda) {
-		List<Emote> emoteList = jda
-                .getEmoteCache()
+		List<RichCustomEmoji> emoteList = jda
+                .getEmojiCache()
                 .stream()
                 .collect(Collectors.toList());
 		
 		List<NitroliteEmote> finalResult = new ArrayList<>();
 		
-        List<Emote> jdaCacheResult = emoteList.stream()//
+        List<RichCustomEmoji> jdaCacheResult = emoteList.stream()//
                 .filter(emote -> emote.getName().equalsIgnoreCase(name) && emote.isAvailable()).collect(Collectors.toList());
         //List<NitroliteEmote> persistentResult = getPersistentEmotes(name);
        

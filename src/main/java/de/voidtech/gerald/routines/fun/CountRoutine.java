@@ -1,29 +1,28 @@
 package main.java.de.voidtech.gerald.routines.fun;
 
-import java.awt.Color;
-import java.util.EnumSet;
-import java.util.Objects;
-
-import main.java.de.voidtech.gerald.persistence.repository.CountingChannelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.persistence.entity.CountingChannel;
+import main.java.de.voidtech.gerald.persistence.repository.CountingChannelRepository;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.service.CountingService;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
+import java.util.EnumSet;
+import java.util.Objects;
 
 @Routine
 public class CountRoutine extends AbstractRoutine {
-	private final static String CORRECT = "U+2705";
-	private final static String LETTER_N = "U+1F1F3";
-	private final static String LETTER_I = "U+1F1EE";
-	private final static String LETTER_C = "U+1F1E8";
-	private final static String LETTER_E = "U+1F1EA";
+	private final static Emoji CORRECT = Emoji.fromUnicode("U+2705");
+	private final static Emoji LETTER_N = Emoji.fromUnicode("U+1F1F3");
+	private final static Emoji LETTER_I = Emoji.fromUnicode("U+1F1EE");
+	private final static Emoji LETTER_C = Emoji.fromUnicode("U+1F1E8");
+	private final static Emoji LETTER_E = Emoji.fromUnicode("U+1F1EA");
 	
 	@Autowired
 	private CountingService countService;
@@ -31,7 +30,7 @@ public class CountRoutine extends AbstractRoutine {
 	@Autowired
 	private CountingChannelRepository repository;
 
-	private boolean shouldSendNice(int countGiven, String channelID, CountingChannel channel) {
+	private boolean shouldSendNice(int countGiven, CountingChannel channel) {
 		return ((countGiven == 69 || countGiven == -69) && !channel.hasReached69());
 	}
 	
@@ -60,12 +59,12 @@ public class CountRoutine extends AbstractRoutine {
 			if (countGiven == currentCount + 1) {
 				countService.setCount(channel, currentCount, message.getMember().getId(), message.getId(), "increment");
 				message.addReaction(CORRECT).queue();
-				if (shouldSendNice(countGiven, message.getChannel().getId(), channel)) sendNice(message);
+				if (shouldSendNice(countGiven, channel)) sendNice(message);
 			
 			} else if (countGiven == currentCount - 1) {
 				countService.setCount(channel, currentCount, message.getMember().getId(), message.getId(), "decrement");
 				message.addReaction(CORRECT).queue();
-				if (shouldSendNice(countGiven, message.getChannel().getId(), channel)) sendNice(message);
+				if (shouldSendNice(countGiven, channel)) sendNice(message);
 			
 			} else {
 				channel.removeLife();
@@ -88,7 +87,7 @@ public class CountRoutine extends AbstractRoutine {
 	@Override
 	public void executeInternal(Message message) {	
 		CountingChannel channel = countService.getCountingChannel(message.getChannel().getId());
-		EnumSet<Permission> perms = message.getGuild().getSelfMember().getPermissions((GuildChannel) message.getChannel());
+		EnumSet<Permission> perms = message.getGuild().getSelfMember().getPermissions(message.getGuildChannel());
 		if (channel != null) {
 			if (ParsingUtils.isInteger(message.getContentRaw()))
 				playGame(message);

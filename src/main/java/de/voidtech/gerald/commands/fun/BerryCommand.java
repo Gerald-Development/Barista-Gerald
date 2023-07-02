@@ -1,6 +1,6 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import main.java.de.voidtech.gerald.util.EventWaiter;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
@@ -32,7 +32,7 @@ public class BerryCommand extends AbstractCommand{
 		String currentBerry = keyList.get(new Random().nextInt(keyList.size()));
 		
 		MessageEmbed berryQuestEmbed = new EmbedBuilder()//
-				.setTitle(String.format("%s guess that berry, you have 15 seconds!", context.getAuthor().getAsTag()))
+				.setTitle(String.format("%s guess that berry, you have 15 seconds!", context.getAuthor().getEffectiveName()))
 				.setColor(Color.YELLOW)
 				.setImage(berryMap.get(currentBerry))
 				.build();

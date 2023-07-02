@@ -1,15 +1,15 @@
 package main.java.de.voidtech.gerald.listeners;
 
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import main.java.de.voidtech.gerald.persistence.entity.StarboardConfig;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.StarboardService;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class StarboardListener implements EventListener {
@@ -24,12 +24,11 @@ public class StarboardListener implements EventListener {
 	
 	@Override
 	public void onEvent(@NotNull GenericEvent event) {
-		if (event instanceof GuildMessageReactionAddEvent) {
-			GuildMessageReactionAddEvent reaction = (GuildMessageReactionAddEvent) event;
-			if (reaction.getReactionEmote().toString().equals("RE:" + STAR_UNICODE)) { 
-				
+		if (event instanceof MessageReactionAddEvent) {
+			MessageReactionAddEvent reaction = (MessageReactionAddEvent) event;
+			if (!reaction.getEmoji().getType().equals(Emoji.Type.UNICODE)) return;
+			if (reaction.getEmoji().asUnicode().getAsCodepoints().equals(STAR_UNICODE)) {
 				long serverID = serverService.getServer(reaction.getGuild().getId()).getId();
-				
 				StarboardConfig config = starboardService.getStarboardConfig(serverID);
 				if (config != null) {
 					pinStarIfAllowed(reaction, config, serverID);
@@ -38,7 +37,7 @@ public class StarboardListener implements EventListener {
 		}	
 	}
 
-	private void pinStarIfAllowed(GuildMessageReactionAddEvent reaction, StarboardConfig config, long serverID) {
+	private void pinStarIfAllowed(MessageReactionAddEvent reaction, StarboardConfig config, long serverID) {
 		if (!starboardService.reactionIsInStarboardChannel(reaction.getChannel().getId(), serverID)) {
 			if (config.getIgnoredChannels() != null) {
 				if (!config.getIgnoredChannels().contains(reaction.getChannel().getId()))

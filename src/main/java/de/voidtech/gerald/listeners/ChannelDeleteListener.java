@@ -1,15 +1,14 @@
 package main.java.de.voidtech.gerald.listeners;
 
+import main.java.de.voidtech.gerald.persistence.entity.Server;
+import main.java.de.voidtech.gerald.service.ServerService;
+import net.dv8tion.jda.api.entities.channel.unions.ChannelUnion;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import main.java.de.voidtech.gerald.persistence.entity.Server;
-import main.java.de.voidtech.gerald.service.ServerService;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
-import net.dv8tion.jda.api.hooks.EventListener;
 
 @Component
 public class ChannelDeleteListener implements EventListener {
@@ -19,10 +18,10 @@ public class ChannelDeleteListener implements EventListener {
 	
 	@Override
 	public void onEvent(@NotNull GenericEvent event) {
-		if(event instanceof TextChannelDeleteEvent)
+		if(event instanceof ChannelDeleteEvent)
 		{
-			TextChannel channel = ((TextChannelDeleteEvent) event).getChannel();
-			Server server = serverService.getServer(((TextChannelDeleteEvent) event).getGuild().getId());
+			ChannelUnion channel = ((ChannelDeleteEvent) event).getChannel();
+			Server server = serverService.getServer(((ChannelDeleteEvent) event).getGuild().getId());
 			
 			server.removeFromChannelWhitelist(channel.getId());
 			serverService.saveServer(server);

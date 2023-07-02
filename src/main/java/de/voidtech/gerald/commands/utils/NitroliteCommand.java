@@ -1,13 +1,13 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import main.java.de.voidtech.gerald.util.EventWaiter;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.persistence.entity.NitroliteAlias;
-import main.java.de.voidtech.gerald.persistence.repository.NitroliteAliasRepository;
 import main.java.de.voidtech.gerald.persistence.entity.NitroliteEmote;
+import main.java.de.voidtech.gerald.persistence.repository.NitroliteAliasRepository;
 import main.java.de.voidtech.gerald.service.EmoteService;
 import main.java.de.voidtech.gerald.service.NitroliteService;
 import main.java.de.voidtech.gerald.service.ServerService;

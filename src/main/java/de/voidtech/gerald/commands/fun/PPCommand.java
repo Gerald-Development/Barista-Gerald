@@ -1,22 +1,21 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
-import java.util.List;
-import java.util.Random;
-
-import main.java.de.voidtech.gerald.persistence.repository.RiggedLengthRepository;
-import net.dv8tion.jda.api.entities.User;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.persistence.entity.RiggedLength;
+import main.java.de.voidtech.gerald.persistence.repository.RiggedLengthRepository;
 import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
+import java.util.List;
+import java.util.Random;
 
 @Command
 public class PPCommand extends AbstractCommand{

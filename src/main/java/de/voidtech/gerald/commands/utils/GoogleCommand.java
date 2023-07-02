@@ -1,21 +1,20 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.service.PlaywrightService;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Command
 public class GoogleCommand extends AbstractCommand {
@@ -78,7 +77,7 @@ public class GoogleCommand extends AbstractCommand {
 		}
 	}
 
-	private boolean getNsfwMode(MessageChannel messageChannel) 
+	private boolean getNsfwMode(MessageChannel messageChannel)
 	{
 		return messageChannel.getType().equals(ChannelType.PRIVATE) || ((TextChannel) messageChannel).isNSFW();
 	}

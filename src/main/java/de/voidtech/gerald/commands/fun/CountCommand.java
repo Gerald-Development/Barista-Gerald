@@ -1,9 +1,5 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
@@ -11,6 +7,9 @@ import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.persistence.entity.CountingChannel;
 import main.java.de.voidtech.gerald.service.CountingService;
 import net.dv8tion.jda.api.Permission;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @Command
 public class CountCommand extends AbstractCommand {

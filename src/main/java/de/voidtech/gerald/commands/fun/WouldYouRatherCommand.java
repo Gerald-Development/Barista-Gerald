@@ -1,19 +1,19 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.logging.Level;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.service.LogService;
 import main.java.de.voidtech.gerald.util.GeraldLogger;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
 
 @Command
 public class WouldYouRatherCommand extends AbstractCommand {
@@ -29,8 +29,8 @@ public class WouldYouRatherCommand extends AbstractCommand {
 
 			//TODO (from: Franziska): Same with the queue. Need to think.
 			context.getChannel().sendMessage("**Would You Rather:**\n:a:" + answerA + "\n**OR:**\n:b:" + answerB).queue(sentMessage -> {
-				sentMessage.addReaction("🅰").queue();
-				sentMessage.addReaction("🅱").queue();
+				sentMessage.addReaction(Emoji.fromUnicode("U+1f170")).queue();
+				sentMessage.addReaction(Emoji.fromUnicode("U+1f171")).queue();
 			});
 			
 		} catch (IOException e) {

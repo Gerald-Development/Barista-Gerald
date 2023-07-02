@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageReaction;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -75,7 +75,7 @@ public class StarboardService {
 	private MessageEmbed constructEmbed(Message message) {
 		EmbedBuilder starboardEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
-				.setAuthor(message.getAuthor().getAsTag(), GlobalConstants.LINKTREE_URL, message.getAuthor().getAvatarUrl())
+				.setAuthor(message.getAuthor().getEffectiveName(), GlobalConstants.LINKTREE_URL, message.getAuthor().getAvatarUrl())
 				.setDescription(message.getContentRaw())
 				.setTitle("Jump to message!", message.getJumpUrl())
 				.setTimestamp(Instant.now())
@@ -115,7 +115,7 @@ public class StarboardService {
 		selfMessage.editMessage(":star: **" + starCountFromMessage + "**").queue();
 	}
 
-	private void sendOrUpdateMessage(long serverID, GuildMessageReactionAddEvent reaction, StarboardConfig config, Message message, long starCountFromMessage) {
+	private void sendOrUpdateMessage(long serverID, MessageReactionAddEvent reaction, StarboardConfig config, Message message, long starCountFromMessage) {
 		StarboardMessage starboardMessage = getStarboardMessage(serverID, reaction.getMessageId());
 		
 		if (starboardMessage == null) {
@@ -130,17 +130,17 @@ public class StarboardService {
 	private long getStarsFromMessage(Message message) {
 		long count = message.getReactions()
 				 .stream()
-				 .filter(reaction -> reaction.getReactionEmote().toString().equals("RE:" + STAR_UNICODE))
+				 .filter(reaction -> reaction.getEmoji().asUnicode().getAsCodepoints().equals(STAR_UNICODE))
 				 .count();
 		for (MessageReaction reaction: message.getReactions()) {
-			if (reaction.getReactionEmote().toString().equals("RE:" + STAR_UNICODE)) {
+			if (reaction.getEmoji().asUnicode().getAsCodepoints().equals(STAR_UNICODE)) {
 				count = reaction.getCount();
 			}
 		}
 		return count;
 	}
 	
-	public void checkStars(long serverID, GuildMessageReactionAddEvent reaction) {
+	public void checkStars(long serverID, MessageReactionAddEvent reaction) {
 		StarboardConfig config = getStarboardConfig(serverID);
 		Message message = reaction.getChannel().retrieveMessageById(reaction.getMessageId()).complete();
 		

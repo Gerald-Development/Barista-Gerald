@@ -1,13 +1,12 @@
 package main.java.de.voidtech.gerald.routines.fun;
 
-import main.java.de.voidtech.gerald.persistence.repository.ChatChannelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.annotations.Routine;
+import main.java.de.voidtech.gerald.persistence.repository.ChatChannelRepository;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.service.ChatbotService;
 import net.dv8tion.jda.api.entities.Message;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Routine
 public class ChatRoutine extends AbstractRoutine{

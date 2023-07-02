@@ -8,7 +8,7 @@ import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.IMentionable;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,7 +27,7 @@ public class WhitelistCommand extends AbstractCommand {
         if (!context.getMember().hasPermission(Permission.MANAGE_SERVER)) return;
 
         String argString = args.size() > 0 ? args.get(0) : "list";
-        TextChannel mentionedChannel = context.getMentionedChannels().size() > 0
+        GuildChannel mentionedChannel = context.getMentionedChannels().size() > 0
                 ? context.getMentionedChannels().get(0)
                 : null;
 
@@ -55,7 +55,7 @@ public class WhitelistCommand extends AbstractCommand {
     }
 
 
-    private void handleAddToWhitelist(CommandContext context, TextChannel mentionedChannel, Server server) {
+    private void handleAddToWhitelist(CommandContext context, GuildChannel mentionedChannel, Server server) {
         if (mentionedChannel != null && mentionedChannel.getGuild().getIdLong() == context.getGuild().getIdLong()) {
             if (server.getChannelWhitelist().contains(mentionedChannel.getId()))
                 context.reply("This channel has already been added to the whitelist");
@@ -66,7 +66,7 @@ public class WhitelistCommand extends AbstractCommand {
         } else context.reply("Please provide a valid channel.");
     }
 
-    private void handleRemoveFromWhitelist(CommandContext context, TextChannel mentionedChannel, Server server) {
+    private void handleRemoveFromWhitelist(CommandContext context, GuildChannel mentionedChannel, Server server) {
         if (mentionedChannel != null) {
             if (!server.getChannelWhitelist().contains(mentionedChannel.getId()))
                 context.reply("This channel is not on the whitelist.");

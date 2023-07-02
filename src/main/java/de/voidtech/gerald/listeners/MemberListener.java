@@ -1,9 +1,5 @@
 package main.java.de.voidtech.gerald.listeners;
 
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import main.java.de.voidtech.gerald.service.ExperienceService;
 import main.java.de.voidtech.gerald.service.JoinLeaveMessageService;
 import main.java.de.voidtech.gerald.service.ServerService;
@@ -11,6 +7,9 @@ import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class MemberListener implements EventListener {

@@ -1,10 +1,9 @@
 package main.java.de.voidtech.gerald.tasks;
 
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.service.ThreadManager;
 import net.dv8tion.jda.api.JDA;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractTask {
 	

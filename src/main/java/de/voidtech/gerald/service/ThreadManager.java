@@ -1,11 +1,11 @@
 package main.java.de.voidtech.gerald.service;
 
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.springframework.stereotype.Service;
+
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import org.apache.commons.lang3.concurrent.BasicThreadFactory;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ThreadManager {

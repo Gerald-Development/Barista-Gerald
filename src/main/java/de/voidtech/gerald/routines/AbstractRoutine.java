@@ -1,11 +1,10 @@
 package main.java.de.voidtech.gerald.routines;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.ThreadManager;
 import net.dv8tion.jda.api.entities.Message;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractRoutine {
 	@Autowired

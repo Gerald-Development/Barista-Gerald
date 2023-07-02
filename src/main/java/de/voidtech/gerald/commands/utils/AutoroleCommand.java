@@ -1,6 +1,6 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import main.java.de.voidtech.gerald.util.EventWaiter;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
@@ -14,10 +14,10 @@ import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.interactions.components.Button;
-import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
@@ -50,11 +50,14 @@ public class AutoroleCommand extends AbstractCommand {
                 () -> context.getChannel().sendMessage("Request timed out.").queue());
     }
 	
-	private void getAwaitedButton(CommandContext context, String question, List<Component> actions, Consumer<ButtonClickEvent> result) {
+	private void getAwaitedButton(CommandContext context, String question, List<ItemComponent> actions, Consumer<ButtonInteractionEvent> result) {
         context.getChannel().sendMessage(question).setActionRow(actions).queue();
-        waiter.waitForEvent(ButtonClickEvent.class,
+        waiter.waitForEvent(ButtonInteractionEvent.class,
                 new BCESameUserPredicate(context.getMember()),
-				result, 30, TimeUnit.SECONDS,
+				event -> {
+					if (!event.isAcknowledged()) event.deferEdit().queue();
+					result.accept(event);
+				}, 30, TimeUnit.SECONDS,
                 () -> context.getChannel().sendMessage("Request timed out.").queue());
     }
 	
@@ -122,7 +125,6 @@ public class AutoroleCommand extends AbstractCommand {
 
 	private void promptForHumanAvailability(CommandContext context, String roleID) {
 		getAwaitedButton(context, "**Should this role be applied to humans?**", createTrueFalseButtons(), event -> {
-			event.deferEdit().queue();
 			switch (event.getComponentId()) {
 			case "YES":
 				promptForBotAvailability(context, roleID, true);
@@ -136,8 +138,8 @@ public class AutoroleCommand extends AbstractCommand {
 		});
 	}
 	
-	private List<Component> createTrueFalseButtons() {
-		List<Component> components = new ArrayList<>();
+	private List<ItemComponent> createTrueFalseButtons() {
+		List<ItemComponent> components = new ArrayList<>();
 		components.add(Button.secondary("YES", TRUE_EMOTE));
 		components.add(Button.secondary("NO", FALSE_EMOTE));
 		return components;
@@ -145,7 +147,6 @@ public class AutoroleCommand extends AbstractCommand {
 
 	private void promptForBotAvailability(CommandContext context, String roleID, boolean applyToHumans) {
 		getAwaitedButton(context, "**Should this role be applied to bots?**", createTrueFalseButtons(), event -> {
-			event.deferEdit().queue();
 			switch (event.getComponentId()) {
 			case "YES":
 				finishAddingAutorole(context, roleID, applyToHumans, true);
