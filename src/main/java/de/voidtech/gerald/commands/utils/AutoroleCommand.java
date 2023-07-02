@@ -54,7 +54,10 @@ public class AutoroleCommand extends AbstractCommand {
         context.getChannel().sendMessage(question).setActionRow(actions).queue();
         waiter.waitForEvent(ButtonInteractionEvent.class,
                 new BCESameUserPredicate(context.getMember()),
-				result, 30, TimeUnit.SECONDS,
+				event -> {
+					if (!event.isAcknowledged()) event.deferEdit().queue();
+					result.accept(event);
+				}, 30, TimeUnit.SECONDS,
                 () -> context.getChannel().sendMessage("Request timed out.").queue());
     }
 	
@@ -144,7 +147,6 @@ public class AutoroleCommand extends AbstractCommand {
 
 	private void promptForBotAvailability(CommandContext context, String roleID, boolean applyToHumans) {
 		getAwaitedButton(context, "**Should this role be applied to bots?**", createTrueFalseButtons(), event -> {
-			event.deferEdit().queue();
 			switch (event.getComponentId()) {
 			case "YES":
 				finishAddingAutorole(context, roleID, applyToHumans, true);

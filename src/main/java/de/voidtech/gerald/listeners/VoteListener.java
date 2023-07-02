@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.listeners;
 
 import main.java.de.voidtech.gerald.service.SuggestionService;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
@@ -18,6 +19,7 @@ public class VoteListener implements EventListener {
 	public void onEvent(@NotNull GenericEvent event) {
 		if (event instanceof MessageReactionAddEvent) {
 			MessageReactionAddEvent reaction = (MessageReactionAddEvent) event;
+			if (!reaction.getEmoji().getType().equals(Emoji.Type.UNICODE)) return;
 			suggestionService.handleVote(reaction);
 		}
 	}

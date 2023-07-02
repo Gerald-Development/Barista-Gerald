@@ -3,6 +3,7 @@ package main.java.de.voidtech.gerald.listeners;
 import main.java.de.voidtech.gerald.persistence.entity.StarboardConfig;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.StarboardService;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
@@ -25,10 +26,9 @@ public class StarboardListener implements EventListener {
 	public void onEvent(@NotNull GenericEvent event) {
 		if (event instanceof MessageReactionAddEvent) {
 			MessageReactionAddEvent reaction = (MessageReactionAddEvent) event;
+			if (!reaction.getEmoji().getType().equals(Emoji.Type.UNICODE)) return;
 			if (reaction.getEmoji().asUnicode().getAsCodepoints().equals(STAR_UNICODE)) {
-				
 				long serverID = serverService.getServer(reaction.getGuild().getId()).getId();
-				
 				StarboardConfig config = starboardService.getStarboardConfig(serverID);
 				if (config != null) {
 					pinStarIfAllowed(reaction, config, serverID);

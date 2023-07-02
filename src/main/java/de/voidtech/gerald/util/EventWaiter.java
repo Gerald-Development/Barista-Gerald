@@ -29,7 +29,7 @@ public class EventWaiter implements EventListener {
     public EventWaiter(ScheduledExecutorService threadpool, boolean shutdownAutomatically) {
         Checks.notNull(threadpool, "ScheduledExecutorService");
         Checks.check(!threadpool.isShutdown(), "Cannot construct EventWaiter with a closed ScheduledExecutorService!");
-        this.waitingEvents = new HashMap();
+        this.waitingEvents = new HashMap<>();
         this.threadpool = threadpool;
         this.shutdownAutomatically = shutdownAutomatically;
     }
