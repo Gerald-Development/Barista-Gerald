@@ -39,7 +39,7 @@ public class InfoCommand extends AbstractCommand {
 		{
 			@SuppressWarnings("rawtypes")
 			Query query = session.createQuery("select count(*) from NitroliteEmote");
-			long count = ((long)query.uniqueResult()) + jda.getEmoteCache().size();
+			long count = ((long)query.uniqueResult()) + jda.getEmojiCache().size();
 			session.close();
 			return count;
 		}

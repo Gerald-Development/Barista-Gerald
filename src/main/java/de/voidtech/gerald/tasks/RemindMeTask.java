@@ -1,11 +1,10 @@
 package main.java.de.voidtech.gerald.tasks;
 
-import org.json.JSONObject;
-
 import main.java.de.voidtech.gerald.annotations.Task;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import org.json.JSONObject;
 
 @Task
 public class RemindMeTask extends AbstractTask {

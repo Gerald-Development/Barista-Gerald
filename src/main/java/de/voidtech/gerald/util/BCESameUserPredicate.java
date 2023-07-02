@@ -1,12 +1,11 @@
 package main.java.de.voidtech.gerald.util;
 
-import java.util.Objects;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+
 import java.util.function.Predicate;
 
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
-
-public class BCESameUserPredicate implements Predicate<ButtonClickEvent> {
+public class BCESameUserPredicate implements Predicate<ButtonInteractionEvent> {
 
 	private final Member originalUser;
 	
@@ -15,7 +14,7 @@ public class BCESameUserPredicate implements Predicate<ButtonClickEvent> {
 	}
 	
 	@Override
-	public boolean test(ButtonClickEvent t) {
-		return Objects.requireNonNull(t.getMember()).getId().equals(originalUser.getId());
+	public boolean test(ButtonInteractionEvent t) {
+		return t.getMember().getId().equals(originalUser.getId());
 	}
 }

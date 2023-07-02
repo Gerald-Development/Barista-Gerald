@@ -1,10 +1,10 @@
 package main.java.de.voidtech.gerald.util;
 
-import java.util.Objects;
-import java.util.function.Predicate;
-
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+
+import java.util.Objects;
+import java.util.function.Predicate;
 
 public class RAESameUserPredicate implements Predicate<MessageReactionAddEvent> {
 

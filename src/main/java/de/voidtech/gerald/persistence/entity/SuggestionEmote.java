@@ -1,6 +1,6 @@
 package main.java.de.voidtech.gerald.persistence.entity;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 

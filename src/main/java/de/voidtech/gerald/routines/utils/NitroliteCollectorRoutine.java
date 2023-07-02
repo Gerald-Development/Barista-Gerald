@@ -1,11 +1,5 @@
 package main.java.de.voidtech.gerald.routines.utils;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.persistence.entity.NitroliteEmote;
 import main.java.de.voidtech.gerald.persistence.repository.NitroliteEmoteRepository;
@@ -17,6 +11,12 @@ import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Routine
 public class NitroliteCollectorRoutine extends AbstractRoutine {
@@ -37,7 +37,7 @@ public class NitroliteCollectorRoutine extends AbstractRoutine {
 	}
 	
 	private boolean emoteIsAlreadyStored(String name, String id, JDA jda) {	
-		if (jda.getEmoteById(id) == null) {
+		if (jda.getEmojiById(id) == null) {
 			return !emoteNotInDatabase(name, id);
 		}
 		return true;

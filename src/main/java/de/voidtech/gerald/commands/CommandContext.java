@@ -2,7 +2,10 @@ package main.java.de.voidtech.gerald.commands;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,13 +18,14 @@ public class CommandContext {
     private final List<String> args;
     private final Guild guild;
     private final List<Member> mentionedMembers;
-    private final List<TextChannel> mentionedChannels;
+    private final List<GuildChannel> mentionedChannels;
     private final List<Role> mentionedRoles;
     private final boolean isSlash;
     private final Message message;
-    private final SlashCommandEvent slashCommandEvent;
+    private final SlashCommandInteractionEvent slashCommandEvent;
     private final boolean isPrivate;
     private final User user;
+    private final GuildChannel guildChannel;
 
     private CommandContext(CommandContextBuilder builder) {
         this.channel = builder.channel;
@@ -36,6 +40,7 @@ public class CommandContext {
         this.slashCommandEvent = builder.slashCommandEvent;
         this.isPrivate = builder.isPrivateMessage;
         this.user = builder.user;
+        this.guildChannel = builder.guildChannel;
     }
     
     public boolean isPrivate() {
@@ -44,6 +49,10 @@ public class CommandContext {
 
     public MessageChannel getChannel() {
         return channel;
+    }
+
+    public GuildChannel getGuildChannel() {
+        return guildChannel;
     }
 
     public Member getMember() {
@@ -62,7 +71,7 @@ public class CommandContext {
         return mentionedMembers;
     }
 
-    public List<TextChannel> getMentionedChannels() {
+    public List<GuildChannel> getMentionedChannels() {
         return mentionedChannels;
     }
 
@@ -79,17 +88,19 @@ public class CommandContext {
     }
     
     public void replyWithFile(byte[] attachment, String attachmentName, MessageEmbed... embeds) {
+        FileUpload file = FileUpload.fromData(attachment, attachmentName);
         if (this.isSlash)
-            slashCommandEvent.replyEmbeds(Arrays.asList(embeds)).addFile(attachment, attachmentName).queue();
+            slashCommandEvent.replyEmbeds(Arrays.asList(embeds)).addFiles(file).queue();
         else
-            message.replyEmbeds(Arrays.asList(embeds)).mentionRepliedUser(false).addFile(attachment, attachmentName).queue();
+            message.replyEmbeds(Arrays.asList(embeds)).mentionRepliedUser(false).addFiles(file).queue();
     }
 
     public void replyWithFile(byte[] attachment, String attachmentName, String text) {
+        FileUpload file = FileUpload.fromData(attachment, attachmentName);
         if (this.isSlash)
-            slashCommandEvent.reply(text).addFile(attachment, attachmentName).queue();
+            slashCommandEvent.reply(text).addFiles(file).queue();
         else
-            message.reply(text).mentionRepliedUser(false).addFile(attachment, attachmentName).queue();
+            message.reply(text).mentionRepliedUser(false).addFiles(file).queue();
     }
 
     public void reply(MessageEmbed... embeds) {
@@ -114,20 +125,21 @@ public class CommandContext {
         return message;
     }
 
-    public SlashCommandEvent getSlashCommandEvent() {
+    public SlashCommandInteractionEvent getSlashCommandEvent() {
         return slashCommandEvent;
     }
 
     public static class CommandContextBuilder {
+        private GuildChannel guildChannel;
         private MessageChannel channel;
         private Member member;
         private List<String> args;
         private List<Member> mentionedMembers;
-        private List<TextChannel> mentionedChannels;
+        private List<GuildChannel> mentionedChannels;
         private List<Role> mentionedRoles;
         private final boolean isSlash;
         private Message message;
-        private SlashCommandEvent slashCommandEvent;
+        private SlashCommandInteractionEvent slashCommandEvent;
         private boolean isPrivateMessage;
 		private User user;
 
@@ -135,6 +147,10 @@ public class CommandContext {
             this.isSlash = isSlashCommand;
         }
 
+        public CommandContextBuilder guildChannel(GuildChannel channel) {
+            this.guildChannel = channel;
+            return this;
+        }
         public CommandContextBuilder channel(MessageChannel channel) {
             this.channel = channel;
             return this;
@@ -155,7 +171,7 @@ public class CommandContext {
             return this;
         }
 
-        public CommandContextBuilder mentionedChannels(List<TextChannel> mentionedChannels) {
+        public CommandContextBuilder mentionedChannels(List<GuildChannel> mentionedChannels) {
             this.mentionedChannels = mentionedChannels;
             return this;
         }
@@ -171,7 +187,7 @@ public class CommandContext {
             return this;
         }
 
-        public CommandContextBuilder slashCommandEvent(SlashCommandEvent event) {
+        public CommandContextBuilder slashCommandEvent(SlashCommandInteractionEvent event) {
             assert isSlash : "Chat based commands can not have a SlashCommandEvent.";
             this.slashCommandEvent = event;
             return this;

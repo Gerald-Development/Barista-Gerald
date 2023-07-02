@@ -1,29 +1,27 @@
 package main.java.de.voidtech.gerald.commands.utils;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
-import main.java.de.voidtech.gerald.persistence.repository.TunnelRepository;
-import org.apache.commons.collections4.BidiMap;
-import org.apache.commons.collections4.bidimap.DualHashBidiMap;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.persistence.entity.Tunnel;
+import main.java.de.voidtech.gerald.persistence.repository.TunnelRepository;
+import main.java.de.voidtech.gerald.util.EventWaiter;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Command
 public class TunnelCommand extends AbstractCommand {
@@ -108,7 +106,7 @@ public class TunnelCommand extends AbstractCommand {
 		originChannelMessage.getChannel().sendMessage("**Tunnel request denied**").queue();
 	}
 
-	private void digTunnel(TextChannel targetChannel, MessageChannel originChannel) {
+	private void digTunnel(TextChannel targetChannel, MessageChannelUnion originChannel) {
 		targetChannel.sendMessage("**Tunnel Dug**").queue();
 		originChannel.sendMessage("**Tunnel Dug**").queue();
 

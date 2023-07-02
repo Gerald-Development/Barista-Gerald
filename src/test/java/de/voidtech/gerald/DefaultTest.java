@@ -1,8 +1,8 @@
 package test.java.de.voidtech.gerald;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class DefaultTest {
 	

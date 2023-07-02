@@ -1,30 +1,27 @@
 package main.java.de.voidtech.gerald.service;
 
-import java.awt.Color;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
+import main.java.de.voidtech.gerald.util.ParsingUtils;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.net.ssl.HttpsURLConnection;
+import java.awt.*;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
-
-import javax.net.ssl.HttpsURLConnection;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.util.GeraldLogger;
-import main.java.de.voidtech.gerald.util.ParsingUtils;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.Webhook;
 
 @Service
 public class WebhookManager {
@@ -93,7 +90,7 @@ public class WebhookManager {
 	}
 	
 	public void postMessageWithFallback(CommandContext context, String content, String avatarUrl, String username, String webhookName) {
-		EnumSet<Permission> perms = context.getGuild().getSelfMember().getPermissions((GuildChannel) context.getChannel());
+		EnumSet<Permission> perms = context.getGuild().getSelfMember().getPermissions(context.getGuildChannel());
 		
         if (perms.contains(Permission.MANAGE_WEBHOOKS)) {
         	Webhook webhook = getOrCreateWebhook((TextChannel) context.getChannel(),

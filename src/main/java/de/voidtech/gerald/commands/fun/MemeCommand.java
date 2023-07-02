@@ -1,6 +1,23 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.awt.Color;
+import main.java.de.voidtech.gerald.annotations.Command;
+import main.java.de.voidtech.gerald.commands.AbstractCommand;
+import main.java.de.voidtech.gerald.commands.CommandCategory;
+import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.persistence.entity.MemeBlocklist;
+import main.java.de.voidtech.gerald.persistence.repository.MemeBlocklistRepository;
+import main.java.de.voidtech.gerald.service.GeraldConfig;
+import main.java.de.voidtech.gerald.service.LogService;
+import main.java.de.voidtech.gerald.service.ServerService;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,24 +30,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-
-import main.java.de.voidtech.gerald.persistence.repository.MemeBlocklistRepository;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import main.java.de.voidtech.gerald.annotations.Command;
-import main.java.de.voidtech.gerald.commands.AbstractCommand;
-import main.java.de.voidtech.gerald.commands.CommandCategory;
-import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.persistence.entity.MemeBlocklist;
-import main.java.de.voidtech.gerald.service.GeraldConfig;
-import main.java.de.voidtech.gerald.service.LogService;
-import main.java.de.voidtech.gerald.service.ServerService;
-import main.java.de.voidtech.gerald.util.GeraldLogger;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 
 @Command
 public class MemeCommand extends AbstractCommand {
@@ -144,7 +143,7 @@ public class MemeCommand extends AbstractCommand {
 					.setColor(Color.ORANGE)
 					.setTitle("Image URL", apiResponse)
 					.setImage(apiResponse)
-					.setFooter("Requested By " + context.getAuthor().getAsTag(), context.getAuthor().getAvatarUrl())
+					.setFooter("Requested By " + context.getAuthor().getEffectiveName(), context.getAuthor().getAvatarUrl())
 					.build();
 			context.reply(memeImageEmbed);
 		}	

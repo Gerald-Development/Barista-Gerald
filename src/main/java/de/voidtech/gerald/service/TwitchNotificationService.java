@@ -1,23 +1,21 @@
 package main.java.de.voidtech.gerald.service;
 
-import java.util.List;
-import java.util.logging.Level;
-
+import com.github.twitch4j.TwitchClient;
+import com.github.twitch4j.TwitchClientBuilder;
+import com.github.twitch4j.events.ChannelGoLiveEvent;
+import main.java.de.voidtech.gerald.persistence.entity.TwitchNotificationChannel;
 import main.java.de.voidtech.gerald.persistence.repository.TwitchNotificationChannelRepository;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import com.github.twitch4j.TwitchClient;
-import com.github.twitch4j.TwitchClientBuilder;
-import com.github.twitch4j.events.ChannelGoLiveEvent;
-
-import main.java.de.voidtech.gerald.persistence.entity.TwitchNotificationChannel;
-import main.java.de.voidtech.gerald.util.GeraldLogger;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.TextChannel;
+import java.util.List;
+import java.util.logging.Level;
 
 @Service
 public class TwitchNotificationService {

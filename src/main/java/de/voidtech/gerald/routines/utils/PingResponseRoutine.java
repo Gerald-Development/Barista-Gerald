@@ -1,12 +1,5 @@
 package main.java.de.voidtech.gerald.routines.utils;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.GlobalConstants;
 import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.persistence.entity.Server;
@@ -17,9 +10,15 @@ import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Routine
 public class PingResponseRoutine extends AbstractRoutine {
@@ -48,8 +47,8 @@ public class PingResponseRoutine extends AbstractRoutine {
     
 	@Override
 	public void executeInternal(Message message) {
-		if (message.getChannelType().equals(ChannelType.TEXT) && message.getMentionedUsers().contains(message.getJDA().getSelfUser())) {
-			List<String> messageBlocks = new ArrayList<String>(Arrays.asList(message.getContentRaw().split(" ")));
+		if (message.getChannelType().equals(ChannelType.TEXT) && message.getMentions().getMembers().contains(message.getJDA().getSelfUser())) {
+			List<String> messageBlocks = new ArrayList<>(Arrays.asList(message.getContentRaw().split(" ")));
 			if (messageBlocks.size() == 1 && ParsingUtils.filterSnowflake(message.getContentRaw()).equals(message.getJDA().getSelfUser().getId()))
 				sendPingInfoMessage(message);
 			else {

@@ -8,7 +8,11 @@ import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
@@ -38,7 +42,7 @@ public class CacheSearchCommand extends AbstractCommand{
 				resultMessage = "**Guild Cache**\n```\n"
 						+ "Guild Name: " + guild.getName()
 				+ "\nGuild ID: " + guild.getId()
-				+ "\nGuild Owner: " + owner.getUser().getAsTag()
+				+ "\nGuild Owner: " + owner.getUser().getEffectiveName()
 				+ "\nGuild Owner ID: " + owner.getId()
 				+ "\nBarista Guild ID: " + serverService.getServer(guild.getId()).getId()
 				+ "```";
@@ -59,7 +63,7 @@ public class CacheSearchCommand extends AbstractCommand{
 			} else if (client.retrieveUserById(args.get(0)).complete() != null) {
 					User user = client.retrieveUserById(args.get(0)).complete();
 					resultMessage = "**User Cache**\n```\n"
-					+ "Username: " + user.getAsTag() 
+					+ "Username: " + user.getEffectiveName() 
 					+ "\nUser ID: " + user.getId() 
 					+ "```";
 					imageURL = user.getAvatarUrl(); 

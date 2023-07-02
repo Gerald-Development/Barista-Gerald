@@ -1,24 +1,19 @@
 package main.java.de.voidtech.gerald.commands.fun;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.TimeoutException;
-import java.util.function.BinaryOperator;
-import java.util.function.UnaryOperator;
-import java.util.logging.Level;
-import java.util.stream.IntStream;
-
-import javax.management.RuntimeErrorException;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.service.LogService;
 import main.java.de.voidtech.gerald.util.GeraldLogger;
+
+import javax.management.RuntimeErrorException;
+import java.util.*;
+import java.util.concurrent.TimeoutException;
+import java.util.function.BinaryOperator;
+import java.util.function.UnaryOperator;
+import java.util.logging.Level;
+import java.util.stream.IntStream;
 
 @Command
 public class MathCommand extends AbstractCommand {

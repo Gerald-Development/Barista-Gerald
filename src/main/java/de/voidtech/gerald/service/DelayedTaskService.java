@@ -1,23 +1,22 @@
 package main.java.de.voidtech.gerald.service;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.logging.Level;
-
+import main.java.de.voidtech.gerald.persistence.entity.DelayedTask;
 import main.java.de.voidtech.gerald.persistence.repository.DelayedTaskRepository;
+import main.java.de.voidtech.gerald.tasks.AbstractTask;
+import main.java.de.voidtech.gerald.tasks.TaskType;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
+import net.dv8tion.jda.api.JDA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import main.java.de.voidtech.gerald.persistence.entity.DelayedTask;
-import main.java.de.voidtech.gerald.tasks.AbstractTask;
-import main.java.de.voidtech.gerald.tasks.TaskType;
-import main.java.de.voidtech.gerald.util.GeraldLogger;
-import net.dv8tion.jda.api.JDA;
+import java.time.Instant;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Level;
 
 @Lazy
 @Service

@@ -1,5 +1,13 @@
 package main.java.de.voidtech.gerald.service;
 
+import main.java.de.voidtech.gerald.commands.fun.InspiroCommand;
+import main.java.de.voidtech.gerald.persistence.entity.DelayedTask;
+import main.java.de.voidtech.gerald.tasks.TaskType;
+import main.java.de.voidtech.gerald.util.GeraldLogger;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,15 +17,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import main.java.de.voidtech.gerald.commands.fun.InspiroCommand;
-import main.java.de.voidtech.gerald.persistence.entity.DelayedTask;
-import main.java.de.voidtech.gerald.tasks.TaskType;
-import main.java.de.voidtech.gerald.util.GeraldLogger;
 
 @Service
 public class InspiroService {

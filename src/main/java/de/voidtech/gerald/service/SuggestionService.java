@@ -1,23 +1,23 @@
 package main.java.de.voidtech.gerald.service;
 
-import java.util.List;
-import java.util.Objects;
-
-import main.java.de.voidtech.gerald.persistence.repository.SuggestionChannelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.persistence.entity.SuggestionChannel;
 import main.java.de.voidtech.gerald.persistence.entity.SuggestionEmote;
+import main.java.de.voidtech.gerald.persistence.repository.SuggestionChannelRepository;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed.Field;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class SuggestionService {
@@ -56,7 +56,7 @@ public class SuggestionService {
 		return role != null;
 	}
 	
-	private void handleUserVote(GuildMessageReactionAddEvent reaction, SuggestionChannel config) {
+	private void handleUserVote(MessageReactionAddEvent reaction, SuggestionChannel config) {
 		//If no vote role is required, ignore
 		if (!config.voteRoleRequired()) return;
 		//If member does not have vote role, delete
@@ -64,10 +64,10 @@ public class SuggestionService {
 		if (!hasRole) reaction.getReaction().removeReaction(reaction.getUser()).queue();
 	}
 
-	private void handleAdminVote(GuildMessageReactionAddEvent reaction, SuggestionChannel config) {
+	private void handleAdminVote(MessageReactionAddEvent reaction, SuggestionChannel config) {
 		//If member does not have "manage messages" perms ignore
 		if (!reaction.getMember().getPermissions().contains(Permission.MESSAGE_MANAGE)) return;
-		SuggestionEmote emote = SuggestionEmote.GetEmoteFromUnicode(reaction.getReactionEmote().getAsCodepoints());
+		SuggestionEmote emote = SuggestionEmote.GetEmoteFromUnicode(reaction.getEmoji().asUnicode().getAsCodepoints());
 		//If reaction is not a coloured dot, ignore
 		if (emote == null) return;
 		//If message is not a suggestion channel embed, ignore
@@ -82,7 +82,7 @@ public class SuggestionService {
 		reaction.getReaction().removeReaction(reaction.getUser()).queue();
 	}
 	
-	private void updateEmbed(EmbedBuilder suggestionModifier, GuildMessageReactionAddEvent reaction, SuggestionEmote emote) {
+	private void updateEmbed(EmbedBuilder suggestionModifier, MessageReactionAddEvent reaction, SuggestionEmote emote) {
 		List<Field> fields = suggestionModifier.getFields();
 		Field suggestionField = fields.stream().filter(f -> Objects.requireNonNull(f.getName()).equals("Suggestion")).findFirst().orElse(null);
 		suggestionModifier.clearFields()
@@ -91,7 +91,7 @@ public class SuggestionService {
 			.setColor(emote.getColour());
 	}
 
-	public void handleVote(GuildMessageReactionAddEvent reaction) {
+	public void handleVote(MessageReactionAddEvent reaction) {
 		Server server = serverService.getServer(reaction.getGuild().getId());
 		SuggestionChannel config = getSuggestionChannel(server.getId());
 		//Ignore bot reactions
@@ -101,7 +101,7 @@ public class SuggestionService {
 		//If reaction is not added in vote channel ignore
 		if (!config.getSuggestionChannel().equals(reaction.getChannel().getId())) return;
 		//If reaction is NOT unicode, ignore
-		if (reaction.getReactionEmote().isEmote()) return;
+		if (!reaction.getEmoji().getType().equals(Emoji.Type.UNICODE)) return;
 		
 		handleUserVote(reaction, config);
 		handleAdminVote(reaction, config);

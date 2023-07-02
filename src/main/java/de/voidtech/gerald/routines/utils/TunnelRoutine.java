@@ -1,14 +1,8 @@
 package main.java.de.voidtech.gerald.routines.utils;
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
-
-import main.java.de.voidtech.gerald.persistence.repository.TunnelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.persistence.entity.Tunnel;
+import main.java.de.voidtech.gerald.persistence.repository.TunnelRepository;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.service.NitroliteService;
@@ -17,8 +11,13 @@ import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Objects;
 
 @Routine
 public class TunnelRoutine extends AbstractRoutine {
@@ -74,7 +73,7 @@ public class TunnelRoutine extends AbstractRoutine {
 		if (perms.contains(Permission.MANAGE_WEBHOOKS)) {
 			Webhook webhook = webhookManager.getOrCreateWebhook(channel, "BGTunnel", message.getJDA().getSelfUser().getId());
 			sendWebhookMessage(webhook, messageContent, message);
-		} else channel.sendMessage("**" + message.getAuthor().getAsTag() + ":** " + messageContent).queue();
+		} else channel.sendMessage("**" + message.getAuthor().getEffectiveName() + ":** " + messageContent).queue();
 	}
 	
 	private void deleteTunnel(String channelId) {

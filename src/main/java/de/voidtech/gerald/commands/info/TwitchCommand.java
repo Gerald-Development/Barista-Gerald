@@ -1,6 +1,6 @@
 package main.java.de.voidtech.gerald.commands.info;
 
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+import main.java.de.voidtech.gerald.util.EventWaiter;
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;

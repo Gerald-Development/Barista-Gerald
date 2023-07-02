@@ -1,22 +1,20 @@
 package main.java.de.voidtech.gerald.service;
 
+import main.java.de.voidtech.gerald.persistence.entity.NitroliteAlias;
+import main.java.de.voidtech.gerald.persistence.entity.NitroliteEmote;
+import main.java.de.voidtech.gerald.persistence.repository.NitroliteAliasRepository;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Message.Attachment;
+import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
-
-import main.java.de.voidtech.gerald.persistence.repository.NitroliteAliasRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import main.java.de.voidtech.gerald.persistence.entity.NitroliteAlias;
-import main.java.de.voidtech.gerald.persistence.entity.NitroliteEmote;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.Message.Attachment;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.Webhook;
 
 @Service
 public class NitroliteService {
@@ -48,7 +46,7 @@ public class NitroliteService {
 	
     public void sendMessage(Message originMessage, String content) {
     	
-    	EnumSet<Permission> perms = originMessage.getGuild().getSelfMember().getPermissions((GuildChannel) originMessage.getChannel());
+    	EnumSet<Permission> perms = originMessage.getGuild().getSelfMember().getPermissions(originMessage.getGuildChannel());
     	
 		if (originMessage.getAttachments().size() != 0) {
             StringBuilder contentBuilder = new StringBuilder(content);
@@ -75,7 +73,7 @@ public class NitroliteService {
     private void sendRegularMessage(Message originMessage, String content, boolean canDeleteMessages) {
     	String finalMessage = "";
     	if (canDeleteMessages) {
-    		finalMessage += "**" + originMessage.getAuthor().getAsTag() + "**: ";
+    		finalMessage += "**" + originMessage.getAuthor().getEffectiveName() + "**: ";
     	}
     	 finalMessage += content;
     	originMessage.getChannel().sendMessage(finalMessage).queue();

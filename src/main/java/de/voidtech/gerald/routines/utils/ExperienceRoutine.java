@@ -1,18 +1,17 @@
 package main.java.de.voidtech.gerald.routines.utils;
 
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.service.ExperienceService;
 import main.java.de.voidtech.gerald.service.ServerService;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+import java.util.Objects;
 
 @Routine
 public class ExperienceRoutine extends AbstractRoutine {

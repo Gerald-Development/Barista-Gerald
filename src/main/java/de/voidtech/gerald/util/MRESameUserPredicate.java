@@ -1,9 +1,9 @@
 package main.java.de.voidtech.gerald.util;
 
-import java.util.function.Predicate;
-
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+
+import java.util.function.Predicate;
 
 public class MRESameUserPredicate implements Predicate<MessageReceivedEvent> {
 

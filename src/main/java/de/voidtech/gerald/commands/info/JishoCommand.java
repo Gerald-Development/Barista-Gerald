@@ -1,10 +1,5 @@
 package main.java.de.voidtech.gerald.commands.info;
 
-import java.awt.Color;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
@@ -12,6 +7,10 @@ import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.service.PlaywrightService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.awt.*;
+import java.util.List;
 
 @Command
 public class JishoCommand extends AbstractCommand {
@@ -27,8 +26,7 @@ public class JishoCommand extends AbstractCommand {
 		String search = JISHO_BASE_URL + String.join("%20", args).replaceAll("#", "%23");
 		byte[] resultImage = playwrightService.screenshotPage(search, 1500, 1500);
 		//TODO (from: Franziska): Same as with queue. I probably need to proxy those things through?
-		context.getChannel().sendMessageEmbeds(constructResultEmbed(search))
-		.addFile(resultImage, "screenshot.png").queue();
+		context.replyWithFile(resultImage, "screenshot.png", constructResultEmbed(search));
 	}
 	
 	private MessageEmbed constructResultEmbed(String url) {

@@ -7,10 +7,9 @@ import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.service.WebhookManager;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.EnumSet;
@@ -24,7 +23,7 @@ public class ImpersonateCommand extends AbstractCommand{
 	
 	@Override
 	public void executeInternal(CommandContext context, List<String> args) {
-		EnumSet<Permission> perms = context.getGuild().getSelfMember().getPermissions((GuildChannel) context.getChannel());
+		EnumSet<Permission> perms = context.getGuild().getSelfMember().getPermissions(context.getGuildChannel());
 		
 		if (perms.contains(Permission.MESSAGE_MANAGE) && perms.contains(Permission.MANAGE_WEBHOOKS)) {
 			if (context.getMentionedMembers().size() == 0) {
@@ -52,7 +51,7 @@ public class ImpersonateCommand extends AbstractCommand{
 		webhookManager.postMessage(messageToBeSent.toString(), null, memberToBeImpersonated.getUser().getAvatarUrl(), memberToBeImpersonated.getUser().getName(), impersonateHook);
 
 		//TODO (from: Franziska): Message needs to be deleted, message context does not have a message object. Should we add one? Do we do this somehow else? Should this command be available through slashes at all!?
-		//context.delete().queue();
+		context.getMessage().delete().queue();
 	}
 
 	@Override

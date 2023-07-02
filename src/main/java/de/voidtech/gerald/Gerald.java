@@ -18,11 +18,11 @@
 
 package main.java.de.voidtech.gerald;
 
-import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import main.java.de.voidtech.gerald.persistence.entity.GlobalConfig;
 import main.java.de.voidtech.gerald.listeners.*;
+import main.java.de.voidtech.gerald.persistence.entity.GlobalConfig;
 import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.GlobalConfigService;
+import main.java.de.voidtech.gerald.util.EventWaiter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -75,11 +75,10 @@ public class Gerald {
 	
 	private Set<GatewayIntent> getApprovedIntents()
 	{
-		Set<GatewayIntent> approvedIntents = new HashSet<GatewayIntent>();
+		Set<GatewayIntent> approvedIntents = new HashSet<>();
 		
 		approvedIntents.add(GatewayIntent.GUILD_MEMBERS);
-		approvedIntents.add(GatewayIntent.GUILD_BANS);
-		approvedIntents.add(GatewayIntent.GUILD_EMOJIS);
+		approvedIntents.add(GatewayIntent.GUILD_EMOJIS_AND_STICKERS);
 		approvedIntents.add(GatewayIntent.GUILD_WEBHOOKS);
 		approvedIntents.add(GatewayIntent.GUILD_INVITES);
 		approvedIntents.add(GatewayIntent.GUILD_VOICE_STATES);
@@ -89,6 +88,7 @@ public class Gerald {
 		approvedIntents.add(GatewayIntent.DIRECT_MESSAGES);
 		approvedIntents.add(GatewayIntent.DIRECT_MESSAGE_REACTIONS);
 		approvedIntents.add(GatewayIntent.DIRECT_MESSAGE_TYPING);
+		approvedIntents.add(GatewayIntent.MESSAGE_CONTENT);
 		
 		return approvedIntents;
 	}

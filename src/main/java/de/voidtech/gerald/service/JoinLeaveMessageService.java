@@ -1,22 +1,21 @@
 package main.java.de.voidtech.gerald.service;
 
-import java.awt.Color;
-import java.time.Instant;
-import java.util.Objects;
-
+import main.java.de.voidtech.gerald.persistence.entity.JoinLeaveMessage;
+import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.persistence.repository.JoinLeaveMessageRepository;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import main.java.de.voidtech.gerald.persistence.entity.JoinLeaveMessage;
-import main.java.de.voidtech.gerald.persistence.entity.Server;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
+import java.awt.*;
+import java.time.Instant;
+import java.util.Objects;
 
 @Service
 public class JoinLeaveMessageService {
@@ -45,7 +44,7 @@ public class JoinLeaveMessageService {
 			
 			MessageEmbed joinMessageEmbed = new EmbedBuilder()
 					.setColor(Color.green)
-					.setDescription(member.getAsMention() + " **(" + member.getUser().getAsTag() + ") " + message + "**")
+					.setDescription(member.getAsMention() + " **(" + member.getUser().getEffectiveName() + ") " + message + "**")
 					.setTimestamp(Instant.now())
 					.build();
 			
@@ -63,7 +62,7 @@ public class JoinLeaveMessageService {
 			
 			MessageEmbed leaveMessageEmbed = new EmbedBuilder()
 					.setColor(Color.red)
-					.setDescription(Objects.requireNonNull(member).getAsMention() + " **(" + member.getUser().getAsTag() + ") " + message + "**")
+					.setDescription(Objects.requireNonNull(member).getAsMention() + " **(" + member.getUser().getEffectiveName() + ") " + message + "**")
 					.setTimestamp(Instant.now())
 					.build();
 			

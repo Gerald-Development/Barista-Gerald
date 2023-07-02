@@ -1,11 +1,5 @@
 package main.java.de.voidtech.gerald.listeners;
 
-import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import main.java.de.voidtech.gerald.persistence.entity.AutoroleConfig;
 import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.service.AutoroleService;
@@ -13,6 +7,11 @@ import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class AutoroleListener implements EventListener {
