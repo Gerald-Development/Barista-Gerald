@@ -59,7 +59,7 @@ public class CommandService
                 .args(messageArray.subList(1, messageArray.size()))
                 .member(message.getMember())
                 .user(message.getAuthor())
-                .guildChannel(message.getGuildChannel())
+                .guildChannel(isPrivateMessage ? null : message.getGuildChannel())
                 .message(message)
                 .build();
 

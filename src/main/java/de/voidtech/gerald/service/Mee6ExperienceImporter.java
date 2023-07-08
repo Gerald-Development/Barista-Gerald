@@ -91,10 +91,10 @@ public class Mee6ExperienceImporter {
         for (int i = 0; i < result.length(); i++) {
             JSONObject xp = result.getJSONObject(i);
             Experience userXp = new Experience(xp.getString("id"), server.getId());
-            long gainedXp = xp.getLong("xp");
+
             long level = xp.getLong("level");
             userXp.setLevel(level);
-            userXp.setTotalExperience(gainedXp);
+            userXp.setTotalExperience(xpService.totalXpNeededForLevel(level - 1) + 1);
 
             xpService.saveUserExperience(userXp);
         }
