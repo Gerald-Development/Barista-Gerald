@@ -24,6 +24,8 @@ public class RemindMeCommand extends AbstractCommand {
 	private static final HashMap<String, Integer> TimeMultipliers = new HashMap<>();
 
 	static {
+		TimeMultipliers.put("y", 31557600);
+		TimeMultipliers.put("o", 2629800);
 		TimeMultipliers.put("w", 604800);
 		TimeMultipliers.put("d", 86400);
 		TimeMultipliers.put("h", 3600);
@@ -55,7 +57,7 @@ public class RemindMeCommand extends AbstractCommand {
 			return;
 		}
 		
-		String timeOnly = timeString.replaceAll(timeMultiplier, "");
+		String timeOnly = ParsingUtils.filterSnowflake(timeString);
 		if (!ParsingUtils.isInteger(timeOnly)) {
 			context.reply("**You need to enter a valid time quantity! (Must be a number)**");
 			return;
@@ -71,7 +73,7 @@ public class RemindMeCommand extends AbstractCommand {
 		long time = (timeValue * multiplicationFactor) + Instant.now().getEpochSecond();
 		
 		remindMeService.addReminder(context, message, time);
-		context.reply("**Reminder added! I'll remind you on** <t:" + time + ":F>");
+		context.reply("**Reminder added! I'll remind you on** <t:" + time + ":F> <t:" + time + ":R>");
 	}
 
 	private void deleteReminder(CommandContext context, List<String> args) {
@@ -101,7 +103,7 @@ public class RemindMeCommand extends AbstractCommand {
 	public String getDescription() {
 		return "Need a reminder to do something in a little while? Or maybe you want to remind yourself of an event in a few weeks?"
 				+ " This command is for you! Simply enter the time delay and a reminder message and you're set!\n\n"
-				+ "Use w, d, h and m (months, weeks, days, hours, minutes) to set your time delay. Examples: 12d, 13m, 4w\n"
+				+ "Use y, mo, w, d, h and m (years, months, weeks, days, hours, minutes) to set your time delay. Examples: 12d, 3mo, 4w\n"
 				+ "Please note that there should be no spaces between the quantity and time multiplier.";
 	}
 
