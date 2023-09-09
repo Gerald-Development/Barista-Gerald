@@ -128,12 +128,12 @@ public class StarboardCommand extends AbstractCommand {
 						context.getChannel().sendMessage("**The channel you provided is not in this server!**").queue();
 					else {
 						if (starboardService.getIgnoredChannels(server.getId()) == null) {
-							starboardService.addChannelToIgnorelist(server.getId(), channelID);
+							starboardService.addChannelToIgnoreList(server.getId(), channelID);
 							context.getChannel().sendMessage("<#" + channelID + "> **has been added to the blacklist!**").queue();
 						} else if (starboardService.getIgnoredChannels(server.getId()).contains(channelID))
 							context.getChannel().sendMessage("**This channel is already blacklisted!**").queue();
 						else {
-							starboardService.addChannelToIgnorelist(server.getId(), channelID);
+							starboardService.addChannelToIgnoreList(server.getId(), channelID);
 							context.getChannel().sendMessage("<#" + channelID + "> **has been added to the blacklist!**").queue();
 						}
 				}
@@ -153,7 +153,7 @@ public class StarboardCommand extends AbstractCommand {
 						if (starboardService.getIgnoredChannels(server.getId()) == null)
 							context.getChannel().sendMessage("**There is no blacklist yet!**").queue();
 						else if (starboardService.getIgnoredChannels(server.getId()).contains(channelID)) {
-							starboardService.removeFromIgnorelist(server.getId(), channelID);
+							starboardService.removeFromIgnoreList(server.getId(), channelID);
 							context.getChannel().sendMessage("<#" + channelID + "> **has been removed from the blacklist!**").queue();
 						} else
 							context.getChannel().sendMessage("**This channel is not yet blacklisted!**").queue();

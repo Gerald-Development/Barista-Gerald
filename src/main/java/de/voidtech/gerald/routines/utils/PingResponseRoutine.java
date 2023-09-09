@@ -10,6 +10,7 @@ import main.java.de.voidtech.gerald.service.GeraldConfig;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -19,6 +20,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Routine
 public class PingResponseRoutine extends AbstractRoutine {
@@ -35,11 +37,10 @@ public class PingResponseRoutine extends AbstractRoutine {
     private void sendPingInfoMessage(Message message) {
     	Server guild = serverService.getServer(message.getGuild().getId());
 		String prefix = guild.getPrefix() == null ? config.getDefaultPrefix() : guild.getPrefix();
-		String linktree = GlobalConstants.LINKTREE_URL;
 		
 		MessageEmbed pingResponseEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
-				.setTitle("You called? :telephone:", linktree)
+				.setTitle("You called? :telephone:", GlobalConstants.LINKTREE_URL)
 				.setDescription("**This Guild's prefix is:** " + prefix + "\nTry " + prefix + "help to see some commands!")
 				.build();
 		message.getChannel().sendMessageEmbeds(pingResponseEmbed).queue();
@@ -47,15 +48,23 @@ public class PingResponseRoutine extends AbstractRoutine {
     
 	@Override
 	public void executeInternal(Message message) {
-		if (message.getChannelType().equals(ChannelType.TEXT) && message.getMentions().getMembers().contains(message.getJDA().getSelfUser())) {
+		if (message.getChannelType().equals(ChannelType.TEXT) && messageMentionsBot(message)) {
 			List<String> messageBlocks = new ArrayList<>(Arrays.asList(message.getContentRaw().split(" ")));
 			if (messageBlocks.size() == 1 && ParsingUtils.filterSnowflake(message.getContentRaw()).equals(message.getJDA().getSelfUser().getId()))
 				sendPingInfoMessage(message);
 			else {
-				message.getChannel().sendTyping();
+				message.getChannel().sendTyping().queue();
 				message.getChannel().sendMessage(geraldAI.getReply(message.getContentDisplay(), message.getId())).queue();
 			}
 		}
+	}
+
+	private boolean messageMentionsBot(Message message) {
+		List<String> mentionedIds = message.getMentions().getMembers()
+				.stream()
+				.map(Member::getId)
+				.collect(Collectors.toList());
+		return mentionedIds.contains(message.getJDA().getSelfUser().getId());
 	}
 
 	@Override
