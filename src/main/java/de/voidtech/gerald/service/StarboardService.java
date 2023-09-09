@@ -18,9 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.awt.*;
 import java.time.Instant;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class StarboardService {
@@ -30,7 +29,8 @@ public class StarboardService {
 
 	@Autowired
 	private StarboardMessageRepository messageRepository;
-	
+
+	private static final Set<String> MEDIA_LINK_PREFIXES = Set.of("https://cdn.discordapp.com/attachments", "https://media.discordapp.net/attachments/");
 	private static final String STAR_UNICODE = "U+2b50";
  
 	public StarboardConfig getStarboardConfig(long serverID) {
@@ -76,33 +76,41 @@ public class StarboardService {
 		EmbedBuilder starboardEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setAuthor(message.getAuthor().getEffectiveName(), GlobalConstants.LINKTREE_URL, message.getAuthor().getAvatarUrl())
-				.setDescription(message.getContentRaw())
+				.setDescription(message.getContentRaw().isEmpty() ? "(Video)" : message.getContentRaw())
 				.setTitle("Jump to message!", message.getJumpUrl())
 				.setTimestamp(Instant.now())
-				.setFooter("in #" + message.getChannel().getName());
-		
-		boolean found = false;
-		if (message.getAttachments().size() > 0) {
-			
-			for (Attachment attachment : message.getAttachments()) {
-				if (attachment.isImage() && !found) {
-					starboardEmbed.setImage(attachment.getUrl());
-					found = true;
-				}
-			}
-		}
-		if (!found && !message.getEmbeds().isEmpty()) {
-			for (MessageEmbed embed : message.getEmbeds()) {
-				if (embed.getImage() != null && !found) {
-					starboardEmbed.setImage(embed.getImage().getUrl());
-					found = true;
-				}
-			}
-		}
-		
+				.setFooter("Posted in #" + message.getChannel().getName());
+		Optional<String> imageUrl = tryAndFindImageUrl(message);
+        imageUrl.ifPresent(starboardEmbed::setImage);
 		return starboardEmbed.build();
 	}
-	
+
+	private Optional<String> tryAndFindImageUrl(Message message) {
+		if (!message.getAttachments().isEmpty()) {
+			for (Attachment attachment : message.getAttachments()) {
+				if (attachment.isImage()) {
+					return Optional.of(attachment.getUrl());
+				}
+			}
+		}
+		if (!message.getEmbeds().isEmpty()) {
+			for (MessageEmbed embed : message.getEmbeds()) {
+				if (embed.getImage() != null) {
+					return Optional.of(embed.getImage().getUrl());
+				}
+			}
+		}
+		List<String> words = List.of(message.getContentRaw().split(" "));
+		for (String word : words) {
+			for (String prefix : MEDIA_LINK_PREFIXES) {
+				if (word.startsWith(prefix)) {
+					return Optional.of(word);
+				}
+			}
+		}
+		return Optional.empty();
+	}
+
 	private synchronized void persistMessage(String originMessageID, String selfMessageID, long serverID) {		
 		messageRepository.save(new StarboardMessage(originMessageID, selfMessageID, serverID));
 	}
@@ -156,7 +164,7 @@ public class StarboardService {
 		return config.getIgnoredChannels();
 	}
 
-	public void addChannelToIgnorelist(long serverID, String channelID) {
+	public void addChannelToIgnoreList(long serverID, String channelID) {
 		List<String> ignoredChannels = getIgnoredChannels(serverID);
 		List<String> newIgnoredChannelList;
 		if (ignoredChannels == null) {
@@ -170,11 +178,11 @@ public class StarboardService {
 		updateConfig(config);
 	}
 
-	public void removeFromIgnorelist(long serverID, String channelID) {
+	public void removeFromIgnoreList(long serverID, String channelID) {
 		List<String> ignoredChannels = getIgnoredChannels(serverID);
 		List<String> newIgnoredChannelList = new ArrayList<>(ignoredChannels);
 		newIgnoredChannelList.remove(channelID);
-		if (newIgnoredChannelList.size() == 0)
+		if (newIgnoredChannelList.isEmpty())
 			newIgnoredChannelList = null;
 		StarboardConfig config = getStarboardConfig(serverID);
 		config.setIgnoredChannels(Objects.requireNonNull(newIgnoredChannelList));
