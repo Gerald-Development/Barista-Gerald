@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.utils.Result;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
@@ -34,15 +35,16 @@ public abstract class ActionsCommand extends AbstractCommand {
 		return repository.getActionStatsProfile(id, action.getType(), serverID);
 	}
 	
-	private void createStatsProfile(String id, ActionType action, long serverID) {
-		repository.save(new ActionStats(action.getType(), id, 0, 0, serverID));
+	private ActionStats createStatsProfile(String id, ActionType action, long serverID) {
+		ActionStats stats = new ActionStats(action.getType(), id, 0, 0, serverID);
+		repository.save(stats);
+		return stats;
 	}
 	
 	private ActionStats getOrCreateProfile(String id, ActionType action, long serverID) {
 		ActionStats stats = getStatsProfile(id, action, serverID);
 		if (stats == null) {
-			createStatsProfile(id, action, serverID);
-			stats = getStatsProfile(id, action, serverID);
+			stats = createStatsProfile(id, action, serverID);
 		}
 		return stats;
 	}
@@ -58,7 +60,7 @@ public abstract class ActionsCommand extends AbstractCommand {
 	private void updateStatsProfile(ActionStats stats) {
 		repository.save(stats);
 	}
-	
+
 	private void updateActionStats(String giver, String receiver, ActionType action, CommandContext context) {
 		
 		long serverID = serverService.getServer(context.getGuild().getId()).getId();
@@ -93,10 +95,17 @@ public abstract class ActionsCommand extends AbstractCommand {
 			sendActionLeaderboard(context, action);
 			return;
 		}
+
+		if (context.getArgs().get(0).equals("stats")) {
+			sendActionStats(context, action);
+			return;
+		}
+
 		if (context.getMentionedMembers().isEmpty()) {
 			context.reply("You need to mention someone to " + action.getType() + "!");
 			return;
 		}
+
 		String gifURL = getActionGif(action.getType());
         if (gifURL != null) {
             updateActionStats(context.getAuthor().getId(), context.getMentionedMembers().get(0).getId(), action, context);
@@ -109,13 +118,30 @@ public abstract class ActionsCommand extends AbstractCommand {
             EmbedBuilder actionEmbedBuilder = new EmbedBuilder();
             actionEmbedBuilder.setTitle(phrase);
             actionEmbedBuilder.setColor(Color.ORANGE);
-            if (!gifURL.equals("")) actionEmbedBuilder.setImage(gifURL);
+            if (!gifURL.isEmpty()) actionEmbedBuilder.setImage(gifURL);
             actionEmbedBuilder.setFooter(getStatsString(context.getAuthor().getId(), context.getMentionedMembers().get(0).getId(), action, context));
             MessageEmbed actionEmbed = actionEmbedBuilder.build();
 			context.reply(actionEmbed);
         }
 	}
-	
+
+	private void sendActionStats(CommandContext context, ActionType action) {
+		Member member;
+		Server server = serverService.getServer(context.getGuild().getId());
+		if (context.getMentionedMembers().isEmpty()) member = context.getMember();
+		else member = context.getMentionedMembers().get(0);
+
+		ActionStats stats = getOrCreateProfile(member.getId(), action, server.getId());
+		String message = String.format("**%s** has %s people **%d times** and has been %s **%d times**",
+				member.getEffectiveName(),
+				conjugateAction(action.getType()),
+				stats.getGivenCount(),
+				conjugateAction(action.getType()),
+				stats.getReceivedCount()
+		);
+		context.reply(message);
+	}
+
 	private void sendActionLeaderboard(CommandContext context, ActionType action) {
 		Server server = serverService.getServer(context.getGuild().getId());
 		List<ActionStats> topGiven = getTopGivenInServer(action, server.getId());
@@ -164,15 +190,11 @@ public abstract class ActionsCommand extends AbstractCommand {
 
 	private String conjugateAction(String action) {
 		String conjugatedAction = action;
-		
 		if (action.charAt(action.length() - 1) == action.charAt(action.length() - 2)) {
 			conjugatedAction += "ed";
-		}
-		else if (action.charAt(action.length() - 1) == 'e') {
+		} else if (action.charAt(action.length() - 1) == 'e') {
 			conjugatedAction += "d";
-		}
-		else conjugatedAction += action.charAt(action.length()-1) + "ed";
-
+		} else conjugatedAction += action.charAt(action.length()-1) + "ed";
 		return conjugatedAction;
 	}
 	
