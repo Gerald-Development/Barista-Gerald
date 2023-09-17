@@ -109,8 +109,9 @@ public class CountCommand extends AbstractCommand {
 		return "Allows you to create a designated Counting channel in your server!"
 				+ " Each user must in turn count up starting from 0, if someone gets"
 				+ " the count wrong, the counter resets from 0! Additionally, users"
-				+ " may battle between eachother trying to either raise the count as"
-				+ " high as possible, or get it as far below zero as possible by counting down.";
+				+ " may battle between each other trying to either raise the count as"
+				+ " high as possible, or get it as far below zero as possible by"
+				+ " counting down. Users may also submit mathematical expressions as answers.";
 	}
 
 	@Override

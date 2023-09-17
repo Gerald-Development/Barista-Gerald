@@ -6,6 +6,7 @@ import main.java.de.voidtech.gerald.persistence.repository.CountingChannelReposi
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.service.CountingService;
+import main.java.de.voidtech.gerald.util.ArithmeticUtils;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 import java.util.EnumSet;
-import java.util.Objects;
 
 @Routine
 public class CountRoutine extends AbstractRoutine {
@@ -50,11 +50,10 @@ public class CountRoutine extends AbstractRoutine {
 		update69ReachedStatus(message.getChannel().getId());
 	}
 	
-	private void playGame(Message message) {
-		if (countService.isDifferentUser(Objects.requireNonNull(message.getMember()).getId(), message.getChannel().getId())) {
+	private void playGame(Message message, int countGiven) {
+		if (countService.isDifferentUser(message.getMember().getId(), message.getChannel().getId())) {
 			CountingChannel channel = countService.getCountingChannel(message.getChannel().getId());
 			int currentCount = channel.getChannelCount();
-			int countGiven = Integer.parseInt(message.getContentRaw());
 			
 			if (countGiven == currentCount + 1) {
 				countService.setCount(channel, currentCount, message.getMember().getId(), message.getId(), "increment");
@@ -89,13 +88,21 @@ public class CountRoutine extends AbstractRoutine {
 		CountingChannel channel = countService.getCountingChannel(message.getChannel().getId());
 		EnumSet<Permission> perms = message.getGuild().getSelfMember().getPermissions(message.getGuildChannel());
 		if (channel != null) {
-			if (ParsingUtils.isInteger(message.getContentRaw()))
-				playGame(message);
-			else if (message.getContentRaw().equalsIgnoreCase("stats") |
-					message.getContentRaw().equalsIgnoreCase("statistics"))
+
+			if (ArithmeticUtils.isValidExpression(message.getContentRaw())) {
+				try {
+					double result = ArithmeticUtils.evalExpression(message.getContentRaw(), System.currentTimeMillis());
+					int count = (int) Math.round(result);
+					playGame(message, count);
+				} catch (Exception e) {
+					message.reply("**Your expression is invalid**").queue();
+				}
+			} else if (ParsingUtils.isInteger(message.getContentRaw())) {
+				playGame(message, Integer.parseInt(message.getContentRaw()));
+			} else if (message.getContentRaw().equalsIgnoreCase("stats") | message.getContentRaw().equalsIgnoreCase("statistics")) {
 				sendStatsMessage(channel, message);
-			else if (!channel.talkingIsAllowed()) {
-				if (perms.contains(Permission.MESSAGE_MANAGE)) message.delete().queue();
+			} else if (!channel.talkingIsAllowed() && perms.contains(Permission.MESSAGE_MANAGE)) {
+				message.delete().queue();
 			}
 		}		
 	}
