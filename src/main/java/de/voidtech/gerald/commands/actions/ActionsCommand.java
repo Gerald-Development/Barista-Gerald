@@ -15,7 +15,6 @@ import net.dv8tion.jda.api.utils.Result;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
