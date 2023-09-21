@@ -1,5 +1,7 @@
 package main.java.de.voidtech.gerald.util;
 
+import com.fathzer.soft.javaluator.DoubleEvaluator;
+
 import javax.management.RuntimeErrorException;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
@@ -10,7 +12,7 @@ import java.util.stream.IntStream;
 public class ArithmeticUtils {
 
     private static final long MILLIS_TIME_OUT = 5000;
-    private static final String EXPRESSION_REGEX = "[0-9+\\-*/^()\\s.]+";
+    private static final String EXPRESSION_REGEX = "([0-9+\\-*/^()\\\\]|sin|sinh|cos|cosh|tan|tanh|ln|log|pi)+";
     private enum TokenType { VALUE, OPERATOR, EXPRESSION, TIMEOUT }
 
     private static class ArithmeticToken {
@@ -259,7 +261,12 @@ public class ArithmeticUtils {
         }
     }
 
-    public static double evalExpression(String expression, long creationTime) throws ArithmeticException {
+    public static double evalExpression(String expression) {
+        expression = expression.replaceAll("\\s","");
+        return new DoubleEvaluator().evaluate(expression);
+    }
+
+    public static double evalExpressionOld(String expression, long creationTime) throws ArithmeticException {
 
         if (!isValidExpression(expression))
             throw new ArithmeticException("Invalid char(s) in expression. Must only contain numbers, + - * / ^ ( )");

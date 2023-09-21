@@ -16,15 +16,10 @@ public class MathCommand extends AbstractCommand {
     public void executeInternal(CommandContext context, List<String> args) {
         String expression = String.join(" ",args);
         try {
-            double result = evalExpression(expression, System.currentTimeMillis());
+            double result = evalExpression(expression);
             context.reply(String.format("The result of your expression `%s` is `%f`", expression, result));
-        } catch (ArithmeticException e){
-            context.reply(String.format("Arithmetic Error: %s", e.getMessage()));
-        }
-        // give feedback to the user in case of an unexpected error.
-        // Yes I know catching Exception is bad practice but it's to future proofing against more exceptions being thrown
-        catch (Exception e){
-            context.reply(String.format("Internal Error `%s`, you should copy the command you sent and error you got and tell us about it at https://discord.gg/RwftadXcCv", e.getMessage()));
+        } catch (Exception e){
+            context.reply("`" + e.getMessage() + "`");
         }
     }
 

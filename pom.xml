@@ -200,5 +200,10 @@
 			<artifactId>okhttp</artifactId>
 			<version>4.9.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.fathzer</groupId>
+			<artifactId>javaluator</artifactId>
+			<version>3.0.0</version>
+		</dependency>
 	</dependencies>
 </project>
