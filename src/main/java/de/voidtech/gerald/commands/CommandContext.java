@@ -42,9 +42,9 @@ public class CommandContext {
         this.user = builder.user;
         this.guildChannel = builder.guildChannel;
     }
-    
+
     public boolean isPrivate() {
-    	return this.isPrivate;
+        return this.isPrivate;
     }
 
     public MessageChannel getChannel() {
@@ -86,7 +86,7 @@ public class CommandContext {
     public JDA getJDA() {
         return user.getJDA();
     }
-    
+
     public void replyWithFile(byte[] attachment, String attachmentName, MessageEmbed... embeds) {
         FileUpload file = FileUpload.fromData(attachment, attachmentName);
         if (this.isSlash)
@@ -141,7 +141,7 @@ public class CommandContext {
         private Message message;
         private SlashCommandInteractionEvent slashCommandEvent;
         private boolean isPrivateMessage;
-		private User user;
+        private User user;
 
         public CommandContextBuilder(boolean isSlashCommand) {
             this.isSlash = isSlashCommand;
@@ -151,6 +151,7 @@ public class CommandContext {
             this.guildChannel = channel;
             return this;
         }
+
         public CommandContextBuilder channel(MessageChannel channel) {
             this.channel = channel;
             return this;
@@ -194,17 +195,17 @@ public class CommandContext {
         }
 
         public CommandContextBuilder privateMessage(boolean isPrivateMessage) {
-        	this.isPrivateMessage = isPrivateMessage;
-        	return this;
+            this.isPrivateMessage = isPrivateMessage;
+            return this;
         }
-        
+
         public CommandContext build() {
             return new CommandContext(this);
         }
 
-		public CommandContextBuilder user(User author) {
-			this.user = author;
-			return this;
-		}
+        public CommandContextBuilder user(User author) {
+            this.user = author;
+            return this;
+        }
     }
 }

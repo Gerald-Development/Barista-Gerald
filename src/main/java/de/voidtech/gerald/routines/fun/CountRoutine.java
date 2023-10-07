@@ -91,7 +91,7 @@ public class CountRoutine extends AbstractRoutine {
 
 			if (ArithmeticUtils.isValidExpression(message.getContentRaw())) {
 				try {
-					double result = ArithmeticUtils.evalExpression(message.getContentRaw(), System.currentTimeMillis());
+					double result = ArithmeticUtils.evalExpression(message.getContentRaw());
 					int count = (int) Math.round(result);
 					playGame(message, count);
 				} catch (Exception e) {

@@ -9,56 +9,56 @@ import java.util.List;
 import java.util.Random;
 
 @Command
-public class CoinflipCommand extends AbstractCommand{
+public class CoinflipCommand extends AbstractCommand {
 
-	@Override
-	public void executeInternal(CommandContext context, List<String> args) {
-		context.reply(new Random().nextBoolean() ? "Heads wins!" : "Tails wins!");
-	}
+    @Override
+    public void executeInternal(CommandContext context, List<String> args) {
+        context.reply(new Random().nextBoolean() ? "Heads wins!" : "Tails wins!");
+    }
 
-	@Override
-	public String getDescription() {
-		return "flips a coin";
-	}
+    @Override
+    public String getDescription() {
+        return "flips a coin";
+    }
 
-	@Override
-	public String getUsage() {
-		return "coinflip";
-	}
+    @Override
+    public String getUsage() {
+        return "coinflip";
+    }
 
-	@Override
-	public String getName() {
-		return "coinflip";
-	}
+    @Override
+    public String getName() {
+        return "coinflip";
+    }
 
-	@Override
-	public CommandCategory getCommandCategory() {
-		return CommandCategory.FUN;
-	}
+    @Override
+    public CommandCategory getCommandCategory() {
+        return CommandCategory.FUN;
+    }
 
-	@Override
-	public boolean isDMCapable() {
-		return true;
-	}
+    @Override
+    public boolean isDMCapable() {
+        return true;
+    }
 
-	@Override
-	public boolean requiresArguments() {
-		return false;
-	}
-	
-	@Override
-	public String[] getCommandAliases() {
+    @Override
+    public boolean requiresArguments() {
+        return false;
+    }
+
+    @Override
+    public String[] getCommandAliases() {
         return new String[]{"coin", "flip"};
-	}
-	
-	@Override
-	public boolean canBeDisabled() {
-		return true;
-	}
-	
-	@Override
-	public boolean isSlashCompatible() {
-		return true;
-	}
+    }
+
+    @Override
+    public boolean canBeDisabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isSlashCompatible() {
+        return true;
+    }
 
 }

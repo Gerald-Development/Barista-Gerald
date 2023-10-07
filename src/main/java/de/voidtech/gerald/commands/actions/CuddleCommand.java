@@ -9,54 +9,54 @@ import java.util.List;
 @Command
 public class CuddleCommand extends ActionsCommand {
 
-	@Override
-	public void executeInternal(CommandContext context, List<String> args) {
-		super.sendAction(context, ActionType.CUDDLE);
-	}
+    @Override
+    public void executeInternal(CommandContext context, List<String> args) {
+        super.sendAction(context, ActionType.CUDDLE);
+    }
 
-	@Override
-	public String getDescription() {
-		return "Cuddle a user!";
-	}
+    @Override
+    public String getDescription() {
+        return "Cuddle a user!";
+    }
 
-	@Override
-	public String getUsage() {
-		return "cuddle @user";
-	}
+    @Override
+    public String getUsage() {
+        return "cuddle @user";
+    }
 
-	@Override
-	public String getName() {
-		return "cuddle";
-	}
+    @Override
+    public String getName() {
+        return "cuddle";
+    }
 
-	@Override
-	public CommandCategory getCommandCategory() {
-		return CommandCategory.ACTIONS;
-	}
+    @Override
+    public CommandCategory getCommandCategory() {
+        return CommandCategory.ACTIONS;
+    }
 
-	@Override
-	public boolean isDMCapable() {
-		return false;
-	}
+    @Override
+    public boolean isDMCapable() {
+        return false;
+    }
 
-	@Override
-	public boolean requiresArguments() {
-		return true;
-	}
+    @Override
+    public boolean requiresArguments() {
+        return true;
+    }
 
-	@Override
-	public String[] getCommandAliases() {
-		return new String[]{"snuggle"};
-	}
+    @Override
+    public String[] getCommandAliases() {
+        return new String[]{"snuggle"};
+    }
 
-	@Override
-	public boolean canBeDisabled() {
-		return true;
-	}
+    @Override
+    public boolean canBeDisabled() {
+        return true;
+    }
 
-	@Override
-	public boolean isSlashCompatible() {
-		return true;
-	}
+    @Override
+    public boolean isSlashCompatible() {
+        return true;
+    }
 
 }

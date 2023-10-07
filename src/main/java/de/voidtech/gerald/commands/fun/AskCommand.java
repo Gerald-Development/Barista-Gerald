@@ -10,80 +10,77 @@ import java.util.List;
 import java.util.Random;
 
 @Command
-public class AskCommand extends AbstractCommand{
+public class AskCommand extends AbstractCommand {
 
-	@Override
-	public void executeInternal(CommandContext context, List<String> args)
-	{
-		if(args.size() > 0)
-		{
-			Random random = new Random();
-			List<String> answers = getAnswers();
-			context.reply(answers.get(random.nextInt(answers.size())));
-		}
-	}
-	
-	private List<String> getAnswers()
-	{
-		List<String> answers = new ArrayList<>();
-		
-		answers.add("Yes");
-		answers.add("No");
-		answers.add("Not a chance");
-		answers.add("Absolutely");
-		answers.add("Absolutely not");
-		answers.add("Without a shadow of a doubt");
-		answers.add("You wish");
-		answers.add("Maybe not this time");
-		answers.add("That sounds like a great idea");
-		answers.add("Are you a moron? of course not");
-		answers.add("A thousand times yes");
-		
-		return answers;
-	}
+    @Override
+    public void executeInternal(CommandContext context, List<String> args) {
+        if (!args.isEmpty()) {
+            Random random = new Random();
+            List<String> answers = getAnswers();
+            context.reply(answers.get(random.nextInt(answers.size())));
+        }
+    }
 
-	@Override
-	public String getDescription() {
-		return "ask Gerald something and he will answer";
-	}
+    private List<String> getAnswers() {
+        List<String> answers = new ArrayList<>();
 
-	@Override
-	public String getUsage() {
-		return "ask are animals with guns cool?";
-	}
+        answers.add("Yes");
+        answers.add("No");
+        answers.add("Not a chance");
+        answers.add("Absolutely");
+        answers.add("Absolutely not");
+        answers.add("Without a shadow of a doubt");
+        answers.add("You wish");
+        answers.add("Maybe not this time");
+        answers.add("That sounds like a great idea");
+        answers.add("Are you a moron? of course not");
+        answers.add("A thousand times yes");
 
-	@Override
-	public String getName() {
-		return "ask";
-	}
+        return answers;
+    }
 
-	@Override
-	public CommandCategory getCommandCategory() {
-		return CommandCategory.FUN;
-	}
+    @Override
+    public String getDescription() {
+        return "ask Gerald something and he will answer";
+    }
 
-	@Override
-	public boolean isDMCapable() {
-		return true;
-	}
+    @Override
+    public String getUsage() {
+        return "ask are animals with guns cool?";
+    }
 
-	@Override
-	public boolean requiresArguments() {
-		return true;
-	}
-	
-	@Override
-	public String[] getCommandAliases() {
+    @Override
+    public String getName() {
+        return "ask";
+    }
+
+    @Override
+    public CommandCategory getCommandCategory() {
+        return CommandCategory.FUN;
+    }
+
+    @Override
+    public boolean isDMCapable() {
+        return true;
+    }
+
+    @Override
+    public boolean requiresArguments() {
+        return true;
+    }
+
+    @Override
+    public String[] getCommandAliases() {
         return new String[]{"whatif"};
-	}
-	
-	@Override
-	public boolean canBeDisabled() {
-		return true;
-	}
-	
-	@Override
-	public boolean isSlashCompatible() {
-		return true;
-	}
+    }
+
+    @Override
+    public boolean canBeDisabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isSlashCompatible() {
+        return true;
+    }
 }

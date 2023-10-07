@@ -15,15 +15,13 @@ import java.util.List;
 
 @Command
 public class RoutineCommand extends AbstractCommand {
-    
-	@Autowired
+
+    private static final String TRUE_EMOTE = "\u2705";
+    private static final String FALSE_EMOTE = "\u274C";
+    @Autowired
     private List<AbstractRoutine> routines;
-    
-	@Autowired
-	private ServerService serverService;
-	
-	private static final String TRUE_EMOTE = "\u2705";
-	private static final String FALSE_EMOTE = "\u274C";
+    @Autowired
+    private ServerService serverService;
 
     @Override
     public void executeInternal(CommandContext context, List<String> args) {
@@ -34,14 +32,14 @@ public class RoutineCommand extends AbstractCommand {
                 .setColor(Color.ORANGE)
                 .setTitle("Barista Gerald - Routines")
                 .setThumbnail(context.getJDA().getSelfUser().getAvatarUrl())
-                .setFooter("Routine Count: "+ routineCount + " | Note: Some routines cannot be disabled. The commands they power require them to function. Try disabling the command instead!");
-        
-        for (AbstractRoutine routine: routines) {
+                .setFooter("Routine Count: " + routineCount + " | Note: Some routines cannot be disabled. The commands they power require them to function. Try disabling the command instead!");
+
+        for (AbstractRoutine routine : routines) {
             routineInformation.addField(routine.getName(), String.format("```Description: %s\nCan be disabled:  %s\nIs disabled Here: %s```",
-            		routine.getDescription(),
-            		routine.canBeDisabled() ? TRUE_EMOTE : FALSE_EMOTE,
-            		server.getRoutineBlacklist().contains(routine.getName()) ? TRUE_EMOTE : FALSE_EMOTE),
-            		false);
+                            routine.getDescription(),
+                            routine.canBeDisabled() ? TRUE_EMOTE : FALSE_EMOTE,
+                            server.getRoutineBlacklist().contains(routine.getName()) ? TRUE_EMOTE : FALSE_EMOTE),
+                    false);
         }
         context.reply(routineInformation.build());
     }
@@ -80,14 +78,14 @@ public class RoutineCommand extends AbstractCommand {
     public String[] getCommandAliases() {
         return new String[]{"routines", "r"};
     }
-    
-	@Override
-	public boolean canBeDisabled() {
-		return false;
-	}
-	
-	@Override
-	public boolean isSlashCompatible() {
-		return true;
-	}
+
+    @Override
+    public boolean canBeDisabled() {
+        return false;
+    }
+
+    @Override
+    public boolean isSlashCompatible() {
+        return true;
+    }
 }

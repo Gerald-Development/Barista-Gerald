@@ -15,29 +15,29 @@ import java.util.Objects;
 @Task
 public class InspiroTask extends AbstractTask {
 
-	@Autowired
-	private InspiroService inspiroService;
-	
-	@Override
-	public TaskType getTaskType() {
-		return TaskType.INSPIRO_DAILY_MESSAGE;
-	}
+    @Autowired
+    private InspiroService inspiroService;
 
-	@Override
-	public void executeInternal(JSONObject args, JDA jda, String userID, String guildID) {
-		String channelID = args.getString("channelID");
-		TextChannel channel = Objects.requireNonNull(jda.getGuildById(guildID)).getTextChannelById(channelID);
-		if (channel == null) return;
-		
-		String inspiroImageURLOpt = inspiroService.getInspiroImageURLOpt();
-		MessageEmbed inspiroEmbed = new EmbedBuilder()//
-				.setTitle("Today's Inspiration", inspiroImageURLOpt)//
-				.setColor(Color.ORANGE)//
-				.setImage(inspiroImageURLOpt)//
-				.setFooter("Data from InspiroBot", InspiroService.INSPIRO_ICON)//
-				.build();
-		channel.sendMessageEmbeds(inspiroEmbed).queue();
-		inspiroService.scheduleInspiro(guildID, channelID);
-	}
+    @Override
+    public TaskType getTaskType() {
+        return TaskType.INSPIRO_DAILY_MESSAGE;
+    }
+
+    @Override
+    public void executeInternal(JSONObject args, JDA jda, String userID, String guildID) {
+        String channelID = args.getString("channelID");
+        TextChannel channel = Objects.requireNonNull(jda.getGuildById(guildID)).getTextChannelById(channelID);
+        if (channel == null) return;
+
+        String inspiroImageURLOpt = inspiroService.getInspiroImageURLOpt();
+        MessageEmbed inspiroEmbed = new EmbedBuilder()//
+                .setTitle("Today's Inspiration", inspiroImageURLOpt)//
+                .setColor(Color.ORANGE)//
+                .setImage(inspiroImageURLOpt)//
+                .setFooter("Data from InspiroBot", InspiroService.INSPIRO_ICON)//
+                .build();
+        channel.sendMessageEmbeds(inspiroEmbed).queue();
+        inspiroService.scheduleInspiro(guildID, channelID);
+    }
 
 }

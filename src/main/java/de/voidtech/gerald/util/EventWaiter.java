@@ -1,5 +1,12 @@
 package main.java.de.voidtech.gerald.util;
 
+import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.session.ShutdownEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.hooks.SubscribeEvent;
+import net.dv8tion.jda.internal.utils.Checks;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,12 +17,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.session.ShutdownEvent;
-import net.dv8tion.jda.api.hooks.EventListener;
-import net.dv8tion.jda.api.hooks.SubscribeEvent;
-import net.dv8tion.jda.internal.utils.Checks;
 
 public class EventWaiter implements EventListener {
     private final HashMap<Class<?>, Set<WaitingEvent>> waitingEvents;
@@ -59,9 +60,9 @@ public class EventWaiter implements EventListener {
 
     @SubscribeEvent
     public final void onEvent(GenericEvent event) {
-        for(Class c = event.getClass(); c != null; c = c.getSuperclass()) {
+        for (Class c = event.getClass(); c != null; c = c.getSuperclass()) {
             if (this.waitingEvents.containsKey(c)) {
-                Set<WaitingEvent> set = (Set)this.waitingEvents.get(c);
+                Set<WaitingEvent> set = (Set) this.waitingEvents.get(c);
                 WaitingEvent[] toRemove = set.toArray(new WaitingEvent[set.size()]);
                 set.removeAll(Stream.of(toRemove).filter((i) -> {
                     return i.attempt(event);

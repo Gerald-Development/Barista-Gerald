@@ -7,14 +7,14 @@ import java.util.function.Predicate;
 
 public class BCESameUserPredicate implements Predicate<ButtonInteractionEvent> {
 
-	private final Member originalUser;
-	
-	public BCESameUserPredicate(Member member) {
-		originalUser = member;
-	}
-	
-	@Override
-	public boolean test(ButtonInteractionEvent t) {
-		return t.getMember().getId().equals(originalUser.getId());
-	}
+    private final Member originalUser;
+
+    public BCESameUserPredicate(Member member) {
+        originalUser = member;
+    }
+
+    @Override
+    public boolean test(ButtonInteractionEvent t) {
+        return t.getMember().getId().equals(originalUser.getId());
+    }
 }

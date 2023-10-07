@@ -14,50 +14,50 @@ import java.util.List;
 
 @Service
 public class AutoroleService {
-	
-	@Autowired
-	private AutoroleConfigRepository repository;
 
-	public List<AutoroleConfig> getAutoroleConfigs(long serverID) {
-    	return repository.getAutoroleConfigsByServerId(serverID);
-	}
-    
-    public AutoroleConfig getAutoroleConfigByRoleID(String roleID) {
-    	return getAutoroleConfigByRoleID(roleID);
+    @Autowired
+    private AutoroleConfigRepository repository;
+
+    public List<AutoroleConfig> getAutoroleConfigs(long serverID) {
+        return repository.getAutoroleConfigsByServerId(serverID);
     }
-    
+
+    public AutoroleConfig getAutoroleConfigByRoleID(String roleID) {
+        return getAutoroleConfigByRoleID(roleID);
+    }
+
     public void deleteAutoroleConfig(String roleID) {
-		repository.deleteAutoroleConfigByRoleId(roleID);
-	}
+        repository.deleteAutoroleConfigByRoleId(roleID);
+    }
 
-	public void saveAutoroleConfig(AutoroleConfig config) {
-		repository.save(config);
-	}
+    public void saveAutoroleConfig(AutoroleConfig config) {
+        repository.save(config);
+    }
 
-	public void addRolesToMember(GuildMemberJoinEvent event, List<AutoroleConfig> configs) {
-		EnumSet<Permission> perms = event.getGuild().getSelfMember().getPermissions();
-		List<AutoroleConfig> discardedConfigs = new ArrayList<>();
-		
-		if (perms.contains(Permission.MANAGE_ROLES)) {
-			for (AutoroleConfig config : configs) {
-				Role role = event.getJDA().getRoleById(config.getRoleID());
-				
-				if (role != null) {
-					if (config.isAvailableForBots() && event.getUser().isBot())
-						event.getGuild().addRoleToMember(event.getMember(), role).queue();
-					if (config.isAvailableForHumans() && !event.getUser().isBot())
-						event.getGuild().addRoleToMember(event.getMember(), role).queue();	
-				} else discardedConfigs.add(config);
-			}
-			if (!discardedConfigs.isEmpty()) {
-				for (AutoroleConfig config : discardedConfigs) {
-					deleteAutoroleConfig(config.getRoleID());
-				}
-			}
-		}
-	}
+    public void addRolesToMember(GuildMemberJoinEvent event, List<AutoroleConfig> configs) {
+        EnumSet<Permission> perms = event.getGuild().getSelfMember().getPermissions();
+        List<AutoroleConfig> discardedConfigs = new ArrayList<>();
 
-	public void removeAllGuildConfigs(long serverID) {
-		repository.deleteAutoroleConfigsByServerId(serverID);
-	}
+        if (perms.contains(Permission.MANAGE_ROLES)) {
+            for (AutoroleConfig config : configs) {
+                Role role = event.getJDA().getRoleById(config.getRoleID());
+
+                if (role != null) {
+                    if (config.isAvailableForBots() && event.getUser().isBot())
+                        event.getGuild().addRoleToMember(event.getMember(), role).queue();
+                    if (config.isAvailableForHumans() && !event.getUser().isBot())
+                        event.getGuild().addRoleToMember(event.getMember(), role).queue();
+                } else discardedConfigs.add(config);
+            }
+            if (!discardedConfigs.isEmpty()) {
+                for (AutoroleConfig config : discardedConfigs) {
+                    deleteAutoroleConfig(config.getRoleID());
+                }
+            }
+        }
+    }
+
+    public void removeAllGuildConfigs(long serverID) {
+        repository.deleteAutoroleConfigsByServerId(serverID);
+    }
 }
