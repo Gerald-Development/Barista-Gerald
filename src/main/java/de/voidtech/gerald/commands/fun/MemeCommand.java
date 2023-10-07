@@ -4,6 +4,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.exception.GeraldException;
 import main.java.de.voidtech.gerald.persistence.entity.MemeBlocklist;
 import main.java.de.voidtech.gerald.persistence.repository.MemeBlocklistRepository;
 import main.java.de.voidtech.gerald.service.GeraldConfigService;
@@ -13,13 +14,22 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Command
 public class MemeCommand extends AbstractCommand {
@@ -79,8 +89,34 @@ public class MemeCommand extends AbstractCommand {
 
     private String postPayload(JSONObject JSONPayload) {
         String payload = JSONPayload.toString();
-        String response = httpClientService.postAndReturnString(config.getMemeApiURL(), payload);
-        return response.substring(1, response.length() - 1);
+        try {
+            HttpURLConnection con = getHttpURLConnection(payload);
+
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
+                String response = in.lines().collect(Collectors.joining());
+                return response.substring(1, response.length() - 1);
+            } catch (IOException e) {
+                throw new GeraldException(e);
+            }
+        } catch (IOException e) {
+            throw new GeraldException(e);
+        }
+    }
+
+    private HttpURLConnection getHttpURLConnection(String payload) throws IOException {
+        HttpURLConnection con = (HttpURLConnection) new URL(config.getMemeApiURL()).openConnection();
+        con.setRequestMethod("POST");
+        con.setRequestProperty("Content-Type", "application/json; utf-8");
+        con.setDoOutput(true);
+        con.setRequestProperty("Accept", "application/json");
+
+        try (OutputStream os = con.getOutputStream()) {
+            byte[] input = payload.getBytes(StandardCharsets.UTF_8);
+            os.write(input, 0, input.length);
+        } catch (IOException e) {
+            throw new GeraldException(e);
+        }
+        return con;
     }
 
     private boolean payloadIsUnblocked(JSONObject payload, long id, CommandContext context) {
