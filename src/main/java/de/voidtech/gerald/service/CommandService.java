@@ -3,7 +3,6 @@ package main.java.de.voidtech.gerald.service;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.util.CustomCollectors;
-import main.java.de.voidtech.gerald.util.GeraldLogger;
 import main.java.de.voidtech.gerald.util.LevenshteinCalculator;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -20,25 +19,21 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
-public class CommandService
-{
-	private static final GeraldLogger LOGGER = LogService.GetLogger(CommandService.class.getSimpleName());
+public class CommandService {
+    private static final Logger LOGGER = Logger.getLogger(CommandService.class.getSimpleName());
 
     private static final int LEVENSHTEIN_THRESHOLD = 1;
-
+    public final HashMap<String, String> aliases = new HashMap<>();
     @Autowired
-    private GeraldConfig config;
-
+    private GeraldConfigService config;
     @Autowired
     private ServerService serverService;
-
     @Autowired
     private List<AbstractCommand> commands;
-
-    public final HashMap<String, String> aliases = new HashMap<>();
 
     public void handleChatCommandOnDemand(Message message) {
         String prefix = getPrefix(message);
@@ -49,7 +44,7 @@ public class CommandService
         List<String> messageArray = Arrays.asList(messageContent.trim().split("\\s+"));
 
         boolean isPrivateMessage = message.getChannel().getType().equals(ChannelType.PRIVATE);
-        
+
         CommandContext cmdContext = new CommandContext.CommandContextBuilder(false)
                 .channel(message.getChannel())
                 .mentionedRoles(isPrivateMessage ? null : message.getMentions().getRoles())
@@ -68,23 +63,20 @@ public class CommandService
                 .collect(CustomCollectors.toSingleton());
 
         if (commandOpt == null) {
-            LOGGER.logWithoutWebhook(Level.INFO, "Command not found: " + messageArray.get(0));
+            LOGGER.log(Level.INFO, "Command not found: " + messageArray.get(0));
             tryLevenshteinOptions(message, messageArray.get(0));
             return;
         }
-            handleCommand(commandOpt, cmdContext);
-        }
+        handleCommand(commandOpt, cmdContext);
+    }
 
-    public void handleCommand(AbstractCommand command, CommandContext context)
-    {
+    public void handleCommand(AbstractCommand command, CommandContext context) {
         if (context.getChannel().getType() == ChannelType.PRIVATE && !command.isDMCapable()) {
             context.getChannel().sendMessage("**You can only use this command in guilds!**").queue();
             return;
         }
-
         command.run(context, context.getArgs());
-
-        LOGGER.logWithoutWebhook(Level.INFO, "Command executed: " + command.getName() + " - From " + context.getAuthor().getEffectiveName() + "- ID: " + context.getAuthor().getId());
+        LOGGER.log(Level.INFO, "Command executed: " + command.getName() + " - From " + context.getAuthor().getEffectiveName() + "- ID: " + context.getAuthor().getId());
     }
 
     private String findCommand(String prompt) {
@@ -96,13 +88,13 @@ public class CommandService
         }
         return commandToBeFound;
     }
-    
-	private MessageEmbed createLevenshteinEmbed(List<String> possibleOptions) {
-		EmbedBuilder levenshteinResultEmbed = new EmbedBuilder()
-				.setColor(Color.RED)
-				.setTitle("I couldn't find that command! Did you mean `" + String.join("` or `", possibleOptions) + "`?");
-		return levenshteinResultEmbed.build();
-	}
+
+    private MessageEmbed createLevenshteinEmbed(List<String> possibleOptions) {
+        EmbedBuilder levenshteinResultEmbed = new EmbedBuilder()
+                .setColor(Color.RED)
+                .setTitle("I couldn't find that command! Did you mean `" + String.join("` or `", possibleOptions) + "`?");
+        return levenshteinResultEmbed.build();
+    }
 
     private void tryLevenshteinOptions(Message message, String commandName) {
         List<String> possibleOptions;
@@ -114,8 +106,7 @@ public class CommandService
             message.getChannel().sendMessageEmbeds(createLevenshteinEmbed(possibleOptions)).queue();
     }
 
-    private boolean shouldHandleAsChatCommand(String prefix, Message message)
-    {
+    private boolean shouldHandleAsChatCommand(String prefix, Message message) {
         String messageRaw = message.getContentRaw();
         return messageRaw.startsWith(prefix) && messageRaw.length() > prefix.length();
     }
@@ -126,20 +117,19 @@ public class CommandService
         }
         String customPrefix = serverService.getServer(message.getGuild().getId()).getPrefix();
 
-        if(customPrefix == null) return config.getDefaultPrefix();
+        if (customPrefix == null) return config.getDefaultPrefix();
         else return customPrefix;
     }
 
     @EventListener(ApplicationReadyEvent.class)
     public void loadAliases() {
-        for (AbstractCommand command: commands) {
+        for (AbstractCommand command : commands) {
             List<String> commandAliases = new ArrayList<>();
             if (command.getCommandAliases() != null)
                 commandAliases = Arrays.asList(command.getCommandAliases());
-            for (String alias: commandAliases) {
+            for (String alias : commandAliases) {
                 aliases.put(alias, command.getName());
             }
         }
-        LOGGER.log(Level.INFO, "Command aliases have been loaded");
     }
 }

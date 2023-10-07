@@ -7,16 +7,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class GlobalConfigService {
-	
-	@Autowired
-	private GlobalConfigRepository repository;
 
-	public GlobalConfig getGlobalConfig() {
-		GlobalConfig config = repository.getGlobalConfig();
-		if (config == null) {
-			config = new GlobalConfig();
-			repository.save(config);
-		}
-		return config;
-	}
+    @Autowired
+    private GlobalConfigRepository repository;
+
+    public GlobalConfig getGlobalConfig() {
+        GlobalConfig config = repository.getGlobalConfig();
+        if (config == null) {
+            config = new GlobalConfig();
+            repository.save(config);
+        }
+        return config;
+    }
 }

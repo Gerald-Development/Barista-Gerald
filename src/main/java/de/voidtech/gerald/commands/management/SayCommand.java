@@ -11,58 +11,57 @@ import java.util.List;
 @Command
 public class SayCommand extends AbstractCommand {
 
-	@Override
-	public void executeInternal(CommandContext context, List<String> args) {
-		if(context.getMember().hasPermission(Permission.MESSAGE_MANAGE))
-		{
-			String msg = String.join(" ", args);
-			context.getChannel().sendMessage(msg).queue(response -> context.getMessage().delete().queue());
-		}
-	}
+    @Override
+    public void executeInternal(CommandContext context, List<String> args) {
+        if (context.getMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+            String msg = String.join(" ", args);
+            context.getChannel().sendMessage(msg).queue(response -> context.getMessage().delete().queue());
+        }
+    }
 
-	@Override
-	public String getDescription() {
-		return "repeats the message you type";
-	}
+    @Override
+    public String getDescription() {
+        return "repeats the message you type";
+    }
 
-	@Override
-	public String getUsage() {
-		return "say a very exciting message";
-	}
+    @Override
+    public String getUsage() {
+        return "say a very exciting message";
+    }
 
-	@Override
-	public String getName() {
-		return "say";
-	}
-	
-	@Override
-	public CommandCategory getCommandCategory() {
-		return CommandCategory.MANAGEMENT;
-	}
+    @Override
+    public String getName() {
+        return "say";
+    }
 
-	@Override
-	public boolean isDMCapable() {
-		return false;
-	}
+    @Override
+    public CommandCategory getCommandCategory() {
+        return CommandCategory.MANAGEMENT;
+    }
 
-	@Override
-	public boolean requiresArguments() {
-		return true;
-	}
-	
-	@Override
-	public String[] getCommandAliases() {
+    @Override
+    public boolean isDMCapable() {
+        return false;
+    }
+
+    @Override
+    public boolean requiresArguments() {
+        return true;
+    }
+
+    @Override
+    public String[] getCommandAliases() {
         return new String[]{"speak", "blessuswiththevoiceofgerald"};
-	}
-	
-	@Override
-	public boolean canBeDisabled() {
-		return true;
-	}
-	
-	@Override
-	public boolean isSlashCompatible() {
-		return true;
-	}
+    }
+
+    @Override
+    public boolean canBeDisabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isSlashCompatible() {
+        return true;
+    }
 
 }

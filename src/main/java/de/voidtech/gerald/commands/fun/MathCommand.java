@@ -5,7 +5,7 @@ import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 
-import java.util.*;
+import java.util.List;
 
 import static main.java.de.voidtech.gerald.util.ArithmeticUtils.evalExpression;
 
@@ -14,11 +14,11 @@ public class MathCommand extends AbstractCommand {
 
     @Override
     public void executeInternal(CommandContext context, List<String> args) {
-        String expression = String.join(" ",args);
+        String expression = String.join(" ", args);
         try {
             double result = evalExpression(expression);
             context.reply(String.format("The result of your expression `%s` is `%f`", expression, result));
-        } catch (Exception e){
+        } catch (Exception e) {
             context.reply("`" + e.getMessage() + "`");
         }
     }
@@ -62,9 +62,9 @@ public class MathCommand extends AbstractCommand {
     public boolean canBeDisabled() {
         return true;
     }
-    
-	@Override
-	public boolean isSlashCompatible() {
-		return true;
-	}
+
+    @Override
+    public boolean isSlashCompatible() {
+        return true;
+    }
 }

@@ -9,54 +9,54 @@ import java.util.List;
 @Command
 public class HugCommand extends ActionsCommand {
 
-	@Override
-	public void executeInternal(CommandContext context, List<String> args) {
-		super.sendAction(context, ActionType.HUG);
-	}
+    @Override
+    public void executeInternal(CommandContext context, List<String> args) {
+        super.sendAction(context, ActionType.HUG);
+    }
 
-	@Override
-	public String getDescription() {
-		return "Hug a user!";
-	}
+    @Override
+    public String getDescription() {
+        return "Hug a user!";
+    }
 
-	@Override
-	public String getUsage() {
-		return "hug @user";
-	}
+    @Override
+    public String getUsage() {
+        return "hug @user";
+    }
 
-	@Override
-	public String getName() {
-		return "hug";
-	}
+    @Override
+    public String getName() {
+        return "hug";
+    }
 
-	@Override
-	public CommandCategory getCommandCategory() {
-		return CommandCategory.ACTIONS;
-	}
+    @Override
+    public CommandCategory getCommandCategory() {
+        return CommandCategory.ACTIONS;
+    }
 
-	@Override
-	public boolean isDMCapable() {
-		return false;
-	}
+    @Override
+    public boolean isDMCapable() {
+        return false;
+    }
 
-	@Override
-	public boolean requiresArguments() {
-		return true;
-	}
-	
-	@Override
-	public String[] getCommandAliases() {
-		return new String[]{"hold"};
-	}
-	
-	@Override
-	public boolean canBeDisabled() {
-		return true;
-	}
-	
-	@Override
-	public boolean isSlashCompatible() {
-		return true;
-	}
+    @Override
+    public boolean requiresArguments() {
+        return true;
+    }
+
+    @Override
+    public String[] getCommandAliases() {
+        return new String[]{"hold"};
+    }
+
+    @Override
+    public boolean canBeDisabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isSlashCompatible() {
+        return true;
+    }
 
 }

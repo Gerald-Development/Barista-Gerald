@@ -17,111 +17,111 @@ import java.util.Random;
 @Command
 public class SpinCommand extends AbstractCommand {
 
-	@Override
-	public void executeInternal(CommandContext context, List<String> args) {
-		Map<String, Color> colorMap = getSpinnerColors();
+    @Override
+    public void executeInternal(CommandContext context, List<String> args) {
+        Map<String, Color> colorMap = getSpinnerColors();
 
-		if (args.size() > 0) {
-			if (colorMap.containsKey(args.get(0).toLowerCase())) {
-				int spinTime = new Random().nextInt(30);
-				Color color = colorMap.get(args.get(0).toLowerCase());
+        if (args.size() > 0) {
+            if (colorMap.containsKey(args.get(0).toLowerCase())) {
+                int spinTime = new Random().nextInt(30);
+                Color color = colorMap.get(args.get(0).toLowerCase());
 
-				doTheSpinning(color, spinTime, context);
-			} else if (args.get(0).equals("colors")) {
-				String supportedColorsString = StringUtils.join(colorMap.keySet(), "\n");
-				context.reply("**Spinner colors:**\n" + supportedColorsString);
-			} else {
-				context.reply("That is not a valid color!");
-			}	
-		} else {
-			int spinTime = new Random().nextInt(30);
-			
-			Object[] values = colorMap.values().toArray();
-			Color color = (Color) values[new Random().nextInt(values.length)];
+                doTheSpinning(color, spinTime, context);
+            } else if (args.get(0).equals("colors")) {
+                String supportedColorsString = StringUtils.join(colorMap.keySet(), "\n");
+                context.reply("**Spinner colors:**\n" + supportedColorsString);
+            } else {
+                context.reply("That is not a valid color!");
+            }
+        } else {
+            int spinTime = new Random().nextInt(30);
 
-			doTheSpinning(color, spinTime, context);
-		}
-	}
+            Object[] values = colorMap.values().toArray();
+            Color color = (Color) values[new Random().nextInt(values.length)];
 
-	@Override
-	public String getDescription() {
-		return "Using the most sophisticated digitally augmented rotation technology, you can spin a virtual spinner";
-	}
+            doTheSpinning(color, spinTime, context);
+        }
+    }
 
-	@Override
-	public String getUsage() {
-		return "spin [color name] OR spin colors (to see the colors you can use)";
-	}
+    @Override
+    public String getDescription() {
+        return "Using the most sophisticated digitally augmented rotation technology, you can spin a virtual spinner";
+    }
 
-	private void doTheSpinning(Color color, int spinTime, CommandContext context) {
-		int spinDelay = spinTime * 1000;
-		MessageEmbed spinnerStartEmbed = new EmbedBuilder()
-				.setColor(color)
-				.setTitle("Your spinner is spinning...")
-				.build();
-		//TODO (from: Franziska): Same here with the queue. I need to work on this later
-		context.getChannel().sendMessageEmbeds(spinnerStartEmbed).queue(sentMessage -> {
-			
-			try {
-				Thread.sleep(spinDelay);
-				MessageEmbed spinnerEndEmbed = new EmbedBuilder()
-						.setColor(color)
-						.setTitle("Your spinner has stopped!")
-						.setDescription("It lasted for **" + spinTime + "** seconds!")
-						.build();
-				sentMessage.editMessageEmbeds(spinnerEndEmbed).queue();
-			} catch (InterruptedException e) {
-				context.getChannel().sendMessage("Your spinner broke!").queue();
-			}
-		});
-	}
+    @Override
+    public String getUsage() {
+        return "spin [color name] OR spin colors (to see the colors you can use)";
+    }
 
-	private Map<String, Color> getSpinnerColors() {
-		Map<String, Color> spinnerColors = new HashMap<>();
-		spinnerColors.put("red", Color.RED);
-		spinnerColors.put("orange", Color.ORANGE);
-		spinnerColors.put("yellow", Color.YELLOW);
-		spinnerColors.put("green", Color.GREEN);
-		spinnerColors.put("blue", Color.BLUE);
-		spinnerColors.put("cyan", Color.CYAN);
-		spinnerColors.put("magenta", Color.MAGENTA);
-		spinnerColors.put("pink", Color.PINK);
-		return spinnerColors;
-	}
+    private void doTheSpinning(Color color, int spinTime, CommandContext context) {
+        int spinDelay = spinTime * 1000;
+        MessageEmbed spinnerStartEmbed = new EmbedBuilder()
+                .setColor(color)
+                .setTitle("Your spinner is spinning...")
+                .build();
+        //TODO (from: Franziska): Same here with the queue. I need to work on this later
+        context.getChannel().sendMessageEmbeds(spinnerStartEmbed).queue(sentMessage -> {
 
-	@Override
-	public String getName() {
-		return "spin";
-	}
+            try {
+                Thread.sleep(spinDelay);
+                MessageEmbed spinnerEndEmbed = new EmbedBuilder()
+                        .setColor(color)
+                        .setTitle("Your spinner has stopped!")
+                        .setDescription("It lasted for **" + spinTime + "** seconds!")
+                        .build();
+                sentMessage.editMessageEmbeds(spinnerEndEmbed).queue();
+            } catch (InterruptedException e) {
+                context.getChannel().sendMessage("Your spinner broke!").queue();
+            }
+        });
+    }
 
-	@Override
-	public CommandCategory getCommandCategory() {
-		return CommandCategory.FUN;
-	}
+    private Map<String, Color> getSpinnerColors() {
+        Map<String, Color> spinnerColors = new HashMap<>();
+        spinnerColors.put("red", Color.RED);
+        spinnerColors.put("orange", Color.ORANGE);
+        spinnerColors.put("yellow", Color.YELLOW);
+        spinnerColors.put("green", Color.GREEN);
+        spinnerColors.put("blue", Color.BLUE);
+        spinnerColors.put("cyan", Color.CYAN);
+        spinnerColors.put("magenta", Color.MAGENTA);
+        spinnerColors.put("pink", Color.PINK);
+        return spinnerColors;
+    }
 
-	@Override
-	public boolean isDMCapable() {
-		return false;
-	}
+    @Override
+    public String getName() {
+        return "spin";
+    }
 
-	@Override
-	public boolean requiresArguments() {
-		return false;
-	}
-	
-	@Override
-	public String[] getCommandAliases() {
-		return new String[]{"spinner", "speen"};
-	}
-	
-	@Override
-	public boolean canBeDisabled() {
-		return true;
-	}
-	
-	@Override
-	public boolean isSlashCompatible() {
-		return false;
-	}
+    @Override
+    public CommandCategory getCommandCategory() {
+        return CommandCategory.FUN;
+    }
+
+    @Override
+    public boolean isDMCapable() {
+        return false;
+    }
+
+    @Override
+    public boolean requiresArguments() {
+        return false;
+    }
+
+    @Override
+    public String[] getCommandAliases() {
+        return new String[]{"spinner", "speen"};
+    }
+
+    @Override
+    public boolean canBeDisabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isSlashCompatible() {
+        return false;
+    }
 
 }

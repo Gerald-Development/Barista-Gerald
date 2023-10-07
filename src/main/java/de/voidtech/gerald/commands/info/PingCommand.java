@@ -13,73 +13,73 @@ import java.util.List;
 @Command
 public class PingCommand extends AbstractCommand {
 
-	@Override
-	public void executeInternal(CommandContext context, List<String> args) {
+    @Override
+    public void executeInternal(CommandContext context, List<String> args) {
 
-		long time = System.currentTimeMillis();
-		
-		MessageEmbed beforePingHasBeenProcessedEmbed = new EmbedBuilder()
-				.setAuthor("Ping?")
-				.setColor(Color.RED)
-				.build();
-		if(context.isSlash()) context.reply("Pong motherfucker");
-		else{
-			context.getChannel().sendMessageEmbeds(beforePingHasBeenProcessedEmbed).queue(response -> {
-				MessageEmbed pingEmbed = new EmbedBuilder()//
-						.setAuthor("Pong!")//
-						.setColor(Color.GREEN)//
-						.setDescription(String.format("Latency: %sms\nGateway Latency: %sms",
-								(System.currentTimeMillis() - time), context.getJDA().getGatewayPing()))//
-						.build();
+        long time = System.currentTimeMillis();
 
-				response.editMessageEmbeds(pingEmbed).queue();
-			});
-		}
-	}
+        MessageEmbed beforePingHasBeenProcessedEmbed = new EmbedBuilder()
+                .setAuthor("Ping?")
+                .setColor(Color.RED)
+                .build();
+        if (context.isSlash()) context.reply("Pong motherfucker");
+        else {
+            context.getChannel().sendMessageEmbeds(beforePingHasBeenProcessedEmbed).queue(response -> {
+                MessageEmbed pingEmbed = new EmbedBuilder()//
+                        .setAuthor("Pong!")//
+                        .setColor(Color.GREEN)//
+                        .setDescription(String.format("Latency: %sms\nGateway Latency: %sms",
+                                (System.currentTimeMillis() - time), context.getJDA().getGatewayPing()))//
+                        .build();
 
-	@Override
-	public String getDescription() {
-		return null;
-	}
+                response.editMessageEmbeds(pingEmbed).queue();
+            });
+        }
+    }
 
-	@Override
-	public String getUsage() {
-		return "ping";
-	}
+    @Override
+    public String getDescription() {
+        return null;
+    }
 
-	@Override
-	public String getName() {
-		return "ping";
-	}
+    @Override
+    public String getUsage() {
+        return "ping";
+    }
 
-	@Override
-	public CommandCategory getCommandCategory() {
-		return CommandCategory.INFO;
-	}
+    @Override
+    public String getName() {
+        return "ping";
+    }
 
-	@Override
-	public boolean isDMCapable() {
-		return true;
-	}
+    @Override
+    public CommandCategory getCommandCategory() {
+        return CommandCategory.INFO;
+    }
 
-	@Override
-	public boolean requiresArguments() {
-		return false;
-	}
-	
-	@Override
-	public String[] getCommandAliases() {
+    @Override
+    public boolean isDMCapable() {
+        return true;
+    }
+
+    @Override
+    public boolean requiresArguments() {
+        return false;
+    }
+
+    @Override
+    public String[] getCommandAliases() {
         return new String[]{"pong"};
-	}
-	
-	@Override
-	public boolean canBeDisabled() {
-		return true;
-	}
-	
-	@Override
-	public boolean isSlashCompatible() {
-		return true;
-	}
+    }
+
+    @Override
+    public boolean canBeDisabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isSlashCompatible() {
+        return true;
+    }
 
 }

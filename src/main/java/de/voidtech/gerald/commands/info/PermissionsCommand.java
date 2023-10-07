@@ -14,84 +14,84 @@ import java.util.EnumSet;
 import java.util.List;
 
 @Command
-public class PermissionsCommand extends AbstractCommand{
-	
-	@Override
-	public void executeInternal(CommandContext context, List<String> args) {
-		EnumSet<Permission> perms;
-		String member;
-		if (args.size() > 0) {
-			if (args.get(0).equals("everyone")) {
-				perms = context.getGuild().getPublicRole().getPermissions();
-				member = "Everyone";
-			} else {
-				perms = ParsingUtils.getMember(context, args).getPermissions(context.getMessage().getGuildChannel());
-				member = ParsingUtils.getMember(context, args).getUser().getEffectiveName();
-			}	
-		} else {
-			perms = ParsingUtils.getMember(context, args).getPermissions(context.getMessage().getGuildChannel());
-			member = ParsingUtils.getMember(context, args).getUser().getEffectiveName();
-		}
-		
-		context.reply(buildPermsEmbed(perms, member));
-	}
+public class PermissionsCommand extends AbstractCommand {
 
-	private MessageEmbed buildPermsEmbed(EnumSet<Permission> perms, String member) {
-		StringBuilder permsList = new StringBuilder();
-		for (Permission perm : perms) {
-			permsList.append(perm.getName()).append("\n");
-		}
-		return new EmbedBuilder()
-				.setColor(Color.ORANGE)
-				.setTitle("Permissions for " + member)
-				.setDescription("```\n" + permsList + "\n```")
-				.build();
-		
-	}
+    @Override
+    public void executeInternal(CommandContext context, List<String> args) {
+        EnumSet<Permission> perms;
+        String member;
+        if (args.size() > 0) {
+            if (args.get(0).equals("everyone")) {
+                perms = context.getGuild().getPublicRole().getPermissions();
+                member = "Everyone";
+            } else {
+                perms = ParsingUtils.getMember(context, args).getPermissions(context.getMessage().getGuildChannel());
+                member = ParsingUtils.getMember(context, args).getUser().getEffectiveName();
+            }
+        } else {
+            perms = ParsingUtils.getMember(context, args).getPermissions(context.getMessage().getGuildChannel());
+            member = ParsingUtils.getMember(context, args).getUser().getEffectiveName();
+        }
 
-	@Override
-	public String getDescription() {
-		return "For server debugging and more, allows you to check someone's (or your own) permissions in a server.";
-	}
+        context.reply(buildPermsEmbed(perms, member));
+    }
 
-	@Override
-	public String getUsage() {
-		return "permissions [@member#1234/ID/everyone]";
-	}
+    private MessageEmbed buildPermsEmbed(EnumSet<Permission> perms, String member) {
+        StringBuilder permsList = new StringBuilder();
+        for (Permission perm : perms) {
+            permsList.append(perm.getName()).append("\n");
+        }
+        return new EmbedBuilder()
+                .setColor(Color.ORANGE)
+                .setTitle("Permissions for " + member)
+                .setDescription("```\n" + permsList + "\n```")
+                .build();
 
-	@Override
-	public String getName() {
-		return "permissions";
-	}
+    }
 
-	@Override
-	public CommandCategory getCommandCategory() {
-		return CommandCategory.INFO;
-	}
+    @Override
+    public String getDescription() {
+        return "For server debugging and more, allows you to check someone's (or your own) permissions in a server.";
+    }
 
-	@Override
-	public boolean isDMCapable() {
-		return false;
-	}
+    @Override
+    public String getUsage() {
+        return "permissions [@member#1234/ID/everyone]";
+    }
 
-	@Override
-	public boolean requiresArguments() {
-		return false;
-	}
+    @Override
+    public String getName() {
+        return "permissions";
+    }
 
-	@Override
-	public String[] getCommandAliases() {
-		return new String[]{"perms", "permsin"};
-	}
-	
-	@Override
-	public boolean canBeDisabled() {
-		return true;
-	}
-	
-	@Override
-	public boolean isSlashCompatible() {
-		return true;
-	}
+    @Override
+    public CommandCategory getCommandCategory() {
+        return CommandCategory.INFO;
+    }
+
+    @Override
+    public boolean isDMCapable() {
+        return false;
+    }
+
+    @Override
+    public boolean requiresArguments() {
+        return false;
+    }
+
+    @Override
+    public String[] getCommandAliases() {
+        return new String[]{"perms", "permsin"};
+    }
+
+    @Override
+    public boolean canBeDisabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isSlashCompatible() {
+        return true;
+    }
 
 }

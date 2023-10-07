@@ -5,8 +5,6 @@ import main.java.de.voidtech.gerald.persistence.entity.NitroliteEmote;
 import main.java.de.voidtech.gerald.persistence.repository.NitroliteEmoteRepository;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
-import main.java.de.voidtech.gerald.service.LogService;
-import main.java.de.voidtech.gerald.util.GeraldLogger;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
@@ -15,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,7 +23,7 @@ public class NitroliteCollectorRoutine extends AbstractRoutine {
 	@Autowired
 	private NitroliteEmoteRepository repository;
 
-	private static final GeraldLogger LOGGER = LogService.GetLogger(NitroliteCollectorRoutine.class.getSimpleName());
+	private static final Logger LOGGER = Logger.getLogger(NitroliteCollectorRoutine.class.getSimpleName());
 	private static final Pattern EMOTE_PATTERN = Pattern.compile("^(<:[^:\\s]+:[0-9]+>|<a:[^:\\s]+:[0-9]+>)+$");
 	
 	private boolean isEmote(String word) {
@@ -59,7 +58,7 @@ public class NitroliteCollectorRoutine extends AbstractRoutine {
 	
 	private void storeNewEmote(String emoteName, String emoteID, boolean emoteIsAnimated) {
 		repository.save(new NitroliteEmote(emoteName, emoteID, emoteIsAnimated));
-		LOGGER.logWithoutWebhook(Level.INFO, "New emote '" + emoteName + "' Has been saved!");
+		LOGGER.log(Level.INFO, "New emote '" + emoteName + "' Has been saved!");
 	}
 	
 	private void parseNewEmote(String word, JDA jda) {

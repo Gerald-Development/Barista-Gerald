@@ -52,14 +52,14 @@ public class LmgtfyCommand extends AbstractCommand {
     public String[] getCommandAliases() {
         return new String[]{"letmegetthat", "letmegoogle"};
     }
-    
-	@Override
-	public boolean canBeDisabled() {
-		return true;
-	}
-	
-	@Override
-	public boolean isSlashCompatible() {
-		return true;
-	}
+
+    @Override
+    public boolean canBeDisabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isSlashCompatible() {
+        return true;
+    }
 }

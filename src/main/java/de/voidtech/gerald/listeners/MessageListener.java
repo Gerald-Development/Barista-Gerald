@@ -1,6 +1,6 @@
 package main.java.de.voidtech.gerald.listeners;
 
-import main.java.de.voidtech.gerald.service.MessageHandler;
+import main.java.de.voidtech.gerald.service.MessageService;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
@@ -12,14 +12,14 @@ import org.springframework.stereotype.Component;
 public class MessageListener implements EventListener {
 
 	@Autowired
-	private MessageHandler msgHandler;
+	private MessageService msgHandler;
 
 	@Override
 	public void onEvent(@NotNull GenericEvent event) {
-		if (event instanceof MessageReceivedEvent) 
+		if (event instanceof MessageReceivedEvent)
 		{
 			MessageReceivedEvent msgEvent = (MessageReceivedEvent) event;
-			
+
 			msgHandler.handleMessage(msgEvent.getMessage());
 		}
 	}

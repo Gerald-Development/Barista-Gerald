@@ -19,55 +19,55 @@ import java.util.Objects;
 
 @Service
 public class JoinLeaveMessageService {
-	
-	@Autowired
-	private ServerService serverService;
-	
-	@Autowired
-	private JoinLeaveMessageRepository repository;
 
-	private boolean customMessageEnabled(long guildID) {
-		return getJoinLeaveMessageEntity(guildID) != null;
-	}
-	
-	private JoinLeaveMessage getJoinLeaveMessageEntity(long guildID) {
-		return repository.getJoinLeaveMessageByServerId(guildID);
-	}
-	
-	public void sendJoinMessage(GuildMemberJoinEvent event) {
-		Server server = serverService.getServer(event.getGuild().getId());
-		if (customMessageEnabled(server.getId())) {
-			JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(server.getId());
-			GuildChannel channel = event.getJDA().getGuildChannelById(joinLeaveMessage.getChannelID());
-			String message = joinLeaveMessage.getJoinMessage();
-			Member member = event.getMember();
-			
-			MessageEmbed joinMessageEmbed = new EmbedBuilder()
-					.setColor(Color.green)
-					.setDescription(member.getAsMention() + " **(" + member.getUser().getEffectiveName() + ") " + message + "**")
-					.setTimestamp(Instant.now())
-					.build();
-			
-			((MessageChannel) Objects.requireNonNull(channel)).sendMessageEmbeds(joinMessageEmbed).queue();
-		}
-	}
-	
-	public void sendLeaveMessage(GuildMemberRemoveEvent event) {
-		Server server = serverService.getServer(event.getGuild().getId());
-		if (customMessageEnabled(server.getId())) {
-			JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(server.getId());
-			GuildChannel channel = event.getJDA().getGuildChannelById(joinLeaveMessage.getChannelID());
-			String message = joinLeaveMessage.getLeaveMessage();
-			Member member = event.getMember();
-			
-			MessageEmbed leaveMessageEmbed = new EmbedBuilder()
-					.setColor(Color.red)
-					.setDescription(Objects.requireNonNull(member).getAsMention() + " **(" + member.getUser().getEffectiveName() + ") " + message + "**")
-					.setTimestamp(Instant.now())
-					.build();
-			
-			((MessageChannel) channel).sendMessageEmbeds(leaveMessageEmbed).queue();
-		}
-	}
-	
+    @Autowired
+    private ServerService serverService;
+
+    @Autowired
+    private JoinLeaveMessageRepository repository;
+
+    private boolean customMessageEnabled(long guildID) {
+        return getJoinLeaveMessageEntity(guildID) != null;
+    }
+
+    private JoinLeaveMessage getJoinLeaveMessageEntity(long guildID) {
+        return repository.getJoinLeaveMessageByServerId(guildID);
+    }
+
+    public void sendJoinMessage(GuildMemberJoinEvent event) {
+        Server server = serverService.getServer(event.getGuild().getId());
+        if (customMessageEnabled(server.getId())) {
+            JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(server.getId());
+            GuildChannel channel = event.getJDA().getGuildChannelById(joinLeaveMessage.getChannelID());
+            String message = joinLeaveMessage.getJoinMessage();
+            Member member = event.getMember();
+
+            MessageEmbed joinMessageEmbed = new EmbedBuilder()
+                    .setColor(Color.green)
+                    .setDescription(member.getAsMention() + " **(" + member.getUser().getEffectiveName() + ") " + message + "**")
+                    .setTimestamp(Instant.now())
+                    .build();
+
+            ((MessageChannel) Objects.requireNonNull(channel)).sendMessageEmbeds(joinMessageEmbed).queue();
+        }
+    }
+
+    public void sendLeaveMessage(GuildMemberRemoveEvent event) {
+        Server server = serverService.getServer(event.getGuild().getId());
+        if (customMessageEnabled(server.getId())) {
+            JoinLeaveMessage joinLeaveMessage = getJoinLeaveMessageEntity(server.getId());
+            GuildChannel channel = event.getJDA().getGuildChannelById(joinLeaveMessage.getChannelID());
+            String message = joinLeaveMessage.getLeaveMessage();
+            Member member = event.getMember();
+
+            MessageEmbed leaveMessageEmbed = new EmbedBuilder()
+                    .setColor(Color.red)
+                    .setDescription(Objects.requireNonNull(member).getAsMention() + " **(" + member.getUser().getEffectiveName() + ") " + message + "**")
+                    .setTimestamp(Instant.now())
+                    .build();
+
+            ((MessageChannel) channel).sendMessageEmbeds(leaveMessageEmbed).queue();
+        }
+    }
+
 }

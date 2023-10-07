@@ -136,10 +136,10 @@ public class WhitelistCommand extends AbstractCommand {
     public boolean canBeDisabled() {
         return false;
     }
-    
-	@Override
-	public boolean isSlashCompatible() {
-		return true;
-	}
+
+    @Override
+    public boolean isSlashCompatible() {
+        return true;
+    }
 
 }

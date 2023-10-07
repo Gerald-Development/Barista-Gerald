@@ -6,7 +6,7 @@ import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
 import main.java.de.voidtech.gerald.service.ChatbotService;
-import main.java.de.voidtech.gerald.service.GeraldConfig;
+import main.java.de.voidtech.gerald.service.GeraldConfigService;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -27,17 +27,17 @@ public class PingResponseRoutine extends AbstractRoutine {
 
 	@Autowired
 	private ServerService serverService;
-	
+
     @Autowired
-    private GeraldConfig config;
-    
+    private GeraldConfigService config;
+
     @Autowired
     private ChatbotService geraldAI;
-	
+
     private void sendPingInfoMessage(Message message) {
     	Server guild = serverService.getServer(message.getGuild().getId());
 		String prefix = guild.getPrefix() == null ? config.getDefaultPrefix() : guild.getPrefix();
-		
+
 		MessageEmbed pingResponseEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle("You called? :telephone:", GlobalConstants.LINKTREE_URL)
@@ -45,7 +45,7 @@ public class PingResponseRoutine extends AbstractRoutine {
 				.build();
 		message.getChannel().sendMessageEmbeds(pingResponseEmbed).queue();
     }
-    
+
 	@Override
 	public void executeInternal(Message message) {
 		if (message.getChannelType().equals(ChannelType.TEXT) && messageMentionsBot(message)) {
@@ -86,7 +86,7 @@ public class PingResponseRoutine extends AbstractRoutine {
 	public String getName() {
 		return "r-ping";
 	}
-	
+
 	@Override
 	public RoutineCategory getRoutineCategory() {
 		return RoutineCategory.UTILS;

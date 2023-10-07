@@ -14,46 +14,46 @@ import java.util.List;
 @Service
 public class RemindMeService {
 
-	@Autowired
-	private DelayedTaskService taskService;
-	
-	public void addReminder(CommandContext context, String message, long time) {
-		DelayedTask task = new DelayedTask(TaskType.REMIND_ME,
-				new JSONObject().put("channelID", context.getChannel().getId()).put("message", ParsingUtils.removeVolatileMentions(message)),
-				context.getGuild().getId(),
-				context.getAuthor().getId(),
-				time);		
-		taskService.saveDelayedTask(task);
-	}
-	
-	public String getRemindersList(CommandContext context) {
-		List<DelayedTask> tasks = taskService.getUserTasksOfType(context.getAuthor().getId(), TaskType.REMIND_ME);
-		
-		StringBuilder list = new StringBuilder();
-		
-		for (DelayedTask task : tasks) {
-			Guild guild = context.getJDA().getGuildById(task.getGuildID());
-			if (guild == null) {
-				taskService.deleteTask(task);
-			} else {
-				list.append("`").append(task.getTaskID()).append("` **").append(guild.getName()).append("** -  <t:").append(task.getExecutionTime()).append(":F> - ");
-				list.append(formatMessage(task.getArgs().getString("message")));
-				list.append("\n");
-			}
-		}
-		return list.toString().equals("") ? "**No reminders!**" : list.toString();
-	}
+    @Autowired
+    private DelayedTaskService taskService;
 
-	private String formatMessage(String msg) {
-		return msg.length() > 20 ? msg.substring(0, 20) + "..." : msg;
-	}
-	
-	public boolean deleteReminder(String userID, long id) {
-		DelayedTask task = taskService.getTaskByID(id);
-		if (task == null) return false;
-		if (!task.getUserID().equals(userID)) return false;
-		taskService.deleteTask(task);
-		return true;
-	}
+    public void addReminder(CommandContext context, String message, long time) {
+        DelayedTask task = new DelayedTask(TaskType.REMIND_ME,
+                new JSONObject().put("channelID", context.getChannel().getId()).put("message", ParsingUtils.removeVolatileMentions(message)),
+                context.getGuild().getId(),
+                context.getAuthor().getId(),
+                time);
+        taskService.saveDelayedTask(task);
+    }
+
+    public String getRemindersList(CommandContext context) {
+        List<DelayedTask> tasks = taskService.getUserTasksOfType(context.getAuthor().getId(), TaskType.REMIND_ME);
+
+        StringBuilder list = new StringBuilder();
+
+        for (DelayedTask task : tasks) {
+            Guild guild = context.getJDA().getGuildById(task.getGuildID());
+            if (guild == null) {
+                taskService.deleteTask(task);
+            } else {
+                list.append("`").append(task.getTaskID()).append("` **").append(guild.getName()).append("** -  <t:").append(task.getExecutionTime()).append(":F> - ");
+                list.append(formatMessage(task.getArgs().getString("message")));
+                list.append("\n");
+            }
+        }
+        return list.toString().equals("") ? "**No reminders!**" : list.toString();
+    }
+
+    private String formatMessage(String msg) {
+        return msg.length() > 20 ? msg.substring(0, 20) + "..." : msg;
+    }
+
+    public boolean deleteReminder(String userID, long id) {
+        DelayedTask task = taskService.getTaskByID(id);
+        if (task == null) return false;
+        if (!task.getUserID().equals(userID)) return false;
+        taskService.deleteTask(task);
+        return true;
+    }
 
 }
