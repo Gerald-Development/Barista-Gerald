@@ -21,7 +21,7 @@ Are you having troubles or questions about Gerald or want to talk to the develop
 [![Discord Banner 2](https://discordapp.com/api/guilds/729317146127106059/widget.png?style=banner2)](https://discord.gg/mNmgHgjDGz)
 
 ## Built with
-- [Java 8 Adopt Open JDK](https://adoptopenjdk.net/) - an open source Java JDK
+- [Java 17 Adopt Open JDK](https://adoptopenjdk.net/) - an open source Java JDK
 - [Hibernate](https://hibernate.org/) - Java ORM for persistence
 - [Spring Boot](https://spring.io/projects/spring-boot) - Dependency Injection and microservices
 - [PostgreSQL](https://www.postgresql.org/) - Database
