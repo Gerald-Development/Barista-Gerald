@@ -48,10 +48,8 @@ public class StarboardCommand extends AbstractCommand {
 		else {
 			getAwaitedReply(context, "**Please enter a channel ID or mention to be used for the starboard:**", response -> {
 				String channelID = ParsingUtils.filterSnowflake(response);
-				if (!ParsingUtils.isSnowflake(channelID))
-					context.getChannel().sendMessage("**The channel you provided is not valid!**").queue();
-				else if (!context.getGuild().getChannels().contains(context.getJDA().getGuildChannelById(channelID)))
-						context.getChannel().sendMessage("**The channel you provided is not in this server!**").queue();
+				if (!context.getGuild().getChannels().contains(context.getJDA().getGuildChannelById(channelID)))
+						context.getChannel().sendMessage("**The channel you provided is either invalid or not in this server!**").queue();
 				else promptForStarCount(context, channelID, server);
 			});
 		}
@@ -77,10 +75,8 @@ public class StarboardCommand extends AbstractCommand {
 	private void changeChannel(CommandContext context, List<String> args, Server server) {
 		if (starboardService.getStarboardConfig(server.getId()) != null) {
 			String channelID = ParsingUtils.filterSnowflake(args.get(1));
-			if (!ParsingUtils.isSnowflake(channelID))
-				context.getChannel().sendMessage("**The channel you provided is not valid!**").queue();
-			else if (!context.getGuild().getChannels().contains(context.getJDA().getGuildChannelById(channelID)))
-					context.getChannel().sendMessage("**The channel you provided is not in this server!**").queue();
+			if (!context.getGuild().getChannels().contains(context.getJDA().getGuildChannelById(channelID)))
+				context.getChannel().sendMessage("**The channel you provided is either invalid or not in this server!**").queue();
 			else {
 				StarboardConfig config = starboardService.getStarboardConfig(server.getId());
 				config.setChannelID(channelID);

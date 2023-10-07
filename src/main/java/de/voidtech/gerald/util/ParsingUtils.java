@@ -89,7 +89,7 @@ public class ParsingUtils {
 	}
 	
 	public static boolean isSnowflake(String input) {
-		return isInteger(input) && input.length() == 18;
+		return isInteger(input) && input.length() > 17 && input.length() < 20;
 	}
 	
 	public static boolean isHexadecimal(String input) {

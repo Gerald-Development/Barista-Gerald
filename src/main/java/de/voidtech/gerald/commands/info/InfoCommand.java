@@ -6,6 +6,7 @@ import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
+import main.java.de.voidtech.gerald.service.HttpClientService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -33,6 +34,9 @@ public class InfoCommand extends AbstractCommand {
 	
 	@Autowired
 	private SessionFactory sessionFactory;
+
+	@Autowired
+	private HttpClientService httpClientService;
 	
 	private long getEmoteCount(JDA jda) {
 		try(Session session = sessionFactory.openSession())
@@ -48,13 +52,12 @@ public class InfoCommand extends AbstractCommand {
 	private static final String JENKINS_LATEST_BUILD_URL = "https://jenkins.voidtech.de/job/Barista%20Gerald/lastSuccessfulBuild/buildNumber";
 	
 	private String getLatestBuild() {
-		Document doc = null;
 		try {
-			doc = Jsoup.connect(JENKINS_LATEST_BUILD_URL).get();
+			return httpClientService.get(JENKINS_LATEST_BUILD_URL).body().string();
 		} catch (IOException e) {
 			e.printStackTrace();
+			return "unknown";
 		}
-		return Objects.requireNonNull(doc).select("body").text();
 	}
 	
 	@Override
@@ -66,11 +69,14 @@ public class InfoCommand extends AbstractCommand {
 		MessageEmbed informationEmbed = new EmbedBuilder()
 				.setColor(Color.ORANGE)
 				.setTitle("Barista Gerald - A Java Discord Bot", GlobalConstants.LINKTREE_URL)
-				.addField("Gerald Owner", "```ElementalMP4#7458```", false)
-				.addField("Barista Gerald Developers", "```\n"
-						+ "ElementalMP4#7458\r\n"
-						+ "Montori#4707\r\n"
-						+ "Scot_Survivor#8625```", false)
+				.addField("Gerald Owner", "```elementalmp4```", false)
+				.addField("People who made this happen", "```\n"
+						+ "elementalmp4\r\n"
+						+ "montori\r\n"
+						+ "scot_survivor\r\n"
+						+ "pagwin\r\n"
+						+ "foxi```", false)
+
 				.addField("Gerald Guild Count", "```" + guildCount + "```", true)
 				.addField("Gerald Member Count", "```" + memberCount + "```", true)
 				.addField("Nitrolite Emote Count", "```" + emoteCount + "```", false)

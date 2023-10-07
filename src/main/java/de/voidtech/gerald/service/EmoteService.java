@@ -16,7 +16,7 @@ public class EmoteService {
 
 	@Autowired
 	private NitroliteEmoteRepository repository;
-	
+
 	//private List<NitroliteEmote> getPersistentEmotes(String name) {
 		//return repository.getEmoteListWithSimilarNames("%" + name.toLowerCase() + "%");
 	//}
@@ -92,7 +92,7 @@ public class EmoteService {
                 .filter(emote -> emote.getName().equalsIgnoreCase(name) && emote.isAvailable()).collect(Collectors.toList());
         //List<NitroliteEmote> persistentResult = getPersistentEmotes(name);
        
-        if (jdaCacheResult.size() > 0) {
+        if (!jdaCacheResult.isEmpty()) {
         	jdaCacheResult.forEach(emote -> {
         		NitroliteEmote newEmote = new NitroliteEmote(emote.getName(), emote.getId(), emote.isAnimated());
         		finalResult.add(newEmote);
