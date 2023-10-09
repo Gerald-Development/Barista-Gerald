@@ -4,7 +4,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.exception.GeraldException;
+import main.java.de.voidtech.gerald.exception.UnhandledGeraldException;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -47,7 +47,7 @@ public class HexCommand extends AbstractCommand {
             Document colourHexPage = Jsoup.connect(colourHexURL).get();
             return colourHexPage.select("#information > div.color-description > p > strong").first().text();
         } catch (IOException e) {
-            throw new GeraldException(e);
+            throw new UnhandledGeraldException(e);
         }
     }
 

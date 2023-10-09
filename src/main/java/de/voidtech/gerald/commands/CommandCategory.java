@@ -5,6 +5,7 @@ public enum CommandCategory {
     FUN("fun", ":video_game:"), 
     INFO("information", ":books:"), 
     MANAGEMENT("management", ":closed_lock_with_key:"),
+    INVISIBLE("invisible", ":shushing_face:"),
     UTILS("utils", ":desktop:");
  
     private final String category;

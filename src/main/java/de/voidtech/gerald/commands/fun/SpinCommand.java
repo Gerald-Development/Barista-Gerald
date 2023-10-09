@@ -4,6 +4,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.exception.HandledGeraldException;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.apache.commons.lang3.StringUtils;
@@ -72,6 +73,7 @@ public class SpinCommand extends AbstractCommand {
                 sentMessage.editMessageEmbeds(spinnerEndEmbed).queue();
             } catch (InterruptedException e) {
                 context.getChannel().sendMessage("Your spinner broke!").queue();
+                throw new HandledGeraldException(e);
             }
         });
     }

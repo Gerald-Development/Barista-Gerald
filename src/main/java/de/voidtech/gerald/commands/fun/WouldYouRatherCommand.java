@@ -4,19 +4,16 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.exception.UnhandledGeraldException;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Command
 public class WouldYouRatherCommand extends AbstractCommand {
-    private static final Logger LOGGER = Logger.getLogger(WouldYouRatherCommand.class.getSimpleName());
-
     @Override
     public void executeInternal(CommandContext context, List<String> args) {
         context.getChannel().sendTyping().queue();
@@ -32,7 +29,7 @@ public class WouldYouRatherCommand extends AbstractCommand {
             });
 
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error during CommandExecution: " + e.getMessage());
+            throw new UnhandledGeraldException(e);
         }
     }
 

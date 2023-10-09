@@ -26,6 +26,7 @@ public class CommandContext {
     private final boolean isPrivate;
     private final User user;
     private final GuildChannel guildChannel;
+    private final boolean isMaster;
 
     private CommandContext(CommandContextBuilder builder) {
         this.channel = builder.channel;
@@ -41,6 +42,11 @@ public class CommandContext {
         this.isPrivate = builder.isPrivateMessage;
         this.user = builder.user;
         this.guildChannel = builder.guildChannel;
+        this.isMaster = builder.isMaster;
+    }
+
+    public boolean isMaster() {
+        return this.isMaster;
     }
 
     public boolean isPrivate() {
@@ -142,6 +148,7 @@ public class CommandContext {
         private SlashCommandInteractionEvent slashCommandEvent;
         private boolean isPrivateMessage;
         private User user;
+        private boolean isMaster;
 
         public CommandContextBuilder(boolean isSlashCommand) {
             this.isSlash = isSlashCommand;
@@ -205,6 +212,11 @@ public class CommandContext {
 
         public CommandContextBuilder user(User author) {
             this.user = author;
+            return this;
+        }
+
+        public CommandContextBuilder master(boolean isMaster) {
+            this.isMaster = isMaster;
             return this;
         }
     }

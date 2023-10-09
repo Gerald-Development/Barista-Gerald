@@ -56,6 +56,7 @@ public class CommandService {
                 .user(message.getAuthor())
                 .guildChannel(isPrivateMessage ? null : message.getGuildChannel())
                 .message(message)
+                .master(config.getMasters().contains(message.getAuthor().getId()))
                 .build();
 
         AbstractCommand commandOpt = commands.stream()

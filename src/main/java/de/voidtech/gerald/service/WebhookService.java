@@ -1,6 +1,7 @@
 package main.java.de.voidtech.gerald.service;
 
 import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.exception.UnhandledGeraldException;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -20,13 +21,10 @@ import java.net.URL;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Service
 public class WebhookService {
 
-    private static final Logger LOGGER = Logger.getLogger(WebhookService.class.getSimpleName());
     @Autowired
     private MultithreadingService multithreadingService;
 
@@ -78,8 +76,7 @@ public class WebhookService {
             connection.disconnect();
 
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "Error during ServiceExecution: " + ex.getMessage());
-            ex.printStackTrace();
+            throw new UnhandledGeraldException(ex);
         }
     }
 

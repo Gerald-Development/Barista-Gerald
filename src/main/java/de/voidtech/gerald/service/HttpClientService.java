@@ -1,6 +1,6 @@
 package main.java.de.voidtech.gerald.service;
 
-import main.java.de.voidtech.gerald.exception.GeraldException;
+import main.java.de.voidtech.gerald.exception.UnhandledGeraldException;
 import main.java.de.voidtech.gerald.util.RequestInterceptor;
 import okhttp3.*;
 import org.json.JSONArray;
@@ -29,7 +29,7 @@ public class HttpClientService {
             Call call = client.newCall(request);
             return call.execute();
         } catch (IOException e) {
-            throw new GeraldException(e);
+            throw new UnhandledGeraldException(e);
         }
     }
 
@@ -42,7 +42,7 @@ public class HttpClientService {
             Call call = client.newCall(request);
             return call.execute();
         } catch (IOException e) {
-            throw new GeraldException(e);
+            throw new UnhandledGeraldException(e);
         }
     }
 
@@ -51,7 +51,7 @@ public class HttpClientService {
             Response response = get(url);
             return new JSONObject(response.body().string());
         } catch (IOException e) {
-            throw new GeraldException(e);
+            throw new UnhandledGeraldException(e);
         }
     }
 
@@ -60,7 +60,7 @@ public class HttpClientService {
             Response response = get(url);
             return response.body().string();
         } catch (IOException e) {
-            throw new GeraldException(e);
+            throw new UnhandledGeraldException(e);
         }
     }
 
@@ -69,7 +69,7 @@ public class HttpClientService {
             Response response = get(url);
             return new JSONArray(response.body().string());
         } catch (IOException e) {
-            throw new GeraldException(e);
+            throw new UnhandledGeraldException(e);
         }
     }
 
@@ -78,7 +78,7 @@ public class HttpClientService {
             Response response = post(url, body);
             return new JSONObject(response.body().string());
         } catch (IOException e) {
-            throw new GeraldException(e);
+            throw new UnhandledGeraldException(e);
         }
     }
 
@@ -87,7 +87,7 @@ public class HttpClientService {
             Response response = post(url, body);
             return response.body().string();
         } catch (IOException e) {
-            throw new GeraldException(e);
+            throw new UnhandledGeraldException(e);
         }
     }
 }
