@@ -24,7 +24,7 @@ public class AlarmService {
         TextChannel channel = context.getJDA().getTextChannelById(configService.getLoggingChannel());
         MessageEmbed alarmEmbed = new EmbedBuilder()
                 .setTitle(":warning: Command " + command + " has failed :warning:")
-                .addField(e.getMessage(), "```\n" + exceptionToString(e).substring(0, 1000) + "\n```", false)
+                .addField(e.getMessage(), "```\n" + exceptionToString(e) + "\n```", false)
                 .setFooter("Reference: " + reference)
                 .setColor(Color.RED)
                 .build();
@@ -36,6 +36,7 @@ public class AlarmService {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
-        return sw.toString();
+        String exceptionString = sw.toString();
+        return exceptionString.length() > 1000 ? exceptionString.substring(0, 1000) : exceptionString;
     }
 }
