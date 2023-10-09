@@ -1,5 +1,6 @@
 package main.java.de.voidtech.gerald.commands;
 
+import main.java.de.voidtech.gerald.exception.HandledGeraldException;
 import main.java.de.voidtech.gerald.exception.UnhandledGeraldException;
 import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.service.AlarmService;
@@ -51,7 +52,7 @@ public abstract class AbstractCommand {
             String ref = UUID.randomUUID().toString();
             LOGGER.log(Level.SEVERE, "Command execution failed: " + e.getMessage() + " - Reference " + ref);
             alarmService.sendCommandAlarm(this.getName(), ref, context, e);
-            if (e instanceof UnhandledGeraldException) {
+            if (!(e instanceof HandledGeraldException)) {
                 MessageEmbed errorEmbed = new EmbedBuilder()
                         .setColor(Color.RED)
                         .setTitle(":warning: Something has gone wrong :warning:")
