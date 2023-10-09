@@ -27,7 +27,7 @@ public class CommandService {
     private static final Logger LOGGER = Logger.getLogger(CommandService.class.getSimpleName());
 
     private static final int LEVENSHTEIN_THRESHOLD = 1;
-    public final HashMap<String, String> aliases = new HashMap<>();
+    private final HashMap<String, String> aliases = new HashMap<>();
     @Autowired
     private GeraldConfigService config;
     @Autowired
@@ -76,8 +76,8 @@ public class CommandService {
             context.getChannel().sendMessage("**You can only use this command in guilds!**").queue();
             return;
         }
-        command.run(context, context.getArgs());
-        LOGGER.log(Level.INFO, "Command executed: " + command.getName() + " - From " + context.getAuthor().getEffectiveName() + "- ID: " + context.getAuthor().getId());
+        boolean run = command.run(context, context.getArgs());
+        LOGGER.log(Level.INFO, (run ? "Command executed: " : "Command NOT executed: ") + command.getName() + " - From " + context.getAuthor().getEffectiveName() + " - ID: " + context.getAuthor().getId());
     }
 
     private String findCommand(String prompt) {
@@ -120,6 +120,10 @@ public class CommandService {
 
         if (customPrefix == null) return config.getDefaultPrefix();
         else return customPrefix;
+    }
+
+    public HashMap<String, String> getAliases() {
+        return this.aliases;
     }
 
     @EventListener(ApplicationReadyEvent.class)

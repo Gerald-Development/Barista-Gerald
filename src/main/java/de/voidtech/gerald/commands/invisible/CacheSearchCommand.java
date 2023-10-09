@@ -120,7 +120,7 @@ public class CacheSearchCommand extends AbstractCommand {
 
     @Override
     public boolean canBeDisabled() {
-        return true;
+        return false;
     }
 
     @Override

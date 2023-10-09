@@ -31,8 +31,8 @@ public abstract class AbstractCommand {
     @Autowired
     private AlarmService alarmService;
 
-    private void runCommandInThread(CommandContext context, List<String> args) {
-        if (!context.isMaster() && getCommandCategory().equals(CommandCategory.INVISIBLE)) return;
+    private boolean runCommandInThread(CommandContext context, List<String> args) {
+        if (!context.isMaster() && getCommandCategory().equals(CommandCategory.INVISIBLE)) return false;
         if (context.getChannel().getType() == ChannelType.PRIVATE && !this.isDMCapable()) {
             context.getChannel().sendMessage("**You can only use this command in guilds!**").queue();
         } else if (this.requiresArguments() && args.isEmpty()) {
@@ -41,6 +41,7 @@ public abstract class AbstractCommand {
             Runnable commandThreadRunnable = () -> tryRunCommand(context, args);
             multithreadingService.getThreadByName("T-Command").execute(commandThreadRunnable);
         }
+        return true;
     }
 
     private void tryRunCommand(CommandContext context, List<String> args) {
@@ -62,7 +63,7 @@ public abstract class AbstractCommand {
         }
     }
 
-    public void run(CommandContext context, List<String> args) {
+    public boolean run(CommandContext context, List<String> args) {
         if (context.getChannel().getType() == ChannelType.PRIVATE) {
             runCommandInThread(context, args);
         } else {
@@ -74,9 +75,10 @@ public abstract class AbstractCommand {
             boolean commandOnBlacklist = commandBlacklist.contains(getName());
 
             if ((channelWhitelisted && !commandOnBlacklist) || context.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-                runCommandInThread(context, args);
+                return runCommandInThread(context, args);
             }
         }
+        return false;
     }
 
     public abstract void executeInternal(CommandContext context, List<String> args);
