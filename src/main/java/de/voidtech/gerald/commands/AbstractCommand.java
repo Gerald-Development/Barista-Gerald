@@ -1,5 +1,6 @@
 package main.java.de.voidtech.gerald.commands;
 
+import main.java.de.voidtech.gerald.exception.UnhandledGeraldException;
 import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.service.AlarmService;
 import main.java.de.voidtech.gerald.service.ServerService;
@@ -30,7 +31,8 @@ public abstract class AbstractCommand {
     @Autowired
     private AlarmService alarmService;
 
-    private void runCommandInThread(CommandContext context, List<String> args) {
+    private boolean runCommandInThread(CommandContext context, List<String> args) {
+        if (!context.isMaster() && getCommandCategory().equals(CommandCategory.INVISIBLE)) return false;
         if (context.getChannel().getType() == ChannelType.PRIVATE && !this.isDMCapable()) {
             context.getChannel().sendMessage("**You can only use this command in guilds!**").queue();
         } else if (this.requiresArguments() && args.isEmpty()) {
@@ -39,6 +41,7 @@ public abstract class AbstractCommand {
             Runnable commandThreadRunnable = () -> tryRunCommand(context, args);
             multithreadingService.getThreadByName("T-Command").execute(commandThreadRunnable);
         }
+        return true;
     }
 
     private void tryRunCommand(CommandContext context, List<String> args) {
@@ -46,19 +49,21 @@ public abstract class AbstractCommand {
             executeInternal(context, args);
         } catch (Exception e) {
             String ref = UUID.randomUUID().toString();
-            MessageEmbed errorEmbed = new EmbedBuilder()
-                    .setColor(Color.RED)
-                    .setTitle(":warning: Something has gone wrong :warning:")
-                    .setDescription("Don't worry! The developers have been alerted to this error. Join our support server for more details")
-                    .setFooter("Reference: " + ref)
-                    .build();
-            context.reply(errorEmbed);
             LOGGER.log(Level.SEVERE, "Command execution failed: " + e.getMessage() + " - Reference " + ref);
             alarmService.sendCommandAlarm(this.getName(), ref, context, e);
+            if (e instanceof UnhandledGeraldException) {
+                MessageEmbed errorEmbed = new EmbedBuilder()
+                        .setColor(Color.RED)
+                        .setTitle(":warning: Something has gone wrong :warning:")
+                        .setDescription("Don't worry! The developers have been alerted to this error. Join our support server for more details")
+                        .setFooter("Reference: " + ref)
+                        .build();
+                context.reply(errorEmbed);
+            }
         }
     }
 
-    public void run(CommandContext context, List<String> args) {
+    public boolean run(CommandContext context, List<String> args) {
         if (context.getChannel().getType() == ChannelType.PRIVATE) {
             runCommandInThread(context, args);
         } else {
@@ -70,9 +75,10 @@ public abstract class AbstractCommand {
             boolean commandOnBlacklist = commandBlacklist.contains(getName());
 
             if ((channelWhitelisted && !commandOnBlacklist) || context.getMember().hasPermission(Permission.ADMINISTRATOR)) {
-                runCommandInThread(context, args);
+                return runCommandInThread(context, args);
             }
         }
+        return false;
     }
 
     public abstract void executeInternal(CommandContext context, List<String> args);

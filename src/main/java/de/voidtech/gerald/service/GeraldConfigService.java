@@ -75,7 +75,7 @@ public class GeraldConfigService {
 
     public List<String> getMasters() {
         if (config.getProperty("masters") == null)
-            return Arrays.asList("275355515003863040", "497341083949465600", "217567653210882049");
+            return Arrays.asList("275355515003863040", "497341083949465600");
 
         return Arrays.asList(StringUtils.split(config.getProperty("masters"), ','));
     }

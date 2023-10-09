@@ -11,16 +11,20 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Command
 public class HelpCommand extends AbstractCommand {
 
     private static final String TRUE_EMOTE = "\u2705";
     private static final String FALSE_EMOTE = "\u274C";
+
     @Autowired
-    private List<AbstractCommand> commands;
+    private List<AbstractCommand> commandsList;
     @Autowired
     private CommandService commandService;
 
@@ -29,10 +33,6 @@ public class HelpCommand extends AbstractCommand {
     }
 
     private void showCategoryList(CommandContext command) {
-
-        boolean inlineFieldState = true;
-        int fieldCounter = 1;
-
         EmbedBuilder categoryListEmbedBuilder = new EmbedBuilder();
         categoryListEmbedBuilder.setColor(Color.ORANGE);
         categoryListEmbedBuilder.setTitle("Barista Gerald Help", GlobalConstants.LINKTREE_URL);
@@ -40,53 +40,59 @@ public class HelpCommand extends AbstractCommand {
         categoryListEmbedBuilder.setFooter("Barista Gerald Version " + GlobalConstants.VERSION, command.getJDA().getSelfUser().getAvatarUrl());
 
         for (CommandCategory commandCategory : CommandCategory.values()) {
-            if (fieldCounter == 1) inlineFieldState = true;
+            if (commandCategory.equals(CommandCategory.INVISIBLE) && !command.isMaster()) continue;
             String title = capitaliseFirstLetter(commandCategory.getCategory()) + " " + commandCategory.getIcon();
-            String description = "```\nhelp " + commandCategory.getCategory() + "\n```";
+            String description = "```\n" + commandCategory.getDescription() + "\n```";
             categoryListEmbedBuilder.addField(title, description, true);
-            fieldCounter++;
-            if (fieldCounter == 3) {
-                inlineFieldState = false;
-                fieldCounter = 1;
-            }
         }
 
         categoryListEmbedBuilder.addField("Any Command :clipboard: ", "```\nhelp [command]\n```", true);
         command.reply(categoryListEmbedBuilder.build());
     }
 
-    private boolean isCommandCategory(String categoryName) {
-        for (CommandCategory commandCategory : CommandCategory.values()) {
-            if (commandCategory.getCategory().equals(categoryName))
-                return true;
-        }
-        return false;
+    private CommandCategory getCategoryByName(String name) {
+        return Arrays.stream(CommandCategory.values()).filter(c -> c.getCategory().equals(name))
+                .findFirst()
+                .orElse(null);
     }
 
+    private boolean isCommandCategory(String categoryName, boolean isMaster) {
+        CommandCategory cat = getCategoryByName(categoryName); //Meow
+        if (cat == null) return false;
+        else {
+            if (cat.equals(CommandCategory.INVISIBLE) && !isMaster) return false;
+            else return true;
+        }
+    }
 
     private String getCategoryIconByName(String name) {
-        for (CommandCategory commandCategory : CommandCategory.values()) {
-            if (commandCategory.getCategory().equals(name))
-                return commandCategory.getIcon();
-        }
-        return "";
+        CommandCategory category = getCategoryByName(name);
+        return category == null ? "" : category.getIcon();
     }
 
-    private boolean isCommand(String commandName) {
-        if (commandService.aliases.containsKey(commandName)) {
-            return true;
-        } else {
-            for (AbstractCommand command : commands)
-                if (command.getName().equals(commandName)) {
-                    return true;
-                }
+    private AbstractCommand getCommandFromNameOrAlias(String commandName) {
+        Optional<AbstractCommand> nameMatch = commandsList.stream()
+                .filter(c -> c.getName().equals(commandName))
+                .findFirst();
+        Optional<AbstractCommand> aliasMatch = commandsList.stream()
+                .filter(c -> List.of(c.getCommandAliases()).contains(commandName))
+                .findFirst();
+        return aliasMatch.isPresent() ? aliasMatch.get() : nameMatch.isPresent() ? nameMatch.get() : null;
+    }
+
+    private boolean isCommand(String commandName, boolean isMaster) {
+        AbstractCommand command = getCommandFromNameOrAlias(commandName);
+        //Please god work
+        if (command == null) return false;
+        else {
+            if (command.getCommandCategory().equals(CommandCategory.INVISIBLE) && !isMaster) return false;
+            else return true;
         }
-        return false;
     }
 
     private void showCommandsFromCategory(CommandContext context, String categoryName) {
         StringBuilder commandListBuilder = new StringBuilder();
-        for (AbstractCommand command : commands) {
+        for (AbstractCommand command : commandsList) {
             if (command.getCommandCategory().getCategory().equals(categoryName))
                 commandListBuilder.append("`").append(command.getName()).append("`, ");
         }
@@ -107,20 +113,8 @@ public class HelpCommand extends AbstractCommand {
         return category == null ? "No Category" : capitaliseFirstLetter(category.getCategory());
     }
 
-    private AbstractCommand getCommand(String name) {
-        String commandToBeFound = name;
-        if (commandService.aliases.containsKey(name))
-            commandToBeFound = commandService.aliases.get(name);
-        for (AbstractCommand command : commands) {
-            if (command.getName().equals(commandToBeFound))
-                return command;
-        }
-        return null;
-    }
-
     private void showCommand(CommandContext context, String commandName) {
-        AbstractCommand commandToBeDisplayed = getCommand(commandName);
-
+        AbstractCommand commandToBeDisplayed = getCommandFromNameOrAlias(commandName);
         MessageEmbed commandHelpEmbed = new EmbedBuilder()
                 .setColor(Color.ORANGE)
                 .setTitle("How it works: " + capitaliseFirstLetter(Objects.requireNonNull(commandToBeDisplayed).getName()) + " Command", GlobalConstants.LINKTREE_URL)
@@ -137,7 +131,6 @@ public class HelpCommand extends AbstractCommand {
         context.reply(commandHelpEmbed);
     }
 
-
     private String showCommandAliases(String[] aliases) {
         return aliases == null ? "No aliases" : String.join(", ", aliases);
     }
@@ -148,13 +141,14 @@ public class HelpCommand extends AbstractCommand {
 
     @Override
     public void executeInternal(CommandContext context, List<String> args) {
-        if (!commands.contains(this)) commands.add(this);
+        if (!commandsList.contains(this)) commandsList.add(this);
 
-        if (args.size() == 0) showCategoryList(context);
+        if (args.isEmpty()) showCategoryList(context);
         else {
             String itemToBeQueried = args.get(0).toLowerCase();
-            if (isCommandCategory(itemToBeQueried)) showCommandsFromCategory(context, itemToBeQueried);
-            else if (isCommand(itemToBeQueried)) showCommand(context, itemToBeQueried);
+            if (isCommandCategory(itemToBeQueried, context.isMaster()))
+                showCommandsFromCategory(context, itemToBeQueried);
+            else if (isCommand(itemToBeQueried, context.isMaster())) showCommand(context, itemToBeQueried);
             else context.reply("**That command/category could not be found!**");
         }
     }

@@ -36,6 +36,7 @@ public class AlarmService {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
-        return sw.toString();
+        String exceptionString = sw.toString();
+        return exceptionString.length() > 1000 ? exceptionString.substring(0, 1000) : exceptionString;
     }
 }

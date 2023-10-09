@@ -1,6 +1,6 @@
 package main.java.de.voidtech.gerald.service;
 
-import main.java.de.voidtech.gerald.exception.GeraldException;
+import main.java.de.voidtech.gerald.exception.UnhandledGeraldException;
 import main.java.de.voidtech.gerald.persistence.entity.DelayedTask;
 import main.java.de.voidtech.gerald.tasks.TaskType;
 import org.json.JSONObject;
@@ -41,7 +41,7 @@ public class InspiroService {
             }
             con.disconnect();
         } catch (IOException e) {
-            throw new GeraldException(e);
+            throw new UnhandledGeraldException(e);
         }
         return null;
     }

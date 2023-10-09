@@ -4,7 +4,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.exception.GeraldException;
+import main.java.de.voidtech.gerald.exception.UnhandledGeraldException;
 import main.java.de.voidtech.gerald.persistence.entity.MemeBlocklist;
 import main.java.de.voidtech.gerald.persistence.repository.MemeBlocklistRepository;
 import main.java.de.voidtech.gerald.service.GeraldConfigService;
@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -96,10 +95,10 @@ public class MemeCommand extends AbstractCommand {
                 String response = in.lines().collect(Collectors.joining());
                 return response.substring(1, response.length() - 1);
             } catch (IOException e) {
-                throw new GeraldException(e);
+                throw new UnhandledGeraldException(e);
             }
         } catch (IOException e) {
-            throw new GeraldException(e);
+            throw new UnhandledGeraldException(e);
         }
     }
 
@@ -114,7 +113,7 @@ public class MemeCommand extends AbstractCommand {
             byte[] input = payload.getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
         } catch (IOException e) {
-            throw new GeraldException(e);
+            throw new UnhandledGeraldException(e);
         }
         return con;
     }

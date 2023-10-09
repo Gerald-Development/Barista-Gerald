@@ -1,4 +1,4 @@
-package main.java.de.voidtech.gerald.commands.utils;
+package main.java.de.voidtech.gerald.commands.invisible;
 
 import main.java.de.voidtech.gerald.GlobalConstants;
 import main.java.de.voidtech.gerald.annotations.Command;
@@ -31,8 +31,6 @@ public class ActivityCommand extends AbstractCommand {
 
     @Override
     public void executeInternal(CommandContext context, List<String> args) {
-        if (!config.getMasters().contains(context.getMember().getId())) return;
-
         if (StringUtils.join(args.toArray(), " ").length() > 128)
             context.reply("Too many characters! The activity can only be 128 letters");
         else {
@@ -81,7 +79,7 @@ public class ActivityCommand extends AbstractCommand {
 
     @Override
     public CommandCategory getCommandCategory() {
-        return CommandCategory.UTILS;
+        return CommandCategory.INVISIBLE;
     }
 
     @Override

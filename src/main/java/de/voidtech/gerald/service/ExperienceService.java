@@ -1,5 +1,6 @@
 package main.java.de.voidtech.gerald.service;
 
+import main.java.de.voidtech.gerald.exception.UnhandledGeraldException;
 import main.java.de.voidtech.gerald.persistence.entity.Experience;
 import main.java.de.voidtech.gerald.persistence.entity.LevelUpRole;
 import main.java.de.voidtech.gerald.persistence.entity.Server;
@@ -59,9 +60,8 @@ public class ExperienceService {
             String response = httpClientService.getAndReturnString(cardURL).split(",")[1];
             return DatatypeConverter.parseBase64Binary(response);
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage());
+            throw new UnhandledGeraldException(e);
         }
-        return null;
     }
 
     public Experience getUserExperience(String userID, long serverID) {
