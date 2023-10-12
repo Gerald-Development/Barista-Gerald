@@ -1,7 +1,6 @@
 package main.java.de.voidtech.gerald.commands;
 
 import main.java.de.voidtech.gerald.exception.HandledGeraldException;
-import main.java.de.voidtech.gerald.exception.UnhandledGeraldException;
 import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.service.AlarmService;
 import main.java.de.voidtech.gerald.service.ServerService;
