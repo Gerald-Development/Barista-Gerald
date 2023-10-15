@@ -106,27 +106,33 @@ public class XKCDCommand extends AbstractCommand {
             String randomResponse = getXKCDById(new Random().nextInt(Integer.parseInt(current)));
             sendXKCD(new JSONObject(randomResponse), context);
         } else {
-            switch (args.get(0)) {
-                case "latest":
-                    String currentResponse = getCurrentXKCD();
-                    sendXKCD(new JSONObject(currentResponse), context);
-                    break;
-                case "id":
-                    if (ParsingUtils.isInteger(args.get(1))) {
-                        String byIdResponse = getXKCDById(Integer.parseInt(args.get(1)));
-                        if (byIdResponse.equals("")) context.reply("**That ID could not be found!**");
-                        else sendXKCD(new JSONObject(byIdResponse), context);
-                    } else context.reply("**That ID is not valid!**");
-                    break;
-                case "search":
-                    String search = formSearch(args);
-                    if (search.equals("")) context.reply("**Your search was invalid!**");
-                    else {
-                        String searchResult = getXKCDBySearch(search);
-                        if (searchResult.equals("")) context.reply("**Your search returned no results!**");
-                        else sendXKCD(new JSONObject(searchResult), context);
+            if (ParsingUtils.isInteger(args.get(0))) {
+                String byIdResponse = getXKCDById(Integer.parseInt(args.get(0)));
+                if (byIdResponse.isEmpty()) context.reply("**That ID could not be found!**");
+                else sendXKCD(new JSONObject(byIdResponse), context);
+            } else {
+                switch (args.get(0)) {
+                    case "latest" -> {
+                        String currentResponse = getCurrentXKCD();
+                        sendXKCD(new JSONObject(currentResponse), context);
                     }
-                    break;
+                    case "id" -> {
+                        if (ParsingUtils.isInteger(args.get(1))) {
+                            String byIdResponse = getXKCDById(Integer.parseInt(args.get(1)));
+                            if (byIdResponse.isEmpty()) context.reply("**That ID could not be found!**");
+                            else sendXKCD(new JSONObject(byIdResponse), context);
+                        } else context.reply("**That ID is not valid!**");
+                    }
+                    case "search" -> {
+                        String search = formSearch(args);
+                        if (search.isEmpty()) context.reply("**Your search was invalid!**");
+                        else {
+                            String searchResult = getXKCDBySearch(search);
+                            if (searchResult.equals("")) context.reply("**Your search returned no results!**");
+                            else sendXKCD(new JSONObject(searchResult), context);
+                        }
+                    }
+                }
             }
         }
     }

@@ -1,7 +1,6 @@
 package main.java.de.voidtech.gerald.service;
 
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.exception.UnhandledGeraldException;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -27,6 +26,9 @@ public class WebhookService {
 
     @Autowired
     private MultithreadingService multithreadingService;
+
+    @Autowired
+    private AlarmSenderService alarmService;
 
     public Webhook getOrCreateWebhook(TextChannel targetChannel, String webhookName, String selfID) {
 
@@ -76,7 +78,7 @@ public class WebhookService {
             connection.disconnect();
 
         } catch (Exception ex) {
-            throw new UnhandledGeraldException(ex);
+            alarmService.sendSystemAlarm(ex);
         }
     }
 

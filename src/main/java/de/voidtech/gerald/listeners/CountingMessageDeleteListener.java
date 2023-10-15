@@ -1,33 +1,28 @@
 package main.java.de.voidtech.gerald.listeners;
 
+import main.java.de.voidtech.gerald.annotations.Listener;
 import main.java.de.voidtech.gerald.persistence.entity.CountingChannel;
 import main.java.de.voidtech.gerald.service.CountingService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
-import net.dv8tion.jda.api.hooks.EventListener;
-import org.jetbrains.annotations.NotNull;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.awt.*;
 
-@Component
-public class CountingMessageDeleteListener implements EventListener {
+@Listener
+public class CountingMessageDeleteListener extends ListenerAdapter {
 
 	@Autowired
 	private CountingService countService;
-	
+
 	@Override
-	public void onEvent(@NotNull GenericEvent event) {
-		if (event instanceof MessageDeleteEvent) {
-			MessageDeleteEvent message = (MessageDeleteEvent) event;
-			CountingChannel channel = countService.getCountingChannel(message.getChannel().getId());
-			if (channel != null) {
-				if (message.getMessageId().equals(channel.getLastCountMessageId())) {
-					message.getChannel().sendMessageEmbeds(createDeletedMessageEmbed()).queue();
-				}
+	public void onMessageDelete(MessageDeleteEvent event) {
+		CountingChannel channel = countService.getCountingChannel(event.getChannel().getId());
+		if (channel != null) {
+			if (event.getMessageId().equals(channel.getLastCountMessageId())) {
+				event.getChannel().sendMessageEmbeds(createDeletedMessageEmbed()).queue();
 			}
 		}
 	}
