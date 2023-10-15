@@ -1,26 +1,27 @@
 package main.java.de.voidtech.gerald.listeners;
 
+import main.java.de.voidtech.gerald.annotations.Listener;
+import main.java.de.voidtech.gerald.service.AlarmSenderService;
 import main.java.de.voidtech.gerald.service.GeraldConfigService;
-import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
-import net.dv8tion.jda.api.hooks.EventListener;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Component;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Component
-public class ReadyListener implements EventListener {
+@Listener
+public class ReadyListener extends ListenerAdapter {
 
-	//Intentionally not using GeraldLogger
-	private static final Logger LOGGER = Logger.getLogger(GeraldConfigService.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(GeraldConfigService.class.getName());
 
-	@Override
-	public void onEvent(@NotNull GenericEvent event) {
-		if (event instanceof ReadyEvent) {
-			String clientName = event.getJDA().getSelfUser().getEffectiveName();
-			LOGGER.log(Level.INFO, "Coffee Machine is ready! Serving lattes as " + clientName);
-		}
-	}
+    @Autowired
+    private AlarmSenderService alarmSenderService;
+
+    @Override
+    public void onReady(ReadyEvent event) {
+        String clientName = event.getJDA().getSelfUser().getEffectiveName();
+        alarmSenderService.ready(event.getJDA());
+        LOGGER.log(Level.INFO, "Coffee Machine is ready! Serving lattes as " + clientName);
+    }
 }

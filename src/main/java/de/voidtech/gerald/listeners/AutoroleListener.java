@@ -1,36 +1,32 @@
 package main.java.de.voidtech.gerald.listeners;
 
+import main.java.de.voidtech.gerald.annotations.Listener;
 import main.java.de.voidtech.gerald.persistence.entity.AutoroleConfig;
 import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.service.AutoroleService;
 import main.java.de.voidtech.gerald.service.ServerService;
-import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
-public class AutoroleListener implements EventListener {
+@Listener
+public class AutoroleListener extends ListenerAdapter {
 	
 	@Autowired
 	private AutoroleService autoroleService;
 	
 	@Autowired
 	private ServerService serverService;
-	
+
 	@Override
-	public void onEvent(@NotNull GenericEvent event) {
-		if (event instanceof GuildMemberJoinEvent) {
-			GuildMemberJoinEvent joinEvent = (GuildMemberJoinEvent) event;
-			Server server = serverService.getServer(joinEvent.getGuild().getId());
-			List<AutoroleConfig> configs = autoroleService.getAutoroleConfigs(server.getId());
-			if (!configs.isEmpty()) {
-				autoroleService.addRolesToMember((GuildMemberJoinEvent) event, configs);
-			}
-		}	
+	public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {
+		Server server = serverService.getServer(event.getGuild().getId());
+		List<AutoroleConfig> configs = autoroleService.getAutoroleConfigs(server.getId());
+		if (!configs.isEmpty()) {
+			autoroleService.addRolesToMember(event, configs);
+		}
 	}
 }

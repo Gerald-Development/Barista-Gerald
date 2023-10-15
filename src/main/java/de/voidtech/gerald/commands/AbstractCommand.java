@@ -2,7 +2,7 @@ package main.java.de.voidtech.gerald.commands;
 
 import main.java.de.voidtech.gerald.exception.HandledGeraldException;
 import main.java.de.voidtech.gerald.persistence.entity.Server;
-import main.java.de.voidtech.gerald.service.AlarmService;
+import main.java.de.voidtech.gerald.service.AlarmSenderService;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.MultithreadingService;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -29,7 +29,7 @@ public abstract class AbstractCommand {
     private MultithreadingService multithreadingService;
 
     @Autowired
-    private AlarmService alarmService;
+    private AlarmSenderService alarmService;
 
     private boolean runCommandInThread(CommandContext context, List<String> args) {
         if (!context.isMaster() && getCommandCategory().equals(CommandCategory.INVISIBLE)) return false;
@@ -50,7 +50,7 @@ public abstract class AbstractCommand {
         } catch (Exception e) {
             String ref = UUID.randomUUID().toString();
             LOGGER.log(Level.SEVERE, "Command execution failed: " + e.getMessage() + " - Reference " + ref);
-            alarmService.sendCommandAlarm(this.getName(), ref, context, e);
+            alarmService.sendCommandAlarm(this.getName(), ref, e);
             if (!(e instanceof HandledGeraldException)) {
                 MessageEmbed errorEmbed = new EmbedBuilder()
                         .setColor(Color.RED)

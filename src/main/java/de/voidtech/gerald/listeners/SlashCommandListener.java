@@ -1,11 +1,11 @@
 package main.java.de.voidtech.gerald.listeners;
 
+import main.java.de.voidtech.gerald.annotations.Listener;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Component;
 
-@Component
+@Listener
 public class SlashCommandListener implements EventListener {
 
     //@Autowired
