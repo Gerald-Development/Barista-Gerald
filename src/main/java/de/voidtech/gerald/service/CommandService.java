@@ -25,9 +25,9 @@ import java.util.stream.Collectors;
 @Service
 public class CommandService {
     private static final Logger LOGGER = Logger.getLogger(CommandService.class.getSimpleName());
-
     private static final int LEVENSHTEIN_THRESHOLD = 1;
     private final HashMap<String, String> aliases = new HashMap<>();
+
     @Autowired
     private GeraldConfigService config;
     @Autowired
@@ -77,7 +77,8 @@ public class CommandService {
             return;
         }
         boolean run = command.run(context, context.getArgs());
-        LOGGER.log(Level.INFO, (run ? "Command executed: " : "Command NOT executed: ") + command.getName() + " - From " + context.getAuthor().getEffectiveName() + " - ID: " + context.getAuthor().getId());
+        LOGGER.log(Level.INFO, (run ? "Command executed: " : "Command NOT executed: ") + command.getName() +
+                " - From " + context.getAuthor().getEffectiveName() + " - ID: " + context.getAuthor().getId());
     }
 
     private String findCommand(String prompt) {

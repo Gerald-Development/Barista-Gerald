@@ -5,7 +5,7 @@ import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.service.HttpClientService;
-import main.java.de.voidtech.gerald.util.EventWaiter;
+import main.java.de.voidtech.gerald.listeners.EventWaiter;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import main.java.de.voidtech.gerald.util.RAESameUserPredicate;
 import net.dv8tion.jda.api.EmbedBuilder;

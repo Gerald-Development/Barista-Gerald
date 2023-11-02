@@ -1,9 +1,11 @@
-package main.java.de.voidtech.gerald.util;
+package main.java.de.voidtech.gerald.listeners;
 
+import main.java.de.voidtech.gerald.annotations.Listener;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.session.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -18,7 +20,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class EventWaiter implements EventListener {
+@Listener
+public class EventWaiter extends ListenerAdapter {
     private final HashMap<Class<?>, Set<WaitingEvent>> waitingEvents;
     private final ScheduledExecutorService threadpool;
     private final boolean shutdownAutomatically;
@@ -58,8 +61,8 @@ public class EventWaiter implements EventListener {
 
     }
 
-    @SubscribeEvent
-    public final void onEvent(GenericEvent event) {
+    @Override
+    public final void onGenericEvent(GenericEvent event) {
         for (Class c = event.getClass(); c != null; c = c.getSuperclass()) {
             if (this.waitingEvents.containsKey(c)) {
                 Set<WaitingEvent> set = (Set) this.waitingEvents.get(c);
