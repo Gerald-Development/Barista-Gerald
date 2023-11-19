@@ -24,14 +24,14 @@ public class AlarmSenderService {
     }
 
     public void sendCommandAlarm(String command, String reference, Exception e) {
+        e.printStackTrace();
         MessageEmbed alarmEmbed = new EmbedBuilder()
                 .setTitle(":warning: Command " + command + " has failed :warning:")
-                .addField(e.getMessage(), "```\n" + exceptionToString(e) + "\n```", false)
+                .addField(shrink(e.getMessage(), 250), "```\n" + exceptionToString(e) + "\n```", false)
                 .setFooter("Reference: " + reference)
                 .setColor(Color.RED)
                 .build();
         loggingChannel.sendMessageEmbeds(alarmEmbed).queue();
-        e.printStackTrace();
     }
 
     private String exceptionToString(Exception e) {
@@ -39,7 +39,11 @@ public class AlarmSenderService {
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
         String exceptionString = sw.toString();
-        return exceptionString.length() > 1000 ? exceptionString.substring(0, 1000) + "..." : exceptionString;
+        return shrink(exceptionString, 1000);
+    }
+
+    private String shrink(String input, int length) {
+        return input.length() > length ? input.substring(0, length) + "..." : input;
     }
 
     public void sendSystemAlarm(Exception e) {
