@@ -80,7 +80,7 @@ public abstract class AbstractCommand {
 
     private void getOverrideOption(CommandContext context, String location, List<ItemComponent> actions, Consumer<ButtonInteractionEvent> result) {
         Message m = context.getAuthor().openPrivateChannel().complete()
-                .sendMessage("The command you wanted to run isn't enabled in **" + location + "**, run it anyway?").setActionRow(actions).complete();
+                .sendMessage("The command you wanted to run is restricted in **" + location + "**, run it anyway?").setActionRow(actions).complete();
         waiter.waitForEvent(ButtonInteractionEvent.class,
                 new BCESameUserPredicate(context.getAuthor()),
                 event -> {
