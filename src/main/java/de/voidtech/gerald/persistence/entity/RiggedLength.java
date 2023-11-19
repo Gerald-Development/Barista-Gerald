@@ -9,10 +9,10 @@ public class RiggedLength {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column
+	@Column(name="memberid")
 	private String memberID; 
 	
-	@Column
+	@Column(name="length")
 	private int length;
 	
 	@Deprecated

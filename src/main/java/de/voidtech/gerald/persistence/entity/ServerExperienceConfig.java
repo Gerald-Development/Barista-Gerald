@@ -16,13 +16,13 @@ public class ServerExperienceConfig {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column
+	@Column(name="serverid")
 	private long serverID;
 	
-	@Column
+	@Column(name="levelupmessagesenabled")
 	private boolean levelUpMessagesEnabled;
 
-	@Column(columnDefinition = "int default -1")
+	@Column(columnDefinition = "int default -1", name="rate")
 	private int rate;
 	
 	//TODO: Don't fetch EAGER for this.

@@ -10,16 +10,16 @@ public class TwitchNotificationChannel {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column
+	@Column(name="channelid")
 	private String channelID; 
 	
-	@Column
+	@Column(name="streamername")
 	private String streamerName;
 	
-	@Column
+	@Column(name="notificationmessage")
 	private String notificationMessage;
 	
-	@Column
+	@Column(name="serverid")
 	private long serverID;
 	
 	@Deprecated

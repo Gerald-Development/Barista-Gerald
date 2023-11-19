@@ -11,16 +11,16 @@ public class StarboardConfig {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column(unique = true)
+	@Column(unique = true, name="starboardchannel")
 	private String starboardChannel; 
 	
-	@Column
+	@Column(name="serverid")
 	private long serverID;
 	
-	@Column
+	@Column(name="requiredstarcount")
 	private long requiredStarCount;
 	
-	@Column
+	@Column(name="ignoredchannels")
 	private String ignoredChannels;
 	
 	@Deprecated

@@ -10,16 +10,16 @@ public class JoinLeaveMessage {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column
+	@Column(name="serverid")
 	private long serverID; 
 	
-	@Column
+	@Column(name="channelid")
 	private String channelID; 
 	
-	@Column
+	@Column(name="joinmessage")
 	private String joinMessage; 
 	
-	@Column
+	@Column(name="leavemessage")
 	private String leaveMessage; 
 	
 	@Deprecated

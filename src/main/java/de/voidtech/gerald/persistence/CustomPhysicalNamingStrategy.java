@@ -20,7 +20,6 @@ public class CustomPhysicalNamingStrategy extends PhysicalNamingStrategyStandard
 
     @Override
     public Identifier toPhysicalColumnName(Identifier name, JdbcEnvironment context) {
-        String lowerName = name.getText().toLowerCase();
-        return new Identifier(lowerName.replace("_", ""), name.isQuoted());
+        return new Identifier(name.getText().toLowerCase(), name.isQuoted());
     }
 }

@@ -9,13 +9,13 @@ public class NitroliteEmote {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column
+	@Column(name="name")
 	private String name;
 	
-	@Column
+	@Column(name="emoteid")
 	private String emoteID;
 	
-	@Column
+	@Column(name="isanimated")
 	private boolean isAnimated;
 	
 	@Deprecated

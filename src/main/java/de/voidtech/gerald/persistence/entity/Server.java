@@ -16,7 +16,7 @@ public class Server
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column(unique = true)
+	@Column(unique=true, name="guildid")
 	private String guildID;
 	
 	//TODO: Don't fetch EAGER for this.
@@ -33,7 +33,7 @@ public class Server
 	@Cascade(CascadeType.REMOVE)
 	private Set<String> routineBlacklist;
 	
-	@Column
+	@Column(name="prefix")
 	private String prefix;
 	
 	@Deprecated

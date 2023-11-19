@@ -9,19 +9,19 @@ public class ActionStats {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column
-	private String type; 
-	
-	@Column
+	@Column(name="type")
+	private String type;
+
+	@Column(name="memberid")
 	private String memberID; 
 	
-	@Column
+	@Column(name="givencount")
 	private long givenCount;
 	
-	@Column
+	@Column(name="receivedcount")
 	private long receivedCount;
 	
-	@Column
+	@Column(name="serverid")
 	long serverID;
 	
 	@Deprecated

@@ -10,10 +10,10 @@ public class MemeBlocklist {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column
+	@Column(name="serverid")
 	private long serverID;
 	
-	@Column
+	@Column(name="blocklist")
 	private String blocklist;
 	
 	@Deprecated

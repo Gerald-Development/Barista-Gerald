@@ -10,16 +10,16 @@ public class AutoroleConfig {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column
+	@Column(name="serverid")
 	private long serverID; 
 	
-	@Column
+	@Column(name="roleid")
 	private String roleID; 
 	
-	@Column
+	@Column(name="availableforbots")
 	private boolean availableForBots; 
 	
-	@Column
+	@Column(name="availableforhumans")
 	private boolean availableForHumans; 
 	
 	@Deprecated
