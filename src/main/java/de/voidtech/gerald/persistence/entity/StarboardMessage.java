@@ -10,13 +10,13 @@ public class StarboardMessage {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column(unique = true)
+	@Column(unique = true, name="originalmessageid")
 	private String originMessageID;
 	
-	@Column(unique = true)
+	@Column(unique = true, name="selfmessageid")
 	private String selfMessageID;
 	
-	@Column
+	@Column(name="serverid")
 	private long serverID;
 	
 	@Deprecated

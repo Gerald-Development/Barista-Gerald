@@ -8,7 +8,7 @@ import main.java.de.voidtech.gerald.persistence.entity.AutoroleConfig;
 import main.java.de.voidtech.gerald.service.AutoroleService;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.util.BCESameUserPredicate;
-import main.java.de.voidtech.gerald.util.EventWaiter;
+import main.java.de.voidtech.gerald.listeners.EventWaiter;
 import main.java.de.voidtech.gerald.util.MRESameUserPredicate;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -53,7 +53,7 @@ public class AutoroleCommand extends AbstractCommand {
     private void getAwaitedButton(CommandContext context, String question, List<ItemComponent> actions, Consumer<ButtonInteractionEvent> result) {
         context.getChannel().sendMessage(question).setActionRow(actions).queue();
         waiter.waitForEvent(ButtonInteractionEvent.class,
-                new BCESameUserPredicate(context.getMember()),
+                new BCESameUserPredicate(context.getAuthor()),
                 event -> {
                     if (!event.isAcknowledged()) event.deferEdit().queue();
                     result.accept(event);

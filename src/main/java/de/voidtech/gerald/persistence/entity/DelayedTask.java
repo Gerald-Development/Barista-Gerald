@@ -14,20 +14,20 @@ public class DelayedTask {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column
+	@Column(name="args")
 	@Type(type = "org.hibernate.type.TextType")
 	private String args; 
 	
-	@Column
+	@Column(name="type")
 	private String type;
 	
-	@Column
+	@Column(name="time")
 	private long time;
 	
-	@Column
+	@Column(name="guildid")
 	private String guildID;
 	
-	@Column
+	@Column(name="userid")
 	private String userID;
 	
 	@Deprecated

@@ -10,22 +10,22 @@ public class Experience {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
-	@Column
+	@Column(name="userid")
 	private String userID;
 	
-	@Column
+	@Column(name="serverid")
 	private long serverID;
 	
-	@Column
+	@Column(name="messagecount")
 	private long messageCount;
 	
-	@Column
+	@Column(name="level")
 	private long level;
 	
-	@Column
+	@Column(name="lastmessagetime")
 	private long lastMessageTime;
 	
-	@Column
+	@Column(name="totalexperience")
 	private long totalExperience;
 	
 	@Deprecated

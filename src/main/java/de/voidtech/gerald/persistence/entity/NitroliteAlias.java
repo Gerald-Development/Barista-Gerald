@@ -9,13 +9,13 @@ public class NitroliteAlias {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
-	@Column
+	@Column(name="serverid")
 	long serverID;
 	
-	@Column
+	@Column(name="aliasname")
 	String aliasName;
 	
-	@Column
+	@Column(name="emoteid")
 	String emoteID;
 	
 	@Deprecated

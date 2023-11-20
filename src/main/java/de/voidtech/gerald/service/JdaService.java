@@ -2,7 +2,6 @@ package main.java.de.voidtech.gerald.service;
 
 import main.java.de.voidtech.gerald.GlobalConstants;
 import main.java.de.voidtech.gerald.persistence.entity.GlobalConfig;
-import main.java.de.voidtech.gerald.util.EventWaiter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -17,6 +16,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.security.auth.login.LoginException;
+import java.util.EventListener;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -65,11 +65,6 @@ public class JdaService {
         approvedIntents.add(GatewayIntent.MESSAGE_CONTENT);
 
         return approvedIntents;
-    }
-
-    @Bean
-    public EventWaiter getEventWaiter() {
-        return new EventWaiter();
     }
 
 }

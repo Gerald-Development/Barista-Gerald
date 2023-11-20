@@ -10,31 +10,31 @@ public class CountingChannel {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column
+	@Column(name="channelid")
 	private String channelID; 
 	
-	@Column
+	@Column(name="serverid")
 	private String serverID;
 	
-	@Column
+	@Column(name="countposition")
 	private int countPosition; 
 	
-	@Column
+	@Column(name="lastuser")
 	private String lastUser; 
 	
-	@Column
+	@Column(name="hasreached69")
 	private boolean hasReached69;
 	
-	@Column
+	@Column(name="talkingallowed")
 	private boolean talkingAllowed;
 	
-	@Column 
+	@Column(name="numberoftimesithasbeennice")
 	private int numberOfTimesItHasBeenNice;
 	
-	@Column
+	@Column(name="lastcountmessageid")
 	private String lastCountMessageId;
 	
-	@Column
+	@Column(name="lives")
 	private int lives;
 	
 	@Deprecated

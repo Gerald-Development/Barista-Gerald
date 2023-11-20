@@ -6,7 +6,7 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.persistence.entity.Tunnel;
 import main.java.de.voidtech.gerald.persistence.repository.TunnelRepository;
-import main.java.de.voidtech.gerald.util.EventWaiter;
+import main.java.de.voidtech.gerald.listeners.EventWaiter;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;

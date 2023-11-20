@@ -9,16 +9,16 @@ public class SuggestionChannel {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column
+	@Column(name="channelid")
 	private String channelID;
 	
-	@Column
+	@Column(name="voterole")
 	private String voteRole;
 	
-	@Column
+	@Column(name="suggestrole")
 	private String suggestRole;
 	
-	@Column
+	@Column(name="serverid")
 	private long serverID;
 	
 	@Deprecated

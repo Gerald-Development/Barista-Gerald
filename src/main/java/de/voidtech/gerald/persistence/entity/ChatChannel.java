@@ -10,7 +10,7 @@ public class ChatChannel {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column
+	@Column(name="channelid")
 	private String channelID; 
 	
 	@Deprecated

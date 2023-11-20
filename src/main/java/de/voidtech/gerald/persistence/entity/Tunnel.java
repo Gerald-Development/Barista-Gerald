@@ -10,10 +10,10 @@ public class Tunnel {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column
+	@Column(name="sourcechannelid")
 	private String sourceChannelID; 
 	
-	@Column
+	@Column(name="destchannelid")
 	private String destChannelID;
 	
 	@Deprecated

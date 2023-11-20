@@ -15,7 +15,7 @@ public class GlobalConfig  {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column
+	@Column(name="status")
 	private String status;
 	
 	@Enumerated(EnumType.ORDINAL)

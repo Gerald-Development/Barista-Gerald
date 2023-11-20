@@ -3,24 +3,36 @@ package main.java.de.voidtech.gerald.commands;
 import main.java.de.voidtech.gerald.exception.HandledGeraldException;
 import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.service.AlarmSenderService;
-import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.MultithreadingService;
+import main.java.de.voidtech.gerald.service.ServerService;
+import main.java.de.voidtech.gerald.util.BCESameUserPredicate;
+import main.java.de.voidtech.gerald.listeners.EventWaiter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class AbstractCommand {
 
     private static final Logger LOGGER = Logger.getLogger(AbstractCommand.class.getSimpleName());
+
+    private static final String TRUE_EMOTE = "\u2705";
+    private static final String FALSE_EMOTE = "\u274C";
 
     @Autowired
     private ServerService serverService;
@@ -30,6 +42,9 @@ public abstract class AbstractCommand {
 
     @Autowired
     private AlarmSenderService alarmService;
+
+    @Autowired
+    private EventWaiter waiter;
 
     private boolean runCommandInThread(CommandContext context, List<String> args) {
         if (!context.isMaster() && getCommandCategory().equals(CommandCategory.INVISIBLE)) return false;
@@ -63,6 +78,28 @@ public abstract class AbstractCommand {
         }
     }
 
+    private void getOverrideOption(CommandContext context, String location, List<ItemComponent> actions, Consumer<ButtonInteractionEvent> result) {
+        Message m = context.getAuthor().openPrivateChannel().complete()
+                .sendMessage("The command you wanted to run is restricted in **" + location + "**, run it anyway?").setActionRow(actions).complete();
+        waiter.waitForEvent(ButtonInteractionEvent.class,
+                new BCESameUserPredicate(context.getAuthor()),
+                event -> {
+                    if (!event.isAcknowledged()) {
+                        event.deferEdit().queue();
+                        event.getMessage().editMessageComponents().queue();
+                    }
+                    result.accept(event);
+                }, 60, TimeUnit.SECONDS,
+                () -> m.delete().queue());
+    }
+
+    private List<ItemComponent> createTrueFalseButtons() {
+        List<ItemComponent> components = new ArrayList<>();
+        components.add(Button.secondary("YES", TRUE_EMOTE));
+        components.add(Button.secondary("NO", FALSE_EMOTE));
+        return components;
+    }
+
     public boolean run(CommandContext context, List<String> args) {
         if (context.getChannel().getType() == ChannelType.PRIVATE) {
             runCommandInThread(context, args);
@@ -76,6 +113,21 @@ public abstract class AbstractCommand {
 
             if ((channelWhitelisted && !commandOnBlacklist) || context.getMember().hasPermission(Permission.ADMINISTRATOR)) {
                 return runCommandInThread(context, args);
+            } else if (context.isMaster()) {
+                String location = context.getGuild().getName() + " > " + context.getChannel().getName();
+                getOverrideOption(context, location, createTrueFalseButtons(), event -> {
+                    switch (event.getComponentId()) {
+                        case "YES" -> {
+                            event.getMessage().editMessage("Permissions overridden in **" + location + "**").queue();
+                            LOGGER.log(Level.WARNING, context.getAuthor().getEffectiveName()
+                                    + " used a permissions override in " + location);
+                            runCommandInThread(context, args);
+                        }
+                        case "NO" -> event.getMessage().editMessage("Obeying the laws in **" + location + "**").queue();
+                        default -> event.getMessage().editMessage("Something brokey :(").queue();
+                    }
+                });
+                return true;
             }
         }
         return false;

@@ -10,13 +10,13 @@ public class LevelUpRole {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
-	@Column
+	@Column(name="roleid")
 	private String roleID;
 	
-	@Column
+	@Column(name="serverid")
 	private long serverID;
 	
-	@Column
+	@Column(name="level")
 	private long level;
 	
 	@Deprecated
