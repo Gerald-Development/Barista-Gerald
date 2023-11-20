@@ -10,7 +10,7 @@ public class StarboardMessage {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column(unique = true, name="originalmessageid")
+	@Column(unique = true, name="originmessageid")
 	private String originMessageID;
 	
 	@Column(unique = true, name="selfmessageid")
