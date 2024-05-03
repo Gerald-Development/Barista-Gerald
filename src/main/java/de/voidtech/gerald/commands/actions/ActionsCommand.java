@@ -12,14 +12,12 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.utils.Result;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 import java.util.List;
 
 public abstract class ActionsCommand extends AbstractCommand {
-    private static final String API_URL = "http://api.nekos.fun:8080/api/";
 
     @Autowired
     private ActionStatsRepository repository;
@@ -105,23 +103,19 @@ public abstract class ActionsCommand extends AbstractCommand {
             return;
         }
 
-        String gifURL = getActionGif(action.getType());
-        if (gifURL != null) {
-            updateActionStats(context.getAuthor().getId(), context.getMentionedMembers().get(0).getId(), action, context);
-            String phrase = String.format("%s %s %s",
-                    context.getMember().getEffectiveName(),
-                    conjugateAction(action.getType()),
-                    context.getMentionedMembers().get(0).getId().equals(context.getAuthor().getId()) ?
-                            "themself" : context.getMentionedMembers().get(0).getEffectiveName());
-            //Wow that was a big one
-            EmbedBuilder actionEmbedBuilder = new EmbedBuilder();
-            actionEmbedBuilder.setTitle(phrase);
-            actionEmbedBuilder.setColor(Color.ORANGE);
-            if (!gifURL.isEmpty()) actionEmbedBuilder.setImage(gifURL);
-            actionEmbedBuilder.setFooter(getStatsString(context.getAuthor().getId(), context.getMentionedMembers().get(0).getId(), action, context));
-            MessageEmbed actionEmbed = actionEmbedBuilder.build();
-            context.reply(actionEmbed);
-        }
+        updateActionStats(context.getAuthor().getId(), context.getMentionedMembers().get(0).getId(), action, context);
+        String phrase = String.format("%s %s %s",
+                context.getMember().getEffectiveName(),
+                conjugateAction(action.getType()),
+                context.getMentionedMembers().get(0).getId().equals(context.getAuthor().getId()) ?
+                        "themself" : context.getMentionedMembers().get(0).getEffectiveName());
+        EmbedBuilder actionEmbedBuilder = new EmbedBuilder();
+        actionEmbedBuilder.setTitle(phrase);
+        actionEmbedBuilder.setColor(Color.ORANGE);
+        actionEmbedBuilder.setFooter(getStatsString(context.getAuthor().getId(), context.getMentionedMembers().get(0).getId(), action, context));
+        MessageEmbed actionEmbed = actionEmbedBuilder.build();
+        context.reply(actionEmbed);
+
     }
 
     private void sendActionStats(CommandContext context, ActionType action) {
@@ -197,8 +191,4 @@ public abstract class ActionsCommand extends AbstractCommand {
         return conjugatedAction;
     }
 
-    private String getActionGif(String action) {
-        JSONObject response = httpClientService.getAndReturnJson(API_URL + action);
-        return response.getString("image");
-    }
 }

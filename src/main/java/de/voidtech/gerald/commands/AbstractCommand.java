@@ -102,7 +102,7 @@ public abstract class AbstractCommand {
 
     public boolean run(CommandContext context, List<String> args) {
         if (context.getChannel().getType() == ChannelType.PRIVATE) {
-            runCommandInThread(context, args);
+            return runCommandInThread(context, args);
         } else {
             Server server = serverService.getServer(context.getGuild().getId());
             Set<String> channelWhitelist = server.getChannelWhitelist();
