@@ -1,6 +1,6 @@
 /*
 	BaristaGerald A General Purpose Discord Bot
-    Copyright (C) 2020-2023  Barista Gerald Dev Team (https://github.com/Gerald-Development/Barista-Gerald)
+    Copyright (C) 2020-2025  Barista Gerald Dev Team (https://github.com/Gerald-Development/Barista-Gerald)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

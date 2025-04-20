@@ -79,13 +79,6 @@
 			</plugin>
 		</plugins>
 	</build>
-	<repositories>
-		<repository>
-			<id>jcenter</id>
-			<name>jcenter-bintray</name>
-			<url>https://jcenter.bintray.com</url>
-		</repository>
-	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>net.dv8tion</groupId>
@@ -130,13 +123,6 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.8.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jagrosh</groupId>
-			<artifactId>jda-utilities</artifactId>
-			<version>3.0.5</version>
-			<scope>compile</scope>
-			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>org.jsoup</groupId>

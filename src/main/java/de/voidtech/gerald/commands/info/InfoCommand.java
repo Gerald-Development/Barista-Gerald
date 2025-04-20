@@ -22,7 +22,6 @@ import java.util.List;
 @Command
 public class InfoCommand extends AbstractCommand {
 
-    private static final String JENKINS_LATEST_BUILD_URL = "https://jenkins.voidtech.de/job/Barista%20Gerald/lastSuccessfulBuild/buildNumber";
     @Autowired
     private List<AbstractCommand> commands;
     @Autowired
@@ -40,10 +39,6 @@ public class InfoCommand extends AbstractCommand {
             session.close();
             return count;
         }
-    }
-
-    private String getLatestBuild() {
-        return httpClientService.getAndReturnString(JENKINS_LATEST_BUILD_URL);
     }
 
     @Override
@@ -66,7 +61,6 @@ public class InfoCommand extends AbstractCommand {
                 .addField("Gerald Guild Count", "```" + guildCount + "```", true)
                 .addField("Gerald Member Count", "```" + memberCount + "```", true)
                 .addField("Nitrolite Emote Count", "```" + emoteCount + "```", false)
-                .addField("Latest Build Number", "```" + getLatestBuild() + "```", true)
                 .addField("Active Threads", "```" + Thread.activeCount() + "```", true)
                 .addField("Latest Release", "```" + GlobalConstants.VERSION + "```", false)
                 .setThumbnail(context.getJDA().getSelfUser().getAvatarUrl())
