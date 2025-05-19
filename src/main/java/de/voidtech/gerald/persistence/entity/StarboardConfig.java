@@ -8,7 +8,7 @@ import java.util.List;
 @Table(name = "StarboardConfig")
 public class StarboardConfig {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	
 	@Column(unique = true, name="starboardchannel")

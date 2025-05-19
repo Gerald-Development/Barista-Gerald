@@ -26,10 +26,15 @@ public class StarboardService {
 
     private static final Set<String> MEDIA_LINK_PREFIXES = Set.of("https://cdn.discordapp.com/attachments", "https://media.discordapp.net/attachments/");
     private static final String STAR_UNICODE = "U+2b50";
+
+    private final StarboardConfigRepository configRepository;
+    private final StarboardMessageRepository messageRepository;
+
     @Autowired
-    private StarboardConfigRepository configRepository;
-    @Autowired
-    private StarboardMessageRepository messageRepository;
+    public StarboardService(StarboardConfigRepository configRepository, StarboardMessageRepository messageRepository) {
+        this.configRepository = configRepository;
+        this.messageRepository = messageRepository;
+    }
 
     public StarboardConfig getStarboardConfig(long serverID) {
         return configRepository.getConfigByServerID(serverID);
@@ -70,7 +75,7 @@ public class StarboardService {
         return messageRepository.getMessageByIdAndServerID(serverID, messageID);
     }
 
-    private MessageEmbed constructEmbed(Message message) {
+    public MessageEmbed constructEmbed(Message message) {
         EmbedBuilder starboardEmbed = new EmbedBuilder()
                 .setColor(Color.ORANGE)
                 .setAuthor(message.getAuthor().getEffectiveName(), GlobalConstants.LINKTREE_URL, message.getAuthor().getAvatarUrl())
@@ -111,6 +116,12 @@ public class StarboardService {
 
     private synchronized void persistMessage(String originMessageID, String selfMessageID, long serverID) {
         messageRepository.save(new StarboardMessage(originMessageID, selfMessageID, serverID));
+    }
+
+    public synchronized void repairMessage(String originMessageID, String selfMessageID, long serverID) {
+        if (messageRepository.getMessageByIdAndServerID(serverID, originMessageID) == null) {
+            messageRepository.save(new StarboardMessage(originMessageID, selfMessageID, serverID));
+        }
     }
 
     private void editStarboardMessage(StarboardMessage starboardMessage, Message message, long starCountFromMessage, StarboardConfig config) {

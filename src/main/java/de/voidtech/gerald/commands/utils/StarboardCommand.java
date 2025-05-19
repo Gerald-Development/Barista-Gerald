@@ -6,6 +6,8 @@ import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.persistence.entity.StarboardConfig;
+import main.java.de.voidtech.gerald.persistence.entity.StarboardMessage;
+import main.java.de.voidtech.gerald.persistence.repository.StarboardMessageRepository;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.StarboardService;
 import main.java.de.voidtech.gerald.listeners.EventWaiter;
@@ -13,26 +15,37 @@ import main.java.de.voidtech.gerald.util.MRESameUserPredicate;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Command
 public class StarboardCommand extends AbstractCommand {
-    //TODO (from: Franziska): Needs some thinking and rewriting for SlashCommands. I will just not implement the context.reply just yet as it will confuse the refactoring later.
-    @Autowired
-    private ServerService serverService;
+
+    private final ServerService serverService;
+    private final StarboardService starboardService;
+    private final EventWaiter waiter;
+    private final StarboardMessageRepository starboardMessageRepository;
+
+    private static final Logger LOGGER = Logger.getLogger(StarboardCommand.class.getSimpleName());
 
     @Autowired
-    private StarboardService starboardService;
-
-    @Autowired
-    private EventWaiter waiter;
+    public StarboardCommand(ServerService serverService, StarboardService starboardService, EventWaiter waiter, StarboardMessageRepository starboardMessageRepository) {
+        this.serverService = serverService;
+        this.starboardService = starboardService;
+        this.waiter = waiter;
+        this.starboardMessageRepository = starboardMessageRepository;
+    }
 
     private void getAwaitedReply(CommandContext context, String question, Consumer<String> result) {
         context.getChannel().sendMessage(question).queue();
@@ -172,8 +185,118 @@ public class StarboardCommand extends AbstractCommand {
                 .build();
     }
 
+    private void migrateMessages(CommandContext context, Server server) throws InterruptedException {
+        if (!context.isMaster()) {
+            context.reply("This command is for bot masters only.");
+            return;
+        }
+
+        if (context.getArgs().size() < 3) {
+            context.reply("This command needs 2 arguments: source channel, destination channel");
+            return;
+        }
+
+        TextChannel sourceChannel = context.getJDA().getTextChannelById(context.getArgs().get(1));
+        TextChannel targetChannel = context.getJDA().getTextChannelById(context.getArgs().get(2));
+
+        if (sourceChannel == null) {
+            context.reply("Source channel <#" + context.getArgs().get(1) + "> not found!");
+            return;
+        }
+
+        if (targetChannel== null) {
+            context.reply("Target channel <#" + context.getArgs().get(2) + "> not found!");
+            return;
+        }
+
+        Server sourceServer = serverService.getServer(sourceChannel.getGuild().getId());
+
+        List<StarboardMessage> messages = starboardMessageRepository.getAllMessagesByServerId(sourceServer.getId());
+
+        for (StarboardMessage message : messages) {
+            try {
+                LOGGER.log(Level.INFO, "Retrieving " + message.getOriginMessageID());
+                Message selfMessage = sourceChannel.retrieveMessageById(message.getSelfMessageID()).complete();
+                String jumpUrl = selfMessage.getEmbeds().get(0).getUrl();
+
+                String channelId = jumpUrl.split("/")[5];
+                String messageId = jumpUrl.split("/")[6];
+
+                Message sourceMessage = context.getJDA().getTextChannelById(channelId).retrieveMessageById(messageId).complete();
+                MessageEmbed starboardEmbed = starboardService.constructEmbed(sourceMessage);
+
+                LOGGER.log(Level.INFO, starboardEmbed.getAuthor().getName() + " - " + starboardEmbed.getDescription());
+                targetChannel.sendMessageEmbeds(starboardEmbed).queue();
+                Thread.sleep(1000);
+            } catch (Exception e) {
+                LOGGER.log(Level.INFO, "Skipping " + message.getOriginMessageID() + " - " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public List<Message> getAllMessages(TextChannel channel) throws InterruptedException {
+        List<Message> allMessages = new ArrayList<>();
+
+        List<Message> latestMessages = channel.getHistory().retrievePast(100).complete();
+        if (latestMessages.isEmpty()) {
+            return allMessages;
+        }
+
+        allMessages.addAll(latestMessages);
+        String beforeId = latestMessages.get(latestMessages.size() - 1).getId();
+
+        while (true) {
+            List<Message> messages = channel.getHistoryBefore(beforeId, 100).complete().getRetrievedHistory();
+            if (messages.isEmpty()) {
+                break;
+            }
+
+            allMessages.addAll(messages);
+            beforeId = messages.get(messages.size() - 1).getId();
+            Thread.sleep(1000);
+        }
+
+        return allMessages;
+    }
+
+    private void repair(CommandContext context, Server server) throws InterruptedException {
+        if (!context.isMaster()) {
+            context.reply("This command is for bot masters only.");
+            return;
+        }
+
+        if (context.getArgs().size() < 2) {
+            context.reply("This command needs you to specify a channel ID!");
+            return;
+        }
+
+        String channelId = ParsingUtils.filterSnowflake(context.getArgs().get(1));
+        TextChannel channel = context.getJDA().getTextChannelById(channelId);
+
+        if (channel == null) {
+            context.reply("Channel not found");
+            return;
+        }
+
+        List<Message> messages = getAllMessages(channel).stream()
+                .filter(m -> m.getAuthor().getId().equals(context.getJDA().getSelfUser().getId()))
+                .toList();
+
+        context.reply("Found " + messages.size() + " messages to repair");
+
+        long serverId = serverService.getServer(channel.getGuild().getId()).getId();
+        for (Message message : messages) {
+            MessageEmbed embed = message.getEmbeds().get(0);
+            String messageId = embed.getUrl().split("/")[6];
+            starboardService.repairMessage(messageId, message.getId(), serverId);
+        }
+
+        context.reply("All done!");
+    }
+
     @Override
-    public void executeInternal(CommandContext context, List<String> args) {
+    public void executeInternal(CommandContext context, List<String> args) throws InterruptedException {
         if (context.getMember().getPermissions().contains(Permission.MANAGE_CHANNEL)) {
             Server server = serverService.getServer(context.getGuild().getId());
 
@@ -198,6 +321,12 @@ public class StarboardCommand extends AbstractCommand {
                     break;
                 case "ignored":
                     showIgnoredChannels(context, server);
+                    break;
+                case "migrate":
+                    migrateMessages(context, server);
+                    break;
+                case "repair":
+                    repair(context, server);
                     break;
                 default:
                     context.getChannel().sendMessage("**That's not a valid subcommand! Try this instead:**\n\n" + this.getUsage()).queue();

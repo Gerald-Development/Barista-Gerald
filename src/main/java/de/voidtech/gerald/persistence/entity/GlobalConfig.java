@@ -12,7 +12,7 @@ import javax.persistence.*;
 public class GlobalConfig  {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	
 	@Column(name="status")

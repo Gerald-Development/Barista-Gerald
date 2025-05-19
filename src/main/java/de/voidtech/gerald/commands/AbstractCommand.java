@@ -133,7 +133,7 @@ public abstract class AbstractCommand {
         return false;
     }
 
-    public abstract void executeInternal(CommandContext context, List<String> args);
+    public abstract void executeInternal(CommandContext context, List<String> args) throws Exception;
 
     public abstract String getDescription();
 

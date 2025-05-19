@@ -6,7 +6,7 @@ import javax.persistence.*;
 @Table(name = "riggedlength")
 public class RiggedLength {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	
 	@Column(name="memberid")

@@ -88,6 +88,7 @@ public class TunnelRoutine extends AbstractRoutine {
 	@Override
 	public void executeInternal(Message message) {
 		if (message.getAuthor().getId().equals(message.getJDA().getSelfUser().getId())) return;
+		if (message.getContentRaw().isEmpty()) return;
 		if (tunnelExists(message.getChannel().getId())) {
 			Tunnel tunnel = getTunnel(message.getChannel().getId());
 			if (targetChannelExists(tunnel, message))
