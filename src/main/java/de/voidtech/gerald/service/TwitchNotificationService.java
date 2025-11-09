@@ -23,16 +23,24 @@ public class TwitchNotificationService {
 
     private static final Logger LOGGER = Logger.getLogger(TwitchNotificationService.class.getSimpleName());
 
-    @Autowired
-    private TwitchNotificationChannelRepository repository;
-
-    @Autowired
-    private JDA jda;
+    private final GeraldConfigService geraldConfig;
+    private final TwitchNotificationChannelRepository repository;
+    private final JDA jda;
 
     private TwitchClient twitchClient;
 
     @Autowired
-    public TwitchNotificationService(GeraldConfigService geraldConfig) {
+    public TwitchNotificationService(
+            final GeraldConfigService geraldConfig,
+            final TwitchNotificationChannelRepository repository,
+            final JDA jda) {
+        this.geraldConfig = geraldConfig;
+        this.repository = repository;
+        this.jda = jda;
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void subscribeToAllStreamers() {
         String twitchClientId = geraldConfig.getTwitchClientId();
         String twitchClientSecret = geraldConfig.getTwitchSecret();
 
@@ -49,10 +57,7 @@ public class TwitchNotificationService {
 
             LOGGER.log(Level.INFO, "Twitch Client has been initialised, hashcode: " + twitchClient.hashCode());
         }
-    }
 
-    @EventListener(ApplicationReadyEvent.class)
-    public void subscribeToAllStreamers() {
         if (twitchClient != null) {
             LOGGER.log(Level.INFO, "Adding Twitch API subscriptions");
 
