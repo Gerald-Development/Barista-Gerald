@@ -3,7 +3,6 @@ package main.java.de.voidtech.gerald.service;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.events.ChannelGoLiveEvent;
-import main.java.de.voidtech.gerald.Gerald;
 import main.java.de.voidtech.gerald.persistence.entity.TwitchNotificationChannel;
 import main.java.de.voidtech.gerald.persistence.repository.TwitchNotificationChannelRepository;
 import net.dv8tion.jda.api.JDA;

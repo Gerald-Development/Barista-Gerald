@@ -1,12 +1,12 @@
 package main.java.de.voidtech.gerald.commands;
 
 import main.java.de.voidtech.gerald.exception.HandledGeraldException;
+import main.java.de.voidtech.gerald.listeners.EventWaiter;
 import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.service.AlarmSenderService;
 import main.java.de.voidtech.gerald.service.MultithreadingService;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.util.BCESameUserPredicate;
-import main.java.de.voidtech.gerald.listeners.EventWaiter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;

@@ -16,7 +16,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.security.auth.login.LoginException;
-import java.util.EventListener;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

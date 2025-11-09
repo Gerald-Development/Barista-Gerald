@@ -9,6 +9,7 @@ import main.java.de.voidtech.gerald.persistence.repository.ChatChannelRepository
 import main.java.de.voidtech.gerald.service.ChatbotService;
 import net.dv8tion.jda.api.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.List;
 
 @Command

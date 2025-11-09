@@ -1,8 +1,8 @@
 package main.java.de.voidtech.gerald.routines;
 
 import main.java.de.voidtech.gerald.persistence.entity.Server;
-import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.service.MultithreadingService;
+import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.entities.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 
