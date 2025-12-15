@@ -11,5 +11,5 @@
   ],
   "build_script": "build.sh",
   "systemd": true,
-  "exec": "/usr/bin/java -jar /opt/barista-gerald/BaristaGerald-1.5.0.jar"
+  "exec": "/usr/bin/java -jar /opt/barista-gerald/target/BaristaGerald-1.5.0.jar"
 }
