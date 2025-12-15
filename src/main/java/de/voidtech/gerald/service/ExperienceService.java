@@ -16,49 +16,47 @@ import net.dv8tion.jda.api.entities.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.xml.bind.DatatypeConverter;
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Service
 public class ExperienceService {
 
-    private static final Logger LOGGER = Logger.getLogger(ExperienceService.class.getSimpleName());
     private static final int EXPERIENCE_DELAY = 60; //Delay between incrementing XP in seconds
-    private static final String BAR_FROM = "#F24548";
-    private static final String BAR_TO = "#3B43D5";
-    private static final String BACKGROUND = "#2F3136";
-    @Autowired
-    private ExperienceRepository experienceRepository;
-    @Autowired
-    private ServerExperienceConfigRepository configRepository;
-    @Autowired
-    private LevelUpRoleRepository levelRepository;
-    @Autowired
-    private ServerService serverService;
-    @Autowired
-    private GeraldConfigService config;
-    @Autowired
-    private HttpClientService httpClientService;
 
-    public byte[] getExperienceCard(String avatarURL, long xpAchieved, long xpNeeded,
-                                    long level, long rank, String username) {
+    private final ExperienceRepository experienceRepository;
+    private final ServerExperienceConfigRepository configRepository;
+    private final LevelUpRoleRepository levelRepository;
+    private final ServerService serverService;
+    private final ImageService imageService;
+
+    @Autowired
+    public ExperienceService(
+            final ExperienceRepository experienceRepository,
+            final ServerExperienceConfigRepository configRepository,
+            final LevelUpRoleRepository levelRepository,
+            final ServerService serverService,
+            final ImageService imageService
+    ) {
+        this.experienceRepository = experienceRepository;
+        this.configRepository = configRepository;
+        this.levelRepository = levelRepository;
+        this.serverService = serverService;
+        this.imageService = imageService;
+    }
+
+    public byte[] getExperienceCard(
+            String avatarURL,
+            long xpAchieved,
+            long xpNeeded,
+            long level,
+            long rank,
+            String username
+    ) {
         try {
-            String cardURL = config.getExperienceCardApiURL() + "xpcard/?avatar_url=" + avatarURL +
-                    "&xp=" + xpAchieved + "&xp_needed=" + xpNeeded + "&level=" + level + "&rank=" + rank
-                    + "&username=" + URLEncoder.encode(username, StandardCharsets.UTF_8.toString())
-                    + "&bar_colour_from=" + URLEncoder.encode(BAR_FROM, StandardCharsets.UTF_8.toString())
-                    + "&bar_colour_to=" + URLEncoder.encode(BAR_TO, StandardCharsets.UTF_8.toString())
-                    + "&bg_colour=" + URLEncoder.encode(BACKGROUND, StandardCharsets.UTF_8.toString());
-            //Remove the data:image/png;base64 part
-            String response = httpClientService.getAndReturnString(cardURL).split(",")[1];
-            return DatatypeConverter.parseBase64Binary(response);
-        } catch (IOException e) {
+            return imageService.createExperienceCard(avatarURL, xpAchieved, xpNeeded, level, rank, username);
+        } catch (Exception e) {
             throw new UnhandledGeraldException(e);
         }
     }
@@ -208,7 +206,6 @@ public class ExperienceService {
         }
 
         userXP.setLastMessageTime(Instant.now().getEpochSecond());
-
         saveUserExperience(userXP);
     }
 

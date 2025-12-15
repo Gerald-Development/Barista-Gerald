@@ -80,11 +80,6 @@ public class GeraldConfigService {
         return Arrays.asList(StringUtils.split(config.getProperty("masters"), ','));
     }
 
-    public String getGavinURL() {
-        String url = config.getProperty("api.gavin_url");
-        return url != null ? url : "http://localhost:6970/chat_bot/";
-    }
-
     public String getTwitchClientId() {
         return config.getProperty("twitch.clientId");
     }
@@ -97,8 +92,4 @@ public class GeraldConfigService {
         return config.getProperty("api.meme_url");
     }
 
-    public String getExperienceCardApiURL() {
-        String url = config.getProperty("api.xp_url");
-        return url != null ? url : "http://localhost:3000/api/";
-    }
 }

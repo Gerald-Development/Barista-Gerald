@@ -52,10 +52,11 @@ public class PingResponseRoutine extends AbstractRoutine {
 			List<String> messageBlocks = new ArrayList<>(Arrays.asList(message.getContentRaw().split(" ")));
 			if (messageBlocks.size() == 1 && ParsingUtils.filterSnowflake(message.getContentRaw()).equals(message.getJDA().getSelfUser().getId()))
 				sendPingInfoMessage(message);
-			else {
-				message.getChannel().sendTyping().queue();
-				message.getChannel().sendMessage(geraldAI.getReply(message.getContentDisplay(), message.getId())).queue();
-			}
+			//TODO: Ollama?
+//			else {
+//				message.getChannel().sendTyping().queue();
+//				message.getChannel().sendMessage(geraldAI.getReply(message.getContentDisplay(), message.getId())).queue();
+//			}
 		}
 	}
 
