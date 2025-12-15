@@ -90,4 +90,19 @@ public class HttpClientService {
             throw new UnhandledGeraldException(e);
         }
     }
+
+    public String postEmptyBody(HttpUrl url) {
+        try {
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(RequestBody.create(null, new byte[]{}))
+                    .build();
+
+            try (Response response = newClient().newCall(request).execute()) {
+                return response.body().string();
+            }
+        } catch (IOException e) {
+            throw new UnhandledGeraldException(e);
+        }
+    }
 }

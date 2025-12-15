@@ -1,5 +1,15 @@
 package main.java.de.voidtech.gerald.service;
 
+import main.java.de.voidtech.gerald.exception.UnhandledGeraldException;
+import okhttp3.FormBody;
+import okhttp3.HttpUrl;
+import org.apiguardian.api.API;
+import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -10,9 +20,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ImageService {
+
+    private static final String SEARCH_BASE_URL = "https://imgflip.com/memesearch?q=";
+    private static final String API_URL = "https://api.imgflip.com/caption_image";
 
     private static final int CARD_WIDTH = 1000;
     private static final int CARD_HEIGHT = 300;
@@ -27,6 +44,11 @@ public class ImageService {
     private static final String BAR_FROM = "#F24548";
     private static final String BAR_TO = "#3B43D5";
     private static final String BACKGROUND = "#2F3136";
+
+    @Autowired
+    private GeraldConfigService geraldConfigService;
+    @Autowired
+    private HttpClientService httpClientService;
 
     public byte[] createExperienceCard(
             String avatarURL,
@@ -113,6 +135,75 @@ public class ImageService {
             e.printStackTrace();
             return new Font(Font.SANS_SERIF, Font.BOLD, (int) size);
         }
+    }
+
+    public String searchMeme(String name) {
+        StringBuilder searchUrl = new StringBuilder(SEARCH_BASE_URL);
+        String[] words = name.split(" ");
+
+        for (int i = 0; i < words.length; i++) {
+            if (i == 0) {
+                searchUrl.append(URLEncoder.encode(words[i], StandardCharsets.UTF_8));
+            } else {
+                searchUrl.append("+").append(URLEncoder.encode(words[i], StandardCharsets.UTF_8));
+            }
+        }
+        searchUrl.append("&nsfw=on");
+
+        try {
+            Document doc = Jsoup.connect(searchUrl.toString()).get();
+            Elements links = doc.select("a");
+            List<String> hrefs = new ArrayList<>();
+
+            for (Element link : links) {
+                hrefs.add(link.attr("href"));
+            }
+
+            List<String> ids = new ArrayList<>();
+            for (String href : hrefs) {
+                String[] parts = href.split("/");
+                for (int i = 0; i < parts.length; i++) {
+                    if (parts[i].equals("meme") && i + 1 < parts.length) {
+                        ids.add(parts[i + 1]);
+                    }
+                }
+            }
+
+            if (!ids.isEmpty()) {
+                return ids.get(0);
+            } else {
+                return null;
+            }
+        } catch (IOException e) {
+            throw new UnhandledGeraldException(e);
+        }
+    }
+
+    public JSONObject generateMeme(String id, List<String> text) {
+
+        HttpUrl.Builder formBuilder = HttpUrl.parse(API_URL).newBuilder()
+                .addQueryParameter("username", geraldConfigService.getMemeApiUsername())
+                .addQueryParameter("password", geraldConfigService.getMemeApiPassword())
+                .addQueryParameter("template_id", id);
+
+        for (int i = 0; i < text.size(); i++) {
+            formBuilder.addQueryParameter("boxes[" + i + "][text]", text.get(i));
+        }
+
+        if (text.isEmpty()) {
+            formBuilder.addQueryParameter("text0", " ");
+        }
+
+        String response = httpClientService.postEmptyBody(formBuilder.build());
+        return new JSONObject(response);
+    }
+
+    public JSONObject getMeme(String name, List<String> text) {
+        String id = searchMeme(name);
+        if (id == null) {
+            return null;
+        }
+        return generateMeme(id, text);
     }
 
 }

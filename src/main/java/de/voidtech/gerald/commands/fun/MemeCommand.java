@@ -4,11 +4,10 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.exception.UnhandledGeraldException;
+import main.java.de.voidtech.gerald.exception.HandledGeraldException;
 import main.java.de.voidtech.gerald.persistence.entity.MemeBlocklist;
 import main.java.de.voidtech.gerald.persistence.repository.MemeBlocklistRepository;
-import main.java.de.voidtech.gerald.service.GeraldConfigService;
-import main.java.de.voidtech.gerald.service.HttpClientService;
+import main.java.de.voidtech.gerald.service.ImageService;
 import main.java.de.voidtech.gerald.service.ServerService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -18,23 +17,12 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Command
 public class MemeCommand extends AbstractCommand {
-
-    @Autowired
-    private HttpClientService httpClientService;
 
     @Autowired
     private MemeBlocklistRepository repository;
@@ -43,7 +31,7 @@ public class MemeCommand extends AbstractCommand {
     private ServerService serverService;
 
     @Autowired
-    private GeraldConfigService config;
+    private ImageService imageService;
 
     private MemeBlocklist getBlocklist(long serverID) {
         return repository.getBlocklist(serverID);
@@ -66,104 +54,66 @@ public class MemeCommand extends AbstractCommand {
         repository.save(blocklistEntity);
     }
 
-    private JSONObject assemblePayloadWithCaptions(String messageText) {
-        List<String> captionsList = new ArrayList<>(Arrays.asList(messageText.split("-")));
-        String templateName = captionsList.get(0);
-
-        captionsList.remove(0);
-
-        JSONObject payload = new JSONObject();
-
-        payload.put("template_name", templateName);
-        payload.put("text", captionsList.toArray());
-
-        return payload;
+    private List<String> getCaptions(List<String> args) {
+        List<String> captions = new ArrayList<>(args);
+        captions.remove(0);
+        captions = captions.stream().map(s -> s.substring(1).trim()).toList();
+        return captions;
     }
 
-    private JSONObject assemblePayloadWithoutCaptions(String messageText) {
-        JSONObject payload = new JSONObject();
-        payload.put("template_name", messageText);
-        return payload;
-    }
-
-    private String postPayload(JSONObject JSONPayload) {
-        String payload = JSONPayload.toString();
-        try {
-            HttpURLConnection con = getHttpURLConnection(payload);
-
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-                String response = in.lines().collect(Collectors.joining());
-                return response.substring(1, response.length() - 1);
-            } catch (IOException e) {
-                throw new UnhandledGeraldException(e);
-            }
-        } catch (IOException e) {
-            throw new UnhandledGeraldException(e);
-        }
-    }
-
-    private HttpURLConnection getHttpURLConnection(String payload) throws IOException {
-        HttpURLConnection con = (HttpURLConnection) new URL(config.getMemeApiURL()).openConnection();
-        con.setRequestMethod("POST");
-        con.setRequestProperty("Content-Type", "application/json; utf-8");
-        con.setDoOutput(true);
-        con.setRequestProperty("Accept", "application/json");
-
-        try (OutputStream os = con.getOutputStream()) {
-            byte[] input = payload.getBytes(StandardCharsets.UTF_8);
-            os.write(input, 0, input.length);
-        } catch (IOException e) {
-            throw new UnhandledGeraldException(e);
-        }
-        return con;
-    }
-
-    private boolean payloadIsUnblocked(JSONObject payload, long id, CommandContext context) {
+    private boolean templateIsBlocked(String template, long id, CommandContext context) {
         if (blocklistExists(id)) {
             MemeBlocklist blocklistEntity = getBlocklist(serverService.getServer(context.getGuild().getId()).getId());
             String blocklistString = blocklistEntity.getBlocklist();
             List<String> blocklist = Arrays.asList(blocklistString.split(","));
-
-            return !blocklist.contains(payload.get("template_name"));
-
+            return blocklist.contains(template);
         } else {
-            return true;
+            return false;
         }
     }
 
-    private void deliverMeme(CommandContext context, JSONObject payload) {
-        String apiResponse = postPayload(payload);
-        if (apiResponse.equals("template not found")) {
+    private void deliverMeme(CommandContext context, String template, List<String> text) {
+        JSONObject apiResponse = imageService.getMeme(template, text);
+
+        if (apiResponse == null) {
             context.reply("Couldn't find that template :(");
-        } else {
-            MessageEmbed memeImageEmbed = new EmbedBuilder()
-                    .setColor(Color.ORANGE)
-                    .setTitle("Image URL", apiResponse)
-                    .setImage(apiResponse)
-                    .setFooter("Requested By " + context.getAuthor().getEffectiveName(), context.getAuthor().getAvatarUrl())
-                    .build();
-            context.reply(memeImageEmbed);
+            return;
         }
+
+        if (!apiResponse.getBoolean("success")) {
+            context.reply("An error occurred whilst loading the template");
+            throw new HandledGeraldException("Failed to load meme: " + apiResponse);
+        }
+
+        MessageEmbed memeImageEmbed = new EmbedBuilder()
+                .setColor(Color.ORANGE)
+                .setTitle("Image URL", apiResponse.getJSONObject("data").getString("url"))
+                .setImage(apiResponse.getJSONObject("data").getString("url"))
+                .setFooter("Requested By " + context.getAuthor().getEffectiveName(), context.getAuthor().getAvatarUrl())
+                .build();
+        context.reply(memeImageEmbed);
     }
 
     private void sendMeme(CommandContext context, List<String> args) {
         String messageText = String.join(" ", args);
-        JSONObject payload;
+        List<String> text = List.of();
+        String template = args.get(0);
 
         if (messageText.contains("-")) {
-            payload = assemblePayloadWithCaptions(messageText);
-        } else {
-            payload = assemblePayloadWithoutCaptions(messageText);
+            text = getCaptions(args);
         }
-        if (context.getChannel().getType() != ChannelType.PRIVATE) {
-            if (payloadIsUnblocked(payload, serverService.getServer(context.getGuild().getId()).getId(), context)) {
-                deliverMeme(context, payload);
-            } else {
-                context.reply("**This template has been blocked**");
-            }
-        } else {
-            deliverMeme(context, payload);
+
+        if (context.getChannel().getType() == ChannelType.PRIVATE) {
+            deliverMeme(context, template, text);
+            return;
         }
+
+        if (templateIsBlocked(template, serverService.getServer(context.getGuild().getId()).getId(), context)) {
+            context.reply("**This template has been blocked**");
+            return;
+        }
+
+        deliverMeme(context, template, text);
     }
 
     private void listBlockedMemes(CommandContext context) {
@@ -209,7 +159,7 @@ public class MemeCommand extends AbstractCommand {
         if (context.getMember().hasPermission(Permission.MESSAGE_MANAGE)) {
             MemeBlocklist blocklistEntity = getOrCreateBlocklist(serverService.getServer(context.getGuild().getId()).getId());
             String blocklistString = blocklistEntity.getBlocklist();
-            List<String> blocklist = new ArrayList<String>(Arrays.asList(blocklistString.split(",")));
+            List<String> blocklist = new ArrayList<>(Arrays.asList(blocklistString.split(",")));
 
             List<String> modifiableArgs = args.subList(1, args.size());
             String templateToAdd = String.join(" ", modifiableArgs);

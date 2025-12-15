@@ -88,8 +88,12 @@ public class GeraldConfigService {
         return config.getProperty("twitch.secret");
     }
 
-    public String getMemeApiURL() {
-        return config.getProperty("api.meme_url");
+    public String getMemeApiUsername() {
+        return config.getProperty("imgflip.username");
+    }
+
+    public String getMemeApiPassword() {
+        return config.getProperty("imgflip.password");
     }
 
 }
