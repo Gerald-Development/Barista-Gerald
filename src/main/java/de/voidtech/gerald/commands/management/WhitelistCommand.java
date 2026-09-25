@@ -26,8 +26,8 @@ public class WhitelistCommand extends AbstractCommand {
 
         if (!context.getMember().hasPermission(Permission.MANAGE_SERVER)) return;
 
-        String argString = args.size() > 0 ? args.get(0) : "list";
-        GuildChannel mentionedChannel = context.getMentionedChannels().size() > 0
+        String argString = !args.isEmpty() ? args.get(0) : "list";
+        GuildChannel mentionedChannel = !context.getMentionedChannels().isEmpty()
                 ? context.getMentionedChannels().get(0)
                 : null;
 
@@ -101,10 +101,11 @@ public class WhitelistCommand extends AbstractCommand {
 
     @Override
     public String getUsage() {
-        return "whitelist add {channelID}\n"
-                + "whitelist remove {channelID}\n"
-                + "whitelist clear\n"
-                + "whitelist";
+        return """
+                whitelist add {channelID}
+                whitelist remove {channelID}
+                whitelist clear
+                whitelist""";
     }
 
     @Override

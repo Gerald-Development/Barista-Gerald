@@ -101,17 +101,20 @@ public class RemindMeCommand extends AbstractCommand {
 
     @Override
     public String getDescription() {
-        return "Need a reminder to do something in a little while? Or maybe you want to remind yourself of an event in a few weeks?"
-                + " This command is for you! Simply enter the time delay and a reminder message and you're set!\n\n"
-                + "Use y, mo, w, d, h and m (years, months, weeks, days, hours, minutes) to set your time delay. Examples: 12d, 3mo, 4w\n"
-                + "Please note that there should be no spaces between the quantity and time multiplier.";
+        return """
+                Need a reminder to do something in a little while? Or maybe you want to remind yourself of an event in a few weeks?\
+                 This command is for you! Simply enter the time delay and a reminder message and you're set!
+                
+                Use y, mo, w, d, h and m (years, months, weeks, days, hours, minutes) to set your time delay. Examples: 12d, 3mo, 4w
+                Please note that there should be no spaces between the quantity and time multiplier.""";
     }
 
     @Override
     public String getUsage() {
-        return "remindme (to see your reminders)\n"
-                + "remindme [time delay] [reminder message]\n"
-                + "remindme delete [reminder ID]";
+        return """
+                remindme (to see your reminders)
+                remindme [time delay] [reminder message]
+                remindme delete [reminder ID]""";
     }
 
     @Override

@@ -4,6 +4,7 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
+import main.java.de.voidtech.gerald.exception.HandledGeraldException;
 import main.java.de.voidtech.gerald.listeners.EventWaiter;
 import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.persistence.entity.StarboardConfig;
@@ -185,7 +186,7 @@ public class StarboardCommand extends AbstractCommand {
                 .build();
     }
 
-    private void migrateMessages(CommandContext context, Server server) throws InterruptedException {
+    private void migrateMessages(CommandContext context) {
         if (!context.isMaster()) {
             context.reply("This command is for bot masters only.");
             return;
@@ -230,7 +231,7 @@ public class StarboardCommand extends AbstractCommand {
                 Thread.sleep(1000);
             } catch (Exception e) {
                 LOGGER.log(Level.INFO, "Skipping " + message.getOriginMessageID() + " - " + e.getMessage());
-                e.printStackTrace();
+                throw new HandledGeraldException(e);
             }
         }
     }
@@ -260,7 +261,7 @@ public class StarboardCommand extends AbstractCommand {
         return allMessages;
     }
 
-    private void repair(CommandContext context, Server server) throws InterruptedException {
+    private void repair(CommandContext context) throws InterruptedException {
         if (!context.isMaster()) {
             context.reply("This command is for bot masters only.");
             return;
@@ -323,10 +324,10 @@ public class StarboardCommand extends AbstractCommand {
                     showIgnoredChannels(context, server);
                     break;
                 case "migrate":
-                    migrateMessages(context, server);
+                    migrateMessages(context);
                     break;
                 case "repair":
-                    repair(context, server);
+                    repair(context);
                     break;
                 default:
                     context.getChannel().sendMessage("**That's not a valid subcommand! Try this instead:**\n\n" + this.getUsage()).queue();
@@ -346,14 +347,16 @@ public class StarboardCommand extends AbstractCommand {
 
     @Override
     public String getUsage() {
-        return "starboard setup [Channel mention / ID] [Required star count]\n"
-                + "starboard count [New number of stars needed]\n"
-                + "starboard channel [New channel mention / ID]\n"
-                + "starboard disable\n"
-                + "starboard ignore [channel mention / ID]\n"
-                + "starboard unignore [channel mention / ID]\n"
-                + "starboard ignored\n\n"
-                + "NOTE: You MUST run the setup command first!";
+        return """
+                starboard setup [Channel mention / ID] [Required star count]
+                starboard count [New number of stars needed]
+                starboard channel [New channel mention / ID]
+                starboard disable
+                starboard ignore [channel mention / ID]
+                starboard unignore [channel mention / ID]
+                starboard ignored
+                
+                NOTE: You MUST run the setup command first!""";
     }
 
     @Override

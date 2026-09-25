@@ -212,9 +212,10 @@ public class AutoroleCommand extends AbstractCommand {
 
     @Override
     public String getUsage() {
-        return "autorole add (then follow the instructions you are given)\n"
-                + "autorole remove [role mention/ID/'all']\n"
-                + "autorole list";
+        return """
+                autorole add (then follow the instructions you are given)
+                autorole remove [role mention/ID/'all']
+                autorole list""";
     }
 
     @Override

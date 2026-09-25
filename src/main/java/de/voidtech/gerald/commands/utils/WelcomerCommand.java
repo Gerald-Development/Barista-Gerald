@@ -221,11 +221,12 @@ public class WelcomerCommand extends AbstractCommand {
 
     @Override
     public String getUsage() {
-        return "welcomer setup (then follow the steps you are shown)\n\n"
-                + "welcomer channel #welcome-new-members (to change the channel)\n\n"
-                + "welcomer joinmsg welcome to our server! (to change the welcome message)\n\n"
-                + "welcomer leavemsg we will miss you! (to change the leave message)\n\n"
-                + "welcomer clear";
+        return """
+                welcomer setup (then follow the steps you are shown)
+                welcomer channel #welcome-new-members (to change the channel)
+                welcomer joinmsg welcome to our server! (to change the welcome message)
+                welcomer leavemsg we will miss you! (to change the leave message)
+                welcomer clear""";
     }
 
     @Override

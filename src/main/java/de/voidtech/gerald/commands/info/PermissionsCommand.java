@@ -20,7 +20,7 @@ public class PermissionsCommand extends AbstractCommand {
     public void executeInternal(CommandContext context, List<String> args) {
         EnumSet<Permission> perms;
         String member;
-        if (args.size() > 0) {
+        if (!args.isEmpty()) {
             if (args.get(0).equals("everyone")) {
                 perms = context.getGuild().getPublicRole().getPermissions();
                 member = "Everyone";

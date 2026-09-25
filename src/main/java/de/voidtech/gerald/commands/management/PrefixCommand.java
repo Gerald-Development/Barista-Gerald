@@ -26,7 +26,7 @@ public class PrefixCommand extends AbstractCommand {
         if (context.getMember().hasPermission(Permission.MANAGE_SERVER)) {
             Server server = serverService.getServer(context.getGuild().getId());
 
-            if (args.size() > 0) {
+            if (!args.isEmpty()) {
                 String prefix = args.get(0);
 
                 server.setPrefix(prefix);

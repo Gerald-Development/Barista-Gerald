@@ -118,7 +118,7 @@ public class TunnelCommand extends AbstractCommand {
     }
 
     private boolean tunnelExists(String senderChannelID, String destChannelID) {
-        if (destChannelID.equals("")) {
+        if (destChannelID.isEmpty()) {
             return repository.getTunnelBySingleChannelId(senderChannelID) != null;
         } else {
             Tunnel tunnelFirst = repository.getTunnelBySingleChannelId(senderChannelID);
@@ -141,7 +141,7 @@ public class TunnelCommand extends AbstractCommand {
         } else {
             String targetChannelID = ParsingUtils.filterSnowflake(args.get(1));
 
-            if (targetChannelID.equals(""))
+            if (targetChannelID.isEmpty())
                 message.getChannel().sendMessage("**That is not a valid channel.**").queue();
             else {
                 TextChannel targetChannel = message.getJDA().getTextChannelCache().getElementById(targetChannelID);
@@ -205,9 +205,10 @@ public class TunnelCommand extends AbstractCommand {
 
     @Override
     public String getUsage() {
-        return "tunnel dig [channel ID/channel mention]\n"
-                + "tunnel fill\n"
-                + "tunnel (use this in a tunnel to see tunnel information)";
+        return """
+                tunnel dig [channel ID/channel mention]
+                tunnel fill
+                tunnel (use this in a tunnel to see tunnel information)""";
     }
 
     @Override

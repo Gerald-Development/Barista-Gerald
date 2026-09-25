@@ -1,8 +1,6 @@
 package main.java.de.voidtech.gerald.service;
 
-import main.java.de.voidtech.gerald.persistence.entity.NitroliteAlias;
 import main.java.de.voidtech.gerald.persistence.entity.NitroliteEmote;
-import main.java.de.voidtech.gerald.persistence.repository.NitroliteAliasRepository;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Message.Attachment;
@@ -25,30 +23,11 @@ public class NitroliteService {
     @Autowired
     private EmoteService emoteService;
 
-    @Autowired
-    private NitroliteAliasRepository aliasRepository;
-
-    @Autowired
-    private ServerService serverService;
-
-    public boolean aliasExists(String name, long serverID) {
-        return aliasRepository.getAliasByNameAndServerID(serverID, name) != null;
-    }
-
-    public NitroliteEmote getEmoteFromAlias(String name, long serverID, Message message) {
-        NitroliteAlias alias = aliasRepository.getAliasByNameAndServerID(serverID, name);
-        return emoteService.getEmoteById(alias.getEmoteID(), message.getJDA());
-    }
-
-    public void deleteAliasesUsingEmote(String emoteID) {
-        aliasRepository.deleteAliasByEmoteID(emoteID);
-    }
-
     public void sendMessage(Message originMessage, String content) {
 
         EnumSet<Permission> perms = originMessage.getGuild().getSelfMember().getPermissions(originMessage.getGuildChannel());
 
-        if (originMessage.getAttachments().size() != 0) {
+        if (!originMessage.getAttachments().isEmpty()) {
             StringBuilder contentBuilder = new StringBuilder(content);
             for (Attachment attachment : originMessage.getAttachments()) {
                 contentBuilder.append("\n").append(attachment.getUrl());
@@ -81,7 +60,7 @@ public class NitroliteService {
 
     public String constructEmoteString(NitroliteEmote emote) {
         if (emote == null) return "[Emote Deleted]";
-        else return String.format("<%s%s:%s>", emote.isEmoteAnimated() ? "a:" : ":", emote.getName(), emote.getID());
+        else return String.format("<%s%s:%s>", emote.animated() ? "a:" : ":", emote.name(), emote.id());
     }
 
     private void sendWebhookMessage(Message message, String content) {
@@ -90,18 +69,14 @@ public class NitroliteService {
     }
 
     public List<String> processNitroliteMessage(Message message) {
-        List<String> messageTokens = Arrays.asList(message.getContentRaw().replaceAll("(?<! )\\[:", " \\[:").replaceAll(":\\](?! )", "\\:] ").split(" "));
-        long serverID = serverService.getServer(message.getGuild().getId()).getId();
+        List<String> messageTokens = Arrays.asList(message.getContentRaw().replaceAll("(?<! )\\[:", " [:").replaceAll(":](?! )", ":] ").split(" "));
         boolean foundOne = false;
 
         for (int i = 0; i < messageTokens.size(); i++) {
             String token = messageTokens.get(i);
-            NitroliteEmote emoteOpt;
             if (token.matches("\\[:[^:]*:]")) {
                 String searchWord = token.substring(2, token.length() - 2);
-                if (aliasExists(searchWord, serverID)) emoteOpt = getEmoteFromAlias(searchWord, serverID, message);
-                else emoteOpt = emoteService.getEmoteByName(searchWord, message.getJDA());
-
+                NitroliteEmote emoteOpt = emoteService.getEmoteByName(searchWord, message.getJDA());
                 if (emoteOpt != null) {
                     foundOne = true;
                     messageTokens.set(i, constructEmoteString(emoteOpt));

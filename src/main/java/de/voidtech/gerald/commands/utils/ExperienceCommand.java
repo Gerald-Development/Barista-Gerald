@@ -95,7 +95,7 @@ public class ExperienceCommand extends AbstractCommand {
                 context.reply("**The provided XP gain rate must be a number!**");
                 return;
             }
-            int gainRate = Integer.valueOf(context.getArgs().get(1));
+            int gainRate = Integer.parseInt(context.getArgs().get(1));
             if (gainRate < 1 || gainRate > 25) {
                 context.reply("**XP gain rate must be between 1 and 25**");
                 return;
@@ -106,12 +106,14 @@ public class ExperienceCommand extends AbstractCommand {
     }
 
     private void showNoXpHelp(CommandContext context) {
-        context.reply("**No XP Settings:**\n"
-                + "list - shows all channels where xp will not be gained\n"
-                + "add - add a channel that will not gain xp\n"
-                + "clear - remove all no xp channels\n"
-                + "remove - remove a channel that will not gain xp\n\n"
-                + "When adding or removing a channel from the no xp list, you will be prompted to enter a channel mention or ID.");
+        context.reply("""
+                **No XP Settings:**
+                list - shows all channels where xp will not be gained
+                add - add a channel that will not gain xp
+                clear - remove all no xp channels
+                remove - remove a channel that will not gain xp
+                
+                When adding or removing a channel from the no xp list, you will be prompted to enter a channel mention or ID.""");
     }
 
     private void handleNoXpChannelSettings(CommandContext context, Server server) {
@@ -131,9 +133,6 @@ public class ExperienceCommand extends AbstractCommand {
                 break;
             case "clear":
                 clearNoXPChannels(context, server);
-                break;
-            case "help":
-                showNoXpHelp(context);
                 break;
             default:
                 showNoXpHelp(context);
@@ -276,7 +275,7 @@ public class ExperienceCommand extends AbstractCommand {
     }
 
     private String numberToEmoji(int number) {
-        List<String> digits = Arrays.asList(String.valueOf(number).split("")); //Wowzer
+        String[] digits = String.valueOf(number).split("");
         StringBuilder finalNumber = new StringBuilder();
         for (String digit : digits) {
             finalNumber.append(ParsingUtils.convertSingleDigitToEmoji(digit));
@@ -351,25 +350,27 @@ public class ExperienceCommand extends AbstractCommand {
 
     @Override
     public String getDescription() {
-        return "You know the drill, the more messages you send, the more experience you gain!\n"
-                + "You can gain up to 15 experience per minute.\n"
-                + "Server admins can configure roles that are given to you when you reach a certain level.\n"
-                + "To stop people from checking their XP, you can disable the XP command.\n"
-                + "If you want to stop people from gaining XP, disable the r-xp routine.\n"
-                + "To disable the level up messages, use the togglemsg subcommand.\n"
-                + "To control which channels will not allow members to gain XP, use 'xp noxp help' to see how to set it up!";
+        return """
+                You know the drill, the more messages you send, the more experience you gain!
+                You can gain up to 15 experience per minute.
+                Server admins can configure roles that are given to you when you reach a certain level.
+                To stop people from checking their XP, you can disable the XP command.
+                If you want to stop people from gaining XP, disable the r-xp routine.
+                To disable the level up messages, use the togglemsg subcommand.
+                To control which channels will not allow members to gain XP, use 'xp noxp help' to see how to set it up!""";
     }
 
     @Override
     public String getUsage() {
-        return "xp\n"
-                + "xp levels\n"
-                + "xp addrole [level] [role]\n"
-                + "xp removerole [level]\n"
-                + "xp togglemsg\n"
-                + "xp leaderboard\n"
-                + "xp noxp [help/list/add/remove/clear]\n" +
-                "xp rate [random/(choose an xp rate)]";
+        return """
+                xp
+                xp levels
+                xp addrole [level] [role]
+                xp removerole [level]
+                xp togglemsg
+                xp leaderboard
+                xp noxp [help/list/add/remove/clear]
+                xp rate [random/(choose an xp rate)]""";
     }
 
     @Override

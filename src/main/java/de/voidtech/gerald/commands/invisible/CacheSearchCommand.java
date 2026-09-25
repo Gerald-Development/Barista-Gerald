@@ -23,9 +23,6 @@ import java.util.Objects;
 public class CacheSearchCommand extends AbstractCommand {
 
     @Autowired
-    private GeraldConfigService config;
-
-    @Autowired
     private ServerService serverService;
 
     @Override

@@ -6,14 +6,9 @@ import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
-import main.java.de.voidtech.gerald.service.HttpClientService;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
@@ -26,26 +21,11 @@ public class InfoCommand extends AbstractCommand {
     private List<AbstractCommand> commands;
     @Autowired
     private List<AbstractRoutine> routines;
-    @Autowired
-    private SessionFactory sessionFactory;
-    @Autowired
-    private HttpClientService httpClientService;
-
-    private long getEmoteCount(JDA jda) {
-        try (Session session = sessionFactory.openSession()) {
-            @SuppressWarnings("rawtypes")
-            Query query = session.createQuery("select count(*) from NitroliteEmote");
-            long count = ((long) query.uniqueResult()) + jda.getEmojiCache().size();
-            session.close();
-            return count;
-        }
-    }
 
     @Override
     public void executeInternal(CommandContext context, List<String> args) {
         long guildCount = context.getJDA().getGuildCache().size();
         long memberCount = context.getJDA().getGuildCache().stream().mapToInt(Guild::getMemberCount).sum();
-        long emoteCount = getEmoteCount(context.getJDA());
 
         MessageEmbed informationEmbed = new EmbedBuilder()
                 .setColor(Color.ORANGE)
@@ -60,7 +40,6 @@ public class InfoCommand extends AbstractCommand {
 
                 .addField("Gerald Guild Count", "```" + guildCount + "```", true)
                 .addField("Gerald Member Count", "```" + memberCount + "```", true)
-                .addField("Nitrolite Emote Count", "```" + emoteCount + "```", false)
                 .addField("Active Threads", "```" + Thread.activeCount() + "```", true)
                 .addField("Latest Release", "```" + GlobalConstants.VERSION + "```", false)
                 .setThumbnail(context.getJDA().getSelfUser().getAvatarUrl())

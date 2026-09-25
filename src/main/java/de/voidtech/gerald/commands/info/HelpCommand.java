@@ -5,7 +5,6 @@ import main.java.de.voidtech.gerald.annotations.Command;
 import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
-import main.java.de.voidtech.gerald.service.CommandService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +23,6 @@ public class HelpCommand extends AbstractCommand {
 
     @Autowired
     private List<AbstractCommand> commandsList;
-    @Autowired
-    private CommandService commandService;
 
     private String capitaliseFirstLetter(String word) {
         return word.substring(0, 1).toUpperCase() + word.substring(1);
@@ -59,8 +56,7 @@ public class HelpCommand extends AbstractCommand {
         CommandCategory cat = getCategoryByName(categoryName); //Meow
         if (cat == null) return false;
         else {
-            if (cat.equals(CommandCategory.INVISIBLE) && !isMaster) return false;
-            else return true;
+            return !cat.equals(CommandCategory.INVISIBLE) || isMaster;
         }
     }
 
@@ -76,7 +72,7 @@ public class HelpCommand extends AbstractCommand {
         Optional<AbstractCommand> aliasMatch = commandsList.stream()
                 .filter(c -> List.of(c.getCommandAliases()).contains(commandName))
                 .findFirst();
-        return aliasMatch.isPresent() ? aliasMatch.get() : nameMatch.isPresent() ? nameMatch.get() : null;
+        return aliasMatch.orElseGet(() -> nameMatch.orElse(null));
     }
 
     private boolean isCommand(String commandName, boolean isMaster) {
@@ -84,8 +80,7 @@ public class HelpCommand extends AbstractCommand {
         //Please god work
         if (command == null) return false;
         else {
-            if (command.getCommandCategory().equals(CommandCategory.INVISIBLE) && !isMaster) return false;
-            else return true;
+            return !command.getCommandCategory().equals(CommandCategory.INVISIBLE) || isMaster;
         }
     }
 
@@ -159,9 +154,10 @@ public class HelpCommand extends AbstractCommand {
 
     @Override
     public String getUsage() {
-        return "help\n"
-                + "help [name of command]\n"
-                + "help [name of category]";
+        return """
+                help
+                help [name of command]
+                help [name of category]""";
     }
 
     @Override

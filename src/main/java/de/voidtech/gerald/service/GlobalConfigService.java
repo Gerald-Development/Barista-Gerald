@@ -19,4 +19,8 @@ public class GlobalConfigService {
         }
         return config;
     }
+
+    public void saveGlobalConfig(GlobalConfig config) {
+        repository.save(config);
+    }
 }

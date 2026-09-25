@@ -6,13 +6,10 @@ import main.java.de.voidtech.gerald.commands.AbstractCommand;
 import main.java.de.voidtech.gerald.commands.CommandCategory;
 import main.java.de.voidtech.gerald.commands.CommandContext;
 import main.java.de.voidtech.gerald.persistence.entity.GlobalConfig;
-import main.java.de.voidtech.gerald.service.GeraldConfigService;
 import main.java.de.voidtech.gerald.service.GlobalConfigService;
 import net.dv8tion.jda.api.entities.Activity.ActivityType;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -21,13 +18,7 @@ import java.util.List;
 public class ActivityCommand extends AbstractCommand {
 
     @Autowired
-    private SessionFactory sessionFactory;
-
-    @Autowired
     private GlobalConfigService globalConfService;
-
-    @Autowired
-    private GeraldConfigService config;
 
     @Override
     public void executeInternal(CommandContext context, List<String> args) {
@@ -60,16 +51,10 @@ public class ActivityCommand extends AbstractCommand {
     }
 
     private void updatePersistentActivity(ActivityType activityType, String status) {
-        try (Session session = sessionFactory.openSession()) {
-            session.getTransaction().begin();
-
-            GlobalConfig globalConf = globalConfService.getGlobalConfig();
-            globalConf.setActivity(activityType);
-            globalConf.setStatus(status);
-
-            session.saveOrUpdate(globalConf);
-            session.getTransaction().commit();
-        }
+        GlobalConfig globalConf = globalConfService.getGlobalConfig();
+        globalConf.setActivity(activityType);
+        globalConf.setStatus(status);
+        globalConfService.saveGlobalConfig(globalConf);
     }
 
     @Override

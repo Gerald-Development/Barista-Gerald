@@ -5,7 +5,6 @@ import main.java.de.voidtech.gerald.annotations.Routine;
 import main.java.de.voidtech.gerald.persistence.entity.Server;
 import main.java.de.voidtech.gerald.routines.AbstractRoutine;
 import main.java.de.voidtech.gerald.routines.RoutineCategory;
-import main.java.de.voidtech.gerald.service.ChatbotService;
 import main.java.de.voidtech.gerald.service.GeraldConfigService;
 import main.java.de.voidtech.gerald.service.ServerService;
 import main.java.de.voidtech.gerald.util.ParsingUtils;
@@ -20,7 +19,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Routine
 public class PingResponseRoutine extends AbstractRoutine {
@@ -30,9 +28,6 @@ public class PingResponseRoutine extends AbstractRoutine {
 
     @Autowired
     private GeraldConfigService config;
-
-    @Autowired
-    private ChatbotService geraldAI;
 
     private void sendPingInfoMessage(Message message) {
     	Server guild = serverService.getServer(message.getGuild().getId());
@@ -52,11 +47,6 @@ public class PingResponseRoutine extends AbstractRoutine {
 			List<String> messageBlocks = new ArrayList<>(Arrays.asList(message.getContentRaw().split(" ")));
 			if (messageBlocks.size() == 1 && ParsingUtils.filterSnowflake(message.getContentRaw()).equals(message.getJDA().getSelfUser().getId()))
 				sendPingInfoMessage(message);
-			//TODO: Ollama?
-//			else {
-//				message.getChannel().sendTyping().queue();
-//				message.getChannel().sendMessage(geraldAI.getReply(message.getContentDisplay(), message.getId())).queue();
-//			}
 		}
 	}
 
@@ -64,7 +54,7 @@ public class PingResponseRoutine extends AbstractRoutine {
 		List<String> mentionedIds = message.getMentions().getMembers()
 				.stream()
 				.map(Member::getId)
-				.collect(Collectors.toList());
+				.toList();
 		return mentionedIds.contains(message.getJDA().getSelfUser().getId());
 	}
 

@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.awt.*;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Command
 public class SuggestCommand extends AbstractCommand {
@@ -67,7 +66,7 @@ public class SuggestCommand extends AbstractCommand {
             List<Attachment> possibleAttachments = context.getMessage().getAttachments()
                     .stream()
                     .filter(Attachment::isImage)
-                    .collect(Collectors.toList());
+                    .toList();
             if (!possibleAttachments.isEmpty()) newSuggestionEmbedBuilder.setImage(possibleAttachments.get(0).getUrl());
         }
         return newSuggestionEmbedBuilder.build();
@@ -203,22 +202,27 @@ public class SuggestCommand extends AbstractCommand {
 
     @Override
     public String getDescription() {
-        return "If you only want certain users to make suggestions, use the suggestrole subcommand to set a suggestion role.\n\n"
-                + "If you only want certain users to vote, use the voterole subcommand to set a vote role.\n\n"
-                + "Use the config subcommand to see your current configuration\n"
-                + "All users will require these roles to make suggestions or vote. This includes admins!\n\n"
-                + "Members with the Manage_Messages permission can use coloured circle emotes (🔵 🟢 🟠 🔴 🟣) to review suggestions "
-                + "(the embed colour will change and a 'reviewed by' field will appear)";
+        return """
+                If you only want certain users to make suggestions, use the suggestrole subcommand to set a suggestion role.
+                
+                If you only want certain users to vote, use the voterole subcommand to set a vote role.
+                
+                Use the config subcommand to see your current configuration
+                All users will require these roles to make suggestions or vote. This includes admins!
+                
+                Members with the Manage_Messages permission can use coloured circle emotes (🔵 🟢 🟠 🔴 🟣) to review suggestions \
+                (the embed colour will change and a 'reviewed by' field will appear)""";
     }
 
     @Override
     public String getUsage() {
-        return "suggest channel [channel]\n"
-                + "suggest disable\n"
-                + "suggest suggestrole [role ID / clear]\n"
-                + "suggest voterole [role ID / clear]\n"
-                + "suggest config\n"
-                + "suggest [suggestion]";
+        return """
+                suggest channel [channel]
+                suggest disable
+                suggest suggestrole [role ID / clear]
+                suggest voterole [role ID / clear]
+                suggest config
+                suggest [suggestion]""";
     }
 
     @Override

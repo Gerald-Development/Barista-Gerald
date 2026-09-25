@@ -67,7 +67,7 @@ public class TwitchCommand extends AbstractCommand {
     private void listStreamers(CommandContext context) {
         List<TwitchNotificationChannel> subscriptions = twitchService.getAllSubscriptionsForServer(serverService.getServer(context.getGuild().getId()).getId());
         String messageBody;
-        if (subscriptions.size() == 0)
+        if (subscriptions.isEmpty())
             messageBody = "None to show!";
         else {
             StringBuilder messageBodyBuilder = new StringBuilder();
@@ -151,9 +151,10 @@ public class TwitchCommand extends AbstractCommand {
 
     @Override
     public String getUsage() {
-        return "twitch add [then follow the instructions on screen]\n"
-                + "twitch remove [streamer name]\n"
-                + "twitch list";
+        return """
+                twitch add [then follow the instructions on screen]
+                twitch remove [streamer name]
+                twitch list""";
     }
 
     @Override

@@ -49,7 +49,7 @@ public class TunnelRoutine extends AbstractRoutine {
 	}
 
 	private void sendWebhookMessage(Webhook webhook, String content, Message message) {
-		if (message.getAttachments().size() != 0) {
+		if (!message.getAttachments().isEmpty()) {
 			StringBuilder contentBuilder = new StringBuilder(content);
 			for (Attachment attachment: message.getAttachments()) {
 				contentBuilder.append("\n").append(attachment.getUrl());
